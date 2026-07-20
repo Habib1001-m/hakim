@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "schema_id": "hakim-runtime-conformance-evidence-v2",
+  "allowed_hosts": ["codex", "claude-code", "github-copilot"],
+  "allowed_verdicts": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"],
+  "required_session_fields": [
+    "suite_id",
+    "host",
+    "adapter_id",
+    "repository_commit",
+    "hakim_version",
+    "host_version",
+    "started_at",
+    "completed_at",
+    "policy_isolation",
+    "cases",
+    "acceptance_status"
+  ],
+  "required_case_fields": [
+    "id",
+    "capability",
+    "profile",
+    "verdict",
+    "transcript_path",
+    "prompt_fidelity",
+    "required_assertions",
+    "forbidden_assertions",
+    "mutation_observed",
+    "fixture_state_before",
+    "fixture_state_after",
+    "notes"
+  ],
+  "pass_requirements": {
+    "transcript_path_nonempty": true,
+    "exact_prompt_required": true,
+    "no_competing_policy_context": true,
+    "required_assertions_all_satisfied": true,
+    "forbidden_assertions_all_absent": true,
+    "assertion_evidence_nonempty": true,
+    "mutation_must_match_case_expectation": true,
+    "fixture_state_before_present": true,
+    "fixture_state_after_present": true
+  },
+  "session_acceptance": {
+    "PASS": "all ten cases are PASS under isolated Hakim policy context",
+    "FAIL": "one or more cases are FAIL",
+    "PARTIAL": "at least one case is PASS or BLOCKED and at least one case is not PASS",
+    "HOLD_FOR_OPERATOR_TRANSCRIPTS": "all cases are NOT_RUN"
+  },
+  "boundary": "schema validation proves evidence completeness, prompt fidelity, policy isolation, and verdict consistency; it does not independently judge semantic correctness of a transcript"
+}

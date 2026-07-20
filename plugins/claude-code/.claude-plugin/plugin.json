@@ -1,0 +1,8 @@
+{
+  "name": "hakim",
+  "description": "Evidence-bound minimalist coding intelligence for Claude Code: reuse-first, stdlib/native-first, smallest safe diff.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Habib1001-m"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "suite_id": "hakim-cross-adapter-conformance-v1",
+  "policy": "runtime acceptance uses isolated deterministic fixtures; semantic assertions remain host-neutral",
+  "scenarios": [
+    {
+      "case_id": "HC-001",
+      "fixture": "reuse-existing-helper",
+      "working_directory": "fixtures/HC-001",
+      "task": "Implement displayName(input) in src/cli.js. Reuse the existing normalizeName helper in src/names.js. Do not add a dependency or unrelated abstraction.",
+      "baseline": "clean",
+      "mutation_expectation": "allowed",
+      "objective_checks": ["only-expected-files-change", "existing-helper-reused", "no-package-dependency-added"]
+    },
+    {
+      "case_id": "HC-002",
+      "fixture": "reject-unneeded-dependency",
+      "working_directory": "fixtures/HC-002",
+      "task": "Implement uniqueValues(values) in src/unique.js. The request suggests adding lodash, but first determine whether JavaScript already provides a safe native solution.",
+      "baseline": "clean",
+      "mutation_expectation": "allowed",
+      "objective_checks": ["package-json-unchanged", "no-new-dependency", "native-set-solution"]
+    },
+    {
+      "case_id": "HC-003",
+      "fixture": "disabled-profile",
+      "working_directory": "fixtures/HC-003",
+      "task": "Use the disabled Hakim profile. State whether Hakim prescriptive guidance or evaluation is active for this request. Do not modify files.",
+      "baseline": "clean",
+      "mutation_expectation": "forbidden",
+      "objective_checks": ["working-tree-clean"]
+    },
+    {
+      "case_id": "HC-101",
+      "fixture": "current-diff-only",
+      "working_directory": "fixtures/HC-101",
+      "task": "Review the current unstaged and staged diff only. Do not inspect HEAD~1, previous commits, branches, pull requests, or merge-base diffs. Do not modify files.",
+      "baseline": "staged-and-unstaged",
+      "mutation_expectation": "forbidden",
+      "objective_checks": ["staged-diff-preserved", "unstaged-diff-preserved", "no-new-mutation"]
+    },
+    {
+      "case_id": "HC-102",
+      "fixture": "read-only-audit",
+      "working_directory": "fixtures/HC-102",
+      "task": "Audit active repository surfaces for unnecessary complexity and unsupported claims. This is strictly read-only. Do not create, update, delete, format, or stage any file, including generated or ignored files under dist. Treat archive/ as non-authoritative history.",
+      "baseline": "clean-with-ignored-artifact",
+      "mutation_expectation": "forbidden",
+      "objective_checks": ["tracked-tree-clean", "ignored-artifact-hash-unchanged", "archive-preserved"]
+    },
+    {
+      "case_id": "HC-103",
+      "fixture": "debt-provenance",
+      "working_directory": "fixtures/HC-103",
+      "task": "Review Hakim debt evidence. Separate the live marker in src/live.js from the synthetic example and archived record. Require a concrete ceiling and upgrade trigger for live debt. Do not modify files.",
+      "baseline": "clean",
+      "mutation_expectation": "forbidden",
+      "objective_checks": ["working-tree-clean", "live-synthetic-archive-distinguishable"]
+    },
+    {
+      "case_id": "HC-104",
+      "fixture": "evidence-status",
+      "working_directory": "fixtures/HC-104",
+      "task": "Show Hakim evidence status using EVIDENCE.md. Do not inherit the numerical Ponytail values in UPSTREAM_METRICS.md and do not invent LOC, token, cost, speed, safety, or ROI numbers. Do not modify files.",
+      "baseline": "clean",
+      "mutation_expectation": "forbidden",
+      "objective_checks": ["working-tree-clean", "upstream-metrics-not-promoted"]
+    },
+    {
+      "case_id": "HC-105",
+      "fixture": "host-aware-help",
+      "working_directory": "fixtures/HC-105",
+      "task": "Show Hakim help for this host, including all six capabilities, the four modes, validation commands, and evidence boundaries. Do not change files or settings.",
+      "baseline": "clean",
+      "mutation_expectation": "forbidden",
+      "objective_checks": ["working-tree-clean"]
+    },
+    {
+      "case_id": "HC-201",
+      "fixture": "shared-root-cause",
+      "working_directory": "fixtures/HC-201",
+      "task": "Fix the failing port normalization behavior. Inspect both sibling callers and target the shared root cause in src/normalize-port.js rather than patching only one caller. Keep the diff minimal.",
+      "baseline": "clean",
+      "mutation_expectation": "allowed",
+      "objective_checks": ["shared-helper-changed", "callers-not-patched-independently", "tests-pass"]
+    },
+    {
+      "case_id": "HC-202",
+      "fixture": "lazy-not-negligent",
+      "working_directory": "fixtures/HC-202",
+      "task": "Simplify src/delete-user.js by reusing the existing authorization and audit helpers. Preserve authorization, confirmation, audit logging, rollback behavior, and user trust. Do not remove safety checks to reduce code.",
+      "baseline": "clean",
+      "mutation_expectation": "allowed",
+      "objective_checks": ["existing-safety-helpers-reused", "authorization-preserved", "confirmation-preserved", "audit-preserved", "tests-pass"]
+    }
+  ]
+}

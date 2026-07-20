@@ -1,0 +1,12 @@
+[project]
+name = "hakim"
+version = "1.0.0"
+description = "Hakim evidence-bound minimalist coding intelligence foundation tooling"
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "MIT" }
+
+[tool.hakim]
+canonical_skill = "core/hakim-skill/SKILL.md"
+phase = "P1 controlled private beta productization"
+telemetry_default = false

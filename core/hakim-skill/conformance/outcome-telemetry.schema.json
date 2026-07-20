@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "schema_id": "hakim-outcome-telemetry-v1",
+  "authority": {
+    "objective_source": "fixture_state_after",
+    "reported_source": "agent_transcript",
+    "verdict_authority": false,
+    "benchmark_authority": false
+  },
+  "allowed_extraction_statuses": [
+    "FOUND",
+    "NO_SUMMARY",
+    "MISSING_TRANSCRIPT",
+    "INVALID_STRUCTURED_SUMMARY"
+  ],
+  "allowed_extraction_methods": [
+    "structured_json_v1",
+    "legacy_hakim_summary_regex",
+    "full_transcript_fallback",
+    null
+  ],
+  "required_packet_fields": [
+    "schema_version",
+    "schema_id",
+    "authority",
+    "suite_id",
+    "host",
+    "adapter_id",
+    "repository_commit",
+    "hakim_version",
+    "generated_at",
+    "cases"
+  ],
+  "required_case_fields": [
+    "case_id",
+    "capability",
+    "profile",
+    "verdict",
+    "objective",
+    "transcript",
+    "summary",
+    "reported"
+  ],
+  "objective_fields": [
+    "capture_status",
+    "mutation_observed",
+    "changed_paths",
+    "diff",
+    "dependency_manifest_changed",
+    "tests"
+  ],
+  "reported_fields": [
+    "smallest_safe_diff",
+    "added_artifacts",
+    "rejected_dependencies",
+    "hakim_decision",
+    "decision_rung"
+  ],
+  "boundary": "outcome telemetry is advisory enrichment. Objective fields are copied from captured fixture state; reported fields are parsed from agent transcripts. Neither section changes runtime verdicts, establishes benchmark results, or authorizes product or release claims."
+}

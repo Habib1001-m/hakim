@@ -1,0 +1,26 @@
+{
+  "name": "hakim",
+  "version": "1.0.0",
+  "description": "Evidence-bound minimalist coding intelligence for Codex.",
+  "author": {
+    "name": "Habib1001-m"
+  },
+  "repository": "https://github.com/Habib1001-m/hakim",
+  "license": "MIT",
+  "keywords": ["minimalism", "yagni", "coding-agent", "skills", "evidence-bound"],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Hakim",
+    "shortDescription": "Minimalist coding intelligence for Codex.",
+    "longDescription": "Hakim guides Codex toward smaller, safer changes: reuse first, stdlib before dependencies, native platform features before custom code, and explicit technical-debt notes for deliberate shortcuts.",
+    "developerName": "Habib1001-m",
+    "category": "Developer Tools",
+    "capabilities": ["skills", "hooks"],
+    "defaultPrompt": [
+      "Use Hakim to review this change for unnecessary code and dependency bloat.",
+      "Use Hakim in full mode and propose the smallest safe implementation."
+    ],
+    "brandColor": "#10A37F"
+  }
+}

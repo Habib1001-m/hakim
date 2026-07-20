@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "hakim-w2-three-task-pilot",
+  "task_id": "W2-T02",
+  "source": {
+    "repository": "sindresorhus/yocto-queue",
+    "visibility": "public",
+    "commit": "b07eac099753833b29d06c614149904445739776",
+    "release": "1.2.2",
+    "license": "MIT",
+    "snapshot_files": {
+      "index.js": {
+        "sha256": "2eabf3096793c43934ef127fb50238dcba93074fb54f943fc62aeab616769dfc"
+      },
+      "index.d.ts": {
+        "sha256": "e8fd38b26593d2a8b63dd8ba130fa53394f79dccc4b0ca0f2aa3622daeb6a1e4"
+      },
+      "license": {
+        "sha256": "a1264f4df17746a518d915abb83b7853644d09b4fee5cc78df61f03783a743d9"
+      }
+    }
+  },
+  "execution": {
+    "mode": "RECORDED_REFERENCE_CANDIDATES",
+    "network_required_for_verification": false,
+    "node_minimum": "18",
+    "task_count": 3,
+    "accepted_pair_count": 3,
+    "retained_failed_run_count": 1,
+    "scoring_order": [
+      "correctness",
+      "scope_compliance",
+      "structural_metrics"
+    ]
+  },
+  "reproducibility": {
+    "target_level": 2,
+    "level_2_requirements": [
+      "pinned public source commit",
+      "retained source snapshot and license",
+      "retained task prompts and candidate outputs",
+      "deterministic offline verification",
+      "content checksums",
+      "retained failed run",
+      "repeat verification produces identical evidence"
+    ],
+    "live_generation_replay_required": false
+  },
+  "claim_boundaries": {
+    "live_agent_causality_proven": false,
+    "generalized_performance_claim_allowed": false,
+    "independent_hakim_benchmark": "NOT_ESTABLISHED",
+    "public_release_readiness": "HOLD"
+  }
+}

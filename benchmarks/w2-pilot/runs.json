@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "hakim-w2-three-task-pilot",
+  "generation_disclosure": "Retained recorded reference candidates validate the benchmark protocol only. They do not prove live model causality, agent obedience, or generalized performance.",
+  "tasks": [
+    {
+      "id": "T1_ENQUEUE_ALL",
+      "prompt": "Add enqueueAll(values) to accept any iterable, enqueue every value in iteration order, preserve undefined values, return void, update TypeScript declarations, and avoid unrelated changes.",
+      "candidates": [
+        {
+          "run_id": "T1_BASELINE",
+          "surface": "BASELINE_WITHOUT_HAKIM_POLICY",
+          "accepted_pair": true,
+          "operations": [
+            {
+              "path": "index.js",
+              "search": "\tenqueue(value) {\n\t\tconst node = new Node(value);\n\n\t\tif (this.#head) {\n\t\t\tthis.#tail.next = node;\n\t\t\tthis.#tail = node;\n\t\t} else {\n\t\t\tthis.#head = node;\n\t\t\tthis.#tail = node;\n\t\t}\n\n\t\tthis.#size++;\n\t}\n",
+              "replace": "\t#appendNode(node) {\n\t\tif (this.#head) {\n\t\t\tthis.#tail.next = node;\n\t\t\tthis.#tail = node;\n\t\t} else {\n\t\t\tthis.#head = node;\n\t\t\tthis.#tail = node;\n\t\t}\n\n\t\tthis.#size++;\n\t}\n\n\tenqueue(value) {\n\t\tthis.#appendNode(new Node(value));\n\t}\n\n\tenqueueAll(values) {\n\t\tfor (const value of values) {\n\t\t\tthis.#appendNode(new Node(value));\n\t\t}\n\t}\n"
+            },
+            {
+              "path": "index.d.ts",
+              "search": "\tenqueue(value: ValueType): void;\n",
+              "replace": "\tenqueue(value: ValueType): void;\n\n\t/**\n\tAdd all values from an iterable in iteration order.\n\t*/\n\tenqueueAll(values: Iterable<ValueType>): void;\n"
+            }
+          ]
+        },
+        {
+          "run_id": "T1_HAKIM",
+          "surface": "HAKIM_POLICY_APPLIED",
+          "accepted_pair": true,
+          "operations": [
+            {
+              "path": "index.js",
+              "search": "\tenqueue(value) {\n\t\tconst node = new Node(value);\n\n\t\tif (this.#head) {\n\t\t\tthis.#tail.next = node;\n\t\t\tthis.#tail = node;\n\t\t} else {\n\t\t\tthis.#head = node;\n\t\t\tthis.#tail = node;\n\t\t}\n\n\t\tthis.#size++;\n\t}\n",
+              "replace": "\tenqueue(value) {\n\t\tconst node = new Node(value);\n\n\t\tif (this.#head) {\n\t\t\tthis.#tail.next = node;\n\t\t\tthis.#tail = node;\n\t\t} else {\n\t\t\tthis.#head = node;\n\t\t\tthis.#tail = node;\n\t\t}\n\n\t\tthis.#size++;\n\t}\n\n\tenqueueAll(values) {\n\t\tfor (const value of values) {\n\t\t\tthis.enqueue(value);\n\t\t}\n\t}\n"
+            },
+            {
+              "path": "index.d.ts",
+              "search": "\tenqueue(value: ValueType): void;\n",
+              "replace": "\tenqueue(value: ValueType): void;\n\n\t/**\n\tAdd all values from an iterable in iteration order.\n\t*/\n\tenqueueAll(values: Iterable<ValueType>): void;\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T2_DEQUEUE_MANY",
+      "prompt": "Add dequeueMany(count) that requires a non-negative integer, returns up to count values in FIFO order, preserves undefined values, never pads after the queue empties, updates size, updates TypeScript declarations, and avoids unrelated changes.",
+      "candidates": [
+        {
+          "run_id": "T2_BASELINE",
+          "surface": "BASELINE_WITHOUT_HAKIM_POLICY",
+          "accepted_pair": true,
+          "operations": [
+            {
+              "path": "index.js",
+              "search": "\tdequeue() {\n\t\tconst current = this.#head;\n\t\tif (!current) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.#head = this.#head.next;\n\t\tthis.#size--;\n\n\t\t// Clean up tail reference when queue becomes empty\n\t\tif (!this.#head) {\n\t\t\tthis.#tail = undefined;\n\t\t}\n\n\t\treturn current.value;\n\t}\n",
+              "replace": "\tdequeue() {\n\t\tconst current = this.#head;\n\t\tif (!current) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.#head = this.#head.next;\n\t\tthis.#size--;\n\n\t\t// Clean up tail reference when queue becomes empty\n\t\tif (!this.#head) {\n\t\t\tthis.#tail = undefined;\n\t\t}\n\n\t\treturn current.value;\n\t}\n\n\t#validateCount(count) {\n\t\tif (!Number.isInteger(count) || count < 0) {\n\t\t\tthrow new TypeError('count must be a non-negative integer');\n\t\t}\n\t}\n\n\tdequeueMany(count) {\n\t\tthis.#validateCount(count);\n\t\tconst values = [];\n\n\t\twhile (values.length < count && this.#head) {\n\t\t\tvalues.push(this.dequeue());\n\t\t}\n\n\t\treturn values;\n\t}\n"
+            },
+            {
+              "path": "index.d.ts",
+              "search": "\tdequeue(): ValueType | undefined;\n",
+              "replace": "\tdequeue(): ValueType | undefined;\n\n\t/**\n\tRemove and return up to `count` values.\n\t*/\n\tdequeueMany(count: number): ValueType[];\n"
+            }
+          ]
+        },
+        {
+          "run_id": "T2_HAKIM",
+          "surface": "HAKIM_POLICY_APPLIED",
+          "accepted_pair": true,
+          "operations": [
+            {
+              "path": "index.js",
+              "search": "\tdequeue() {\n\t\tconst current = this.#head;\n\t\tif (!current) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.#head = this.#head.next;\n\t\tthis.#size--;\n\n\t\t// Clean up tail reference when queue becomes empty\n\t\tif (!this.#head) {\n\t\t\tthis.#tail = undefined;\n\t\t}\n\n\t\treturn current.value;\n\t}\n",
+              "replace": "\tdequeue() {\n\t\tconst current = this.#head;\n\t\tif (!current) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.#head = this.#head.next;\n\t\tthis.#size--;\n\n\t\t// Clean up tail reference when queue becomes empty\n\t\tif (!this.#head) {\n\t\t\tthis.#tail = undefined;\n\t\t}\n\n\t\treturn current.value;\n\t}\n\n\tdequeueMany(count) {\n\t\tif (!Number.isInteger(count) || count < 0) {\n\t\t\tthrow new TypeError('count must be a non-negative integer');\n\t\t}\n\n\t\treturn Array.from({length: Math.min(count, this.#size)}, () => this.dequeue());\n\t}\n"
+            },
+            {
+              "path": "index.d.ts",
+              "search": "\tdequeue(): ValueType | undefined;\n",
+              "replace": "\tdequeue(): ValueType | undefined;\n\n\t/**\n\tRemove and return up to `count` values.\n\t*/\n\tdequeueMany(count: number): ValueType[];\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T3_TO_ARRAY",
+      "prompt": "Add toArray() that returns a front-to-back snapshot, preserves undefined values, does not mutate the queue, returns a detached array, updates TypeScript declarations, and avoids unrelated changes.",
+      "candidates": [
+        {
+          "run_id": "T3_BASELINE",
+          "surface": "BASELINE_WITHOUT_HAKIM_POLICY",
+          "accepted_pair": true,
+          "operations": [
+            {
+              "path": "index.js",
+              "search": "\tclear() {\n\t\tthis.#head = undefined;\n\t\tthis.#tail = undefined;\n\t\tthis.#size = 0;\n\t}\n",
+              "replace": "\ttoArray() {\n\t\tconst values = [];\n\t\tlet current = this.#head;\n\n\t\twhile (current) {\n\t\t\tvalues.push(current.value);\n\t\t\tcurrent = current.next;\n\t\t}\n\n\t\treturn values;\n\t}\n\n\tclear() {\n\t\tthis.#head = undefined;\n\t\tthis.#tail = undefined;\n\t\tthis.#size = 0;\n\t}\n"
+            },
+            {
+              "path": "index.d.ts",
+              "search": "\tpeek(): ValueType | undefined;\n",
+              "replace": "\tpeek(): ValueType | undefined;\n\n\t/**\n\tReturn a front-to-back snapshot without modifying the queue.\n\t*/\n\ttoArray(): ValueType[];\n"
+            }
+          ]
+        },
+        {
+          "run_id": "T3_HAKIM",
+          "surface": "HAKIM_POLICY_APPLIED",
+          "accepted_pair": true,
+          "operations": [
+            {
+              "path": "index.js",
+              "search": "\tclear() {\n\t\tthis.#head = undefined;\n\t\tthis.#tail = undefined;\n\t\tthis.#size = 0;\n\t}\n",
+              "replace": "\ttoArray() {\n\t\treturn [...this];\n\t}\n\n\tclear() {\n\t\tthis.#head = undefined;\n\t\tthis.#tail = undefined;\n\t\tthis.#size = 0;\n\t}\n"
+            },
+            {
+              "path": "index.d.ts",
+              "search": "\tpeek(): ValueType | undefined;\n",
+              "replace": "\tpeek(): ValueType | undefined;\n\n\t/**\n\tReturn a front-to-back snapshot without modifying the queue.\n\t*/\n\ttoArray(): ValueType[];\n"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "failed_runs": [
+    {
+      "run_id": "T2_FAILED_PADDING_AND_VALIDATION",
+      "task_id": "T2_DEQUEUE_MANY",
+      "surface": "RETAINED_FAILED_RUN",
+      "expected_status": "FAIL",
+      "excluded_from_pair_scoring": true,
+      "failure_reason": "No count validation and result padding after the queue empties.",
+      "operations": [
+        {
+          "path": "index.js",
+          "search": "\tdequeue() {\n\t\tconst current = this.#head;\n\t\tif (!current) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.#head = this.#head.next;\n\t\tthis.#size--;\n\n\t\t// Clean up tail reference when queue becomes empty\n\t\tif (!this.#head) {\n\t\t\tthis.#tail = undefined;\n\t\t}\n\n\t\treturn current.value;\n\t}\n",
+          "replace": "\tdequeue() {\n\t\tconst current = this.#head;\n\t\tif (!current) {\n\t\t\treturn;\n\t\t}\n\n\t\tthis.#head = this.#head.next;\n\t\tthis.#size--;\n\n\t\t// Clean up tail reference when queue becomes empty\n\t\tif (!this.#head) {\n\t\t\tthis.#tail = undefined;\n\t\t}\n\n\t\treturn current.value;\n\t}\n\n\tdequeueMany(count) {\n\t\tconst values = [];\n\n\t\tfor (let index = 0; index < count; index++) {\n\t\t\tvalues.push(this.dequeue());\n\t\t}\n\n\t\treturn values;\n\t}\n"
+        },
+        {
+          "path": "index.d.ts",
+          "search": "\tdequeue(): ValueType | undefined;\n",
+          "replace": "\tdequeue(): ValueType | undefined;\n\n\t/**\n\tRemove and return up to `count` values.\n\t*/\n\tdequeueMany(count: number): ValueType[];\n"
+        }
+      ]
+    }
+  ]
+}

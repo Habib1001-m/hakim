@@ -1,0 +1,21 @@
+{
+  "description": "Hakim optional non-blocking diagnostics for successful Claude Code Edit and Write tool calls.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/post_tool_use_diagnostic.mjs"
+            ],
+            "timeout": 5,
+            "statusMessage": "Hakim diagnostic check"
+          }
+        ]
+      }
+    ]
+  }
+}

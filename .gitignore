@@ -1,0 +1,59 @@
+# Hakim Project - Git Ignore Rules
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+venv/
+.venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+*.zip
+hakim-v*.zip
+dist/
+build/
+
+# Temp files
+*.tmp
+*.bak
+*.orig
+*.log
+
+# Environment (NEVER commit secrets)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# IDE
+*.sublime-workspace
+*.sublime-project
+.history/
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+*.cover

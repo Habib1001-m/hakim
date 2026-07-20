@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-11",
+  "upstream": {
+    "name": "Ponytail",
+    "repository": "https://github.com/DietrichGebert/ponytail",
+    "license": "MIT",
+    "copyright_holder": "DietrichGebert",
+    "reviewed_release": "v4.8.4",
+    "reviewed_release_commit": "bc9ee94",
+    "reviewed_release_date": "2026-06-29"
+  },
+  "relationship": {
+    "classification": "governance-focused derivative",
+    "git_fork": false,
+    "official_upstream_project": false,
+    "automatic_compatibility": false,
+    "automatic_sync": false,
+    "performance_equivalence": false,
+    "distribution_equivalence": false
+  },
+  "inherited_concepts": [
+    "seven-level smallest-safe-change decision ladder",
+    "reuse-first and YAGNI enforcement",
+    "lite/full/ultra intensity model",
+    "lazy-not-negligent safety boundary"
+  ],
+  "hakim_implemented_differentiation": [
+    "evidence-bound PASS/HOLD claim governance",
+    "machine-readable cross-host capability contract and parity gates",
+    "runtime evidence acceptance packets",
+    "metadata and product-truth consistency checks",
+    "live-versus-synthetic debt provenance",
+    "archive authority boundaries",
+    "read-only local startup diagnostics"
+  ],
+  "not_inherited_or_transferred": [
+    "Ponytail benchmark results",
+    "Ponytail release or marketplace status",
+    "Ponytail adapter coverage",
+    "Ponytail package publication",
+    "Ponytail trademarks, branding, community metrics, or endorsements",
+    "compatibility with Ponytail configuration or state"
+  ],
+  "sync_policy": {
+    "mode": "manual evidence-gated review",
+    "triggers": [
+      "before changing an inherited methodology surface",
+      "before public release or marketplace planning",
+      "when upstream licensing or attribution changes",
+      "when a relevant upstream security or correctness fix is identified"
+    ],
+    "candidate_decisions": [
+      "adopt",
+      "adapt",
+      "reject",
+      "defer"
+    ],
+    "required_evidence": [
+      "upstream release or commit reference",
+      "affected Hakim files",
+      "license and attribution review",
+      "behavioral rationale",
+      "tests and projection impact",
+      "documented decision"
+    ],
+    "direct_cherry_pick_without_review": false
+  }
+}

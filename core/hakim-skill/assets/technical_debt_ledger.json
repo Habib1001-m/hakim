@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "metadata": {
+    "title": "Hakim Technical Debt Ledger Example Dataset",
+    "version": "1.0.0",
+    "description": "Synthetic illustrative dataset demonstrating the Hakim technical-debt schema. Entries are not claims about this repository.",
+    "last_updated": "2026-07-10T00:00:00Z",
+    "data_classification": "synthetic_example",
+    "repository_claims": false,
+    "evidence_requirement": "A live repository debt claim must reference files that exist in the target repository and include commit, pull request, issue, or operator evidence.",
+    "total_entries": 6,
+    "summary": {
+      "unresolved": 5,
+      "resolved": 1,
+      "by_severity": {
+        "high": 1,
+        "medium": 3,
+        "low": 2
+      }
+    }
+  },
+  "entries": [
+    {
+      "entry_id": "TD-20260701-001",
+      "evidence_scope": "synthetic_example",
+      "description": "Custom cache class with TTL instead of functools.lru_cache",
+      "justification": "Needed distributed caching with Redis backend for future multi-instance deployment. Current usage is single-instance only. Ladder rung 3 (StdLib) bypassed for speculative scalability that may never materialize. Decision driven by architecture team's preference for 'enterprise-grade' solutions without profiling data.",
+      "hierarchy_level_bypassed": 3,
+      "rung_name": "StdLib",
+      "removal_plan": "Replace custom APICache class (src/utils/cache.py, 89 lines) with @lru_cache(maxsize=1000) decorator on fetch_api_data function. If distributed cache needed later, add Redis adapter as separate module without changing call sites. Trigger: when actual multi-instance deployment is scheduled.",
+      "target_date": "2026-12-31",
+      "severity": "medium",
+      "estimated_loc_impact": 87,
+      "actual_loc_saved": 0,
+      "created_at": "2026-07-01T10:30:00Z",
+      "resolved_at": null,
+      "tags": ["caching", "premature-optimization"],
+      "related_files": ["src/utils/cache.py", "src/api/handlers.py"]
+    },
+    {
+      "entry_id": "TD-20260703-002",
+      "evidence_scope": "synthetic_example",
+      "description": "Custom date picker component instead of native <input type='date'>",
+      "justification": "UX team insisted on branded date picker with custom styling and range selection. Ladder rung 4 (Native Platform) bypassed for aesthetic preferences over functional requirements. Native HTML5 date input provides 100% accessibility and zero bundle size.",
+      "hierarchy_level_bypassed": 4,
+      "rung_name": "Native Platform",
+      "removal_plan": "Replace DatePicker.jsx (156 lines + 12KB CSS) with <input type='date'> styled via CSS custom properties. For range selection, use two native date inputs with min/max constraints. Trigger: when UX team accepts native styling or when bundle size becomes critical.",
+      "target_date": "2026-10-15",
+      "severity": "low",
+      "estimated_loc_impact": 168,
+      "actual_loc_saved": 0,
+      "created_at": "2026-07-03T14:20:00Z",
+      "resolved_at": null,
+      "tags": ["ui", "aesthetic-over-function"],
+      "related_files": ["src/components/DatePicker.jsx", "src/styles/datepicker.css"]
+    },
+    {
+      "entry_id": "TD-20260705-003",
+      "evidence_scope": "synthetic_example",
+      "description": "Pydantic models for API request validation instead of manual dataclass validation",
+      "justification": "Team familiar with Pydantic from previous projects. Ladder rung 3 (StdLib) bypassed for developer convenience over stdlib dataclasses. Manual validation would add ~30 lines but eliminate dependency and reduce cold start time by 200ms.",
+      "hierarchy_level_bypassed": 3,
+      "rung_name": "StdLib",
+      "removal_plan": "Replace Pydantic models (src/models/*.py, 234 lines total) with @dataclass + manual validate_* functions. Use typing module for type hints. Trigger: when cold start time becomes SLA-critical or when Pydantic introduces breaking changes.",
+      "target_date": "2027-01-31",
+      "severity": "medium",
+      "estimated_loc_impact": 45,
+      "actual_loc_saved": 0,
+      "created_at": "2026-07-05T09:15:00Z",
+      "resolved_at": null,
+      "tags": ["validation", "developer-convenience"],
+      "related_files": ["src/models/user.py", "src/models/order.py", "src/api/validators.py"]
+    },
+    {
+      "entry_id": "TD-20260707-004",
+      "evidence_scope": "synthetic_example",
+      "description": "Celery task queue for background email sending instead of asyncio + multiprocessing",
+      "justification": "Anticipated need for complex task scheduling, retries, and monitoring dashboard. Ladder rung 3 (StdLib) bypassed for infrastructure that doesn't exist yet. Current email volume is 50/day, easily handled by asyncio. Celery adds Redis dependency and 2 worker processes.",
+      "hierarchy_level_bypassed": 3,
+      "rung_name": "StdLib",
+      "removal_plan": "Replace Celery tasks (src/tasks/email.py, 67 lines) with asyncio.Queue + multiprocessing.Pool. Use stdlib logging for monitoring. Add Celery only when: (1) email volume > 10,000/day, OR (2) complex scheduling required, OR (3) retry logic exceeds 50 lines. Trigger: metrics-based, not speculative.",
+      "target_date": "2027-06-30",
+      "severity": "high",
+      "estimated_loc_impact": 120,
+      "actual_loc_saved": 0,
+      "created_at": "2026-07-07T16:45:00Z",
+      "resolved_at": null,
+      "tags": ["infrastructure", "premature-scaling", "high-severity"],
+      "related_files": ["src/tasks/email.py", "src/workers/celery_worker.py", "requirements.txt"]
+    },
+    {
+      "entry_id": "TD-20260708-005",
+      "evidence_scope": "synthetic_example",
+      "description": "SQLAlchemy ORM for simple CRUD operations instead of raw SQL with sqlite3",
+      "justification": "Team preference for ORM abstraction and migration tooling (Alembic). Ladder rung 3 (StdLib) bypassed for developer productivity. Current schema has 4 tables with simple relationships. Raw SQL would be more transparent and faster for simple queries.",
+      "hierarchy_level_bypassed": 3,
+      "rung_name": "StdLib",
+      "removal_plan": "Replace SQLAlchemy models (src/db/models.py, 189 lines) with dataclasses + sqlite3 raw SQL queries. Use Alembic-style migration scripts manually. Trigger: when query performance becomes bottleneck OR when team size > 5 developers (abstraction becomes valuable).",
+      "target_date": "2027-03-31",
+      "severity": "medium",
+      "estimated_loc_impact": 95,
+      "actual_loc_saved": 0,
+      "created_at": "2026-07-08T11:30:00Z",
+      "resolved_at": null,
+      "tags": ["database", "orm-abstraction"],
+      "related_files": ["src/db/models.py", "src/db/session.py", "alembic/"]
+    },
+    {
+      "entry_id": "TD-20260615-006",
+      "evidence_scope": "synthetic_example",
+      "description": "requests library for HTTP client instead of urllib.request",
+      "justification": "Initial project setup before Hakim skill adoption. Ladder rung 3 (StdLib) bypassed for convenience. urllib.request provides same functionality with zero dependencies.",
+      "hierarchy_level_bypassed": 3,
+      "rung_name": "StdLib",
+      "removal_plan": "Replace requests.get/post calls (src/api/client.py, 34 lines) with urllib.request.urlopen + json.loads. Add 15-line helper function for common patterns. Trigger: during next refactoring sprint.",
+      "target_date": "2026-08-31",
+      "severity": "low",
+      "estimated_loc_impact": 34,
+      "actual_loc_saved": 34,
+      "created_at": "2026-06-15T08:00:00Z",
+      "resolved_at": "2026-07-09T14:20:00Z",
+      "tags": ["http", "resolved", "hakim-adoption"],
+      "related_files": ["src/api/client.py"]
+    }
+  ],
+  "statistics": {
+    "total_estimated_loc_impact": 549,
+    "total_actual_loc_saved": 34,
+    "average_days_to_resolution": 45,
+    "most_common_rung_bypassed": 3,
+    "most_common_severity": "medium",
+    "resolution_rate_percent": 16.7
+  },
+  "usage_instructions": {
+    "interpretation": "This bundled file is a synthetic example dataset. Do not treat any entry, path, timestamp, resolution status, or statistic as a fact about the Hakim repository.",
+    "live_claim_rule": "Before promoting an entry to a live repository claim, verify every related file and attach commit, pull request, issue, or operator evidence.",
+    "adding_entry": "Use /hakim-debt command or manually append to entries array",
+    "resolving_entry": "Set resolved_at to ISO timestamp, update actual_loc_saved",
+    "querying": "Use jq: cat technical_debt_ledger.json | jq '.entries[] | select(.severity==\"high\")'",
+    "reporting": "Use /hakim-gain command to generate summary report"
+  }
+}

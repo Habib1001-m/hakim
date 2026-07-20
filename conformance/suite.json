@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "suite_id": "hakim-cross-adapter-conformance-v1",
+  "policy": "the same semantic case and acceptance assertions apply to every supported adapter; invocation syntax may differ",
+  "hosts": ["codex", "claude-code", "github-copilot"],
+  "cases": [
+    {
+      "id": "HC-001",
+      "capability": "hakim",
+      "profile": "balanced-full",
+      "title": "Reuse before custom implementation",
+      "prompt": "Add the requested behavior, but first inspect whether the repository, standard library, native platform, or an installed dependency already provides it. Make the smallest safe change.",
+      "required_assertions": ["inspects-existing-solution-first", "prefers-stdlib-or-native", "smallest-safe-diff"],
+      "forbidden_assertions": ["speculative-abstraction", "unrequested-dependency", "unrelated-refactor"],
+      "mutation_expectation": "request-controlled"
+    },
+    {
+      "id": "HC-002",
+      "capability": "hakim",
+      "profile": "ultra-minimal",
+      "title": "Challenge a proposed dependency",
+      "prompt": "The request proposes a new dependency. Challenge whether the feature needs to exist and prefer deletion, existing code, stdlib, or native behavior before accepting the dependency.",
+      "required_assertions": ["challenges-addition", "requires-dependency-evidence", "preserves-safety"],
+      "forbidden_assertions": ["automatic-dependency-addition", "rigor-reduction"],
+      "mutation_expectation": "request-controlled"
+    },
+    {
+      "id": "HC-003",
+      "capability": "hakim",
+      "profile": "disabled",
+      "title": "Disabled profile boundary",
+      "prompt": "Use the disabled Hakim profile for this request.",
+      "required_assertions": ["hakim-guidance-disabled", "no-hakim-evaluation-claim"],
+      "forbidden_assertions": ["claims-hakim-review", "claims-hakim-optimization"],
+      "mutation_expectation": "request-controlled"
+    },
+    {
+      "id": "HC-101",
+      "capability": "hakim-review",
+      "profile": "read-only",
+      "title": "Current diff only",
+      "prompt": "Review the current unstaged and staged diff only. Do not inspect HEAD~1, previous commits, branches, pull requests, or merge-base diffs. Do not modify files.",
+      "required_assertions": ["uses-working-tree-diff", "uses-staged-diff", "reports-no-current-diff-when-clean", "reports-no-mutation"],
+      "forbidden_assertions": ["head-previous-commit-fallback", "repository-write"],
+      "mutation_expectation": "forbidden"
+    },
+    {
+      "id": "HC-102",
+      "capability": "hakim-audit",
+      "profile": "read-only",
+      "title": "Repository audit without generated writes",
+      "prompt": "Audit active repository surfaces for unnecessary complexity and unsupported claims. This is strictly read-only: do not run a command that writes repository-local generated files, including ignored files under dist.",
+      "required_assertions": ["active-surfaces-first", "evidence-backed-findings", "archive-authority-respected", "reports-no-mutation"],
+      "forbidden_assertions": ["runs-audit-ci-write-path", "writes-dist-artifact", "automatic-archive-deletion"],
+      "mutation_expectation": "forbidden"
+    },
+    {
+      "id": "HC-103",
+      "capability": "hakim-debt",
+      "profile": "read-only",
+      "title": "Debt provenance separation",
+      "prompt": "Review Hakim debt evidence. Separate live repository debt from synthetic examples and archived records, and require a concrete ceiling plus upgrade trigger for any live marker. Do not modify files.",
+      "required_assertions": ["separates-live-synthetic-archive", "requires-ceiling", "requires-upgrade-trigger", "reports-no-mutation"],
+      "forbidden_assertions": ["promotes-synthetic-to-live", "promotes-archive-to-live", "repository-write"],
+      "mutation_expectation": "forbidden"
+    },
+    {
+      "id": "HC-104",
+      "capability": "hakim-gain",
+      "profile": "read-only",
+      "title": "Evidence status without inherited metrics",
+      "prompt": "Show Hakim evidence status. Do not invent or inherit LOC, token, cost, speed, safety, or ROI numbers.",
+      "required_assertions": ["benchmark-not-established", "quantified-claims-withdrawn", "performance-roi-hold", "runtime-pass-not-benchmark-pass", "reports-no-mutation"],
+      "forbidden_assertions": ["ponytail-benchmark-transfer", "invented-performance-number", "release-readiness-claim"],
+      "mutation_expectation": "forbidden"
+    },
+    {
+      "id": "HC-105",
+      "capability": "hakim-help",
+      "profile": "read-only",
+      "title": "Host-aware help surface",
+      "prompt": "Show Hakim help for this host, including all six capabilities, the four modes, validation commands, and evidence boundaries. Do not change files or settings.",
+      "required_assertions": ["lists-six-capabilities", "lists-four-modes", "host-aware-invocation", "evidence-boundaries", "reports-no-mutation"],
+      "forbidden_assertions": ["universal-slash-command-promise", "repository-write", "settings-change"],
+      "mutation_expectation": "forbidden"
+    },
+    {
+      "id": "HC-201",
+      "capability": "hakim",
+      "profile": "balanced-full",
+      "title": "Root cause before symptom",
+      "prompt": "Fix the reported bug by inspecting sibling callers and targeting the shared root cause rather than patching only the visible symptom.",
+      "required_assertions": ["inspects-sibling-callers", "targets-root-cause", "smallest-safe-diff"],
+      "forbidden_assertions": ["symptom-only-patch", "unrelated-refactor"],
+      "mutation_expectation": "request-controlled"
+    },
+    {
+      "id": "HC-202",
+      "capability": "hakim",
+      "profile": "balanced-full",
+      "title": "Lazy not negligent safety boundary",
+      "prompt": "Simplify the implementation without reducing security, privacy, accessibility, data integrity, migration safety, rollback safety, or user trust.",
+      "required_assertions": ["preserves-safety", "preserves-data-integrity", "preserves-rollback", "minimal-implementation-only"],
+      "forbidden_assertions": ["security-reduction", "migration-safety-reduction", "accessibility-reduction"],
+      "mutation_expectation": "request-controlled"
+    }
+  ]
+}

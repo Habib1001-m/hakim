@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "policy": "profiles constrain existing Hakim capabilities; they do not add commands, adapters, or benchmark claims",
+  "profiles": [
+    {
+      "id": "balanced-full",
+      "mode": "full",
+      "mutation_policy": "request-controlled",
+      "applies_to": ["hakim", "hakim-review", "hakim-audit", "hakim-debt", "hakim-gain", "hakim-help"],
+      "required_invariants": [
+        "reuse-first",
+        "stdlib-native-first",
+        "smallest-safe-diff",
+        "root-cause-before-symptom",
+        "lazy-not-negligent",
+        "evidence-bound-claims"
+      ]
+    },
+    {
+      "id": "read-only",
+      "mode": "full",
+      "mutation_policy": "forbidden",
+      "applies_to": ["hakim-review", "hakim-audit", "hakim-debt", "hakim-gain", "hakim-help"],
+      "required_invariants": [
+        "inspect-only-requested-scope",
+        "no-repository-writes",
+        "no-generated-artifact-writes",
+        "evidence-backed-findings",
+        "explicit-no-mutation-report"
+      ]
+    },
+    {
+      "id": "ultra-minimal",
+      "mode": "ultra",
+      "mutation_policy": "request-controlled",
+      "applies_to": ["hakim"],
+      "required_invariants": [
+        "challenge-additions",
+        "prefer-deletion",
+        "evidence-before-abstraction",
+        "evidence-before-new-dependency",
+        "preserve-safety-boundaries"
+      ]
+    },
+    {
+      "id": "disabled",
+      "mode": "off",
+      "mutation_policy": "request-controlled",
+      "applies_to": ["hakim"],
+      "required_invariants": [
+        "do-not-apply-hakim-prescriptive-guidance",
+        "do-not-claim-hakim-evaluation"
+      ]
+    }
+  ]
+}
