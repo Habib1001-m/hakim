@@ -9,7 +9,7 @@ All notable public changes to Hakim are recorded here.
 - Reconciled release/readiness claims with the maintained host-native product paths after R2.
 - Removed the obsolete global OpenCode prerelease packaging path from public package scripts and CI gates; the maintained OpenCode product path is the guarded project-local installer/remover.
 - Bounded OpenCode lifecycle claims to the project-local implementation: create-only installation, canonical hash verification, exact-match removal, quarantine-backed removal, and rollback are maintained; a cross-process lifecycle lock is not claimed.
-- Added a Codex `0.130.0+` compatibility floor for this beta's bundled plugin-hook/SessionStart contract.
+- Added a Codex `0.131.0+` compatibility floor for this beta's default-on bundled plugin-hook/SessionStart contract; `rust-v0.130.0` still shipped `plugin_hooks` disabled by default.
 
 ## 1.0.0-beta.1
 
