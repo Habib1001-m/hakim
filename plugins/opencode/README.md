@@ -1,7 +1,6 @@
 # Hakim OpenCode Adapter
 
-**Status:** implemented project-local structural pilot  
-**Runtime evidence:** `NOT_PERFORMED`  
+**Status:** public beta project-local adapter  
 **Distribution:** repository-local files only; no npm package or global installer
 
 ## What this adapter does
@@ -20,7 +19,9 @@ It uses OpenCode configuration and prompt hooks to:
 - keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
 - remove session-local mode state when a session-deleted event is observed.
 
-The structural tests exercise the OpenCode hook shapes without launching OpenCode. They do not establish live host compatibility.
+Repository tests cover the documented hook shapes and guarded file lifecycle.
+Live host compatibility remains bounded to documented local validation and does
+not establish universal OpenCode compatibility.
 
 ## Project-local installed layout
 
@@ -42,11 +43,19 @@ The structural tests exercise the OpenCode hook shapes without launching OpenCod
             └── hakim-help/SKILL.md
 ```
 
-The installer does **not** create or modify `opencode.json`. OpenCode discovers the project-local plugin from `.opencode/plugins/`; the plugin registers the installed skill path at load time.
+The installer does **not** create or modify `opencode.json`. OpenCode discovers
+the project-local plugin from `.opencode/plugins/`; the plugin registers the
+installed skill path at load time.
 
 ## Install
 
-Dry-run first:
+Inspect the unified read-only plan first:
+
+```bash
+npm run plan:install -- --host opencode -- --target /path/to/repository
+```
+
+Dry-run the concrete installation manifest:
 
 ```bash
 npm run install:opencode -- --target /path/to/repository
@@ -86,7 +95,10 @@ Examples after installation:
 /hakim-help Explain the available Hakim capabilities.
 ```
 
-The mode is session/process-local. It is not persisted to a user profile or shared across machines. `HAKIM_DEFAULT_MODE` may set the process default to `lite`, `full`, `ultra`, or `off`; invalid values normalize to `full` through the canonical loader.
+The mode is session/process-local. It is not persisted to a user profile or
+shared across machines. `HAKIM_DEFAULT_MODE` may set the process default to
+`lite`, `full`, `ultra`, or `off`; invalid values normalize to `full` through
+the canonical loader.
 
 The adapter never overwrites an existing OpenCode command with the same name.
 
@@ -104,7 +116,10 @@ Apply removal:
 npm run remove:opencode -- --target /path/to/repository --apply
 ```
 
-Removal proceeds only when every installed Hakim file is a complete byte-identical match for the current canonical bundle. Modified, partial, symlink, non-regular, or unrelated OpenCode paths are preserved. The `.opencode` directory itself and unrelated content are never removed.
+Removal proceeds only when every installed Hakim file is a complete
+byte-identical match for the current canonical bundle. Modified, partial,
+symlink, non-regular, or unrelated OpenCode paths are preserved. The
+`.opencode` directory itself and unrelated content are never removed.
 
 ## Validate repository-side behavior
 
@@ -115,18 +130,14 @@ npm test
 npm run check:evidence-script
 ```
 
-These checks prove deterministic plugin wiring and guarded file lifecycle behavior only.
+These checks prove deterministic plugin wiring and guarded file lifecycle
+behavior only.
 
-## Explicit non-claims
+## Evidence boundaries
 
-```text
-OPENCODE_PROJECT_PLUGIN_IMPLEMENTED=true
-OPENCODE_STRUCTURAL_HOOK_TESTS=PASS
-OPENCODE_LIVE_RUNTIME_VALIDATION=NOT_PERFORMED
-OPENCODE_RUNTIME_CONFORMANCE=NOT_ESTABLISHED
-OPENCODE_PUBLIC_DISTRIBUTION=NOT_PERFORMED
-RUNTIME_VERDICTS=23_OF_30
-PUBLIC_RELEASE_READINESS=HOLD
-```
-
-Do not add OpenCode to accepted runtime counts until a separately approved live evidence packet is captured and accepted.
+- Project-local plugin and installer behavior is covered by the public test suite.
+- Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
+- Public source availability does not imply npm, marketplace, global-installer,
+  signing, or universal-runtime availability.
+- Runtime or compatibility claims must remain bounded to the specific evidence
+  collected for the tested environment.
