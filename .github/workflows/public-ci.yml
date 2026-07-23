@@ -34,6 +34,11 @@ jobs:
       - name: Verify first-run contract
         run: npm run check:first-run
 
+      - name: Verify host-native plugin contracts
+        run: |
+          npm run check:codex-projection
+          npm run check:claude-projection
+
       - name: Run public JavaScript tests
         run: npm run test:public:js
 
