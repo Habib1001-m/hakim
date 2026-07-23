@@ -97,5 +97,8 @@ jobs:
       - name: Run public Python tests
         run: npm run test:public:py
 
-      - name: Build skill package
-        run: npm run package:skill
+      - name: Build skill archive
+        run: mkdir -p dist && python core/hakim-skill/scripts/package_skill.py --source core/hakim-skill --output dist/hakim-skill.zip
+
+      - name: Verify skill package
+        run: python scripts/verify_package.py dist/hakim-skill.zip
