@@ -1,11 +1,12 @@
 ---
 name: hakim-help
-description: Show a concise host-aware quick reference for Hakim modes, capabilities, private OpenCode first-run steps, and evidence boundaries. Use for Hakim help, Hakim commands, how to use Hakim, or supported Hakim features.
+description: Provide the current Hakim capability map and evidence boundaries when Claude needs host-aware usage guidance.
+user-invocable: false
 ---
 
 # Hakim Help
 
-Use this one-screen reference. Invocation syntax differs by host; capability scope does not.
+Use this capability when Claude needs the current Hakim capability map. The user-facing Claude Code shortcut is `/hakim:help`.
 
 ## Modes
 
@@ -16,43 +17,27 @@ Use this one-screen reference. Invocation syntax differs by host; capability sco
 | `ultra` | Prefer deletion and require evidence before additions. |
 | `off` | Do not apply Hakim guidance. |
 
-## Capabilities
+## Canonical capabilities
 
 | Capability | Function |
 |---|---|
 | `hakim` | Apply the smallest-safe-diff decision ladder. |
 | `hakim-review` | Review an explicit diff for removable complexity. |
-| `hakim-audit` | Manually audit an explicitly inspected repository scope; the optional deterministic helper scans Python only with two rules. |
+| `hakim-audit` | Audit an explicitly inspected repository scope. |
 | `hakim-debt` | Collect live `hakim:` shortcuts and validate debt provenance. |
 | `hakim-gain` | Show accepted evidence status without unsupported metrics. |
-| `hakim-help` | Show this reference without changing state. |
-
-## Host invocation
-
-- **OpenCode native package:** `/hakim`, `/hakim-review`, `/hakim-audit`, `/hakim-debt`, `/hakim-gain`, or `/hakim-help`.
-- **Codex:** use discovered skills such as `@hakim` or ask in natural language.
-- **Claude Code:** use exposed slash skills when listed by the host, or ask in natural language.
-- **GitHub Copilot:** use natural-language requests; repository instructions do not promise slash commands.
+| `hakim-help` | Provide capability guidance without changing state. |
 
 The canonical capability map is `core/hakim-skill/capabilities.json`.
 
-## Private OpenCode first run
+## Claude Code native surface
 
-1. Obtain the verified `habib-hakim-1.0.0-beta.1.tgz` artifact.
-2. Run `npx /absolute/path/to/habib-hakim-1.0.0-beta.1.tgz install`.
-3. Restart OpenCode or open a new session.
-4. Run `/hakim-help`, then one bounded Hakim task.
-5. Record privacy-safe feedback with the repository's `Hakim Beta Feedback` issue form.
-
-The package is not published to npm. Do not replace the local `.tgz` path with
-`npx @habib/hakim install`.
+The installed Claude plugin exposes `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, and `/hakim:help`. It also provides plugin subagents and lifecycle hooks. Inspect them with `/plugin`, `/agents`, and `/hooks`.
 
 ## Evidence boundary
 
-Accepted runtime verdicts are `23/30`; the reproducible benchmark protocol is
-`LEVEL_2_ACCEPTED`; the independent Hakim benchmark is `NOT_ESTABLISHED`;
-external evaluator journeys remain `0`; performance and ROI claims remain `HOLD`.
+Public source, structural checks, package checks, and host-local validation each prove only their inspected scope. Do not infer universal compatibility, correctness, security approval, benchmark results, performance gains, token savings, cost savings, adoption, or ROI without separate accepted evidence.
 
 ## Boundary
 
-One-shot reference. It changes no mode, files, settings, or runtime state.
+One-shot reference. It changes no files, settings, permissions, or runtime state.
