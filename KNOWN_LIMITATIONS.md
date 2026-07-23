@@ -1,11 +1,11 @@
 # Known Limitations
 
-Hakim remains pre-release software.
+Hakim `1.0.0-beta.1` remains public beta software.
 
 ## Distribution
 
 - The source repository is public.
-- No npm package or marketplace listing is currently published.
+- No npm package or public marketplace listing is currently published.
 - Local build outputs are not signed, notarized, or externally attested.
 - No SBOM or public support SLA is currently provided.
 
