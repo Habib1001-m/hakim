@@ -21,8 +21,8 @@ class BenchmarkProvenanceTests(unittest.TestCase):
         for fragment in withdrawn_fragments:
             self.assertNotIn(fragment.lower(), text.lower())
 
-        self.assertIn("Independent Hakim benchmark: NOT_ESTABLISHED", text)
-        self.assertIn("Quantified performance or ROI claims: HOLD", text)
+        self.assertIn("does not claim an independent benchmark result", text)
+        self.assertIn("return on investment without", text)
         self.assertIn("Ponytail-derived values", text)
         self.assertIn("not accepted as independent Hakim", text)
 
