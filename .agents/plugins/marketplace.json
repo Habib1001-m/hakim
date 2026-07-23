@@ -1,7 +1,7 @@
 {
-  "name": "hakim-local",
+  "name": "hakim",
   "interface": {
-    "displayName": "Hakim Local Plugins"
+    "displayName": "Hakim"
   },
   "plugins": [
     {
