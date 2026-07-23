@@ -1,0 +1,91 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { SUPPORTED_HOSTS } from '../scripts/hakim_install_plan.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+const packageJson = JSON.parse(read('package.json'));
+const version = read('core/hakim-skill/VERSION').trim();
+const readme = read('README.md');
+const install = read('core/hakim-skill/INSTALL.md');
+const changelog = read('CHANGELOG.md');
+const security = read('SECURITY.md');
+const limitations = read('KNOWN_LIMITATIONS.md');
+const canonicalSkill = read('core/hakim-skill/SKILL.md');
+const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
+const claudeManifest = JSON.parse(read('plugins/claude-code/.claude-plugin/plugin.json'));
+
+const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
+assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
+
+assert.equal(version, '1.0.0-beta.1');
+assert.equal(packageJson.version, version);
+assert.equal(codexManifest.version, version);
+assert.equal(claudeManifest.version, version);
+assert.match(canonicalSkill, new RegExp(`^version:\\s*${version.replaceAll('.', '\\.')}$`, 'm'));
+assert.match(readme, new RegExp(`Hakim \\`${version.replaceAll('.', '\\.')}\\` is public beta software`));
+assert.match(security, new RegExp(version.replaceAll('.', '\\.')));
+assert.match(limitations, new RegExp(version.replaceAll('.', '\\.')));
+assert.match(changelog, new RegExp(`^## ${version.replaceAll('.', '\\.')}$`, 'm'));
+
+assert.match(readme, /^## Quick start$/m);
+assert.match(readme, /npm run plan:install -- --host all/);
+assert.match(install, /npm run plan:install -- --host all/);
+
+const hostSurfaces = new Map([
+  ['codex', 'Codex'],
+  ['claude-code', 'Claude Code'],
+  ['github-copilot', 'GitHub Copilot'],
+  ['opencode', 'OpenCode'],
+]);
+
+for (const host of expectedHosts) {
+  const displayName = hostSurfaces.get(host);
+  assert.match(readme, new RegExp(`^### ${displayName}$`, 'm'), `${displayName} missing from README Quick start`);
+  assert.match(install, new RegExp(`^### ${displayName}$`, 'm'), `${displayName} missing from INSTALL.md`);
+  assert.match(
+    `${readme}\n${install}`,
+    new RegExp(`npm run plan:install -- --host ${host.replace('-', '\\-')}`),
+    `${host} missing from documented install planning`,
+  );
+}
+
+function markdownFiles(start) {
+  const files = [];
+  const stack = [start];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      if (entry.name === '.git' || entry.name === 'dist' || entry.name === 'node_modules') continue;
+      const absolute = path.join(current, entry.name);
+      if (entry.isDirectory()) stack.push(absolute);
+      else if (entry.isFile() && entry.name.endsWith('.md')) files.push(absolute);
+    }
+  }
+  return files;
+}
+
+const documentedScripts = new Set();
+const stalePublicTokens = [
+  'PUBLIC_RELEASE_READINESS=HOLD',
+  'RUNTIME_VERDICTS=',
+  'OPENCODE_LIVE_RUNTIME_VALIDATION=NOT_PERFORMED',
+];
+
+for (const file of markdownFiles(root)) {
+  const text = fs.readFileSync(file, 'utf8');
+  for (const match of text.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) {
+    documentedScripts.add(match[1]);
+  }
+  for (const token of stalePublicTokens) {
+    assert.ok(!text.includes(token), `${path.relative(root, file)} contains stale public token ${token}`);
+  }
+}
+
+for (const script of [...documentedScripts].sort()) {
+  assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
+}
+
+console.log(`public first-run contract OK: ${expectedHosts.length} hosts, ${documentedScripts.size} documented npm scripts, version ${version}`);
