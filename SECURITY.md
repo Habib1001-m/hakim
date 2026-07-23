@@ -3,7 +3,7 @@
 ## Supported versions
 
 Security fixes are maintained on a best-effort basis for the latest public
-`main` branch and the current `1.0.x` pre-release line.
+`main` branch and the current `1.0.0-beta.1` public beta line.
 
 Hakim does not currently provide a paid support plan, response-time guarantee,
 enterprise compliance certification, or long-term-support release.

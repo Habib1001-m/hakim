@@ -1,0 +1,102 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { SUPPORTED_HOSTS } from '../scripts/hakim_install_plan.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const packageJson = JSON.parse(read('package.json'));
+const version = read('core/hakim-skill/VERSION').trim();
+const readme = read('README.md');
+const install = read('core/hakim-skill/INSTALL.md');
+const changelog = read('CHANGELOG.md');
+const security = read('SECURITY.md');
+const limitations = read('KNOWN_LIMITATIONS.md');
+const canonicalSkill = read('core/hakim-skill/SKILL.md');
+const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
+const claudeManifest = JSON.parse(read('plugins/claude-code/.claude-plugin/plugin.json'));
+
+const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
+assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
+
+assert.equal(version, '1.0.0-beta.1');
+assert.equal(packageJson.version, version);
+assert.equal(codexManifest.version, version);
+assert.equal(claudeManifest.version, version);
+assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
+assert.ok(readme.includes('Hakim `' + version + '` is public beta software'));
+assert.match(security, new RegExp(escapeRegExp(version)));
+assert.match(limitations, new RegExp(escapeRegExp(version)));
+assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
+
+assert.match(readme, /^## Quick start$/m);
+assert.match(readme, /npm run plan:install -- --host all/);
+assert.match(install, /npm run plan:install -- --host all/);
+
+const hostSurfaces = new Map([
+  ['codex', 'Codex'],
+  ['claude-code', 'Claude Code'],
+  ['github-copilot', 'GitHub Copilot'],
+  ['opencode', 'OpenCode'],
+]);
+
+for (const host of expectedHosts) {
+  const displayName = hostSurfaces.get(host);
+  assert.match(readme, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from README Quick start`);
+  assert.match(install, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from INSTALL.md`);
+  assert.match(
+    `${readme}\n${install}`,
+    new RegExp(`npm run plan:install -- --host ${escapeRegExp(host)}`),
+    `${host} missing from documented install planning`,
+  );
+}
+
+const opencodeReadme = read('plugins/opencode/README.md');
+for (const text of [readme, install, opencodeReadme]) {
+  assert.ok(!/npm run plan:install[^\n]*-- --target/.test(text), 'plan:install examples must not contain a second npm separator before --target');
+}
+assert.ok(readme.includes('npm run plan:install -- --host opencode --target /path/to/project'));
+assert.ok(install.includes('npm run plan:install -- --host opencode --target /path/to/project'));
+assert.ok(opencodeReadme.includes('npm run plan:install -- --host opencode --target /path/to/repository'));
+
+const productDocs = [
+  'README.md',
+  'CONTRIBUTING.md',
+  'SUPPORTED_HOSTS.md',
+  'SECURITY.md',
+  'KNOWN_LIMITATIONS.md',
+  'core/hakim-skill/INSTALL.md',
+  'plugins/README.md',
+  'plugins/codex/README.md',
+  'plugins/claude-code/README.md',
+  'plugins/opencode/README.md',
+  'plugins/copilot/README.md',
+  'plugins/hermes/README.md',
+  'plugins/gemini-antigravity/README.md',
+];
+
+const documentedScripts = new Set();
+const stalePublicTokens = [
+  'PUBLIC_RELEASE_READINESS=HOLD',
+  'RUNTIME_VERDICTS=',
+  'OPENCODE_LIVE_RUNTIME_VALIDATION=NOT_PERFORMED',
+  'Phase D',
+];
+
+for (const relative of productDocs) {
+  const text = read(relative);
+  for (const match of text.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) {
+    documentedScripts.add(match[1]);
+  }
+  for (const token of stalePublicTokens) {
+    assert.ok(!text.includes(token), `${relative} contains stale public token ${token}`);
+  }
+}
+
+for (const script of [...documentedScripts].sort()) {
+  assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
+}
+
+console.log(`public first-run contract OK: ${expectedHosts.length} hosts, ${documentedScripts.size} documented npm scripts, version ${version}`);

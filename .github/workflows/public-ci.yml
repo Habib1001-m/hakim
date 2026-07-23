@@ -31,8 +31,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run public tests
-        run: npm test
+      - name: Verify first-run contract
+        run: npm run check:first-run
+
+      - name: Run public JavaScript tests
+        run: npm run test:public:js
+
+      - name: Run public Python tests
+        run: npm run test:public:py
 
       - name: Build skill package
         run: npm run package:skill

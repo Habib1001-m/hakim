@@ -7,7 +7,7 @@ description: >
   Use on coding, review, refactoring, dependency, and technical-debt tasks.
 argument-hint: [lite|full|ultra|off]
 license: MIT
-version: 1.0.0
+version: 1.0.0-beta.1
 author: Habib1001-m
 repository: https://github.com/Habib1001-m/hakim
 tags:
@@ -110,21 +110,21 @@ claim that Hakim ships a workflow engine.
 
 ## Distribution Boundary
 
-The verified private OpenCode prerelease supports owned-state install, status,
-upgrade, reinstall, and removal from a local `.tgz` artifact. Public npm and
-marketplace publication remain unauthorized. Persistent installation on Codex,
-Claude Code, and GitHub Copilot remains host-managed and is not generalized
-from the OpenCode package. No MCP or A2A runtime/distribution is claimed.
+Hakim `1.0.0-beta.1` is distributed from public source. No npm package, public
+marketplace listing, signing, notarization, or global installer is currently
+claimed. OpenCode uses a guarded project-local installer; Codex and Claude Code
+use repository-local integration surfaces; GitHub Copilot uses repository
+instructions. Host-native installation, activation, trust, and removal controls
+remain authoritative. No MCP or A2A runtime/distribution is claimed.
 
-## Evidence and Benchmark Status
+## Evidence and Evaluation Boundaries
 
-```text
-Accepted runtime verdicts: 23_OF_30
-Reproducible benchmark protocol: LEVEL_2_ACCEPTED
-Independent Hakim benchmark: NOT_ESTABLISHED
-External evaluator journeys: 0
-Quantified performance or ROI claims: HOLD
-```
+Public CI proves only the checked repository tests and package-build contracts.
+Host runtime validation remains environment-specific and does not establish
+universal compatibility. Hakim does not claim an independent benchmark result,
+model-quality improvement, quantified performance gain, token saving, cost
+saving, adoption result, safety improvement, or return on investment without
+separate accepted evidence.
 
 Historical Ponytail-derived values are not accepted as independent Hakim
 results. Runtime validation, protocol reproducibility, external UX evidence,

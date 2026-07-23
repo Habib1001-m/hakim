@@ -4,14 +4,7 @@ All notable public changes to Hakim are recorded here.
 
 ## Unreleased
 
-### Changed
-
-- Separated the public product repository from local development governance,
-  review archives, taskboards, and private evidence records.
-- Replaced internal transition reporting with user-facing product,
-  installation, security, host-support, and limitation documentation.
-- Added a minimal public CI boundary without private evaluator or governance
-  artifact uploads.
+No unreleased public changes are recorded yet.
 
 ## 1.0.0-beta.1
 
@@ -25,6 +18,20 @@ All notable public changes to Hakim are recorded here.
 - Package integrity records, exact ownership validation, lifecycle locking,
   quarantine, and rollback safeguards.
 - Local skill and native-package build and verification tools.
+- Host-specific first-run instructions for Codex, Claude Code, GitHub Copilot,
+  and OpenCode.
+
+### Changed
+
+- Separated the public product repository from local development governance,
+  review archives, taskboards, and private evidence records.
+- Replaced internal transition reporting with user-facing product,
+  installation, security, host-support, and limitation documentation.
+- Added a minimal public CI boundary without private evaluator or governance
+  artifact uploads.
+- Unified read-only installation planning across all four maintained hosts,
+  including OpenCode target-state inspection.
+- Aligned public release metadata and manifests on `1.0.0-beta.1`.
 
 ### Security
 
@@ -35,6 +42,6 @@ All notable public changes to Hakim are recorded here.
 
 ### Boundaries
 
-- No npm or marketplace package is currently published.
+- No npm or public marketplace package is currently published.
 - No signing, notarization, SBOM, external attestation, support SLA, or general
   model-quality claim is provided.

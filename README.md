@@ -7,11 +7,88 @@ the observed scope.
 
 ## Status
 
-Hakim is public source and remains pre-release software.
-
-The repository is not currently published as an npm package or marketplace
+Hakim `1.0.0-beta.1` is public beta software distributed from source. The
+repository is not currently published as an npm package or public marketplace
 extension. `package.json` remains marked as private to prevent accidental
 registry publication.
+
+## Quick start
+
+Clone Hakim, verify the public surface, and inspect the host-specific install
+plan before making changes to another repository:
+
+```bash
+git clone https://github.com/Habib1001-m/hakim.git
+cd hakim
+npm run doctor:fast
+npm run plan:install -- --host all
+```
+
+Choose the host you actually use.
+
+### OpenCode
+
+Preview the project-local bundle first, then apply it only after reviewing the
+manifest:
+
+```bash
+npm run plan:install -- --host opencode --target /path/to/project
+npm run install:opencode -- --target /path/to/project
+npm run install:opencode -- --target /path/to/project --apply
+```
+
+Start OpenCode from the target project and use `/hakim-help` or `/hakim full ...`.
+The installer is create-only and does not edit `opencode.json`.
+
+### Codex
+
+Preview the repository-local Codex integration and launcher:
+
+```bash
+npm run plan:install -- --host codex
+npm run launch:codex -- --cwd /path/to/project
+```
+
+After reviewing the plan, launch Codex with:
+
+```bash
+npm run launch:codex -- --apply --cwd /path/to/project
+```
+
+Installation, activation, and SessionStart hook trust remain managed by Codex.
+Review `/plugins` and `/hooks` before enabling the integration.
+
+### Claude Code
+
+Preview the direct plugin-directory launch:
+
+```bash
+npm run plan:install -- --host claude-code
+npm run launch:claude -- --cwd /path/to/project
+```
+
+After review:
+
+```bash
+npm run launch:claude -- --apply --cwd /path/to/project
+```
+
+Hakim does not persistently install or modify Claude Code configuration through
+this launcher.
+
+### GitHub Copilot
+
+Compare the target repository first. The installer creates the supported
+instruction file only when it is absent and never overwrites an existing one.
+
+```bash
+npm run plan:install -- --host github-copilot --target /path/to/project
+npm run install:copilot -- --target /path/to/project
+npm run install:copilot -- --target /path/to/project --apply
+```
+
+See [Install Hakim](core/hakim-skill/INSTALL.md) for the complete host-by-host
+flow and trust boundaries.
 
 ## Core capabilities
 
@@ -33,9 +110,6 @@ registry publication.
 ## Local validation
 
 ```bash
-git clone https://github.com/Habib1001-m/hakim.git
-cd hakim
-
 npm test
 npm run doctor
 ```
