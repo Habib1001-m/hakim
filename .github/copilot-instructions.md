@@ -1,5 +1,7 @@
 # Hakim repository instructions
 
+<!-- hakim-canonical-sha256: 836081baf3c50b49413a9c4e3cec815336d87382849a8a75e6b6f09e5c46c6c7 -->
+
 When changing this repository:
 
 - make the smallest safe change;
@@ -20,7 +22,6 @@ When changing this repository:
 - Use Hakim capability `hakim-gain` for evidence-status summaries.
 - Use Hakim capability `hakim-help` for host-aware usage guidance.
 
-These are capability names, not universal slash-command claims. Host-native
-permissions and repository protections remain authoritative.
+When the native `hakim` Copilot plugin is installed, prefer its matching skill or specialized custom agent over re-implementing the workflow from these baseline instructions.
 
-Do not promise slash-command support on this surface.
+These are capability names, not universal slash-command claims. Host-native permissions, repository protections, plugin enablement, and tool controls remain authoritative.
