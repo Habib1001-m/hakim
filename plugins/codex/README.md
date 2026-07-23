@@ -4,7 +4,7 @@ Hakim is packaged as a native Codex plugin with six reusable skills and a Sessio
 
 ## Compatibility
 
-Use Codex `0.130.0` or newer for the full Hakim beta product path. Earlier Codex builds had known plugin-local hook discovery and trust gaps; Hakim does not claim SessionStart compatibility on those builds. Host-native hook discovery, enablement, trust, approvals, and managed policy remain authoritative.
+Use Codex `0.131.0` or newer for the full Hakim beta product path. In `rust-v0.130.0`, plugin-bundled hooks were still behind the disabled-by-default `plugin_hooks` feature; `rust-v0.131.0` marks that feature stable and enables it by default. Host-native hook discovery, enablement, trust, approvals, and managed policy remain authoritative.
 
 ## Install
 
