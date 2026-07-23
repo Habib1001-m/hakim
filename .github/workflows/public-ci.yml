@@ -40,6 +40,14 @@ jobs:
           npm run check:claude-projection
           npm run check:copilot-projection
 
+      - name: Verify capability parity and conformance
+        run: |
+          npm run check:capability-parity
+          npm run check:conformance
+
+      - name: Verify native host preflight contract
+        run: node tests/test_hakim_host_preflight.mjs
+
       - name: Run public JavaScript tests
         run: npm run test:public:js
 
