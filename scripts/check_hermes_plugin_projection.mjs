@@ -4,7 +4,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const PLUGIN = path.join(ROOT, 'plugins', 'hermes');
 const VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
 const CAPABILITIES = ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'];
 const errors = [];
@@ -48,7 +47,16 @@ for (const command of CAPABILITIES) {
   if (!init.includes(`"${command}"`)) errors.push(`Hermes slash command missing: /${command}`);
 }
 
-for (const forbidden of ['register_tool(', 'register_cli_command(', 'register_middleware(', 'register_platform(', 'allow_tool_override', 'mcp']) {
+for (const forbidden of [
+  'register_tool(',
+  'register_cli_command(',
+  'register_middleware(',
+  'register_platform(',
+  'register_mcp',
+  'mcp_servers',
+  'allow_tool_override',
+  'ctx.llm',
+]) {
   if (init.toLowerCase().includes(forbidden.toLowerCase())) errors.push(`Hermes plugin contains forbidden expansion surface: ${forbidden}`);
 }
 
