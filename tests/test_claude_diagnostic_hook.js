@@ -7,14 +7,53 @@ const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 const hooksPath = path.join(root, 'plugins/claude-code/hooks/hooks.json');
-const handlerPath = path.join(root, 'plugins/claude-code/hooks/post_tool_use_diagnostic.mjs');
+const sessionHandlerPath = path.join(root, 'plugins/claude-code/hooks/session_start.mjs');
+const diagnosticHandlerPath = path.join(root, 'plugins/claude-code/hooks/post_tool_use_diagnostic.mjs');
 
 const hooksConfig = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
-assert.ok(hooksConfig.description.includes('optional non-blocking diagnostics'));
-assert.deepEqual(Object.keys(hooksConfig.hooks), ['PostToolUse']);
-assert.equal(hooksConfig.hooks.PostToolUse.length, 1);
+assert.match(hooksConfig.description, /session activation/i);
+assert.deepEqual(Object.keys(hooksConfig.hooks).sort(), ['PostToolUse', 'SessionStart']);
 
-const group = hooksConfig.hooks.PostToolUse[0];
+const sessionGroups = hooksConfig.hooks.SessionStart;
+assert.equal(sessionGroups.length, 1);
+assert.equal(sessionGroups[0].matcher, 'startup|resume|clear');
+assert.equal(sessionGroups[0].hooks.length, 1);
+const sessionHook = sessionGroups[0].hooks[0];
+assert.equal(sessionHook.type, 'command');
+assert.equal(sessionHook.command, 'node');
+assert.deepEqual(sessionHook.args, ['${CLAUDE_PLUGIN_ROOT}/hooks/session_start.mjs']);
+assert.equal(sessionHook.timeout, 5);
+
+const sessionInput = JSON.stringify({
+  hook_event_name: 'SessionStart',
+  source: 'startup',
+  cwd: '/tmp/hakim-project',
+});
+const session = spawnSync(process.execPath, [sessionHandlerPath], {
+  cwd: root,
+  input: sessionInput,
+  encoding: 'utf8',
+});
+assert.equal(session.status, 0, session.stderr);
+const sessionOutput = JSON.parse(session.stdout);
+assert.equal(sessionOutput.hookSpecificOutput.hookEventName, 'SessionStart');
+assert.match(sessionOutput.hookSpecificOutput.additionalContext, /Hakim 1\.0\.0-beta\.1 plugin is active/i);
+assert.match(sessionOutput.hookSpecificOutput.additionalContext, /\/hakim:full/);
+assert.match(sessionOutput.hookSpecificOutput.additionalContext, /permissions/i);
+assert.ok(!Object.prototype.hasOwnProperty.call(sessionOutput, 'decision'));
+assert.ok(!Object.prototype.hasOwnProperty.call(sessionOutput.hookSpecificOutput, 'permissionDecision'));
+
+const unrelatedSession = spawnSync(process.execPath, [sessionHandlerPath], {
+  cwd: root,
+  input: JSON.stringify({ hook_event_name: 'PostToolUse' }),
+  encoding: 'utf8',
+});
+assert.equal(unrelatedSession.status, 0, unrelatedSession.stderr);
+assert.equal(unrelatedSession.stdout, '');
+
+const groups = hooksConfig.hooks.PostToolUse;
+assert.equal(groups.length, 1);
+const group = groups[0];
 assert.equal(group.matcher, 'Edit|Write');
 assert.equal(group.hooks.length, 1);
 
@@ -23,7 +62,7 @@ assert.equal(hook.type, 'command');
 assert.equal(hook.command, 'node');
 assert.deepEqual(hook.args, ['${CLAUDE_PLUGIN_ROOT}/hooks/post_tool_use_diagnostic.mjs']);
 assert.equal(hook.timeout, 5);
-assert.ok(!Object.prototype.hasOwnProperty.call(hook, 'if'), 'D.2E/D.2G hook must not add extra conditional ambiguity');
+assert.ok(!Object.prototype.hasOwnProperty.call(hook, 'if'));
 
 const input = JSON.stringify({
   hook_event_name: 'PostToolUse',
@@ -32,7 +71,7 @@ const input = JSON.stringify({
   tool_response: { filePath: '/tmp/example.txt', success: true },
 });
 
-const disabled = spawnSync(process.execPath, [handlerPath], {
+const disabled = spawnSync(process.execPath, [diagnosticHandlerPath], {
   cwd: root,
   input,
   encoding: 'utf8',
@@ -41,7 +80,7 @@ const disabled = spawnSync(process.execPath, [handlerPath], {
 assert.equal(disabled.status, 0, disabled.stderr);
 assert.equal(disabled.stdout, '');
 
-const enabled = spawnSync(process.execPath, [handlerPath], {
+const enabled = spawnSync(process.execPath, [diagnosticHandlerPath], {
   cwd: root,
   input,
   encoding: 'utf8',
@@ -53,12 +92,12 @@ assert.deepEqual(Object.keys(output), ['hookSpecificOutput']);
 assert.equal(output.hookSpecificOutput.hookEventName, 'PostToolUse');
 assert.match(output.hookSpecificOutput.additionalContext, /smallest safe diff/i);
 assert.match(output.hookSpecificOutput.additionalContext, /targeted validation/i);
-assert.ok(!Object.prototype.hasOwnProperty.call(output, 'systemMessage'), 'default hook mode must not show a visible system message');
-assert.ok(!Object.prototype.hasOwnProperty.call(output, 'decision'), 'D.2E/D.2G hook must not block');
-assert.ok(!Object.prototype.hasOwnProperty.call(output.hookSpecificOutput, 'updatedToolOutput'), 'D.2E/D.2G hook must not rewrite tool output');
-assert.ok(!Object.prototype.hasOwnProperty.call(output.hookSpecificOutput, 'updatedMCPToolOutput'), 'D.2E/D.2G hook must not rewrite MCP tool output');
+assert.ok(!Object.prototype.hasOwnProperty.call(output, 'systemMessage'));
+assert.ok(!Object.prototype.hasOwnProperty.call(output, 'decision'));
+assert.ok(!Object.prototype.hasOwnProperty.call(output.hookSpecificOutput, 'updatedToolOutput'));
+assert.ok(!Object.prototype.hasOwnProperty.call(output.hookSpecificOutput, 'updatedMCPToolOutput'));
 
-const debug = spawnSync(process.execPath, [handlerPath], {
+const debug = spawnSync(process.execPath, [diagnosticHandlerPath], {
   cwd: root,
   input,
   encoding: 'utf8',
@@ -70,10 +109,10 @@ assert.equal(debugOutput.hookSpecificOutput.hookEventName, 'PostToolUse');
 assert.match(debugOutput.hookSpecificOutput.additionalContext, /smallest safe diff/i);
 assert.match(debugOutput.systemMessage, /Hakim diagnostic hook observed/i);
 assert.match(debugOutput.systemMessage, /Write completed/i);
-assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput, 'decision'), 'D.2G debug signal must not block');
-assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput, 'continue'), 'D.2G debug signal must not stop Claude');
-assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput.hookSpecificOutput, 'updatedToolOutput'), 'D.2G debug signal must not rewrite tool output');
-assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput.hookSpecificOutput, 'updatedMCPToolOutput'), 'D.2G debug signal must not rewrite MCP tool output');
+assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput, 'decision'));
+assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput, 'continue'));
+assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput.hookSpecificOutput, 'updatedToolOutput'));
+assert.ok(!Object.prototype.hasOwnProperty.call(debugOutput.hookSpecificOutput, 'updatedMCPToolOutput'));
 
 const readInput = JSON.stringify({
   hook_event_name: 'PostToolUse',
@@ -81,7 +120,7 @@ const readInput = JSON.stringify({
   tool_input: { file_path: '/tmp/example.txt' },
   tool_response: 'hello',
 });
-const ignored = spawnSync(process.execPath, [handlerPath], {
+const ignored = spawnSync(process.execPath, [diagnosticHandlerPath], {
   cwd: root,
   input: readInput,
   encoding: 'utf8',
@@ -90,4 +129,4 @@ const ignored = spawnSync(process.execPath, [handlerPath], {
 assert.equal(ignored.status, 0, ignored.stderr);
 assert.equal(ignored.stdout, '');
 
-console.log('test_claude_diagnostic_hook.js: ok');
+console.log('test_claude_diagnostic_hook.js: native Claude lifecycle hooks ok');
