@@ -49,7 +49,7 @@ npm run install:opencode -- --target /path/to/project
 npm run install:opencode -- --target /path/to/project --apply
 ```
 
-Start OpenCode from the target project and use `/hakim-help` or `/hakim full ...`. The installer is create-only, verifies owned paths, and does not edit `opencode.json`.
+Start OpenCode from the target project and use `/hakim-help` or `/hakim full ...`. The installer is create-only, verifies the canonical bundle paths and hashes, and does not edit `opencode.json`.
 
 See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle and trust boundaries.
 
@@ -57,11 +57,11 @@ See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific life
 
 - A canonical coding policy focused on minimal, safe changes.
 - Native host plugins for Codex, Claude Code, and GitHub Copilot.
-- A guarded project-local native OpenCode plugin package.
+- A guarded project-local native OpenCode plugin bundle.
 - Host-specialized skills, agents, commands, and lifecycle controls where the host supports them.
 - Deterministic PR Guardian checks for dependency and evidence-boundary drift.
 - Bounded review, audit, doctor, host-preflight, and install-planning commands.
-- OpenCode integrity records, exact path ownership, containment checks, lifecycle locking, quarantine, and rollback safeguards.
+- OpenCode canonical-manifest hashing, create-only installation, exact-match removal, quarantine-backed removal, and rollback safeguards.
 - Local packaging and verification tools that do not require a runtime service.
 
 ## Requirements
@@ -71,6 +71,8 @@ For product use, install the supported host you intend to use. Repository develo
 - Node.js 18 or newer.
 - Python 3.
 - Git.
+
+For the full Codex product path in this beta, use Codex `0.130.0` or newer. Earlier Codex builds had known plugin-hook discovery and trust gaps and are outside Hakim's claimed SessionStart compatibility boundary.
 
 ## Local validation
 
@@ -86,13 +88,7 @@ Build the canonical skill package:
 npm run package:skill
 ```
 
-Build the native OpenCode package:
-
-```bash
-npm run build:native-plugin
-```
-
-Generated packages are local build outputs. They are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
+Generated skill packages are local build outputs. They are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
 
 ## Supported hosts
 
