@@ -64,11 +64,8 @@ jobs:
       - name: Verify OpenCode runtime plugin
         run: node tests/test_opencode_plugin.mjs
 
-      - name: Verify OpenCode install and removal lifecycle
+      - name: Verify OpenCode project-local lifecycle
         run: node tests/test_hakim_opencode_lifecycle.mjs
-
-      - name: Verify OpenCode realpath containment
-        run: node tests/test_native_plugin_realpath_containment.mjs
 
       - name: Verify host fallback and lifecycle contracts
         run: |
@@ -99,6 +96,3 @@ jobs:
 
       - name: Build skill package
         run: npm run package:skill
-
-      - name: Build native plugin package
-        run: npm run build:native-plugin
