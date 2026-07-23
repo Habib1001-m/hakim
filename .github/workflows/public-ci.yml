@@ -97,6 +97,27 @@ jobs:
       - name: Run public Python tests
         run: npm run test:public:py
 
+      - name: Diagnose source-checkout audit command
+        run: '! grep -R -nF --include="*.md" "python core/hakim-skill/scripts/audit_complexity.py" core/hakim-skill'
+
+      - name: Diagnose missing archive authority
+        run: '! grep -R -nF --include="*.md" "ARCHIVE_POLICY.md" core/hakim-skill'
+
+      - name: Diagnose obsolete MCP deploy command
+        run: '! grep -R -nF --include="*.md" "mcp deploy hakim-skill-package.zip" core/hakim-skill'
+
+      - name: Diagnose obsolete MCP compatibility contract
+        run: '! grep -R -nF --include="*.md" "MCP namespace must remain" core/hakim-skill'
+
+      - name: Diagnose obsolete A2A compatibility contract
+        run: '! grep -R -nF --include="*.md" "A2A message schema must remain" core/hakim-skill'
+
+      - name: Diagnose obsolete private test taxonomy
+        run: '! grep -R -nF --include="*.md" "T-YAML-001" core/hakim-skill'
+
+      - name: Diagnose obsolete private review taxonomy
+        run: '! grep -R -nF --include="*.md" "R1-R6 reviews" core/hakim-skill'
+
       - name: Build skill archive
         run: mkdir -p dist && python core/hakim-skill/scripts/package_skill.py --source core/hakim-skill --output dist/hakim-skill.zip
 
