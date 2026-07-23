@@ -9,10 +9,23 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 const CANONICAL = path.join(ROOT, 'core/hakim-skill/SKILL.md');
 const VERSION_FILE = path.join(ROOT, 'core/hakim-skill/VERSION');
-const PROJECTION = path.join(ROOT, 'plugins/claude-code/skills/hakim/SKILL.md');
-const MANIFEST = path.join(ROOT, 'plugins/claude-code/.claude-plugin/plugin.json');
-const HOOKS = path.join(ROOT, 'plugins/claude-code/hooks/hooks.json');
-const HOOK_HANDLER = path.join(ROOT, 'plugins/claude-code/hooks/post_tool_use_diagnostic.mjs');
+const PLUGIN_ROOT = path.join(ROOT, 'plugins', 'claude-code');
+const PROJECTION = path.join(PLUGIN_ROOT, 'skills', 'hakim', 'SKILL.md');
+const MANIFEST = path.join(PLUGIN_ROOT, '.claude-plugin', 'plugin.json');
+const MARKETPLACE = path.join(ROOT, '.claude-plugin', 'marketplace.json');
+const HOOKS = path.join(PLUGIN_ROOT, 'hooks', 'hooks.json');
+const SESSION_HANDLER = path.join(PLUGIN_ROOT, 'hooks', 'session_start.mjs');
+const DIAGNOSTIC_HANDLER = path.join(PLUGIN_ROOT, 'hooks', 'post_tool_use_diagnostic.mjs');
+
+const NATIVE_SKILLS = ['full', 'review', 'audit', 'debt', 'gain', 'help'];
+const CANONICAL_SKILLS = ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'];
+const AGENTS = [
+  'hakim-reviewer',
+  'hakim-auditor',
+  'hakim-debt-analyst',
+  'hakim-evidence-verifier',
+  'hakim-implementer',
+];
 
 const REQUIRED_PHRASES = [
   'Hakim for Claude Code',
@@ -58,83 +71,142 @@ function parseJson(filePath, errors) {
   }
 }
 
-function validateHookConfig(errors) {
-  if (!exists(HOOKS)) {
-    errors.push('Claude adapter must include hooks/hooks.json for the diagnostic prototype');
-    return null;
+function requireFile(filePath, errors, label) {
+  if (!exists(filePath)) {
+    errors.push(`${label} missing: ${path.relative(ROOT, filePath)}`);
+    return false;
   }
+  return true;
+}
 
-  if (!exists(HOOK_HANDLER)) {
-    errors.push('Claude diagnostic hook handler missing');
+function validateHookGroup(groups, matcher, expectedHandler, errors, label) {
+  if (!Array.isArray(groups) || groups.length !== 1) {
+    errors.push(`${label} must define exactly one matcher group`);
+    return;
   }
+  const group = groups[0];
+  if (group.matcher !== matcher) errors.push(`${label} matcher must be ${matcher}`);
+  if (!Array.isArray(group.hooks) || group.hooks.length !== 1) {
+    errors.push(`${label} must define exactly one handler`);
+    return;
+  }
+  const handler = group.hooks[0];
+  if (handler.type !== 'command') errors.push(`${label} handler must be command type`);
+  if (handler.command !== 'node') errors.push(`${label} handler must invoke node`);
+  if (!Array.isArray(handler.args) || handler.args.length !== 1 || handler.args[0] !== expectedHandler) {
+    errors.push(`${label} handler path mismatch`);
+  }
+  if (handler.timeout !== 5) errors.push(`${label} timeout must remain 5 seconds`);
+}
+
+function validateHooks(errors) {
+  if (!requireFile(HOOKS, errors, 'Claude hooks manifest')) return;
+  requireFile(SESSION_HANDLER, errors, 'Claude SessionStart handler');
+  requireFile(DIAGNOSTIC_HANDLER, errors, 'Claude diagnostic handler');
 
   const hooksConfig = parseJson(HOOKS, errors);
-  if (!hooksConfig) return null;
+  if (!hooksConfig) return;
 
-  const events = Object.keys(hooksConfig.hooks || {});
-  if (events.length !== 1 || events[0] !== 'PostToolUse') {
-    errors.push('Claude hook must define PostToolUse only');
-    return hooksConfig;
-  }
-
-  const groups = hooksConfig.hooks.PostToolUse;
-  if (!Array.isArray(groups) || groups.length !== 1) {
-    errors.push('Claude hook must define exactly one PostToolUse matcher group');
-    return hooksConfig;
+  const events = Object.keys(hooksConfig.hooks || {}).sort();
+  if (JSON.stringify(events) !== JSON.stringify(['PostToolUse', 'SessionStart'])) {
+    errors.push(`Claude hooks must define SessionStart and PostToolUse only; found ${events.join(', ')}`);
+    return;
   }
 
-  const group = groups[0];
-  if (group.matcher !== 'Edit|Write') {
-    errors.push('Claude hook matcher must be Edit|Write');
+  validateHookGroup(
+    hooksConfig.hooks.SessionStart,
+    'startup|resume|clear',
+    '${CLAUDE_PLUGIN_ROOT}/hooks/session_start.mjs',
+    errors,
+    'Claude SessionStart hook',
+  );
+  validateHookGroup(
+    hooksConfig.hooks.PostToolUse,
+    'Edit|Write',
+    '${CLAUDE_PLUGIN_ROOT}/hooks/post_tool_use_diagnostic.mjs',
+    errors,
+    'Claude PostToolUse hook',
+  );
+
+  if (exists(SESSION_HANDLER)) {
+    const text = readUtf8(SESSION_HANDLER);
+    for (const phrase of ['SessionStart', 'additionalContext', '/hakim:full', 'permissions']) {
+      if (!text.includes(phrase)) errors.push(`Claude SessionStart handler missing activation phrase: ${phrase}`);
+    }
+    for (const forbidden of ['writeFileSync(', 'appendFileSync(', 'rmSync(', 'unlinkSync(']) {
+      if (text.includes(forbidden)) errors.push(`Claude SessionStart handler must remain read-only: ${forbidden}`);
+    }
   }
 
-  if (!Array.isArray(group.hooks) || group.hooks.length !== 1) {
-    errors.push('Claude hook must define exactly one handler');
-    return hooksConfig;
+  if (exists(DIAGNOSTIC_HANDLER)) {
+    const text = readUtf8(DIAGNOSTIC_HANDLER);
+    if (!text.includes('HAKIM_CLAUDE_DIAGNOSTIC_HOOK')) {
+      errors.push('Claude diagnostic hook must remain opt-in');
+    }
+    if (text.includes('permissionDecision')) {
+      errors.push('Claude post-edit diagnostic must not make permission decisions');
+    }
+  }
+}
+
+function validateMarketplace(expectedVersion, errors) {
+  if (!requireFile(MARKETPLACE, errors, 'Claude marketplace manifest')) return;
+  const marketplace = parseJson(MARKETPLACE, errors);
+  if (!marketplace) return;
+  if (marketplace.name !== 'hakim') errors.push('Claude marketplace name must be hakim');
+  const plugin = Array.isArray(marketplace.plugins)
+    ? marketplace.plugins.find((item) => item.name === 'hakim')
+    : null;
+  if (!plugin) {
+    errors.push('Claude marketplace must expose the hakim plugin');
+    return;
+  }
+  if (plugin.source !== './plugins/claude-code') errors.push('Claude marketplace source must be ./plugins/claude-code');
+  if (plugin.version !== expectedVersion) errors.push(`Claude marketplace version must be ${expectedVersion}`);
+}
+
+function validateNativeSurface(errors) {
+  for (const skill of NATIVE_SKILLS) {
+    const filePath = path.join(PLUGIN_ROOT, 'skills', skill, 'SKILL.md');
+    if (!requireFile(filePath, errors, `Claude native skill ${skill}`)) continue;
+    const text = readUtf8(filePath);
+    if (!text.includes('disable-model-invocation: true')) {
+      errors.push(`Claude native skill ${skill} must be user-controlled`);
+    }
   }
 
-  const handler = group.hooks[0];
-  if (handler.type !== 'command') errors.push('Claude hook handler must be command type');
-  if (handler.command !== 'node') errors.push('Claude hook handler must invoke node');
-  if (!Array.isArray(handler.args) || handler.args.length !== 1 || handler.args[0] !== '${CLAUDE_PLUGIN_ROOT}/hooks/post_tool_use_diagnostic.mjs') {
-    errors.push('Claude hook handler must point to the bundled diagnostic handler');
-  }
-  if (handler.timeout !== 5) errors.push('Claude hook timeout must remain 5 seconds');
-  if (Object.prototype.hasOwnProperty.call(handler, 'if')) errors.push('Claude hook must not add extra conditional ambiguity');
-
-  const handlerText = exists(HOOK_HANDLER) ? readUtf8(HOOK_HANDLER) : '';
-  if (!handlerText.includes('HAKIM_CLAUDE_DIAGNOSTIC_HOOK')) {
-    errors.push('Claude diagnostic hook must remain gated by HAKIM_CLAUDE_DIAGNOSTIC_HOOK');
-  }
-  if (!handlerText.includes('HAKIM_CLAUDE_DIAGNOSTIC_HOOK_DEBUG')) {
-    errors.push('Claude observable signal must be gated by HAKIM_CLAUDE_DIAGNOSTIC_HOOK_DEBUG');
-  }
-  if (!handlerText.includes('systemMessage')) {
-    errors.push('Claude observable signal must use systemMessage for visible runtime evidence');
-  }
-  if (handlerText.includes('updatedToolOutput')) {
-    errors.push('Claude diagnostic hook handler must not emit updatedToolOutput');
-  }
-  if (handlerText.includes('updatedMCPToolOutput')) {
-    errors.push('Claude diagnostic hook handler must not emit updatedMCPToolOutput');
-  }
-  if (handlerText.includes('permissionDecision')) {
-    errors.push('Claude diagnostic hook handler must not emit permissionDecision');
+  for (const skill of CANONICAL_SKILLS) {
+    const filePath = path.join(PLUGIN_ROOT, 'skills', skill, 'SKILL.md');
+    if (!requireFile(filePath, errors, `Claude canonical skill ${skill}`)) continue;
+    const text = readUtf8(filePath);
+    if (!text.includes('user-invocable: false')) {
+      errors.push(`Claude canonical skill ${skill} must be hidden from the slash menu`);
+    }
   }
 
-  return hooksConfig;
+  for (const agent of AGENTS) {
+    const filePath = path.join(PLUGIN_ROOT, 'agents', `${agent}.md`);
+    requireFile(filePath, errors, `Claude plugin agent ${agent}`);
+  }
+
+  const implementer = path.join(PLUGIN_ROOT, 'agents', 'hakim-implementer.md');
+  if (exists(implementer) && !readUtf8(implementer).includes('isolation: worktree')) {
+    errors.push('Claude Hakim implementer must preserve worktree isolation');
+  }
 }
 
 function main() {
   const errors = [];
-
   const canonical = readUtf8(CANONICAL);
   const expectedVersion = readUtf8(VERSION_FILE).trim();
   const projection = readUtf8(PROJECTION);
   const canonicalHash = sha256(canonical);
   const projectionMarker = extractMarker(projection);
   const manifest = parseJson(MANIFEST, errors);
-  validateHookConfig(errors);
+
+  validateHooks(errors);
+  validateMarketplace(expectedVersion, errors);
+  validateNativeSurface(errors);
 
   if (!projectionMarker) {
     errors.push('missing hakim-canonical-sha256 marker in Claude compact skill');
@@ -160,12 +232,13 @@ function main() {
     canonical: path.relative(ROOT, CANONICAL),
     projection: path.relative(ROOT, PROJECTION),
     manifest: path.relative(ROOT, MANIFEST),
+    marketplace: path.relative(ROOT, MARKETPLACE),
     hooks: path.relative(ROOT, HOOKS),
-    diagnostic_handler: path.relative(ROOT, HOOK_HANDLER),
-    hook_event: 'PostToolUse',
-    hook_matcher: 'Edit|Write',
-    hook_opt_in_env: 'HAKIM_CLAUDE_DIAGNOSTIC_HOOK',
-    hook_debug_env: 'HAKIM_CLAUDE_DIAGNOSTIC_HOOK_DEBUG',
+    session_handler: path.relative(ROOT, SESSION_HANDLER),
+    diagnostic_handler: path.relative(ROOT, DIAGNOSTIC_HANDLER),
+    native_skills: NATIVE_SKILLS,
+    canonical_skills: CANONICAL_SKILLS,
+    plugin_agents: AGENTS,
     expected_version: expectedVersion,
     canonical_hash: canonicalHash,
     projection_marker: projectionMarker,
@@ -176,9 +249,9 @@ function main() {
   if (process.argv.includes('--json')) {
     console.log(JSON.stringify(payload, null, 2));
   } else if (payload.ok) {
-    console.log(`Claude compact skill projection OK (${canonicalHash.slice(0, 12)})`);
+    console.log(`Claude native plugin projection OK (${canonicalHash.slice(0, 12)})`);
   } else {
-    console.error('Claude compact skill projection drift detected:');
+    console.error('Claude native plugin projection drift detected:');
     for (const error of errors) console.error(`- ${error}`);
   }
 
