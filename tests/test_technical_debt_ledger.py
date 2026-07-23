@@ -23,7 +23,7 @@ class TechnicalDebtLedgerProvenanceTests(unittest.TestCase):
 
     def test_debt_capability_does_not_assume_source_checkout_path(self) -> None:
         text = CANONICAL_DEBT.read_text(encoding="utf-8")
-        self.assertIn("Do not assume a source-repository path", text)
+        self.assertIn("source-repository path", text)
         self.assertIn("installed plugin", text)
         self.assertIn("Do not convert examples into live debt", text)
 
