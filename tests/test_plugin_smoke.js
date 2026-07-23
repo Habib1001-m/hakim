@@ -20,15 +20,7 @@ const { spawnSync } = require('node:child_process');
     assert.ok(!fs.existsSync(path.join(root, 'plugins', dir, 'SKILL.md')), `${dir} must not duplicate canonical SKILL.md`);
   }
 
-  const capabilityIds = [
-    'hakim',
-    'hakim-review',
-    'hakim-audit',
-    'hakim-debt',
-    'hakim-gain',
-    'hakim-help',
-  ];
-
+  const capabilityIds = ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'];
   for (const host of ['codex', 'claude-code']) {
     for (const capabilityId of capabilityIds) {
       const skillPath = path.join(root, 'plugins', host, 'skills', capabilityId, 'SKILL.md');
@@ -39,22 +31,21 @@ const { spawnSync } = require('node:child_process');
   }
 
   const expectedVersion = fs.readFileSync(path.join(root, 'core/hakim-skill/VERSION'), 'utf8').trim();
-
-  const codexManifestPath = path.join(root, 'plugins/codex/.codex-plugin/plugin.json');
-  const codexManifest = JSON.parse(fs.readFileSync(codexManifestPath, 'utf8'));
+  const codexManifest = JSON.parse(fs.readFileSync(path.join(root, 'plugins/codex/.codex-plugin/plugin.json'), 'utf8'));
   assert.equal(codexManifest.name, 'hakim');
   assert.equal(codexManifest.version, expectedVersion);
   assert.equal(codexManifest.skills, './skills/');
   assert.equal(codexManifest.hooks, './hooks/hooks.json');
+  assert.deepEqual(codexManifest.interface.capabilities, ['Interactive', 'Read', 'Write']);
   assert.ok(!(codexManifest.keywords || []).includes('enterprise'));
 
-  const claudeManifestPath = path.join(root, 'plugins/claude-code/.claude-plugin/plugin.json');
-  const claudeManifest = JSON.parse(fs.readFileSync(claudeManifestPath, 'utf8'));
+  const claudeManifest = JSON.parse(fs.readFileSync(path.join(root, 'plugins/claude-code/.claude-plugin/plugin.json'), 'utf8'));
   assert.equal(claudeManifest.name, 'hakim');
   assert.equal(claudeManifest.version, expectedVersion);
   assert.match(claudeManifest.description, /smallest safe diff/i);
-  assert.ok(fs.existsSync(path.join(root, 'plugins/claude-code/hooks/hooks.json')), 'Claude D.2E diagnostic hook config missing');
-  assert.ok(fs.existsSync(path.join(root, 'plugins/claude-code/hooks/post_tool_use_diagnostic.mjs')), 'Claude D.2E diagnostic hook handler missing');
+  assert.ok(fs.existsSync(path.join(root, '.claude-plugin/marketplace.json')), 'Claude native marketplace missing');
+  assert.ok(fs.existsSync(path.join(root, 'plugins/claude-code/hooks/session_start.mjs')), 'Claude SessionStart activation missing');
+  assert.ok(fs.existsSync(path.join(root, 'plugins/claude-code/hooks/post_tool_use_diagnostic.mjs')), 'Claude diagnostic handler missing');
 
   const copilotInstructions = fs.readFileSync(path.join(root, '.github/copilot-instructions.md'), 'utf8');
   for (const capabilityId of capabilityIds) {
@@ -63,20 +54,21 @@ const { spawnSync } = require('node:child_process');
   assert.match(copilotInstructions, /Do not promise slash-command support on this surface/);
 
   const marketplace = JSON.parse(fs.readFileSync(path.join(root, '.agents/plugins/marketplace.json'), 'utf8'));
+  assert.equal(marketplace.name, 'hakim');
+  assert.equal(marketplace.interface.displayName, 'Hakim');
   assert.equal(marketplace.plugins[0].source.path, './plugins/codex');
 
-  const hook = spawnSync(
-    process.execPath,
-    [path.join(root, 'plugins/codex/hooks/session_start.mjs')],
-    {
-      cwd: root,
-      encoding: 'utf8',
-      env: { ...process.env, PLUGIN_ROOT: path.join(root, 'plugins/codex'), HAKIM_DEFAULT_MODE: 'full' },
-    },
-  );
+  const hook = spawnSync(process.execPath, [path.join(root, 'plugins/codex/hooks/session_start.mjs')], {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, PLUGIN_ROOT: path.join(root, 'plugins/codex'), HAKIM_DEFAULT_MODE: 'full' },
+  });
   assert.equal(hook.status, 0, hook.stderr + hook.stdout);
-  assert.match(hook.stdout, /Hakim mode: full/);
-  assert.match(hook.stdout, /The 7-level ladder/);
+  assert.match(hook.stdout, /Hakim 1\.0\.0-beta\.1 is active in full mode/);
+  assert.match(hook.stdout, /progressively/);
+  assert.match(hook.stdout, /\$hakim:hakim-help/);
+  assert.doesNotMatch(hook.stdout, /The 7-level ladder/);
+  assert.doesNotMatch(hook.stdout, /Technical debt format/);
 
-  console.log('test_plugin_smoke.js: ok');
+  console.log('test_plugin_smoke.js: native host plugin smoke ok');
 })();
