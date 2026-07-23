@@ -17,6 +17,10 @@ const limitations = read('KNOWN_LIMITATIONS.md');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
 const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
 const claudeManifest = JSON.parse(read('plugins/claude-code/.claude-plugin/plugin.json'));
+const copilotManifest = JSON.parse(read('plugins/copilot/plugin.json'));
+const claudeMarketplace = JSON.parse(read('.claude-plugin/marketplace.json'));
+const codexMarketplace = JSON.parse(read('.agents/plugins/marketplace.json'));
+const copilotMarketplace = JSON.parse(read('.github/plugin/marketplace.json'));
 
 const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
 assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
@@ -25,6 +29,10 @@ assert.equal(version, '1.0.0-beta.1');
 assert.equal(packageJson.version, version);
 assert.equal(codexManifest.version, version);
 assert.equal(claudeManifest.version, version);
+assert.equal(copilotManifest.version, version);
+assert.equal(claudeMarketplace.plugins.find((item) => item.name === 'hakim')?.version, version);
+assert.equal(copilotMarketplace.plugins.find((item) => item.name === 'hakim')?.version, version);
+assert.equal(codexMarketplace.name, 'hakim');
 assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
 assert.ok(readme.includes('Hakim `' + version + '` is public beta software'));
 assert.match(security, new RegExp(escapeRegExp(version)));
@@ -41,23 +49,28 @@ const hostSurfaces = new Map([
   ['github-copilot', 'GitHub Copilot'],
   ['opencode', 'OpenCode'],
 ]);
-
 for (const host of expectedHosts) {
   const displayName = hostSurfaces.get(host);
   assert.match(readme, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from README Quick start`);
-  assert.match(install, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from INSTALL.md`);
-  assert.match(
-    `${readme}\n${install}`,
-    new RegExp(`npm run plan:install -- --host ${escapeRegExp(host)}`),
-    `${host} missing from documented install planning`,
-  );
+  assert.match(install, new RegExp(`^## ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from INSTALL.md`);
 }
+
+const combinedFirstRun = `${readme}\n${install}`;
+assert.match(combinedFirstRun, /codex plugin marketplace add Habib1001-m\/hakim/);
+assert.match(combinedFirstRun, /hakim@hakim/);
+assert.match(combinedFirstRun, /claude plugin marketplace add Habib1001-m\/hakim/);
+assert.match(combinedFirstRun, /claude plugin install hakim@hakim/);
+assert.match(combinedFirstRun, /\/hakim:full/);
+assert.match(combinedFirstRun, /copilot plugin marketplace add Habib1001-m\/hakim/);
+assert.match(combinedFirstRun, /copilot plugin install hakim@hakim/);
+assert.match(combinedFirstRun, /\/skills list/);
+assert.match(combinedFirstRun, /\/agent/);
+assert.match(combinedFirstRun, /npm run install:opencode -- --target \/path\/to\/project --apply/);
 
 const opencodeReadme = read('plugins/opencode/README.md');
 for (const text of [readme, install, opencodeReadme]) {
   assert.ok(!/npm run plan:install[^\n]*-- --target/.test(text), 'plan:install examples must not contain a second npm separator before --target');
 }
-assert.ok(readme.includes('npm run plan:install -- --host opencode --target /path/to/project'));
 assert.ok(install.includes('npm run plan:install -- --host opencode --target /path/to/project'));
 assert.ok(opencodeReadme.includes('npm run plan:install -- --host opencode --target /path/to/repository'));
 
@@ -83,20 +96,19 @@ const stalePublicTokens = [
   'RUNTIME_VERDICTS=',
   'OPENCODE_LIVE_RUNTIME_VALIDATION=NOT_PERFORMED',
   'Phase D',
+  'hakim-local',
+  'DIRECT_PLUGIN_DIR_ONLY',
+  'REPOSITORY_INSTRUCTIONS_ONLY',
 ];
 
 for (const relative of productDocs) {
   const text = read(relative);
-  for (const match of text.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) {
-    documentedScripts.add(match[1]);
-  }
-  for (const token of stalePublicTokens) {
-    assert.ok(!text.includes(token), `${relative} contains stale public token ${token}`);
-  }
+  for (const match of text.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) documentedScripts.add(match[1]);
+  for (const token of stalePublicTokens) assert.ok(!text.includes(token), `${relative} contains stale public token ${token}`);
 }
 
 for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} hosts, ${documentedScripts.size} documented npm scripts, version ${version}`);
+console.log(`public first-run contract OK: ${expectedHosts.length} native/product hosts, ${documentedScripts.size} documented npm scripts, version ${version}`);
