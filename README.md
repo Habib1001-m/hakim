@@ -32,7 +32,7 @@ Preview the project-local bundle first, then apply it only after reviewing the
 manifest:
 
 ```bash
-npm run plan:install -- --host opencode -- --target /path/to/project
+npm run plan:install -- --host opencode --target /path/to/project
 npm run install:opencode -- --target /path/to/project
 npm run install:opencode -- --target /path/to/project --apply
 ```
