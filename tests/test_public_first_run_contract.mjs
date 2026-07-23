@@ -45,7 +45,7 @@ assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
 assert.match(install, /npm run plan:install -- --host all/);
-assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.130\.0`/);
+assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
