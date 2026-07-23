@@ -94,31 +94,49 @@ export function inspectClaude(root = ROOT, version = null) {
   const expectedVersion = version || fs.readFileSync(path.join(root, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
   const sourcePath = path.join(root, 'plugins', 'claude-code');
   const manifestPath = path.join(sourcePath, '.claude-plugin', 'plugin.json');
+  const marketplacePath = path.join(root, '.claude-plugin', 'marketplace.json');
   const skillsPath = path.join(sourcePath, 'skills');
+  const agentsPath = path.join(sourcePath, 'agents');
   const hooksPath = path.join(sourcePath, 'hooks', 'hooks.json');
+  const nativeSkills = ['full', 'review', 'audit', 'debt', 'gain', 'help'];
+  const nativeAgents = ['hakim-reviewer', 'hakim-auditor', 'hakim-debt-analyst', 'hakim-evidence-verifier', 'hakim-implementer'];
   let manifest = {};
+  let marketplace = {};
+
   if (fs.existsSync(manifestPath)) manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  if (fs.existsSync(marketplacePath)) marketplace = JSON.parse(fs.readFileSync(marketplacePath, 'utf8'));
+  const entry = (marketplace.plugins || []).find((item) => item.name === 'hakim');
 
   const checks = [
     check('source_directory_present', fs.existsSync(sourcePath), path.relative(root, sourcePath)),
     check('manifest_present', fs.existsSync(manifestPath), path.relative(root, manifestPath)),
     check('manifest_version_matches', manifest.version === expectedVersion, manifest.version || null),
+    check('marketplace_present', fs.existsSync(marketplacePath), path.relative(root, marketplacePath)),
+    check('marketplace_entry_present', Boolean(entry), entry?.name || null),
+    check('marketplace_source_matches', entry?.source === './plugins/claude-code', entry?.source || null),
+    check('marketplace_version_matches', entry?.version === expectedVersion, entry?.version || null),
     check('skills_directory_present', fs.existsSync(skillsPath), path.relative(root, skillsPath)),
+    check('native_user_skills_present', nativeSkills.every((name) => fs.existsSync(path.join(skillsPath, name, 'SKILL.md'))), nativeSkills),
+    check('agents_directory_present', fs.existsSync(agentsPath), path.relative(root, agentsPath)),
+    check('native_agents_present', nativeAgents.every((name) => fs.existsSync(path.join(agentsPath, `${name}.md`))), nativeAgents),
     check('hooks_manifest_present', fs.existsSync(hooksPath), path.relative(root, hooksPath)),
   ];
 
   return {
     host: 'claude-code',
     status: summarizeStatus(checks),
-    support_boundary: 'LOCAL_EVALUATION_ONLY',
-    distribution_mode: 'DIRECT_PLUGIN_DIR',
+    support_boundary: 'HOST_NATIVE_PLUGIN',
+    distribution_mode: 'NATIVE_MARKETPLACE',
     source_path: 'plugins/claude-code',
-    invocation: 'claude --plugin-dir ./plugins/claude-code',
-    target_state: 'DIRECT_PLUGIN_DIR_ONLY',
-    persistent_installation: 'NOT_CLAIMED',
+    marketplace_path: '.claude-plugin/marketplace.json',
+    invocation: 'claude plugin marketplace add Habib1001-m/hakim && claude plugin install hakim@hakim',
+    target_state: 'READY_FOR_NATIVE_INSTALL',
+    persistent_installation: 'SUPPORTED_BY_HOST',
     automatic_changes: false,
+    native_user_skills: nativeSkills,
+    native_agents: nativeAgents,
     checks,
-    next_safe_action: 'Run Claude Code with --plugin-dir ./plugins/claude-code, then use /plugins and /help to verify the six skills and hook.',
+    next_safe_action: 'Install natively with `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim`; use /hakim:help after installation.',
   };
 }
 
