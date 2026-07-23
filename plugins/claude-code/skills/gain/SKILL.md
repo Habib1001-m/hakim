@@ -4,7 +4,7 @@ description: Verify what the current Hakim evidence actually proves in an isolat
 argument-hint: [scope]
 disable-model-invocation: true
 context: fork
-agent: hakim-evidence-verifier
+agent: hakim:hakim-evidence-verifier
 effort: high
 ---
 
