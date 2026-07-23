@@ -38,6 +38,7 @@ jobs:
         run: |
           npm run check:codex-projection
           npm run check:claude-projection
+          npm run check:copilot-projection
 
       - name: Run public JavaScript tests
         run: npm run test:public:js
