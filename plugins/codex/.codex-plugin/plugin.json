@@ -1,26 +1,41 @@
 {
   "name": "hakim",
   "version": "1.0.0-beta.1",
-  "description": "Evidence-bound minimalist coding intelligence for Codex.",
+  "description": "Evidence-bound coding governance for Codex: smallest safe diff, reuse-first, native-first, and explicit evidence boundaries.",
   "author": {
     "name": "Habib1001-m"
   },
+  "homepage": "https://github.com/Habib1001-m/hakim",
   "repository": "https://github.com/Habib1001-m/hakim",
   "license": "MIT",
-  "keywords": ["minimalism", "yagni", "coding-agent", "skills", "evidence-bound"],
+  "keywords": [
+    "minimalism",
+    "yagni",
+    "coding-agent",
+    "skills",
+    "evidence-bound",
+    "review",
+    "technical-debt"
+  ],
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Hakim",
-    "shortDescription": "Minimalist coding intelligence for Codex.",
-    "longDescription": "Hakim guides Codex toward smaller, safer changes: reuse first, stdlib before dependencies, native platform features before custom code, and explicit technical-debt notes for deliberate shortcuts.",
+    "shortDescription": "Evidence-bound coding governance for smaller, safer changes.",
+    "longDescription": "Hakim guides Codex toward the smallest safe change: reuse existing code first, prefer standard-library and native platform capabilities before dependencies, challenge speculative architecture, and keep completion or performance claims tied to inspectable evidence.",
     "developerName": "Habib1001-m",
     "category": "Developer Tools",
-    "capabilities": ["skills", "hooks"],
-    "defaultPrompt": [
-      "Use Hakim to review this change for unnecessary code and dependency bloat.",
-      "Use Hakim in full mode and propose the smallest safe implementation."
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
     ],
-    "brandColor": "#10A37F"
+    "websiteURL": "https://github.com/Habib1001-m/hakim",
+    "defaultPrompt": [
+      "Use Hakim full mode and make the smallest safe change.",
+      "Use Hakim to review this diff for removable complexity."
+    ],
+    "brandColor": "#10A37F",
+    "screenshots": []
   }
 }
