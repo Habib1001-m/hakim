@@ -26,7 +26,7 @@ const { spawnSync } = require('node:child_process');
       const skillPath = path.join(root, 'plugins', host, 'skills', capabilityId, 'SKILL.md');
       assert.ok(fs.existsSync(skillPath), `${host} ${capabilityId} skill missing`);
       const skillText = fs.readFileSync(skillPath, 'utf8');
-      assert.match(skillText, new RegExp(`^name:\\s*${capabilityId}$`, 'm'));
+      assert.match(skillText, new RegExp(`^name:\s*${capabilityId}$`, 'm'));
     }
   }
 
@@ -49,9 +49,10 @@ const { spawnSync } = require('node:child_process');
 
   const copilotInstructions = fs.readFileSync(path.join(root, '.github/copilot-instructions.md'), 'utf8');
   for (const capabilityId of capabilityIds) {
-    assert.match(copilotInstructions, new RegExp(`\\\`${capabilityId}\\\``), `Copilot ${capabilityId} capability routing missing`);
+    assert.match(copilotInstructions, new RegExp(`\\`${capabilityId}\\``), `Copilot ${capabilityId} capability routing missing`);
   }
-  assert.match(copilotInstructions, /Do not promise slash-command support on this surface/);
+  assert.match(copilotInstructions, /not universal slash-command claims/);
+  assert.match(copilotInstructions, /native `hakim` Copilot plugin/);
 
   const marketplace = JSON.parse(fs.readFileSync(path.join(root, '.agents/plugins/marketplace.json'), 'utf8'));
   assert.equal(marketplace.name, 'hakim');
