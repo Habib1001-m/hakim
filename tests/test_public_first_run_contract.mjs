@@ -27,6 +27,9 @@ assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
 
 assert.equal(version, '1.0.0-beta.1');
 assert.equal(packageJson.version, version);
+assert.equal(packageJson.private, true);
+assert.equal(packageJson.scripts['build:native-plugin'], undefined);
+assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
 assert.equal(codexManifest.version, version);
 assert.equal(claudeManifest.version, version);
 assert.equal(copilotManifest.version, version);
@@ -42,6 +45,7 @@ assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
 assert.match(install, /npm run plan:install -- --host all/);
+assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.130\.0`/);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -76,6 +80,7 @@ assert.ok(opencodeReadme.includes('npm run plan:install -- --host opencode --tar
 
 const productDocs = [
   'README.md',
+  'CHANGELOG.md',
   'CONTRIBUTING.md',
   'SUPPORTED_HOSTS.md',
   'SECURITY.md',
@@ -99,6 +104,10 @@ const stalePublicTokens = [
   'hakim-local',
   'DIRECT_PLUGIN_DIR_ONLY',
   'REPOSITORY_INSTRUCTIONS_ONLY',
+  'private-prerelease',
+  'npx /absolute/path/to/habib-hakim-',
+  'build:native-plugin',
+  'verify:native-prerelease',
 ];
 
 for (const relative of productDocs) {
