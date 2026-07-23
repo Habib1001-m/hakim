@@ -3,9 +3,10 @@ name: hakim
 description: Use Hakim on coding tasks to enforce smallest safe diff, reuse existing code first, prefer stdlib/native platform features, avoid speculative architecture, and keep release claims evidence-bound.
 argument-hint: [lite|full|ultra]
 disable-model-invocation: false
+user-invocable: false
 ---
 
-<!-- hakim-canonical-sha256: 836081baf3c50b49413a9c4e3cec815336d87382849a8a75e6b6f09e5c46c6c7 -->
+<!-- hakim-canonical-sha256: 5fc4290f2d6200e56c379f7758bee1a46dffc1549cf59ee441eaf96ebe9fe772 -->
 
 # Hakim for Claude Code
 

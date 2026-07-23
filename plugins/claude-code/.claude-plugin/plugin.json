@@ -1,8 +1,20 @@
 {
   "name": "hakim",
-  "description": "Evidence-bound minimalist coding intelligence for Claude Code: reuse-first, stdlib/native-first, smallest safe diff.",
+  "displayName": "Hakim",
+  "description": "Evidence-bound coding governance for Claude Code: smallest safe diff, reuse-first, native-first, isolated review agents, and explicit evidence boundaries.",
   "version": "1.0.0-beta.1",
   "author": {
     "name": "Habib1001-m"
-  }
+  },
+  "homepage": "https://github.com/Habib1001-m/hakim",
+  "repository": "https://github.com/Habib1001-m/hakim",
+  "license": "MIT",
+  "keywords": [
+    "coding",
+    "review",
+    "governance",
+    "minimalism",
+    "yagni",
+    "technical-debt"
+  ]
 }

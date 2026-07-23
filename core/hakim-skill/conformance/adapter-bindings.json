@@ -5,27 +5,59 @@
       "adapter_id": "codex-plugin",
       "invocation_kind": "namespaced-skill",
       "activation_template": "$hakim:{capability}",
+      "activation_map": {
+        "hakim": "$hakim:hakim",
+        "hakim-review": "$hakim:hakim-review",
+        "hakim-audit": "$hakim:hakim-audit",
+        "hakim-debt": "$hakim:hakim-debt",
+        "hakim-gain": "$hakim:hakim-gain",
+        "hakim-help": "$hakim:hakim-help"
+      },
       "source_root": "plugins/codex/skills",
       "slash_commands_claimed": false
     },
     "claude-code": {
       "adapter_id": "claude-code-plugin",
-      "invocation_kind": "slash-skill",
-      "activation_template": "/{capability}",
+      "invocation_kind": "native-command-and-skill",
+      "activation_template": "/hakim:{capability}",
+      "activation_map": {
+        "hakim": "/hakim:full",
+        "hakim-review": "/hakim:review",
+        "hakim-audit": "/hakim:audit",
+        "hakim-debt": "/hakim:debt",
+        "hakim-gain": "/hakim:gain",
+        "hakim-help": "/hakim:help"
+      },
       "source_root": "plugins/claude-code/skills",
       "slash_commands_claimed": true
     },
     "github-copilot": {
-      "adapter_id": "github-copilot-repository-instructions",
-      "invocation_kind": "natural-language",
-      "activation_template": "Use Hakim capability {capability}.",
-      "source_root": ".github/copilot-instructions.md",
+      "adapter_id": "github-copilot-plugin",
+      "invocation_kind": "native-skill-or-agent",
+      "activation_template": "Use the installed Hakim skill {capability}.",
+      "activation_map": {
+        "hakim": "Use the installed Hakim skill hakim.",
+        "hakim-review": "Use the installed Hakim skill hakim-review.",
+        "hakim-audit": "Use the installed Hakim skill hakim-audit.",
+        "hakim-debt": "Use the installed Hakim skill hakim-debt.",
+        "hakim-gain": "Use the installed Hakim skill hakim-gain.",
+        "hakim-help": "Use the installed Hakim skill hakim-help."
+      },
+      "source_root": "plugins/copilot/skills",
       "slash_commands_claimed": false
     },
     "opencode": {
       "adapter_id": "opencode-project-plugin",
       "invocation_kind": "slash-command-and-native-skill",
       "activation_template": "/{capability}",
+      "activation_map": {
+        "hakim": "/hakim full",
+        "hakim-review": "/hakim-review",
+        "hakim-audit": "/hakim-audit",
+        "hakim-debt": "/hakim-debt",
+        "hakim-gain": "/hakim-gain",
+        "hakim-help": "/hakim-help"
+      },
       "source_root": "plugins/opencode",
       "slash_commands_claimed": true,
       "runtime_validation": "NOT_PERFORMED"

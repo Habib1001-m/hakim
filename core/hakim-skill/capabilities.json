@@ -9,19 +9,19 @@
       "hosts": {
         "codex": {
           "path": "plugins/codex/skills/hakim/SKILL.md",
-          "invocation": "@hakim or natural-language activation"
+          "invocation": "$hakim:hakim or matching natural-language activation"
         },
         "claude-code": {
           "path": "plugins/claude-code/skills/hakim/SKILL.md",
-          "invocation": "/hakim when exposed by the host, or natural-language activation"
+          "invocation": "/hakim:full for explicit user invocation; hidden canonical skill remains model-invocable"
         },
         "github-copilot": {
-          "path": ".github/copilot-instructions.md",
-          "invocation": "natural-language activation such as 'use Hakim' or 'smallest safe diff'"
+          "path": "plugins/copilot/skills/hakim/SKILL.md",
+          "invocation": "use the installed Hakim skill `hakim`, or matching natural-language activation"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
-          "invocation": "/hakim <lite|full|ultra|off> or natural-language activation"
+          "invocation": "/hakim <lite|full|ultra|off> or the OpenCode native skill tool"
         }
       }
     },
@@ -32,15 +32,15 @@
       "hosts": {
         "codex": {
           "path": "plugins/codex/skills/hakim-review/SKILL.md",
-          "invocation": "@hakim-review or natural language"
+          "invocation": "$hakim:hakim-review or matching natural language"
         },
         "claude-code": {
           "path": "plugins/claude-code/skills/hakim-review/SKILL.md",
-          "invocation": "/hakim-review when exposed by the host, or natural language"
+          "invocation": "/hakim:review or the scoped hakim:hakim-reviewer agent"
         },
         "github-copilot": {
-          "path": ".github/copilot-instructions.md",
-          "invocation": "ask for a Hakim over-engineering review of the current diff"
+          "path": "plugins/copilot/skills/hakim-review/SKILL.md",
+          "invocation": "use the installed `hakim-review` skill or select the `hakim-reviewer` custom agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
@@ -55,15 +55,15 @@
       "hosts": {
         "codex": {
           "path": "plugins/codex/skills/hakim-audit/SKILL.md",
-          "invocation": "@hakim-audit or natural language"
+          "invocation": "$hakim:hakim-audit or matching natural language"
         },
         "claude-code": {
           "path": "plugins/claude-code/skills/hakim-audit/SKILL.md",
-          "invocation": "/hakim-audit when exposed by the host, or natural language"
+          "invocation": "/hakim:audit or the scoped hakim:hakim-auditor agent"
         },
         "github-copilot": {
-          "path": ".github/copilot-instructions.md",
-          "invocation": "ask for a Hakim complexity audit of an explicit repository scope"
+          "path": "plugins/copilot/skills/hakim-audit/SKILL.md",
+          "invocation": "use the installed `hakim-audit` skill or select the `hakim-auditor` custom agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
@@ -78,15 +78,15 @@
       "hosts": {
         "codex": {
           "path": "plugins/codex/skills/hakim-debt/SKILL.md",
-          "invocation": "@hakim-debt or natural language"
+          "invocation": "$hakim:hakim-debt or matching natural language"
         },
         "claude-code": {
           "path": "plugins/claude-code/skills/hakim-debt/SKILL.md",
-          "invocation": "/hakim-debt when exposed by the host, or natural language"
+          "invocation": "/hakim:debt or the scoped hakim:hakim-debt-analyst agent"
         },
         "github-copilot": {
-          "path": ".github/copilot-instructions.md",
-          "invocation": "ask to collect hakim: comments and review the debt ledger"
+          "path": "plugins/copilot/skills/hakim-debt/SKILL.md",
+          "invocation": "use the installed `hakim-debt` skill or select the `hakim-debt-analyst` custom agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
@@ -101,15 +101,15 @@
       "hosts": {
         "codex": {
           "path": "plugins/codex/skills/hakim-gain/SKILL.md",
-          "invocation": "@hakim-gain or natural language"
+          "invocation": "$hakim:hakim-gain or matching natural language"
         },
         "claude-code": {
           "path": "plugins/claude-code/skills/hakim-gain/SKILL.md",
-          "invocation": "/hakim-gain when exposed by the host, or natural language"
+          "invocation": "/hakim:gain or the scoped hakim:hakim-evidence-verifier agent"
         },
         "github-copilot": {
-          "path": ".github/copilot-instructions.md",
-          "invocation": "ask for Hakim evidence status or validated impact claims"
+          "path": "plugins/copilot/skills/hakim-gain/SKILL.md",
+          "invocation": "use the installed `hakim-gain` skill or select the `hakim-evidence-verifier` custom agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
@@ -124,15 +124,15 @@
       "hosts": {
         "codex": {
           "path": "plugins/codex/skills/hakim-help/SKILL.md",
-          "invocation": "@hakim-help or natural language"
+          "invocation": "$hakim:hakim-help or matching natural language"
         },
         "claude-code": {
           "path": "plugins/claude-code/skills/hakim-help/SKILL.md",
-          "invocation": "/hakim-help when exposed by the host, or natural language"
+          "invocation": "/hakim:help"
         },
         "github-copilot": {
-          "path": ".github/copilot-instructions.md",
-          "invocation": "ask what Hakim can do or how to use its capabilities"
+          "path": "plugins/copilot/skills/hakim-help/SKILL.md",
+          "invocation": "use the installed `hakim-help` skill"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",

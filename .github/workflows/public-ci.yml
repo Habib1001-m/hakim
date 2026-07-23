@@ -34,8 +34,65 @@ jobs:
       - name: Verify first-run contract
         run: npm run check:first-run
 
-      - name: Run public JavaScript tests
-        run: npm run test:public:js
+      - name: Verify host-native plugin contracts
+        run: |
+          npm run check:codex-projection
+          npm run check:claude-projection
+          npm run check:copilot-projection
+
+      - name: Verify capability parity
+        run: npm run check:capability-parity
+
+      - name: Verify cross-host conformance
+        run: npm run check:conformance
+
+      - name: Verify native host preflight contract
+        run: node tests/test_hakim_host_preflight.mjs
+
+      - name: Verify core governance contracts
+        run: |
+          node tests/test_rule_copies.js
+          node tests/test_rule_missing_section.js
+          node tests/test_upstream_relationship.js
+          node tests/test_hakim_doctor.mjs
+          node tests/test_structured_metadata.js
+          node tests/test_hakim_guarded_session.mjs
+
+      - name: Verify native plugin smoke
+        run: node tests/test_plugin_smoke.js
+
+      - name: Verify OpenCode runtime plugin
+        run: node tests/test_opencode_plugin.mjs
+
+      - name: Verify OpenCode install and removal lifecycle
+        run: node tests/test_hakim_opencode_lifecycle.mjs
+
+      - name: Verify OpenCode realpath containment
+        run: node tests/test_native_plugin_realpath_containment.mjs
+
+      - name: Verify host fallback and lifecycle contracts
+        run: |
+          node tests/test_claude_diagnostic_hook.js
+          node tests/test_hakim_install_plan.mjs
+          node tests/test_hakim_codex_launch.mjs
+          node tests/test_hakim_claude_launch.mjs
+          node tests/test_hakim_copilot_install.mjs
+          node tests/test_hakim_copilot_remove.mjs
+
+      - name: Verify review and PR guardian contracts
+        run: |
+          node tests/test_hakim_pr_guardian.mjs
+          node tests/test_hakim_review_pr.mjs
+
+      - name: Verify conformance fixture generation
+        run: |
+          node tests/test_cross_adapter_conformance.js
+          node tests/test_generate_conformance_packets_no_git.js
+
+      - name: Verify public repository and package boundaries
+        run: |
+          npm run check:public-boundary
+          npm run check:public-package
 
       - name: Run public Python tests
         run: npm run test:public:py

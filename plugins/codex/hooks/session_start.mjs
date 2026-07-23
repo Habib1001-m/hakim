@@ -6,20 +6,34 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const pluginRoot = process.env.PLUGIN_ROOT || path.resolve(__dirname, '..');
-const skillPath = path.join(pluginRoot, 'skills', 'hakim', 'SKILL.md');
+const manifestPath = path.join(pluginRoot, '.codex-plugin', 'plugin.json');
 const mode = (process.env.HAKIM_DEFAULT_MODE || 'full').toLowerCase();
 
-const modeLine = {
-  lite: 'Hakim mode: lite — implement the request and mention the lazier alternative.',
-  full: 'Hakim mode: full — enforce reuse, stdlib/native first, and shortest safe diff.',
-  ultra: 'Hakim mode: ultra — challenge additions and prefer deletion before new code.',
-  off: 'Hakim mode: off — guidance disabled.',
-}[mode] || 'Hakim mode: full — enforce reuse, stdlib/native first, and shortest safe diff.';
+const validModes = new Set(['lite', 'full', 'ultra', 'off']);
+const resolvedMode = validModes.has(mode) ? mode : 'full';
 
-if (mode === 'off') {
-  process.stdout.write('Hakim guidance disabled for this session.\n');
+let version = 'unknown';
+try {
+  version = JSON.parse(fs.readFileSync(manifestPath, 'utf8')).version || version;
+} catch {
+  // Activation guidance must never block Codex startup.
+}
+
+if (resolvedMode === 'off') {
+  process.stdout.write('Hakim guidance is disabled for this Codex session.\n');
   process.exit(0);
 }
 
-const skill = fs.readFileSync(skillPath, 'utf8');
-process.stdout.write(`\n${modeLine}\n\n${skill}\n`);
+const modeGuidance = {
+  lite: 'Lite mode: implement the request and mention the smaller alternative.',
+  full: 'Full mode: apply the complete Hakim ladder; reuse first and prefer stdlib/native capabilities.',
+  ultra: 'Ultra mode: challenge additions aggressively and prefer safe deletion before new code.',
+}[resolvedMode];
+
+process.stdout.write([
+  `Hakim ${version} is active in ${resolvedMode} mode.`,
+  modeGuidance,
+  'Use the installed Hakim skills progressively when their descriptions match the task; do not preload the full skill body into every session.',
+  'Preserve Codex approval, sandbox, plugin, and hook trust controls.',
+  'Use $hakim:hakim-help when explicit Hakim usage guidance is needed.',
+].join(' ') + '\n');

@@ -1,6 +1,7 @@
 ---
 name: hakim-debt
 description: Collect deliberate Hakim shortcuts from hakim comments and review the technical-debt ledger without inventing live repository debt. Use for Hakim debt, shortcut ledger, deferred work review, or technical-debt evidence review.
+user-invocable: false
 ---
 
 # Hakim Debt
