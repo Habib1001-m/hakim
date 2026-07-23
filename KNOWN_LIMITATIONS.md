@@ -12,7 +12,7 @@ Hakim `1.0.0-beta.1` remains public beta software.
 ## Compatibility
 
 - Supported-host evidence is bounded to documented environments.
-- Codex `0.130.0+` is the compatibility floor for this beta's bundled plugin-hook contract; older builds with plugin-hook discovery or trust gaps are outside the claimed SessionStart boundary.
+- Codex `0.131.0+` is the compatibility floor for this beta's default-on bundled plugin-hook contract. In tag `rust-v0.130.0`, `plugin_hooks` was still under development and disabled by default; in `rust-v0.131.0`, it is stable and enabled by default.
 - Universal operating-system, editor-version, provider, and model compatibility is not established.
 - Host-native approval, activation, sandboxing, and removal remain authoritative.
 
