@@ -3,11 +3,16 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  buildOpenCodeBundle,
+  inspectInstalledBundle,
+  validateTargetRoot,
+} from './lib/opencode_bundle.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
 
-export const SUPPORTED_HOSTS = Object.freeze(['codex', 'claude-code', 'github-copilot']);
+export const SUPPORTED_HOSTS = Object.freeze(['codex', 'claude-code', 'github-copilot', 'opencode']);
 
 export function parseArgs(args) {
   const options = { host: 'all', target: null, json: false, help: false };
@@ -32,8 +37,8 @@ export function parseArgs(args) {
   if (options.host !== 'all' && !SUPPORTED_HOSTS.includes(options.host)) {
     throw new Error(`unsupported host: ${options.host}`);
   }
-  if (options.target && !['all', 'github-copilot'].includes(options.host)) {
-    throw new Error('--target is supported only for github-copilot or all');
+  if (options.target && !['all', 'github-copilot', 'opencode'].includes(options.host)) {
+    throw new Error('--target is supported only for github-copilot, opencode, or all');
   }
   return options;
 }
@@ -200,13 +205,98 @@ export function inspectCopilot(targetRoot = null, root = ROOT) {
   };
 }
 
+export function inspectOpenCode(targetRoot = null, root = ROOT) {
+  let bundle;
+  try {
+    bundle = buildOpenCodeBundle(root);
+  } catch (error) {
+    return {
+      host: 'opencode',
+      status: 'FAIL',
+      support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER',
+      distribution_mode: 'PROJECT_LOCAL_INSTALLER',
+      source_path: 'plugins/opencode',
+      target_root: targetRoot ? path.resolve(targetRoot) : null,
+      target_state: 'SOURCE_INVALID',
+      persistent_installation: 'NOT_CLAIMED',
+      automatic_changes: false,
+      checks: [check('canonical_bundle_valid', false, error.message)],
+      next_safe_action: `Repair the canonical OpenCode bundle before planning installation: ${error.message}`,
+    };
+  }
+
+  const checks = [
+    check('canonical_bundle_valid', true, `${bundle.files.length} files`),
+    check('opencode_config_mutation_disabled', bundle.opencode_config_mutation === false, bundle.opencode_config_mutation),
+  ];
+
+  if (!targetRoot) {
+    return {
+      host: 'opencode',
+      status: summarizeStatus(checks),
+      support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER',
+      distribution_mode: 'PROJECT_LOCAL_INSTALLER',
+      source_path: 'plugins/opencode',
+      target_root: null,
+      target_state: 'NOT_COMPARED',
+      persistent_installation: 'NOT_CLAIMED',
+      automatic_changes: false,
+      checks,
+      next_safe_action: 'Run npm run install:opencode -- --target <repository> for a dry-run manifest, then add --apply only after review.',
+    };
+  }
+
+  const target = validateTargetRoot(targetRoot);
+  if (!target.ok) {
+    return {
+      host: 'opencode',
+      status: 'FAIL',
+      support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER',
+      distribution_mode: 'PROJECT_LOCAL_INSTALLER',
+      source_path: 'plugins/opencode',
+      target_root: target.target_root,
+      target_state: target.state,
+      persistent_installation: 'NOT_CLAIMED',
+      automatic_changes: false,
+      checks: [...checks, check('target_root_valid', false, target.state)],
+      next_safe_action: target.message,
+    };
+  }
+
+  const installed = inspectInstalledBundle(target.target_root, bundle);
+  let nextSafeAction = 'Review the OpenCode target state before any mutation.';
+  if (installed.aggregate_state === 'ABSENT') {
+    nextSafeAction = `Run npm run install:opencode -- --target ${target.target_root} for the dry-run manifest, then rerun with --apply after review.`;
+  } else if (installed.aggregate_state === 'EXACT_MATCH') {
+    nextSafeAction = 'The project-local OpenCode adapter already matches the canonical Hakim bundle; no installation change is needed.';
+  } else {
+    nextSafeAction = 'Preserve the existing OpenCode paths and reconcile them manually; automatic overwrite or partial repair is prohibited.';
+  }
+
+  return {
+    host: 'opencode',
+    status: summarizeStatus(checks),
+    support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER',
+    distribution_mode: 'PROJECT_LOCAL_INSTALLER',
+    source_path: 'plugins/opencode',
+    target_root: target.target_root,
+    target_state: installed.aggregate_state,
+    persistent_installation: 'NOT_CLAIMED',
+    automatic_changes: false,
+    checks: [...checks, check('target_root_valid', true, target.target_root)],
+    inspection: installed.counts,
+    next_safe_action: nextSafeAction,
+  };
+}
+
 export function buildPlan(options, root = ROOT) {
   const version = fs.readFileSync(path.join(root, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
   const requestedHosts = options.host === 'all' ? SUPPORTED_HOSTS : [options.host];
   const plans = requestedHosts.map((host) => {
     if (host === 'codex') return inspectCodex(root, version);
     if (host === 'claude-code') return inspectClaude(root, version);
-    return inspectCopilot(options.target, root);
+    if (host === 'github-copilot') return inspectCopilot(options.target, root);
+    return inspectOpenCode(options.target, root);
   });
   const failed = plans.filter((plan) => plan.status !== 'PASS');
 
@@ -241,7 +331,10 @@ export function formatText(plan) {
     if (hostPlan.comparison) {
       lines.push(`TARGET_STATE=${hostPlan.comparison.target_state}`);
       if (hostPlan.comparison.target_path) lines.push(`TARGET=${hostPlan.comparison.target_path}`);
-    } else lines.push(`TARGET_STATE=${hostPlan.target_state}`);
+    } else {
+      lines.push(`TARGET_STATE=${hostPlan.target_state}`);
+      if (hostPlan.target_root) lines.push(`TARGET=${hostPlan.target_root}`);
+    }
     lines.push(`NEXT_SAFE_ACTION=${hostPlan.next_safe_action}`);
   }
 
@@ -252,9 +345,9 @@ export function formatText(plan) {
 function usage() {
   return [
     'Usage:',
-    '  npm run plan:install -- --host <codex|claude-code|github-copilot|all>',
+    '  npm run plan:install -- --host <codex|claude-code|github-copilot|opencode|all>',
     '  npm run plan:install:json -- --host all',
-    '  node scripts/hakim_install_plan.mjs --host github-copilot --target <repository> [--json]',
+    '  node scripts/hakim_install_plan.mjs --host <github-copilot|opencode> --target <repository> [--json]',
     '',
     'Produces a read-only, repository-backed installation plan. It never copies,',
     'deletes, overwrites, or edits host or target-repository files.',
@@ -270,12 +363,10 @@ function main() {
     console.error(usage());
     process.exit(2);
   }
-
   if (options.help) {
     console.log(usage());
     return;
   }
-
   const plan = buildPlan(options);
   console.log(options.json ? JSON.stringify(plan, null, 2) : formatText(plan));
   process.exit(plan.overall_status === 'PASS' ? 0 : 1);
