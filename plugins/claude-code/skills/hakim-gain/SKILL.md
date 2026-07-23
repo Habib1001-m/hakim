@@ -1,6 +1,7 @@
 ---
 name: hakim-gain
 description: Summarize what Hakim can and cannot claim from the evidence available in the current repository or task. Use for Hakim impact, gain, evidence status, or validated results.
+user-invocable: false
 ---
 
 # Hakim Gain
