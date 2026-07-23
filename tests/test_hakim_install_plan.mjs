@@ -46,9 +46,22 @@ assert.equal(codex.automatic_changes, false);
 
 const claude = inspectClaude(repoRoot, expectedVersion);
 assert.equal(claude.status, 'PASS');
-assert.equal(claude.distribution_mode, 'DIRECT_PLUGIN_DIR');
-assert.match(claude.invocation, /claude --plugin-dir/);
+assert.equal(claude.support_boundary, 'HOST_NATIVE_PLUGIN');
+assert.equal(claude.distribution_mode, 'NATIVE_MARKETPLACE');
+assert.equal(claude.target_state, 'READY_FOR_NATIVE_INSTALL');
+assert.equal(claude.persistent_installation, 'SUPPORTED_BY_HOST');
+assert.match(claude.invocation, /claude plugin marketplace add Habib1001-m\/hakim/);
+assert.match(claude.invocation, /claude plugin install hakim@hakim/);
+assert.deepEqual(claude.native_user_skills, ['full', 'review', 'audit', 'debt', 'gain', 'help']);
+assert.deepEqual(claude.native_agents, [
+  'hakim-reviewer',
+  'hakim-auditor',
+  'hakim-debt-analyst',
+  'hakim-evidence-verifier',
+  'hakim-implementer',
+]);
 assert.equal(claude.automatic_changes, false);
+assert.match(claude.next_safe_action, /install hakim@hakim/);
 
 const opencodeNoTarget = inspectOpenCode(null, repoRoot);
 assert.equal(opencodeNoTarget.status, 'PASS');
@@ -94,10 +107,14 @@ assert.equal(plan.hakim_version, expectedVersion);
 assert.equal(plan.overall_status, 'PASS');
 assert.equal(plan.persistent_installation_claimed, false);
 assert.equal(plan.plans.length, 4);
-assert.match(formatText(plan), /MUTATION_PERFORMED=NO/);
-assert.match(formatText(plan), /\[github-copilot\]/);
-assert.match(formatText(plan), /\[opencode\]/);
-assert.match(formatText(plan), /TARGET_STATE=NOT_COMPARED/);
+const formatted = formatText(plan);
+assert.match(formatted, /MUTATION_PERFORMED=NO/);
+assert.match(formatted, /\[claude-code\]/);
+assert.match(formatted, /MODE=NATIVE_MARKETPLACE/);
+assert.match(formatted, /claude plugin install hakim@hakim/);
+assert.match(formatted, /\[github-copilot\]/);
+assert.match(formatted, /\[opencode\]/);
+assert.match(formatted, /TARGET_STATE=NOT_COMPARED/);
 
 const cli = spawnSync(process.execPath, ['scripts/hakim_install_plan.mjs', '--host', 'all', '--json'], {
   cwd: repoRoot,
@@ -109,6 +126,7 @@ assert.equal(cliPlan.overall_status, 'PASS');
 assert.equal(cliPlan.plans.length, 4);
 assert.equal(cliPlan.mutation_performed, false);
 assert.equal(cliPlan.hakim_version, expectedVersion);
+assert.equal(cliPlan.plans.find((item) => item.host === 'claude-code').distribution_mode, 'NATIVE_MARKETPLACE');
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 assert.equal(packageJson.scripts['plan:install'], 'node scripts/hakim_install_plan.mjs');
@@ -116,4 +134,4 @@ assert.equal(packageJson.scripts['plan:install:json'], 'node scripts/hakim_insta
 assert.match(packageJson.scripts['test:integration:js'], /tests\/test_hakim_install_plan\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_install_plan\.mjs/);
 
-console.log('read-only Hakim installation planning covers Codex, Claude Code, Copilot, and OpenCode targets');
+console.log('read-only Hakim installation planning covers native Claude marketplace plus Codex, Copilot, and OpenCode targets');
