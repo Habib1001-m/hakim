@@ -74,6 +74,7 @@ const stalePublicTokens = [
   'PUBLIC_RELEASE_READINESS=HOLD',
   'RUNTIME_VERDICTS=',
   'OPENCODE_LIVE_RUNTIME_VALIDATION=NOT_PERFORMED',
+  'Phase D',
 ];
 
 for (const relative of productDocs) {
