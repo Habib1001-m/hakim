@@ -34,22 +34,22 @@ jobs:
       - name: Verify first-run contract
         run: npm run check:first-run
 
-      - name: Verify plugin smoke
-        run: node tests/test_plugin_smoke.js
-
-      - name: Verify install plan
-        run: node tests/test_hakim_install_plan.mjs
-
-      - name: Verify Codex projection
-        run: npm run check:codex-projection
-
-      - name: Verify Claude projection
-        run: npm run check:claude-projection
-
       - name: Run public JavaScript tests
         run: npm run test:public:js
 
-      - name: Run public Python tests
+      - name: Python audit-complexity tests
+        run: python tests/test_audit_complexity.py
+
+      - name: Python skill-package tests
+        run: python tests/test_package_skill.py
+
+      - name: Python release-checksum tests
+        run: python tests/test_release_checksums.py
+
+      - name: Python downloaded-release tests
+        run: python tests/test_verify_downloaded_release_bundle.py
+
+      - name: Run complete public Python tests
         run: npm run test:public:py
 
       - name: Build skill package
