@@ -83,18 +83,19 @@ pull request, issue, operator transcript, or accepted `hakim:` marker. The
 bundled ledger is classified as `synthetic_example` and does not make claims
 about this repository.
 
-## Commands
+## Capabilities
 
-These are capability identifiers. Exact syntax depends on the host.
+These are canonical capability identifiers. User-facing invocation intentionally
+differs by host and is recorded in `capabilities.json` and the host integration.
 
 | Capability | What it does |
 |---|---|
-| `/hakim [lite | full | ultra | off]` | Apply or change Hakim intensity. |
-| `/hakim-review` | Review the current unstaged and staged diff for removable complexity. |
-| `/hakim-audit` | Audit active repository surfaces for evidence-backed simplification opportunities. |
-| `/hakim-debt` | Separate live debt from synthetic examples and archived records. |
-| `/hakim-gain` | Show accepted runtime and benchmark evidence status without unsupported metrics. |
-| `/hakim-help` | Show modes, capabilities, host syntax, validation, and evidence boundaries. |
+| `hakim` | Apply or change Hakim intensity. |
+| `hakim-review` | Review the current unstaged and staged diff for removable complexity. |
+| `hakim-audit` | Audit active repository surfaces for evidence-backed simplification opportunities. |
+| `hakim-debt` | Separate live debt from synthetic examples and archived records. |
+| `hakim-gain` | Show accepted evidence status without unsupported metrics. |
+| `hakim-help` | Show modes, capabilities, host syntax, validation, and evidence boundaries. |
 
 ## Progressive Disclosure Protocol
 
@@ -110,12 +111,13 @@ claim that Hakim ships a workflow engine.
 
 ## Distribution Boundary
 
-Hakim `1.0.0-beta.1` is distributed from public source. No npm package, public
-marketplace listing, signing, notarization, or global installer is currently
-claimed. OpenCode uses a guarded project-local installer; Codex and Claude Code
-use repository-local integration surfaces; GitHub Copilot uses repository
-instructions. Host-native installation, activation, trust, and removal controls
-remain authoritative. No MCP or A2A runtime/distribution is claimed.
+Hakim `1.0.0-beta.1` is distributed from public source. Codex, Claude Code, and
+GitHub Copilot have repository-hosted native plugin marketplaces; OpenCode uses
+a guarded project-local native plugin installer. No npm publication, central
+plugin-directory listing, signing, notarization, or universal global installer
+is claimed. Host-native installation, activation, permissions, trust, sandbox,
+managed policy, and removal controls remain authoritative. No MCP or A2A
+runtime/distribution is claimed.
 
 ## Evidence and Evaluation Boundaries
 
