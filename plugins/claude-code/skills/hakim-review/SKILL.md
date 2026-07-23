@@ -1,6 +1,7 @@
 ---
 name: hakim-review
 description: Review the current diff for unnecessary complexity, duplicated behavior, avoidable dependencies, speculative abstractions, and opportunities to delete or shrink code. Use for Hakim review, simplify review, over-engineering review, or smallest safe diff review.
+user-invocable: false
 ---
 
 # Hakim Review
