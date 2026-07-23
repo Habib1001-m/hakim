@@ -46,8 +46,11 @@ jobs:
       - name: Verify Claude projection
         run: npm run check:claude-projection
 
-      - name: Run public tests
-        run: npm test
+      - name: Run public JavaScript tests
+        run: npm run test:public:js
+
+      - name: Run public Python tests
+        run: npm run test:public:py
 
       - name: Build skill package
         run: npm run package:skill
