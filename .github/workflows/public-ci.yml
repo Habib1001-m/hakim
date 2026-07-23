@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  javascript:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -25,6 +25,11 @@ jobs:
         with:
           node-version: "24"
           package-manager-cache: false
+
+      - name: Setup Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.11"
 
       - name: Verify first-run contract
         run: npm run check:first-run
@@ -32,70 +37,8 @@ jobs:
       - name: Run public JavaScript tests
         run: npm run test:public:js
 
-  discover-python:
-    runs-on: ubuntu-latest
-    outputs:
-      tests: ${{ steps.discover.outputs.tests }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-
-      - name: Discover Python test files
-        id: discover
-        shell: bash
-        run: |
-          set -euo pipefail
-          tests="$(python - <<'PY'
-          import json
-          from pathlib import Path
-          print(json.dumps([str(path) for path in sorted(Path('tests').glob('test_*.py'))]))
-          PY
-          )"
-          echo "tests=$tests" >> "$GITHUB_OUTPUT"
-
-  python-file:
-    needs: discover-python
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        file: ${{ fromJSON(needs.discover-python.outputs.tests) }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-
-      - name: Setup Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
-        with:
-          python-version: "3.11"
-
-      - name: Run ${{ matrix.file }}
-        run: python "${{ matrix.file }}"
-
-  package:
-    needs:
-      - javascript
-      - python-file
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
-        with:
-          node-version: "24"
-          package-manager-cache: false
-
-      - name: Setup Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
-        with:
-          python-version: "3.11"
+      - name: Run public Python tests
+        run: npm run test:public:py
 
       - name: Build skill package
         run: npm run package:skill
