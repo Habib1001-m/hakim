@@ -4,7 +4,7 @@ description: Inspect Hakim technical-debt markers and provenance in a read-only 
 argument-hint: [scope]
 disable-model-invocation: true
 context: fork
-agent: hakim-debt-analyst
+agent: hakim:hakim-debt-analyst
 effort: high
 ---
 
