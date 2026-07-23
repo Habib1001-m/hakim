@@ -20,8 +20,14 @@ Additional checks may include:
 
 ```bash
 npm run doctor
+npm run check:evidence-script
 npm run package:skill
-npm run build:native-plugin
+```
+
+For OpenCode lifecycle changes, validate the maintained project-local path with:
+
+```bash
+node tests/test_hakim_opencode_lifecycle.mjs
 ```
 
 ## Pull requests
