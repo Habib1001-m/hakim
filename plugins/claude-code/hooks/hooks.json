@@ -1,6 +1,22 @@
 {
-  "description": "Hakim optional non-blocking diagnostics for successful Claude Code Edit and Write tool calls.",
+  "description": "Hakim Claude Code lifecycle integration: automatic session activation plus optional post-edit diagnostics.",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/session_start.mjs"
+            ],
+            "timeout": 5,
+            "statusMessage": "Activating Hakim"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
