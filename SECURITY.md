@@ -33,9 +33,11 @@ of the threat model.
 
 ## Privacy
 
-Telemetry is disabled by default. Raw prompts and source code are not logged by
-default. Runtime evidence must be minimized, sanitized, and free of credentials
-or private customer material.
+Hakim does not implement a product telemetry collection service and does not
+enable raw prompt or source-code logging. Repository conformance, evidence, and
+outcome schemas are local validation artifacts rather than a telemetry service.
+Any captured runtime evidence must be minimized, sanitized, and free of
+credentials or private customer material.
 
 ## Host boundaries
 
