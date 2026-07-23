@@ -34,6 +34,18 @@ jobs:
       - name: Verify first-run contract
         run: npm run check:first-run
 
+      - name: Verify plugin smoke
+        run: node tests/test_plugin_smoke.js
+
+      - name: Verify install plan
+        run: node tests/test_hakim_install_plan.mjs
+
+      - name: Verify Codex projection
+        run: npm run check:codex-projection
+
+      - name: Verify Claude projection
+        run: npm run check:claude-projection
+
       - name: Run public tests
         run: npm test
 
