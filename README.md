@@ -72,7 +72,7 @@ For product use, install the supported host you intend to use. Repository develo
 - Python 3.
 - Git.
 
-For the full Codex product path in this beta, use Codex `0.130.0` or newer. Earlier Codex builds had known plugin-hook discovery and trust gaps and are outside Hakim's claimed SessionStart compatibility boundary.
+For the full Codex product path in this beta, use Codex `0.131.0` or newer. Codex `0.130.0` still shipped plugin-bundled hooks disabled by default; `0.131.0` is the first tagged release in which the `plugin_hooks` feature is stable and enabled by default.
 
 ## Local validation
 
