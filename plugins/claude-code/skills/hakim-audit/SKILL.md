@@ -1,6 +1,7 @@
 ---
 name: hakim-audit
 description: Perform an evidence-backed manual complexity audit of an explicitly inspected repository scope, optionally using Hakim's bounded Python heuristic scan as one input. Use for Hakim audit, repository simplification, bloat review, or over-engineering review.
+user-invocable: false
 ---
 
 # Hakim Audit
