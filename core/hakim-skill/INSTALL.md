@@ -23,7 +23,7 @@ files.
 Dry-run the project-local installation first:
 
 ```bash
-npm run plan:install -- --host opencode -- --target /path/to/project
+npm run plan:install -- --host opencode --target /path/to/project
 npm run install:opencode -- --target /path/to/project
 ```
 
