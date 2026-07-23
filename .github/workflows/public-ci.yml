@@ -37,14 +37,14 @@ jobs:
       - name: Run public JavaScript tests
         run: npm run test:public:js
 
-      - name: Python tests A-M
-        run: python -m unittest discover -s tests -p 'test_[a-m]*.py'
+      - name: Python tests A-F
+        run: python -m unittest discover -s tests -p 'test_[a-f]*.py'
+
+      - name: Python tests G-M
+        run: python -m unittest discover -s tests -p 'test_[g-m]*.py'
 
       - name: Python tests N-Z
         run: python -m unittest discover -s tests -p 'test_[n-z]*.py'
-
-      - name: Run complete public Python tests
-        run: npm run test:public:py
 
       - name: Build skill package
         run: npm run package:skill
