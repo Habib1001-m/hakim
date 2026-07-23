@@ -19,7 +19,9 @@ Hakim is active as a native Claude Code plugin.
 
 ## Native agents
 
-Claude may also delegate to plugin agents such as `hakim-reviewer`, `hakim-auditor`, `hakim-debt-analyst`, and `hakim-evidence-verifier`. `hakim-implementer` is available for explicitly isolated implementation work in a temporary git worktree.
+Claude may delegate automatically to plugin agents exposed under scoped names such as `hakim:hakim-reviewer`, `hakim:hakim-auditor`, `hakim:hakim-debt-analyst`, and `hakim:hakim-evidence-verifier`. `hakim:hakim-implementer` is available for explicitly isolated implementation work in a temporary git worktree.
+
+Type `@` in Claude Code to discover and explicitly select an installed Hakim agent when you want guaranteed delegation.
 
 ## Installation
 
@@ -28,4 +30,4 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-Use `/plugin`, `/agents`, and `/hooks` to inspect the installed plugin and its native components. Claude Code permissions, approval controls, and managed policy remain authoritative.
+Use `/plugin` or `claude plugin details hakim@hakim` to inspect the installed component inventory. Claude Code permissions, approval controls, and managed policy remain authoritative.
