@@ -37,17 +37,11 @@ jobs:
       - name: Run public JavaScript tests
         run: npm run test:public:js
 
-      - name: Python audit-complexity tests
-        run: python tests/test_audit_complexity.py
+      - name: Python tests A-M
+        run: python -m unittest discover -s tests -p 'test_[a-m]*.py'
 
-      - name: Python skill-package tests
-        run: python tests/test_package_skill.py
-
-      - name: Python release-checksum tests
-        run: python tests/test_release_checksums.py
-
-      - name: Python downloaded-release tests
-        run: python tests/test_verify_downloaded_release_bundle.py
+      - name: Python tests N-Z
+        run: python -m unittest discover -s tests -p 'test_[n-z]*.py'
 
       - name: Run complete public Python tests
         run: npm run test:public:py
