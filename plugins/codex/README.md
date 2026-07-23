@@ -1,29 +1,43 @@
-# Hakim Codex Adapter
+# Hakim for Codex
 
-Status: **public beta repository-local integration, runtime validated within the recorded local pilot scope**.
+Hakim is packaged as a native Codex plugin with six reusable skills and a SessionStart hook. The repository is also a Codex Git marketplace, so product users do not need the npm launcher.
 
-This adapter contains:
+## Install
 
-- `.codex-plugin/plugin.json` — manifest;
-- `skills/` — six Hakim capability skills;
-- `hooks/hooks.json` — one declared SessionStart hook;
-- `hooks/session_start.mjs` — session guidance loader.
+Add the Hakim repository as a Codex marketplace:
 
-## Distribution boundary
-
-The current Codex integration is repository-local. Hakim is not currently
-published as a public Codex Plugin Directory listing or other global marketplace
-package.
-
-## Local repository marketplace
-
-The repo-scoped marketplace is:
-
-```text
-.agents/plugins/marketplace.json
+```bash
+codex plugin marketplace add Habib1001-m/hakim
 ```
 
-It declares one `hakim` plugin sourced from `./plugins/codex`.
+Then open `/plugins`, select the **Hakim** marketplace, and install the `hakim` plugin. Review and trust the single SessionStart hook from `/hooks`, then start a new thread.
+
+The installed identity is:
+
+```text
+hakim@hakim
+```
+
+This same installation is intended to be picked up by Codex surfaces that share the same plugin configuration. Host-native availability, workspace policy, permissions, approval, sandbox, and hook trust remain authoritative.
+
+## Native usage
+
+Hakim is skill-first on Codex. The plugin exposes the canonical capabilities through Codex skill discovery:
+
+- `$hakim:hakim` — full smallest-safe-diff workflow.
+- `$hakim:hakim-review` — bounded removable-complexity review.
+- `$hakim:hakim-audit` — evidence-backed audit.
+- `$hakim:hakim-debt` — technical-debt provenance.
+- `$hakim:hakim-gain` — evidence-status verification.
+- `$hakim:hakim-help` — usage guidance and boundaries.
+
+Natural-language invocation remains valid when Codex discovers the matching skill from its description.
+
+## Startup behavior
+
+Hakim's SessionStart hook now injects only a compact activation context. It does **not** paste the full canonical skill into every session. Codex loads the matching skill progressively when needed, preserving context and reducing startup noise.
+
+`HAKIM_DEFAULT_MODE` can be set to `lite`, `full`, `ultra`, or `off`; `full` is the default. The hook does not bypass approvals or sandbox policy.
 
 ## Validation
 
@@ -35,57 +49,29 @@ npm run check:codex-projection
 node plugins/codex/hooks/session_start.mjs
 ```
 
-## Guarded launch
+## Development fallback
 
-Preview the Codex binary, working directory, local marketplace contract, and
-shell-free argv without starting Codex:
-
-```bash
-npm run launch:codex -- \
-  --binary codex \
-  --cwd /path/to/workspace
-```
-
-Launch only after reviewing the dry-run:
+Repository contributors can still inspect or launch the local checkout without changing Codex plugin installation state:
 
 ```bash
-npm run launch:codex -- \
-  --apply \
-  --binary codex \
-  --cwd /path/to/workspace \
-  -- --model gpt-5.6
+npm run launch:codex -- --binary codex --cwd /path/to/workspace
+npm run launch:codex -- --apply --binary codex --cwd /path/to/workspace
 ```
 
-The launcher validates the canonical plugin directory, manifest name and
-version, skills and hooks, repository-local marketplace name/source/policy, the
-Codex executable, and working directory. It starts Codex with explicit argv and
-`shell: false`. It refuses `--cd`/`-C` overrides and approval/sandbox bypass
-flags. Plugin installation, activation, and hook trust remain explicitly managed
-through `/plugins` and `/hooks`; the launcher does not claim or perform them.
+The launcher is a **development fallback**, not the product installation path. It remains shell-free and refuses `--cd`/`-C` overrides plus approval/sandbox bypass flags.
 
-## Startup hygiene
+## Troubleshooting
 
-A runtime transcript showed multiple local SessionStart registrations even
-though the repository declares one plugin and one hook. Inspect local state with:
+If multiple old local registrations exist, inspect them before deleting anything:
 
 ```bash
 bash scripts/codex_startup_doctor.sh
 ```
 
-The doctor is read-only. When duplication is observed, review `/plugins` and
-`/hooks` in Codex, retain one `hakim@hakim-local` installation and one trusted
-SessionStart hook, restart Codex, then rerun the doctor.
+Retain one `hakim@hakim` installation and one trusted SessionStart hook. Preserve sessions, skills, and user configuration until any duplicate registration source is identified.
 
-Do not delete caches or configuration blindly. Preserve sessions, skills, and
-user configuration until the duplicate registration source is identified.
+## Product boundary
 
-## Trust boundary
+Hakim's public Git marketplace makes the plugin installable from source, but it does not by itself claim an approved listing in OpenAI's central Plugin Directory. OpenAI now uses the Plugin Directory as the primary discovery surface for plugins; publishing there is a separate distribution step.
 
-Plugin hooks are not automatically trusted. The user must review and trust the
-hook definition before activation.
-
-## Evidence boundary
-
-The compact skill projection is hash-gated against the canonical skill. Runtime
-validation does not imply public marketplace, persistent installation,
-benchmark, enterprise, MCP/A2A, or universal compatibility.
+Runtime validation remains scoped evidence and does not prove universal compatibility, correctness, security approval, benchmark results, performance gains, or ROI.
