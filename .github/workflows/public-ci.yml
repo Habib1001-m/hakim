@@ -31,6 +31,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Verify first-run contract
+        run: npm run check:first-run
+
       - name: Run public tests
         run: npm test
 
