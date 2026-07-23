@@ -1,6 +1,6 @@
 {
   "name": "@habib/hakim",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.1",
   "private": true,
   "description": "Hakim foundation tooling for evidence-bound minimalist coding intelligence.",
   "type": "commonjs",
