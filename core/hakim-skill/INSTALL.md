@@ -4,7 +4,7 @@ Hakim `1.0.0-beta.1` is distributed from source and host-native Git marketplaces
 
 ## Codex
 
-Use Codex `0.130.0` or newer for this beta's full native plugin path, including bundled SessionStart hook discovery and trust.
+Use Codex `0.131.0` or newer for this beta's full native plugin path. `rust-v0.130.0` still shipped plugin-bundled hooks disabled by default; `rust-v0.131.0` is the first tagged release where `plugin_hooks` is stable and enabled by default.
 
 Install directly from this repository:
 
