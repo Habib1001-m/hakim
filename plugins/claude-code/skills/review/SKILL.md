@@ -4,7 +4,7 @@ description: Run a read-only Hakim complexity review in an isolated reviewer con
 argument-hint: [scope]
 disable-model-invocation: true
 context: fork
-agent: hakim-reviewer
+agent: hakim:hakim-reviewer
 effort: high
 ---
 
