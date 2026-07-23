@@ -1,13 +1,11 @@
-# Hakim Hermes Adapter
+# Hakim Hermes Integration Placeholder
 
-Status: **planned skeleton**.
+Hakim `1.0.0-beta.1` does not publish or maintain an installable Hermes adapter.
+This directory is retained only as a compatibility placeholder in the public
+source tree.
 
-This directory exists for Phase D repository structure only. Do not treat this adapter as installable until Phase D.1/D.3 adds:
+Do not infer installation, runtime validation, command availability, persistent
+configuration, or support from the presence of this directory.
 
-- platform format verification,
-- install instructions,
-- activation smoke test,
-- disable/uninstall path,
-- drift check against `core/hakim-skill/SKILL.md`.
-
-No full copy of Hakim rules should live in this adapter.
+The current maintained host surfaces are documented in
+[`SUPPORTED_HOSTS.md`](../../SUPPORTED_HOSTS.md).
