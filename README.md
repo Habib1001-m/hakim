@@ -68,8 +68,8 @@ See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific life
 
 For product use, install the supported host you intend to use. Repository development and local validation additionally require:
 
-- Node.js 18 or newer.
-- Python 3.
+- Node.js 18 or newer. This is the declared minimum; Public CI currently validates Node.js 24.
+- Python 3.10 or newer. Maintained Python tooling uses Python 3.10+ syntax; Public CI currently validates Python 3.11.
 - Git.
 
 For the full Codex product path in this beta, use Codex `0.131.0` or newer. Codex `0.130.0` still shipped plugin-bundled hooks disabled by default; `0.131.0` is the first tagged release in which the `plugin_hooks` feature is stable and enabled by default.
@@ -111,7 +111,7 @@ See [Known Limitations](KNOWN_LIMITATIONS.md).
 
 ## Privacy
 
-Telemetry is disabled by default. Hakim does not enable raw prompt or source code logging by default.
+Hakim does not implement a product telemetry collection service. Repository conformance and evidence schemas are local validation artifacts, not product telemetry. Hakim does not enable raw prompt or source-code logging.
 
 Do not commit credentials, private prompts, sensitive evidence, or customer source code to bug reports or test fixtures.
 
