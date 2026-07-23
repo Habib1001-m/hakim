@@ -38,19 +38,19 @@ The canonical Hakim capabilities remain available to Claude for automatic model 
 
 Hakim ships Claude Code plugin agents:
 
-- `hakim-reviewer` — read-only complexity review.
-- `hakim-auditor` — deep read-only evidence-backed audit.
-- `hakim-debt-analyst` — read-only debt provenance analysis.
-- `hakim-evidence-verifier` — independent evidence/claim verification.
-- `hakim-implementer` — bounded implementation in an isolated git worktree.
+- `hakim:hakim-reviewer` — read-only complexity review.
+- `hakim:hakim-auditor` — deep read-only evidence-backed audit.
+- `hakim:hakim-debt-analyst` — read-only debt provenance analysis.
+- `hakim:hakim-evidence-verifier` — independent evidence/claim verification.
+- `hakim:hakim-implementer` — bounded implementation in an isolated git worktree.
 
-Inspect them with `/agents`. Claude may delegate to them automatically when their descriptions match the task.
+Claude can delegate to them automatically. Type `@` in Claude Code to select a scoped Hakim agent explicitly when you want guaranteed delegation.
 
 ## Hooks
 
 Hakim's `SessionStart` hook adds a small activation context when the plugin is enabled so Claude knows Hakim is available without requiring a wrapper launch command. The existing post-edit diagnostic hook remains opt-in.
 
-Inspect active hooks with `/hooks`.
+Claude Code's plugin detail view reports the installed hook inventory.
 
 ## Inspect, update, or remove
 
