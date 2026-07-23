@@ -6,6 +6,7 @@ import { SUPPORTED_HOSTS } from '../scripts/hakim_install_plan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const packageJson = JSON.parse(read('package.json'));
 const version = read('core/hakim-skill/VERSION').trim();
 const readme = read('README.md');
@@ -24,11 +25,11 @@ assert.equal(version, '1.0.0-beta.1');
 assert.equal(packageJson.version, version);
 assert.equal(codexManifest.version, version);
 assert.equal(claudeManifest.version, version);
-assert.match(canonicalSkill, new RegExp(`^version:\\s*${version.replaceAll('.', '\\.')}$$`, 'm'));
-assert.match(readme, new RegExp(`Hakim \\`${version.replaceAll('.', '\\.')}\\` is public beta software`));
-assert.match(security, new RegExp(version.replaceAll('.', '\\.')));
-assert.match(limitations, new RegExp(version.replaceAll('.', '\\.')));
-assert.match(changelog, new RegExp(`^## ${version.replaceAll('.', '\\.')}$$`, 'm'));
+assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
+assert.ok(readme.includes('Hakim `' + version + '` is public beta software'));
+assert.match(security, new RegExp(escapeRegExp(version)));
+assert.match(limitations, new RegExp(escapeRegExp(version)));
+assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
 
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
@@ -43,11 +44,11 @@ const hostSurfaces = new Map([
 
 for (const host of expectedHosts) {
   const displayName = hostSurfaces.get(host);
-  assert.match(readme, new RegExp(`^### ${displayName}$$`, 'm'), `${displayName} missing from README Quick start`);
-  assert.match(install, new RegExp(`^### ${displayName}$$`, 'm'), `${displayName} missing from INSTALL.md`);
+  assert.match(readme, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from README Quick start`);
+  assert.match(install, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from INSTALL.md`);
   assert.match(
     `${readme}\n${install}`,
-    new RegExp(`npm run plan:install -- --host ${host.replace('-', '\\-')}`),
+    new RegExp(`npm run plan:install -- --host ${escapeRegExp(host)}`),
     `${host} missing from documented install planning`,
   );
 }
