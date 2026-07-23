@@ -58,12 +58,17 @@ jobs:
           node tests/test_structured_metadata.js
           node tests/test_hakim_guarded_session.mjs
 
-      - name: Verify OpenCode native lifecycle
-        run: |
-          node tests/test_plugin_smoke.js
-          node tests/test_opencode_plugin.mjs
-          node tests/test_hakim_opencode_lifecycle.mjs
-          node tests/test_native_plugin_realpath_containment.mjs
+      - name: Verify native plugin smoke
+        run: node tests/test_plugin_smoke.js
+
+      - name: Verify OpenCode runtime plugin
+        run: node tests/test_opencode_plugin.mjs
+
+      - name: Verify OpenCode install and removal lifecycle
+        run: node tests/test_hakim_opencode_lifecycle.mjs
+
+      - name: Verify OpenCode realpath containment
+        run: node tests/test_native_plugin_realpath_containment.mjs
 
       - name: Verify host fallback and lifecycle contracts
         run: |
