@@ -1,0 +1,10 @@
+manifest_version: 1
+name: hakim
+version: 1.0.0-beta.1
+description: Evidence-bound smallest-safe-diff coding governance for Hermes Agent.
+author: Habib1001-m
+kind: standalone
+provides_tools: []
+provides_hooks:
+  - pre_llm_call
+  - pre_gateway_dispatch
