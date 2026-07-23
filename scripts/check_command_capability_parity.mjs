@@ -124,11 +124,20 @@ for (const relative of [
 }
 
 const opencode = read('plugins/opencode/hakim.mjs');
-if (!opencode.includes('const NATIVE_SKILL_MANIFEST = Object.freeze([')) errors.push('OpenCode native skill manifest missing');
-if (!opencode.includes('export const createHakimPlugin = async')) errors.push('OpenCode plugin export missing');
-for (const id of CAPABILITY_IDS) if (!opencode.includes(`capability_id: '${id}'`)) errors.push(`OpenCode missing capability ${id}`);
-for (const marker of ['lazy_strength: 100', "intensity: 'ultra'", "intensity: 'off'", 'read_only: true', 'write_capable: true']) {
-  if (!opencode.includes(marker)) errors.push(`OpenCode policy-profile binding missing: ${marker}`);
+for (const required of [
+  'function loadCapabilities(capabilitiesPath)',
+  'config.command[capability.id] = commandDefinition(capability)',
+  'config.skills.paths.push(bundle.skillsDir)',
+  "'command.execute.before'",
+  "'experimental.chat.system.transform'",
+  'loader.getRules(mode, { skillPath: bundle.skillPath })',
+  "const VALID_MODES = new Set(['lite', 'full', 'ultra', 'off'])",
+  "event?.type !== 'session.deleted'",
+]) {
+  if (!opencode.includes(required)) errors.push(`OpenCode native capability contract missing: ${required}`);
+}
+if (opencode.includes('const NATIVE_SKILL_MANIFEST = Object.freeze([')) {
+  errors.push('OpenCode must not restore the superseded embedded native-skill manifest; capability discovery is registry-driven');
 }
 
 const result = {
@@ -136,6 +145,7 @@ const result = {
   exact_projection_hosts: EXACT_ADJUNCT_HOSTS,
   native_hosts: ['codex', 'claude-code', 'github-copilot', 'opencode'],
   capability_registry: 'core/hakim-skill/capabilities.json',
+  opencode_capability_loading: 'REGISTRY_DRIVEN',
   status: errors.length === 0 ? 'PASS' : 'FAIL',
   errors,
 };
