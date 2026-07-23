@@ -4,7 +4,7 @@ description: Run a deep read-only Hakim repository audit in an isolated auditor 
 argument-hint: [scope]
 disable-model-invocation: true
 context: fork
-agent: hakim-auditor
+agent: hakim:hakim-auditor
 effort: xhigh
 ---
 
