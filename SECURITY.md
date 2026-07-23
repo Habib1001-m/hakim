@@ -19,13 +19,17 @@ expected and observed behavior, impact, and any mitigation already tested.
 
 ## Security design boundaries
 
-Hakim uses defensive controls including exact ownership inventories and content
-hashes, real-path containment checks, refusal of unsafe path states, lifecycle
-locking, quarantine, no-clobber rollback, least-privilege workflow permissions,
-and immutable action references.
+Hakim's maintained product paths use defensive controls appropriate to each host.
+For the project-local OpenCode lifecycle these include canonical content hashes,
+refusal of symlink/non-regular or conflicting target state, create-only writes,
+exact-match removal, quarantine-backed removal, and rollback on failed mutation.
+Public CI uses least-privilege permissions and immutable action references.
 
-These controls reduce risk but do not prove the absence of vulnerabilities.
-Local write access by unrelated processes remains part of the threat model.
+These controls reduce risk but do not prove the absence of vulnerabilities. The
+project-local OpenCode lifecycle does not claim a cross-process operation lock or
+immunity to malicious/concurrent filesystem replacement between every validation
+and mutation checkpoint. Local write access by unrelated processes remains part
+of the threat model.
 
 ## Privacy
 
