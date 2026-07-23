@@ -100,5 +100,14 @@ jobs:
       - name: Build skill archive
         run: mkdir -p dist && python core/hakim-skill/scripts/package_skill.py --source core/hakim-skill --output dist/hakim-skill.zip
 
-      - name: Verify skill package
+      - name: Verify skill package structure
+        run: python scripts/verify_package.py dist/hakim-skill.zip --section structure
+
+      - name: Verify skill package documentation
+        run: python scripts/verify_package.py dist/hakim-skill.zip --section docs
+
+      - name: Verify skill package conformance
+        run: python scripts/verify_package.py dist/hakim-skill.zip --section conformance
+
+      - name: Verify complete skill package
         run: python scripts/verify_package.py dist/hakim-skill.zip
