@@ -1,6 +1,6 @@
 # Hakim Codex Adapter
 
-Status: **runtime validated within the recorded local pilot scope**.
+Status: **public beta repository-local integration, runtime validated within the recorded local pilot scope**.
 
 This adapter contains:
 
@@ -8,6 +8,12 @@ This adapter contains:
 - `skills/` — six Hakim capability skills;
 - `hooks/hooks.json` — one declared SessionStart hook;
 - `hooks/session_start.mjs` — session guidance loader.
+
+## Distribution boundary
+
+The current Codex integration is repository-local. Hakim is not currently
+published as a public Codex Plugin Directory listing or other global marketplace
+package.
 
 ## Local repository marketplace
 
@@ -23,7 +29,7 @@ It declares one `hakim` plugin sourced from `./plugins/codex`.
 
 ```bash
 npm test
-npm run check:metadata
+npm run check:conformance
 npm run check:capability-parity
 npm run check:codex-projection
 node plugins/codex/hooks/session_start.mjs
@@ -82,4 +88,4 @@ hook definition before activation.
 
 The compact skill projection is hash-gated against the canonical skill. Runtime
 validation does not imply public marketplace, persistent installation,
-benchmark, enterprise, MCP/A2A, or general release readiness.
+benchmark, enterprise, MCP/A2A, or universal compatibility.
