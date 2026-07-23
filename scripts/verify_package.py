@@ -24,6 +24,25 @@ REQUIRED = {
     "hakim-skill/scripts/check_rule_copies.js",
 }
 
+FORBIDDEN_LEGACY_MEMBERS = {
+    "hakim-skill/references/grpo_mathematics.md",
+    "hakim-skill/references/workflow_patterns.md",
+    "hakim-skill/references/progressive_disclosure.md",
+    "hakim-skill/references/yagni_guidelines.md",
+    "hakim-skill/assets/benchmark_results.md",
+    "hakim-skill/assets/technical_debt_ledger.json",
+}
+
+FORBIDDEN_ACTIVE_DOC_TOKENS = {
+    "python core/hakim-skill/scripts/audit_complexity.py": "source-checkout-only audit command",
+    "ARCHIVE_POLICY.md": "missing historical archive authority",
+    "mcp deploy hakim-skill-package.zip": "obsolete MCP deployment instruction",
+    "MCP namespace must remain": "obsolete MCP compatibility contract",
+    "A2A message schema must remain": "obsolete A2A compatibility contract",
+    "T-YAML-001": "obsolete private-era test taxonomy",
+    "R1-R6 reviews": "obsolete private-era review taxonomy",
+}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -42,6 +61,16 @@ def main() -> int:
         if missing:
             print("missing required package members:", *missing, sep="\n- ", file=sys.stderr)
             return 1
+        legacy = sorted(FORBIDDEN_LEGACY_MEMBERS & names)
+        if legacy:
+            print("legacy documentation must not ship in the public skill package:", *legacy, sep="\n- ", file=sys.stderr)
+            return 1
+        for name in sorted(item for item in names if item.endswith(".md")):
+            text = zf.read(name).decode("utf-8")
+            for token, reason in FORBIDDEN_ACTIVE_DOC_TOKENS.items():
+                if token in text:
+                    print(f"{name} contains {reason}: {token}", file=sys.stderr)
+                    return 1
         notices = zf.read("hakim-skill/THIRD_PARTY_NOTICES.md").decode("utf-8")
         if "Copyright (c) 2026 DietrichGebert" not in notices:
             print("packaged third-party notice is missing Ponytail attribution", file=sys.stderr)
