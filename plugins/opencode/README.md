@@ -52,7 +52,7 @@ installed skill path at load time.
 Inspect the unified read-only plan first:
 
 ```bash
-npm run plan:install -- --host opencode -- --target /path/to/repository
+npm run plan:install -- --host opencode --target /path/to/repository
 ```
 
 Dry-run the concrete installation manifest:
