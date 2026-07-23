@@ -16,11 +16,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 ARCHIVE_ROOT = "hakim-skill"
 DEFAULT_OUTPUT = "hakim-skill-package.zip"
 REQUIRED_FILES = ["SKILL.md", "AGENTS.md"]
-REQUIRED_SUBDIRS = ["scripts", "references", "assets"]
+REQUIRED_SUBDIRS = ["scripts", "assets"]
 EXCLUDED_DIRS = {
     ".git",
     ".hg",
