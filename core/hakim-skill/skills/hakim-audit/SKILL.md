@@ -48,7 +48,7 @@ The helper is a read-only Python heuristic scan. It:
 - reports repository-wide complexity, dead-code analysis, duplication analysis, correctness review, and security review as `NOT_PERFORMED`;
 - requires manual verification before any remediation decision.
 
-The `lite`, `full`, and `ultra` intensity values are provenance labels only for this helper. They execute the same rules and thresholds.
+The `lite`, `full`, and `ultra` intensity values are provenance labels only for this helper. They execute the same rules and thresholds, and the report records `intensity_semantics=PROVENANCE_LABEL_ONLY`.
 
 ## Evidence collection
 
