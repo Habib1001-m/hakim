@@ -20,10 +20,6 @@ intensity_levels:
   - full
   - ultra
   - off
-progressive_disclosure:
-  l1_metadata_tokens: 100
-  l2_full_skill_tokens: 2500
-  l3_references_unbounded: true
 ---
 
 # Hakim Skill Package
@@ -73,15 +69,15 @@ ceiling: the concrete limit
 upgrade path: what changes when the ceiling is reached
 ```
 
-Examples in bundled assets are synthetic unless repository evidence explicitly
-promotes them to live debt.
+Examples or ledgers bundled by a distribution are synthetic unless repository
+evidence explicitly promotes an entry to live debt.
 
 ## Deliberate Technical Debt Ledger
 
 Live debt requires an existing repository path plus evidence such as a commit,
-pull request, issue, operator transcript, or accepted `hakim:` marker. The
-bundled ledger is classified as `synthetic_example` and does not make claims
-about this repository.
+pull request, issue, operator transcript, or accepted `hakim:` marker. Some Hakim
+distributions may include a synthetic example ledger; its presence is optional
+and it does not make claims about the target repository.
 
 ## Capabilities
 
@@ -97,11 +93,13 @@ differs by host and is recorded in `capabilities.json` and the host integration.
 | `hakim-gain` | Show accepted evidence status without unsupported metrics. |
 | `hakim-help` | Show modes, capabilities, host syntax, validation, and evidence boundaries. |
 
-## Progressive Disclosure Protocol
+## Optional Resources
 
-1. **Discovery:** load only skill metadata.
-2. **Activation:** load this file when the request matches Hakim.
-3. **Execution:** read scripts, references, or assets only when required.
+Some Hakim distributions include helper scripts or example assets. Use those
+resources only when they are actually present in the active distribution and
+relevant to the task. Do not assume a source-repository path from an installed
+plugin, and do not fail a manual capability merely because an optional helper or
+example asset is absent.
 
 ## Workflow Use
 
@@ -131,19 +129,6 @@ separate accepted evidence.
 Historical Ponytail-derived values are not accepted as independent Hakim
 results. Runtime validation, protocol reproducibility, external UX evidence,
 model quality, and product performance remain separate claims.
-
-## File Structure
-
-```text
-core/hakim-skill/
-├── VERSION
-├── SKILL.md
-├── capabilities.json
-├── skills/
-├── scripts/
-├── references/
-└── assets/
-```
 
 ## Lazy, Not Negligent
 
