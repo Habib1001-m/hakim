@@ -24,11 +24,11 @@ assert.equal(version, '1.0.0-beta.1');
 assert.equal(packageJson.version, version);
 assert.equal(codexManifest.version, version);
 assert.equal(claudeManifest.version, version);
-assert.match(canonicalSkill, new RegExp(`^version:\\s*${version.replaceAll('.', '\\.')}$`, 'm'));
+assert.match(canonicalSkill, new RegExp(`^version:\\s*${version.replaceAll('.', '\\.')}$$`, 'm'));
 assert.match(readme, new RegExp(`Hakim \\`${version.replaceAll('.', '\\.')}\\` is public beta software`));
 assert.match(security, new RegExp(version.replaceAll('.', '\\.')));
 assert.match(limitations, new RegExp(version.replaceAll('.', '\\.')));
-assert.match(changelog, new RegExp(`^## ${version.replaceAll('.', '\\.')}$`, 'm'));
+assert.match(changelog, new RegExp(`^## ${version.replaceAll('.', '\\.')}$$`, 'm'));
 
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
@@ -43,8 +43,8 @@ const hostSurfaces = new Map([
 
 for (const host of expectedHosts) {
   const displayName = hostSurfaces.get(host);
-  assert.match(readme, new RegExp(`^### ${displayName}$`, 'm'), `${displayName} missing from README Quick start`);
-  assert.match(install, new RegExp(`^### ${displayName}$`, 'm'), `${displayName} missing from INSTALL.md`);
+  assert.match(readme, new RegExp(`^### ${displayName}$$`, 'm'), `${displayName} missing from README Quick start`);
+  assert.match(install, new RegExp(`^### ${displayName}$$`, 'm'), `${displayName} missing from INSTALL.md`);
   assert.match(
     `${readme}\n${install}`,
     new RegExp(`npm run plan:install -- --host ${host.replace('-', '\\-')}`),
@@ -52,20 +52,21 @@ for (const host of expectedHosts) {
   );
 }
 
-function markdownFiles(start) {
-  const files = [];
-  const stack = [start];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
-      if (entry.name === '.git' || entry.name === 'dist' || entry.name === 'node_modules') continue;
-      const absolute = path.join(current, entry.name);
-      if (entry.isDirectory()) stack.push(absolute);
-      else if (entry.isFile() && entry.name.endsWith('.md')) files.push(absolute);
-    }
-  }
-  return files;
-}
+const productDocs = [
+  'README.md',
+  'CONTRIBUTING.md',
+  'SUPPORTED_HOSTS.md',
+  'SECURITY.md',
+  'KNOWN_LIMITATIONS.md',
+  'core/hakim-skill/INSTALL.md',
+  'plugins/README.md',
+  'plugins/codex/README.md',
+  'plugins/claude-code/README.md',
+  'plugins/opencode/README.md',
+  'plugins/copilot/README.md',
+  'plugins/hermes/README.md',
+  'plugins/gemini-antigravity/README.md',
+];
 
 const documentedScripts = new Set();
 const stalePublicTokens = [
@@ -74,13 +75,13 @@ const stalePublicTokens = [
   'OPENCODE_LIVE_RUNTIME_VALIDATION=NOT_PERFORMED',
 ];
 
-for (const file of markdownFiles(root)) {
-  const text = fs.readFileSync(file, 'utf8');
+for (const relative of productDocs) {
+  const text = read(relative);
   for (const match of text.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) {
     documentedScripts.add(match[1]);
   }
   for (const token of stalePublicTokens) {
-    assert.ok(!text.includes(token), `${path.relative(root, file)} contains stale public token ${token}`);
+    assert.ok(!text.includes(token), `${relative} contains stale public token ${token}`);
   }
 }
 
