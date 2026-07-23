@@ -53,6 +53,14 @@ for (const host of expectedHosts) {
   );
 }
 
+const opencodeReadme = read('plugins/opencode/README.md');
+for (const text of [readme, install, opencodeReadme]) {
+  assert.ok(!/npm run plan:install[^\n]*-- --target/.test(text), 'plan:install examples must not contain a second npm separator before --target');
+}
+assert.ok(readme.includes('npm run plan:install -- --host opencode --target /path/to/project'));
+assert.ok(install.includes('npm run plan:install -- --host opencode --target /path/to/project'));
+assert.ok(opencodeReadme.includes('npm run plan:install -- --host opencode --target /path/to/repository'));
+
 const productDocs = [
   'README.md',
   'CONTRIBUTING.md',
