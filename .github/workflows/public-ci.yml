@@ -40,8 +40,11 @@ jobs:
       - name: Python tests A
         run: python -m unittest discover -s tests -p 'test_a*.py'
 
-      - name: Python tests B-C
-        run: python -m unittest discover -s tests -p 'test_[b-c]*.py'
+      - name: Python tests B
+        run: python -m unittest discover -s tests -p 'test_b*.py'
+
+      - name: Python tests C
+        run: python -m unittest discover -s tests -p 'test_c*.py'
 
       - name: Python tests D-Z
         run: python -m unittest discover -s tests -p 'test_[d-z]*.py'
