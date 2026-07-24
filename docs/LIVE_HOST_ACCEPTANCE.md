@@ -115,6 +115,8 @@ The candidate becomes `PASS` only when:
 - the host version is detected from the real binary;
 - a non-empty public-safe evidence reference is supplied.
 
+`--output` is create-only. The harness refuses to overwrite an existing evidence packet; use a new path for every run so earlier evidence remains inspectable.
+
 A candidate packet is evidence for review, not authorization to change the public acceptance projection.
 
 ## 4. Promote only after review
