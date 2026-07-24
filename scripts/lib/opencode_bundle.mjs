@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export const OPENCODE_ROOT = '.opencode';
-export const PLUGIN_RELATIVE_PATH = '.opencode/plugins/hakim.mjs';
+export const PLUGIN_RELATIVE_PATH = '.opencode/plugins/hakim.js';
 export const RUNTIME_RELATIVE_ROOT = '.opencode/hakim-runtime';
 
 export function sha256(bytes) {
