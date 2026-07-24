@@ -41,7 +41,7 @@ def get_rules(mode: str = "full", path: Path | None = None) -> str:
         "",
         get_mode_directive(normalized),
         "",
-        "Canonical source: core/hakim-skill/SKILL.md",
+        "Canonical Hakim policy loaded from the active distribution.",
         "",
         load_skill_content(path),
     ])
