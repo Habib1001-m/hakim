@@ -1,6 +1,6 @@
 # Install Hakim
 
-Hakim `1.0.0-beta.1` is distributed from source and host-native Git marketplaces. No npm package or central marketplace/directory listing is currently claimed.
+Hakim `1.0.0-beta.1` is distributed from public source and host-native Git marketplaces. No npm registry package or central marketplace/directory listing is currently claimed.
 
 ## Codex
 
@@ -65,19 +65,36 @@ Inside Copilot CLI use `/skills list` and `/agent` to inspect Hakim's six skills
 
 ## OpenCode
 
-OpenCode currently uses Hakim's guarded project-local installer, so this path starts from a Hakim checkout:
+Hakim remains a guarded **project-local** OpenCode plugin, but normal installation no longer requires cloning Hakim first.
+
+From the target repository:
 
 ```bash
-git clone https://github.com/Habib1001-m/hakim.git
-cd hakim
-npm run plan:install -- --host opencode --target /path/to/project
-npm run install:opencode -- --target /path/to/project
-npm run install:opencode -- --target /path/to/project --apply
+npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
 ```
 
-Start OpenCode from the target repository and use `/hakim-help` or `/hakim full ...`. Installation is create-only, validates the canonical file manifest and target paths, refuses unsafe partial/different bundles, and does not edit `opencode.json`.
+This uses npm only as Git transport/command execution for the public GitHub repository. Hakim is still not published to the npm registry, and the command creates no global Hakim/OpenCode installation.
 
-Removal is a separate exact-match operation through `npm run remove:opencode`; it uses quarantine-backed removal and restoration on failure. The project-local lifecycle does not claim a cross-process operation lock or a global installer.
+The target defaults to the current directory. Optional read-only inspection:
+
+```bash
+npx --yes --package=github:Habib1001-m/hakim hakim-opencode install --dry-run
+npx --yes --package=github:Habib1001-m/hakim hakim-opencode status
+```
+
+Start OpenCode from that repository and use `/hakim-help` or `/hakim full ...`. Installation is create-only, validates the canonical file manifest and target paths, refuses unsafe partial/different bundles, and does not edit `opencode.json`.
+
+Exact-match removal is also project-local:
+
+```bash
+npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove
+```
+
+The remover quarantines and verifies the canonical files before mutation and attempts restoration on failure. Modified, partial, unsafe, or unrelated OpenCode state is preserved.
+
+For source development, the lower-level `npm run plan:install`, `install:opencode`, and `remove:opencode` commands remain available from a Hakim checkout. They are development/inspection surfaces rather than a requirement for normal first-run use.
+
+The new Git-backed bootstrap is structurally covered by repository tests, but that does not by itself promote a new live-host acceptance claim. Any release that treats this exact first-run journey as the accepted OpenCode path must carry separate accepted real-host evidence.
 
 ## Inspect all maintained product surfaces
 
@@ -98,6 +115,6 @@ npm run doctor
 npm run package:skill
 ```
 
-Generated skill packages are local outputs. They do not prove npm publication, central directory approval, signing, notarization, third-party attestation, or universal host compatibility.
+Generated skill packages are local outputs. They do not prove npm registry publication, central directory approval, signing, notarization, third-party attestation, or universal host compatibility.
 
 Host-native installation, approval, trust, sandboxing, plugin enablement, managed policy, permissions, and removal controls remain authoritative.
