@@ -7,6 +7,7 @@ const rules = require('../core/hakim-skill/scripts/check_rule_copies.js');
 
 const root = path.resolve(__dirname, '..');
 const fixture = fs.readFileSync(path.join(root, 'tests/fixtures/skill_with_bom_and_blank.md'), 'utf8');
+const canonical = fs.readFileSync(path.join(root, 'core/hakim-skill/SKILL.md'), 'utf8');
 const frontmatter = rules.extractFrontmatter(fixture);
 
 assert.ok(frontmatter, 'frontmatter should be found with BOM and leading blank lines');
@@ -18,4 +19,9 @@ const analysis = rules.analyzeSkill(fixture);
 assert.deepEqual(analysis.missing_yaml_fields, []);
 assert.deepEqual(analysis.missing_sections, []);
 
-console.log('test_rule_copies.js: ok');
+const canonicalAnalysis = rules.analyzeSkill(canonical);
+assert.deepEqual(canonicalAnalysis.missing_yaml_fields, []);
+assert.deepEqual(canonicalAnalysis.missing_sections, []);
+assert.ok(canonicalAnalysis.sections.capabilities);
+
+console.log('test_rule_copies.js: fixture and canonical rule integrity ok');
