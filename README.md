@@ -6,7 +6,7 @@ Hakim is an evidence-bound coding governance toolkit for AI-assisted development
 
 Hakim `1.0.0-beta.1` is public beta software distributed from source and host-native Git marketplaces. It is not published to npm and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
-Public beta is the release channel, not a claim that every current native host journey has live acceptance. Current public-safe live-host status is recorded in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). Private acceptance ledgers and release authorization remain outside the public repository.
+All four maintained current-native product paths have accepted real-host install/start/invocation evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication. Private release authorization remains outside the public repository.
 
 ## Quick start
 
@@ -102,6 +102,12 @@ Hakim maintains product surfaces for:
 - OpenCode
 
 Each host intentionally uses its strongest native extension model rather than a lowest-common-denominator adapter. Host-native approval, trust, sandboxing, activation, plugin policy, and removal controls remain authoritative. See [Supported Hosts](SUPPORTED_HOSTS.md).
+
+## External public-beta evaluation
+
+Developers outside the maintainer acceptance run can participate in Hakim's bounded external beta campaign. Use Hakim on a real repository task, then submit the structured **Hakim public-beta feedback** issue form.
+
+See [External Public-Beta Evaluation](docs/EXTERNAL_BETA_EVALUATION.md) for the evaluation journey, evidence boundary, and campaign decision semantics. The campaign targets five independent accepted evaluator reports and does not convert that small sample into an invented success percentage.
 
 ## Evidence boundaries
 
