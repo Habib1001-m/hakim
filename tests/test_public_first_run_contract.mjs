@@ -61,8 +61,21 @@ for (const obsolete of [
   'scripts/check_product_state_truth.mjs',
   'scripts/check_transition_state_truth.mjs',
   'scripts/check_runtime_conformance_readiness.mjs',
+  'scripts/build_native_plugin_package.mjs',
+  'scripts/pack_native_plugin_tarball.mjs',
+  'scripts/verify_native_plugin_prerelease.mjs',
+  'scripts/run_native_plugin_opencode_smoke.sh',
+  'tests/verify_native_plugin_opencode_smoke.mjs',
+  'tests/test_native_plugin_tarball.mjs',
+  'tests/test_native_plugin_realpath_containment.mjs',
+  'tests/test_native_plugin_transactional_lifecycle.mjs',
+  'packaging/native-plugin',
+  'docs/agentic-ai-reference-SPEC.md',
+  'docs/theoretical-reference',
+  'plugins/hermes',
+  'plugins/gemini-antigravity',
 ]) {
-  assert.equal(fs.existsSync(path.join(root, obsolete)), false, `obsolete public state checker still exists: ${obsolete}`);
+  assert.equal(fs.existsSync(path.join(root, obsolete)), false, `retired public surface still exists: ${obsolete}`);
 }
 
 assert.equal(fs.existsSync(path.join(root, 'docs/EXTERNAL_BETA_EVALUATION.md')), false, 'suspended evaluator guide must not remain active');
@@ -126,8 +139,6 @@ const productDocs = [
   'plugins/claude-code/README.md',
   'plugins/opencode/README.md',
   'plugins/copilot/README.md',
-  'plugins/hermes/README.md',
-  'plugins/gemini-antigravity/README.md',
 ];
 
 const documentedScripts = new Set();
