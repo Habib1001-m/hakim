@@ -60,6 +60,8 @@ assert.ok(readme.includes('Hakim `' + version + '` is public beta software'));
 assert.match(security, new RegExp(escapeRegExp(version)));
 assert.match(limitations, new RegExp(escapeRegExp(version)));
 assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
+assert.match(changelog, /Withdrew the premature External Public-Beta Evaluator Campaign/);
+assert.match(changelog, /private-prerelease/);
 
 for (const obsolete of [
   'scripts/check_product_state_truth.mjs',
@@ -152,6 +154,7 @@ const productDocs = [
   'plugins/opencode/README.md',
   'plugins/copilot/README.md',
 ];
+const activeTruthDocs = productDocs.filter((relative) => relative !== 'CHANGELOG.md');
 
 const documentedScripts = new Set();
 const stalePublicTokens = [
@@ -174,7 +177,10 @@ const stalePublicTokens = [
 for (const relative of productDocs) {
   const text = read(relative);
   for (const match of text.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) documentedScripts.add(match[1]);
-  for (const token of stalePublicTokens) assert.ok(!text.includes(token), `${relative} contains stale public token ${token}`);
+}
+for (const relative of activeTruthDocs) {
+  const text = read(relative);
+  for (const token of stalePublicTokens) assert.ok(!text.includes(token), `${relative} contains stale active-product token ${token}`);
 }
 
 for (const script of [...documentedScripts].sort()) {
