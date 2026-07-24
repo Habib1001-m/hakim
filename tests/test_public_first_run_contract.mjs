@@ -17,6 +17,8 @@ const changelog = read('CHANGELOG.md');
 const security = read('SECURITY.md');
 const limitations = read('KNOWN_LIMITATIONS.md');
 const liveAcceptance = read('docs/LIVE_HOST_ACCEPTANCE.md');
+const externalBeta = read('docs/EXTERNAL_BETA_EVALUATION.md');
+const feedbackForm = read('.github/ISSUE_TEMPLATE/public-beta-feedback.yml');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
 const nativeAcceptance = JSON.parse(read('conformance/native-host-acceptance.json'));
 const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
@@ -38,7 +40,9 @@ assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
 assert.equal(pyproject['tool.hakim'].phase, undefined);
 assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
 assert.equal(nativeAcceptance.product_version, version);
+assert.equal(nativeAcceptance.overall_status, 'PASS');
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
+for (const host of expectedHosts) assert.equal(nativeAcceptance.hosts[host].status, 'PASS');
 assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
 assert.equal(packageJson.scripts['accept:host'], 'node scripts/hakim_live_host_acceptance.mjs');
@@ -70,6 +74,19 @@ assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
 assert.match(liveAcceptance, /npm run accept:host -- --host codex/);
 assert.match(liveAcceptance, /--apply.*intentionally refused/);
 assert.match(liveAcceptance, /candidate evidence packet/i);
+assert.match(readme, /^## External public-beta evaluation$/m);
+assert.match(readme, /docs\/EXTERNAL_BETA_EVALUATION\.md/);
+assert.match(externalBeta, /five independent accepted evaluator reports/i);
+assert.match(externalBeta, /CONTINUE_BETA/);
+assert.match(externalBeta, /REMEDIATE/);
+assert.match(externalBeta, /HOLD/);
+assert.match(feedbackForm, /^name: Hakim public-beta feedback$/m);
+assert.match(feedbackForm, /I was not part of Hakim's maintainer live-host acceptance run\./);
+assert.match(feedbackForm, /real repository task rather than reviewing documentation only/);
+assert.match(feedbackForm, /credentials, secrets, private prompts, customer data, proprietary source code, or private governance material/);
+for (const displayName of ['Codex', 'Claude Code', 'GitHub Copilot CLI', 'OpenCode']) {
+  assert.match(feedbackForm, new RegExp(`^\\s*- ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from public-beta feedback form`);
+}
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -111,6 +128,7 @@ const productDocs = [
   'KNOWN_LIMITATIONS.md',
   'VERSIONING.md',
   'docs/LIVE_HOST_ACCEPTANCE.md',
+  'docs/EXTERNAL_BETA_EVALUATION.md',
   'core/hakim-skill/INSTALL.md',
   'core/hakim-skill/MIGRATION.md',
   'plugins/README.md',
