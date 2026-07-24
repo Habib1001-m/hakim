@@ -1,7 +1,7 @@
 // Hakim OpenCode plugin adapter.
 //
 // Project-local usage after installation:
-//   .opencode/plugins/hakim.mjs
+//   .opencode/plugins/hakim.js
 //
 // The adapter does not embed the Hakim ruleset. It resolves the canonical
 // loader, capability contract, and skill sources from either this repository
