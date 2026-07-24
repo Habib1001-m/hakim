@@ -92,7 +92,18 @@ npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove
 
 The remover quarantines and verifies the canonical files before mutation and attempts restoration on failure. Modified, partial, unsafe, or unrelated OpenCode state is preserved.
 
-For source development, the lower-level `npm run plan:install`, `install:opencode`, and `remove:opencode` commands remain available from a Hakim checkout. They are development/inspection surfaces rather than a requirement for normal first-run use.
+### Source-checkout fallback
+
+For repository development or manual lifecycle inspection, a Hakim checkout exposes the underlying read-only/apply commands explicitly:
+
+```bash
+npm run plan:install -- --host opencode --target /path/to/repository
+npm run install:opencode -- --target /path/to/repository
+npm run install:opencode -- --target /path/to/repository --apply
+npm run remove:opencode -- --target /path/to/repository
+```
+
+The install command is dry-run unless `--apply` is present. These commands exercise the same project-local bundle/lifecycle implementation used by the Git-backed bootstrap; they are not a requirement for normal first-run use.
 
 The new Git-backed bootstrap is structurally covered by repository tests, but that does not by itself promote a new live-host acceptance claim. Any release that treats this exact first-run journey as the accepted OpenCode path must carry separate accepted real-host evidence.
 
