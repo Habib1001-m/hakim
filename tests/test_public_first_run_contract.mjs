@@ -17,8 +17,6 @@ const changelog = read('CHANGELOG.md');
 const security = read('SECURITY.md');
 const limitations = read('KNOWN_LIMITATIONS.md');
 const liveAcceptance = read('docs/LIVE_HOST_ACCEPTANCE.md');
-const externalBeta = read('docs/EXTERNAL_BETA_EVALUATION.md');
-const feedbackForm = read('.github/ISSUE_TEMPLATE/public-beta-feedback.yml');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
 const nativeAcceptance = JSON.parse(read('conformance/native-host-acceptance.json'));
 const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
@@ -67,6 +65,9 @@ for (const obsolete of [
   assert.equal(fs.existsSync(path.join(root, obsolete)), false, `obsolete public state checker still exists: ${obsolete}`);
 }
 
+assert.equal(fs.existsSync(path.join(root, 'docs/EXTERNAL_BETA_EVALUATION.md')), false, 'suspended evaluator guide must not remain active');
+assert.equal(fs.existsSync(path.join(root, '.github/ISSUE_TEMPLATE/public-beta-feedback.yml')), false, 'suspended evaluator issue form must not remain active');
+
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
 assert.match(install, /npm run plan:install -- --host all/);
@@ -74,19 +75,9 @@ assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
 assert.match(liveAcceptance, /npm run accept:host -- --host codex/);
 assert.match(liveAcceptance, /--apply.*intentionally refused/);
 assert.match(liveAcceptance, /candidate evidence packet/i);
-assert.match(readme, /^## External public-beta evaluation$/m);
-assert.match(readme, /docs\/EXTERNAL_BETA_EVALUATION\.md/);
-assert.match(externalBeta, /five independent accepted evaluator reports/i);
-assert.match(externalBeta, /CONTINUE_BETA/);
-assert.match(externalBeta, /REMEDIATE/);
-assert.match(externalBeta, /HOLD/);
-assert.match(feedbackForm, /^name: Hakim public-beta feedback$/m);
-assert.match(feedbackForm, /I was not part of Hakim's maintainer live-host acceptance run\./);
-assert.match(feedbackForm, /real repository task rather than reviewing documentation only/);
-assert.match(feedbackForm, /credentials, secrets, private prompts, customer data, proprietary source code, or private governance material/);
-for (const displayName of ['Codex', 'Claude Code', 'GitHub Copilot CLI', 'OpenCode']) {
-  assert.match(feedbackForm, new RegExp(`^\\s*- ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from public-beta feedback form`);
-}
+assert.match(readme, /^## Product readiness$/m);
+assert.match(readme, /POST-BETA-R1/);
+assert.match(readme, /external evaluator recruitment is currently suspended/i);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -128,7 +119,6 @@ const productDocs = [
   'KNOWN_LIMITATIONS.md',
   'VERSIONING.md',
   'docs/LIVE_HOST_ACCEPTANCE.md',
-  'docs/EXTERNAL_BETA_EVALUATION.md',
   'core/hakim-skill/INSTALL.md',
   'core/hakim-skill/MIGRATION.md',
   'plugins/README.md',
@@ -154,6 +144,8 @@ const stalePublicTokens = [
   'npx /absolute/path/to/habib-hakim-',
   'build:native-plugin',
   'verify:native-prerelease',
+  'OPEN FOR EXTERNAL EVALUATOR SUBMISSIONS',
+  'five independent accepted evaluator reports',
 ];
 
 for (const relative of productDocs) {
@@ -166,4 +158,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} native/product hosts, ${documentedScripts.size} documented npm scripts, version ${version}`);
+console.log(`public first-run contract OK: ${expectedHosts.length} native/product hosts, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
