@@ -16,7 +16,7 @@ const CRITICAL_SECTIONS = [
   { id: 'ladder', header: '## The Ladder' },
   { id: 'intensity', header: '## Intensity Levels' },
   { id: 'persistence', header: '## Persistence' },
-  { id: 'commands', header: '## Commands' },
+  { id: 'capabilities', header: '## Capabilities' },
   { id: 'debt_ledger', header: '## Deliberate Technical Debt Ledger' },
   { id: 'lazy_not_negligent', header: '## Lazy, Not Negligent' },
 ];
@@ -224,7 +224,7 @@ function main() {
   const copyAnalysis = analyzeSkill(copyContent);
   const diffs = compare(primaryAnalysis, copyAnalysis);
   const result = { original: { path: primaryPath, hash: primaryAnalysis.file_hash_short }, copy: { path: comparePath, hash: copyAnalysis.file_hash_short }, identical: diffs.length === 0, diff_count: diffs.length, diffs };
-  console.log(jsonMode ? JSON.stringify(result, null, 2) : formatComparisonText(diffs, primaryPath, comparePath));
+  console.log(jsonMode ? JSON.stringify(result, null, 2) : formatComparisonText(diffs, primaryPath, copyPath));
   process.exit(diffs.length === 0 ? 0 : 1);
 }
 
