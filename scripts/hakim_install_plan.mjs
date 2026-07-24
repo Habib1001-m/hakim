@@ -12,6 +12,7 @@ import {
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
 export const SUPPORTED_HOSTS = Object.freeze(['codex', 'claude-code', 'github-copilot', 'opencode']);
+export const OPENCODE_BOOTSTRAP = 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install';
 
 export function parseArgs(args) {
   const options = { host: 'all', target: null, json: false, help: false };
@@ -158,18 +159,91 @@ export function inspectCopilot(targetRoot = null, root = ROOT, version = null) {
 
 export function inspectOpenCode(targetRoot = null, root = ROOT) {
   let bundle;
-  try { bundle = buildOpenCodeBundle(root); }
-  catch (error) { return { host: 'opencode', status: 'FAIL', support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER', distribution_mode: 'PROJECT_LOCAL_INSTALLER', source_path: 'plugins/opencode', target_root: targetRoot ? path.resolve(targetRoot) : null, target_state: 'SOURCE_INVALID', persistent_installation: 'NOT_CLAIMED', automatic_changes: false, checks: [check('canonical_bundle_valid', false, error.message)], next_safe_action: `Repair the canonical OpenCode bundle before planning installation: ${error.message}` }; }
-  const checks = [check('canonical_bundle_valid', true, `${bundle.files.length} files`), check('opencode_config_mutation_disabled', bundle.opencode_config_mutation === false, bundle.opencode_config_mutation)];
-  if (!targetRoot) return { host: 'opencode', status: summarizeStatus(checks), support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER', distribution_mode: 'PROJECT_LOCAL_INSTALLER', source_path: 'plugins/opencode', target_root: null, target_state: 'NOT_COMPARED', persistent_installation: 'NOT_CLAIMED', automatic_changes: false, checks, next_safe_action: 'Run npm run install:opencode -- --target <repository> for a dry-run manifest, then add --apply only after review.' };
+  try {
+    bundle = buildOpenCodeBundle(root);
+  } catch (error) {
+    return {
+      host: 'opencode',
+      status: 'FAIL',
+      support_boundary: 'PROJECT_LOCAL_NATIVE_PLUGIN',
+      distribution_mode: 'GIT_BACKED_PROJECT_LOCAL_INSTALLER',
+      source_path: 'plugins/opencode',
+      invocation: OPENCODE_BOOTSTRAP,
+      target_root: targetRoot ? path.resolve(targetRoot) : null,
+      target_state: 'SOURCE_INVALID',
+      persistent_installation: 'PROJECT_LOCAL',
+      automatic_changes: false,
+      checks: [check('canonical_bundle_valid', false, error.message)],
+      next_safe_action: `Repair the canonical OpenCode bundle before planning installation: ${error.message}`,
+    };
+  }
+
+  const checks = [
+    check('canonical_bundle_valid', true, `${bundle.files.length} files`),
+    check('opencode_config_mutation_disabled', bundle.opencode_config_mutation === false, bundle.opencode_config_mutation),
+    check('git_bootstrap_cli_present', fs.existsSync(path.join(root, 'scripts', 'hakim_opencode_cli.mjs')), 'scripts/hakim_opencode_cli.mjs'),
+  ];
+
+  if (!targetRoot) {
+    return {
+      host: 'opencode',
+      status: summarizeStatus(checks),
+      support_boundary: 'PROJECT_LOCAL_NATIVE_PLUGIN',
+      distribution_mode: 'GIT_BACKED_PROJECT_LOCAL_INSTALLER',
+      source_path: 'plugins/opencode',
+      invocation: OPENCODE_BOOTSTRAP,
+      target_root: null,
+      target_state: 'READY_FOR_GIT_BOOTSTRAP',
+      persistent_installation: 'PROJECT_LOCAL',
+      automatic_changes: false,
+      checks,
+      next_safe_action: `From the target repository run \`${OPENCODE_BOOTSTRAP}\`; add --dry-run to inspect the manifest without writing.`,
+    };
+  }
+
   const target = validateTargetRoot(targetRoot);
-  if (!target.ok) return { host: 'opencode', status: 'FAIL', support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER', distribution_mode: 'PROJECT_LOCAL_INSTALLER', source_path: 'plugins/opencode', target_root: target.target_root, target_state: target.state, persistent_installation: 'NOT_CLAIMED', automatic_changes: false, checks: [...checks, check('target_root_valid', false, target.state)], next_safe_action: target.message };
+  if (!target.ok) {
+    return {
+      host: 'opencode',
+      status: 'FAIL',
+      support_boundary: 'PROJECT_LOCAL_NATIVE_PLUGIN',
+      distribution_mode: 'GIT_BACKED_PROJECT_LOCAL_INSTALLER',
+      source_path: 'plugins/opencode',
+      invocation: OPENCODE_BOOTSTRAP,
+      target_root: target.target_root,
+      target_state: target.state,
+      persistent_installation: 'PROJECT_LOCAL',
+      automatic_changes: false,
+      checks: [...checks, check('target_root_valid', false, target.state)],
+      next_safe_action: target.message,
+    };
+  }
+
   const installed = inspectInstalledBundle(target.target_root, bundle);
   let nextSafeAction = 'Review the OpenCode target state before any mutation.';
-  if (installed.aggregate_state === 'ABSENT') nextSafeAction = `Run npm run install:opencode -- --target ${target.target_root} for the dry-run manifest, then rerun with --apply after review.`;
-  else if (installed.aggregate_state === 'EXACT_MATCH') nextSafeAction = 'The project-local OpenCode adapter already matches the canonical Hakim bundle; no installation change is needed.';
-  else nextSafeAction = 'Preserve the existing OpenCode paths and reconcile them manually; automatic overwrite or partial repair is prohibited.';
-  return { host: 'opencode', status: summarizeStatus(checks), support_boundary: 'PROJECT_LOCAL_STRUCTURAL_ADAPTER', distribution_mode: 'PROJECT_LOCAL_INSTALLER', source_path: 'plugins/opencode', target_root: target.target_root, target_state: installed.aggregate_state, persistent_installation: 'NOT_CLAIMED', automatic_changes: false, checks: [...checks, check('target_root_valid', true, target.target_root)], inspection: installed.counts, next_safe_action: nextSafeAction };
+  if (installed.aggregate_state === 'ABSENT') {
+    nextSafeAction = `Run \`${OPENCODE_BOOTSTRAP} --target ${target.target_root}\`; add --dry-run first when inspection is desired.`;
+  } else if (installed.aggregate_state === 'EXACT_MATCH') {
+    nextSafeAction = 'The project-local OpenCode adapter already matches the canonical Hakim bundle; no installation change is needed.';
+  } else {
+    nextSafeAction = 'Preserve the existing OpenCode paths and reconcile them manually; automatic overwrite or partial repair is prohibited.';
+  }
+
+  return {
+    host: 'opencode',
+    status: summarizeStatus(checks),
+    support_boundary: 'PROJECT_LOCAL_NATIVE_PLUGIN',
+    distribution_mode: 'GIT_BACKED_PROJECT_LOCAL_INSTALLER',
+    source_path: 'plugins/opencode',
+    invocation: OPENCODE_BOOTSTRAP,
+    target_root: target.target_root,
+    target_state: installed.aggregate_state,
+    persistent_installation: 'PROJECT_LOCAL',
+    automatic_changes: false,
+    checks: [...checks, check('target_root_valid', true, target.target_root)],
+    inspection: installed.counts,
+    next_safe_action: nextSafeAction,
+  };
 }
 
 export function buildPlan(options, root = ROOT) {
