@@ -68,7 +68,7 @@ assert.match(readme, /npm run plan:install -- --host all/);
 assert.match(install, /npm run plan:install -- --host all/);
 assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
 assert.match(liveAcceptance, /npm run accept:host -- --host codex/);
-assert.match(liveAcceptance, /--apply is intentionally refused/);
+assert.match(liveAcceptance, /--apply.*intentionally refused/);
 assert.match(liveAcceptance, /candidate evidence packet/i);
 
 const hostSurfaces = new Map([
