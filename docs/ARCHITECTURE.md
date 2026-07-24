@@ -76,7 +76,11 @@ Native marketplace plugin with six skills and five custom agents. `.github/copil
 
 ### OpenCode
 
-Native project-local plugin installed through Hakim's guarded installer. The maintained lifecycle is create-only, refuses conflicting or unsafe target state, verifies canonical hashes, and uses exact-match removal with rollback safeguards. The current onboarding still requires a Hakim source checkout and is an explicit product UX remediation target.
+Native project-local plugin installed by the same guarded create-only lifecycle regardless of entry point. Normal first-run uses a Git-backed `npx` bootstrap from the public Hakim repository, while source-checkout `npm run` commands remain development/inspection fallbacks. The bootstrap package exposes only the OpenCode CLI, installer/remover, canonical loader/policy/capabilities, and OpenCode plugin resources through an explicit package allowlist.
+
+The maintained lifecycle refuses conflicting or unsafe target state, verifies canonical hashes, never edits `opencode.json`, and uses exact-match removal with quarantine/rollback safeguards. The Git-backed bootstrap does not publish Hakim to the npm registry and does not create a global Hakim/OpenCode installation.
+
+Because first-run transport is part of the observed product journey, structural tests for the new bootstrap do not silently replace the earlier live-host evidence. The exact Git-backed install/start/invocation journey requires fresh accepted real-host evidence before it is independently promoted.
 
 ## Runtime and filesystem boundaries
 
@@ -96,11 +100,13 @@ Keep these claims separate:
 4. **Release authorization** — explicit operator decision outside ordinary CI success.
 5. **Performance or quality improvement** — requires dedicated accepted evidence; it is not inferred from any item above.
 
-Current-native acceptance for the four maintained hosts is recorded publicly. External evaluator recruitment is suspended during POST-BETA-R1 remediation and must not be inferred from native-host `PASS` status.
+Current native runtime evidence for the four maintained hosts is recorded publicly. External evaluator recruitment is suspended during POST-BETA-R1 remediation and must not be inferred from native-host `PASS` status. A newly introduced first-run transport must carry its own accepted observation before that exact transport is described as live accepted.
 
 ## Packaging and release
 
 The canonical skill package uses an explicit allowlist rather than recursively shipping the source tree. ZIP member order, timestamps, and file modes are normalized so equivalent maintained source content can produce a byte-reproducible archive.
+
+The root repository package is private and is not an npm registry release. Its `files` allowlist exists only to make the Git-backed OpenCode bootstrap bounded when npm/npx fetches Hakim directly from GitHub.
 
 Checksums prove artifact integrity against a recorded digest. Reproducibility is a separate claim and must be tested independently.
 
