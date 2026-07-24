@@ -106,7 +106,7 @@ test('copied project-local bundle resolves without repository-relative imports',
   fs.mkdirSync(path.join(runtimeDir, 'loaders'), { recursive: true });
   fs.mkdirSync(path.join(runtimeDir, 'hakim-skill'), { recursive: true });
 
-  fs.copyFileSync(PLUGIN_PATH, path.join(pluginDir, 'hakim.mjs'));
+  fs.copyFileSync(PLUGIN_PATH, path.join(pluginDir, 'hakim.js'));
   fs.copyFileSync(
     path.join(ROOT, 'core', 'loaders', 'hakim-loader.mjs'),
     path.join(runtimeDir, 'loaders', 'hakim-loader.mjs'),
@@ -126,7 +126,7 @@ test('copied project-local bundle resolves without repository-relative imports',
   );
 
   try {
-    const load = await loadPlugin(path.join(pluginDir, 'hakim.mjs'));
+    const load = await loadPlugin(path.join(pluginDir, 'hakim.js'));
     const hooks = await load({});
     const config = {};
     await hooks.config(config);
