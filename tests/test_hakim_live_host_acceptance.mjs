@@ -61,6 +61,25 @@ assert.equal(inspect.safety.raw_host_output_captured, false);
 assert.ok(inspect.journey.every((item) => item.observation === 'NOT_RECORDED'));
 assert.ok(inspect.install_commands.some((command) => /claude plugin install hakim@hakim/.test(command)));
 
+const opencodeDependencies = {
+  resolveExecutable: () => '/usr/local/bin/opencode',
+  probeVersion: () => ({ status: 'PASS', version: '1.17.13', exit_code: 0, reason: null }),
+};
+const targetRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-live-opencode-target-'));
+try {
+  const opencodeInspect = buildLiveAcceptance(
+    parseArgs(['--host', 'opencode', '--target', targetRoot]),
+    root,
+    opencodeDependencies,
+  );
+  assert.equal(opencodeInspect.install_plan.distribution_mode, 'GIT_BACKED_PROJECT_LOCAL_INSTALLER');
+  assert.ok(opencodeInspect.install_commands.some((command) => /npx --yes --package=github:Habib1001-m\/hakim hakim-opencode install/.test(command)));
+  assert.ok(opencodeInspect.install_commands.some((command) => /exact Git commit/.test(command)));
+  assert.match(opencodeInspect.journey[0].description, /Git-backed Hakim bootstrap/);
+} finally {
+  fs.rmSync(targetRoot, { recursive: true, force: true });
+}
+
 const accepted = buildLiveAcceptance(parsed, root, dependencies);
 assert.equal(accepted.mode, 'CANDIDATE_EVIDENCE');
 assert.equal(accepted.candidate_status, 'PASS');
@@ -125,4 +144,4 @@ try {
   fs.rmSync(outputRoot, { recursive: true, force: true });
 }
 
-console.log('live host acceptance harness stays read-only and produces create-only reviewable candidate evidence');
+console.log('live host acceptance harness stays read-only, tracks the Git-backed OpenCode journey, and produces create-only reviewable candidate evidence');
