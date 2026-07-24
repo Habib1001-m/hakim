@@ -30,7 +30,8 @@ Hakim `1.0.0-beta.1` remains public beta software.
 
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
-- Current native live-host acceptance is recorded in `conformance/native-host-acceptance.json`; all four maintained current-native paths currently have accepted `PASS` evidence, but that evidence remains bounded to the observed environments and journeys.
+- Current native live-host acceptance is recorded in `conformance/native-host-acceptance.json`: Codex, Claude Code, and GitHub Copilot currently retain accepted `PASS` evidence; the new Git-backed OpenCode first-run path is `NOT_RUN` pending fresh real-host install/start/invocation evidence.
+- Earlier guarded project-local OpenCode evidence remains bounded historical evidence and is not reused to promote the Git-backed transport.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
 - Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.
 - External evaluator recruitment is currently suspended for POST-BETA-R1 product remediation. The withdrawn campaign accepted no external reports, and native-host acceptance must not be converted into a claim of independent product usefulness or retention.
