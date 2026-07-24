@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -43,7 +42,7 @@ export function getRules(mode = 'full', options = {}) {
     '',
     getModeDirective(normalized),
     '',
-    'Canonical source: core/hakim-skill/SKILL.md',
+    'Canonical Hakim policy loaded from the active distribution.',
     '',
     skill,
   ].join('\n');
