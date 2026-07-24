@@ -65,6 +65,28 @@ for (const relative of [
   }
 }
 
+for (const relative of [
+  'docs/EXTERNAL_BETA_EVALUATION.md',
+  '.github/ISSUE_TEMPLATE/public-beta-feedback.yml',
+  'docs/agentic-ai-reference-SPEC.md',
+  'docs/theoretical-reference',
+  'plugins/hermes',
+  'plugins/gemini-antigravity',
+  'packaging/native-plugin',
+  'scripts/build_native_plugin_package.mjs',
+  'scripts/pack_native_plugin_tarball.mjs',
+  'scripts/verify_native_plugin_prerelease.mjs',
+  'scripts/run_native_plugin_opencode_smoke.sh',
+  'tests/verify_native_plugin_opencode_smoke.mjs',
+  'tests/test_native_plugin_tarball.mjs',
+  'tests/test_native_plugin_realpath_containment.mjs',
+  'tests/test_native_plugin_transactional_lifecycle.mjs',
+]) {
+  if (fs.existsSync(path.join(root, relative))) {
+    errors.push(`retired public product surface remains: ${relative}`);
+  }
+}
+
 const payload = { ok: errors.length === 0, errors };
 console.log(JSON.stringify(payload, null, 2));
 process.exit(payload.ok ? 0 : 1);
