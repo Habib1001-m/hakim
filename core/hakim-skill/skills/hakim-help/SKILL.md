@@ -34,11 +34,13 @@ Hakim maintains one canonical capability registry, but installed host plugins ar
 - **Codex:** `codex plugin marketplace add Habib1001-m/hakim`, install `hakim@hakim` from `/plugins`, then use skills such as `$hakim:hakim`, `$hakim:hakim-review`, and `$hakim:hakim-help`.
 - **Claude Code:** `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim`; explicit commands are `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, and `/hakim:help`.
 - **GitHub Copilot:** `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim`; inspect skills with `/skills list` and specialized agents with `/agent`.
-- **OpenCode:** install the guarded project-local bundle from a Hakim source checkout, then use `/hakim full`, `/hakim-review`, `/hakim-audit`, `/hakim-debt`, `/hakim-gain`, or `/hakim-help`.
+- **OpenCode:** from the target repository run `npx --yes --package=github:Habib1001-m/hakim hakim-opencode install`, then use `/hakim full`, `/hakim-review`, `/hakim-audit`, `/hakim-debt`, `/hakim-gain`, or `/hakim-help`.
 
 ## Distribution boundary
 
-Repository-hosted native Git marketplaces are maintained for Codex, Claude Code, and GitHub Copilot. OpenCode uses a guarded project-local native plugin installer. Hakim is not published to npm and does not claim a central plugin-directory listing, signing, notarization, or universal host compatibility.
+Repository-hosted native Git marketplaces are maintained for Codex, Claude Code, and GitHub Copilot. OpenCode uses a Git-backed bootstrap that creates the guarded project-local native plugin bundle; Hakim is not published to the npm registry and does not claim a global OpenCode installer, central plugin-directory listing, signing, notarization, or universal host compatibility.
+
+The Git-backed OpenCode bootstrap is structurally tested, but structural or CI evidence does not by itself establish that exact first-run transport as live-host accepted.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 
