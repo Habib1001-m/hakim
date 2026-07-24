@@ -28,8 +28,9 @@ Hakim acknowledges Ponytail as the source of these core concepts:
 - the principle that minimalism must not remove safety, validation, security,
   accessibility, or data-integrity protections.
 
-The current implementation may express these ideas differently and adds its own
-runtime, evidence, and governance machinery.
+Hakim expresses these ideas through its own canonical skill, adds an `off` mode,
+and maintains its own host integrations, evidence boundaries, and governance
+contracts.
 
 ## What does not transfer
 
@@ -50,16 +51,17 @@ establish implementation parity.
 Hakim's implemented differentiation is governance and conformance, not broader
 agent coverage or proven performance superiority:
 
-1. **Evidence-bound status:** runtime, benchmark, release, and support claims use
-   explicit PASS/HOLD boundaries.
-2. **Cross-host conformance:** a machine-readable six-capability contract is
-   checked across Codex, Claude Code, and GitHub Copilot repository instructions.
-3. **Provenance controls:** live debt, synthetic examples, archives, and accepted
-   runtime evidence are separated.
-4. **Product-truth gates:** versions, metadata, projections, and active claims are
-   checked in CI.
-5. **Safe diagnostics:** local runtime inspection is read-only and requires
-   operator evidence before acceptance.
+1. **Evidence-bound status:** runtime, benchmark, release, and support claims are
+   limited to inspectable evidence and explicit `NOT_ESTABLISHED` boundaries.
+2. **Cross-host conformance:** a machine-readable six-capability contract maps
+   semantic capability parity across the maintained Codex, Claude Code, GitHub
+   Copilot, and OpenCode product surfaces while allowing host-native invocation.
+3. **Provenance controls:** live repository evidence is kept separate from
+   upstream, historical, synthetic, or unsupported material.
+4. **Product-truth gates:** versions, metadata, projections, public package
+   boundaries, and active claims are checked in CI within their documented scope.
+5. **Safe diagnostics:** local inspection and planning commands are bounded and do
+   not establish broader runtime, benchmark, correctness, or security claims.
 
 This is a product-direction declaration, not a claim that these properties are
 unique in the market or superior to Ponytail.
@@ -71,7 +73,7 @@ Hakim does not continuously merge or automatically track Ponytail.
 Run an upstream review:
 
 - before changing an inherited methodology surface;
-- before public release or marketplace planning;
+- before a public release or distribution change;
 - when Ponytail changes its license or attribution requirements;
 - when a relevant upstream security or correctness fix is identified.
 
@@ -99,6 +101,6 @@ This declaration does not establish:
 
 - independent Hakim benchmark evidence;
 - Ponytail compatibility;
-- public release or marketplace readiness;
+- central marketplace or directory publication, signing, or universal host compatibility;
 - enterprise, MCP, or A2A readiness;
 - permission to use Ponytail branding as Hakim branding.

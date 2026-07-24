@@ -1,6 +1,6 @@
 # Hakim repository instructions
 
-<!-- hakim-canonical-sha256: 5fc4290f2d6200e56c379f7758bee1a46dffc1549cf59ee441eaf96ebe9fe772 -->
+<!-- hakim-canonical-sha256: bc3622f534593772ef1fee0d4c988747886ed1cef3763d48ad4392d9f4807939 -->
 
 When changing this repository:
 

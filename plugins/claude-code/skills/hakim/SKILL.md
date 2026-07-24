@@ -1,12 +1,12 @@
 ---
 name: hakim
 description: Use Hakim on coding tasks to enforce smallest safe diff, reuse existing code first, prefer stdlib/native platform features, avoid speculative architecture, and keep release claims evidence-bound.
-argument-hint: [lite|full|ultra]
+argument-hint: [lite|full|ultra|off]
 disable-model-invocation: false
 user-invocable: false
 ---
 
-<!-- hakim-canonical-sha256: 5fc4290f2d6200e56c379f7758bee1a46dffc1549cf59ee441eaf96ebe9fe772 -->
+<!-- hakim-canonical-sha256: bc3622f534593772ef1fee0d4c988747886ed1cef3763d48ad4392d9f4807939 -->
 
 # Hakim for Claude Code
 
@@ -14,7 +14,7 @@ user-invocable: false
 
 Use this skill when the user asks for Hakim, lazy mode, simplest solution, minimal solution, YAGNI, over-engineering reduction, code review, refactoring, dependency choice, or the smallest safe next change.
 
-Default to `full` unless the user requests `lite` or `ultra`.
+Default to `full` unless the user requests `lite`, `ultra`, or `off`.
 
 ## The 7-level ladder
 

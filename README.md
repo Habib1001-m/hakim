@@ -49,7 +49,7 @@ npm run install:opencode -- --target /path/to/project
 npm run install:opencode -- --target /path/to/project --apply
 ```
 
-Start OpenCode from the target project and use `/hakim-help` or `/hakim full ...`. The installer is create-only, verifies owned paths, and does not edit `opencode.json`.
+Start OpenCode from the target project and use `/hakim-help` or `/hakim full ...`. The installer is create-only, verifies the canonical bundle paths and hashes, and does not edit `opencode.json`.
 
 See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle and trust boundaries.
 
@@ -57,20 +57,22 @@ See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific life
 
 - A canonical coding policy focused on minimal, safe changes.
 - Native host plugins for Codex, Claude Code, and GitHub Copilot.
-- A guarded project-local native OpenCode plugin package.
+- A guarded project-local native OpenCode plugin bundle.
 - Host-specialized skills, agents, commands, and lifecycle controls where the host supports them.
 - Deterministic PR Guardian checks for dependency and evidence-boundary drift.
 - Bounded review, audit, doctor, host-preflight, and install-planning commands.
-- OpenCode integrity records, exact path ownership, containment checks, lifecycle locking, quarantine, and rollback safeguards.
+- OpenCode canonical-manifest hashing, create-only installation, exact-match removal, quarantine-backed removal, and rollback safeguards.
 - Local packaging and verification tools that do not require a runtime service.
 
 ## Requirements
 
 For product use, install the supported host you intend to use. Repository development and local validation additionally require:
 
-- Node.js 18 or newer.
-- Python 3.
+- Node.js 18 or newer. This is the declared minimum; Public CI currently validates Node.js 24.
+- Python 3.10 or newer. Maintained Python tooling uses Python 3.10+ syntax; Public CI currently validates Python 3.11.
 - Git.
+
+For the full Codex product path in this beta, use Codex `0.131.0` or newer. Codex `0.130.0` still shipped plugin-bundled hooks disabled by default; `0.131.0` is the first tagged release in which the `plugin_hooks` feature is stable and enabled by default.
 
 ## Local validation
 
@@ -86,13 +88,7 @@ Build the canonical skill package:
 npm run package:skill
 ```
 
-Build the native OpenCode package:
-
-```bash
-npm run build:native-plugin
-```
-
-Generated packages are local build outputs. They are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
+Generated skill packages are local build outputs. They are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
 
 ## Supported hosts
 
@@ -115,7 +111,7 @@ See [Known Limitations](KNOWN_LIMITATIONS.md).
 
 ## Privacy
 
-Telemetry is disabled by default. Hakim does not enable raw prompt or source code logging by default.
+Hakim does not implement a product telemetry collection service. Repository conformance and evidence schemas are local validation artifacts, not product telemetry. Hakim does not enable raw prompt or source-code logging.
 
 Do not commit credentials, private prompts, sensitive evidence, or customer source code to bug reports or test fixtures.
 

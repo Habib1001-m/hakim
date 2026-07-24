@@ -1,11 +1,11 @@
-# Hakim OpenCode Adapter
+# Hakim for OpenCode
 
-**Status:** public beta project-local adapter  
-**Distribution:** repository-local files only; no npm package or global installer
+**Status:** public beta project-local native plugin  
+**Distribution:** repository-local files from a Hakim source checkout; no npm package or global installer
 
-## What this adapter does
+## What this plugin does
 
-The adapter loads as a project-local OpenCode plugin from:
+The plugin loads project-locally from:
 
 ```text
 .opencode/plugins/hakim.mjs
@@ -19,9 +19,7 @@ It uses OpenCode configuration and prompt hooks to:
 - keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
 - remove session-local mode state when a session-deleted event is observed.
 
-Repository tests cover the documented hook shapes and guarded file lifecycle.
-Live host compatibility remains bounded to documented local validation and does
-not establish universal OpenCode compatibility.
+Repository tests cover the documented hook shapes and guarded project-local file lifecycle. Live host compatibility remains bounded to documented local validation and does not establish universal OpenCode compatibility.
 
 ## Project-local installed layout
 
@@ -43,9 +41,7 @@ not establish universal OpenCode compatibility.
             └── hakim-help/SKILL.md
 ```
 
-The installer does **not** create or modify `opencode.json`. OpenCode discovers
-the project-local plugin from `.opencode/plugins/`; the plugin registers the
-installed skill path at load time.
+The installer does **not** create or modify `opencode.json`. OpenCode discovers the project-local plugin from `.opencode/plugins/`; the plugin registers the installed skill path at load time.
 
 ## Install
 
@@ -79,8 +75,9 @@ Installation is create-only. It refuses:
 - unsafe `.opencode` directory components;
 - a pre-existing different plugin or runtime file;
 - a partial bundle, even when the files that exist match;
-- concurrent target creation;
 - any automatic overwrite or partial repair.
+
+Every created file is checked against the canonical manifest. A failed partial creation attempts to roll back only the files and directories created by that operation.
 
 ## Use
 
@@ -95,12 +92,9 @@ Examples after installation:
 /hakim-help Explain the available Hakim capabilities.
 ```
 
-The mode is session/process-local. It is not persisted to a user profile or
-shared across machines. `HAKIM_DEFAULT_MODE` may set the process default to
-`lite`, `full`, `ultra`, or `off`; invalid values normalize to `full` through
-the canonical loader.
+The mode is session/process-local. It is not persisted to a user profile or shared across machines. `HAKIM_DEFAULT_MODE` may set the process default to `lite`, `full`, `ultra`, or `off`; invalid values normalize to `full` through the canonical loader.
 
-The adapter never overwrites an existing OpenCode command with the same name.
+The plugin never overwrites an existing OpenCode command with the same name.
 
 ## Remove
 
@@ -116,10 +110,11 @@ Apply removal:
 npm run remove:opencode -- --target /path/to/repository --apply
 ```
 
-Removal proceeds only when every installed Hakim file is a complete
-byte-identical match for the current canonical bundle. Modified, partial,
-symlink, non-regular, or unrelated OpenCode paths are preserved. The
-`.opencode` directory itself and unrelated content are never removed.
+Removal proceeds only when every installed Hakim file is a complete byte-identical match for the current canonical bundle. Before removal, the exact files are copied into a private quarantine directory and verified again. If removal fails after mutation starts, Hakim attempts restoration from that quarantine. Modified, partial, symlink, non-regular, or unrelated OpenCode paths are preserved. The `.opencode` directory itself and unrelated content are never removed.
+
+## Concurrency boundary
+
+The maintained project-local installer/remover does not claim a cross-process lifecycle lock. It validates target state at defined checkpoints and refuses unsafe or changed state, but it does not claim immunity to a malicious or concurrent filesystem replacement between every check and mutation. Treat the target repository as an operator-controlled trust boundary during install or removal.
 
 ## Validate repository-side behavior
 
@@ -130,14 +125,11 @@ npm test
 npm run check:evidence-script
 ```
 
-These checks prove deterministic plugin wiring and guarded file lifecycle
-behavior only.
+These checks prove deterministic plugin wiring and the documented guarded project-local file lifecycle only.
 
 ## Evidence boundaries
 
-- Project-local plugin and installer behavior is covered by the public test suite.
+- Project-local plugin and installer/remover behavior is covered by the public test suite.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
-- Public source availability does not imply npm, marketplace, global-installer,
-  signing, or universal-runtime availability.
-- Runtime or compatibility claims must remain bounded to the specific evidence
-  collected for the tested environment.
+- Public source availability does not imply npm, marketplace, global-installer, signing, or universal-runtime availability.
+- Runtime or compatibility claims must remain bounded to the specific evidence collected for the tested environment.

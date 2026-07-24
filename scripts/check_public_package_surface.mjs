@@ -23,7 +23,8 @@ if (!fs.existsSync(packagePath)) {
     'doctor:json',
     'doctor:fast',
     'package:skill',
-    'build:native-plugin',
+    'install:opencode',
+    'remove:opencode',
   ]) {
     if (!pkg.scripts?.[script]) errors.push(`missing package script: ${script}`);
   }
@@ -40,6 +41,15 @@ if (!fs.existsSync(packagePath)) {
   ]) {
     if (pkg.scripts?.[internalScript]) {
       errors.push(`internal package script remains: ${internalScript}`);
+    }
+  }
+
+  for (const obsoleteDistributionScript of [
+    'build:native-plugin',
+    'verify:native-prerelease',
+  ]) {
+    if (pkg.scripts?.[obsoleteDistributionScript]) {
+      errors.push(`obsolete distribution script remains: ${obsoleteDistributionScript}`);
     }
   }
 }

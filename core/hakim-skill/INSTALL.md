@@ -4,6 +4,8 @@ Hakim `1.0.0-beta.1` is distributed from source and host-native Git marketplaces
 
 ## Codex
 
+Use Codex `0.131.0` or newer for this beta's full native plugin path. `rust-v0.130.0` still shipped plugin-bundled hooks disabled by default; `rust-v0.131.0` is the first tagged release where `plugin_hooks` is stable and enabled by default.
+
 Install directly from this repository:
 
 ```bash
@@ -73,7 +75,9 @@ npm run install:opencode -- --target /path/to/project
 npm run install:opencode -- --target /path/to/project --apply
 ```
 
-Start OpenCode from the target repository and use `/hakim-help` or `/hakim full ...`. Installation is create-only, validates exact owned paths, refuses unsafe partial/different bundles, supports guarded lifecycle operations, and does not edit `opencode.json`.
+Start OpenCode from the target repository and use `/hakim-help` or `/hakim full ...`. Installation is create-only, validates the canonical file manifest and target paths, refuses unsafe partial/different bundles, and does not edit `opencode.json`.
+
+Removal is a separate exact-match operation through `npm run remove:opencode`; it uses quarantine-backed removal and restoration on failure. The project-local lifecycle does not claim a cross-process operation lock or a global installer.
 
 ## Inspect all maintained product surfaces
 
@@ -92,9 +96,8 @@ The install plan is read-only. It reports the maintained Codex, Claude Code, Git
 npm test
 npm run doctor
 npm run package:skill
-npm run build:native-plugin
 ```
 
-Generated packages are local outputs. They do not prove npm publication, central directory approval, signing, notarization, third-party attestation, or universal host compatibility.
+Generated skill packages are local outputs. They do not prove npm publication, central directory approval, signing, notarization, third-party attestation, or universal host compatibility.
 
 Host-native installation, approval, trust, sandboxing, plugin enablement, managed policy, permissions, and removal controls remain authoritative.

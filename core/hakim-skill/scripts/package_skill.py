@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Hakim skill packager.
 
-Creates a deterministic ZIP archive for the canonical Hakim skill package while
-excluding generated artifacts, caches, hidden files, and the output archive
-itself when it is placed inside the source tree.
+Creates a deterministic ZIP archive from the explicit maintained Hakim package
+surface. Source-repository files are not shipped merely because they happen to
+live under ``core/hakim-skill``.
 """
 from __future__ import annotations
 
@@ -16,11 +16,24 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-VERSION = "1.1.1"
+VERSION = "1.2.0"
 ARCHIVE_ROOT = "hakim-skill"
 DEFAULT_OUTPUT = "hakim-skill-package.zip"
-REQUIRED_FILES = ["SKILL.md", "AGENTS.md"]
-REQUIRED_SUBDIRS = ["scripts", "references", "assets"]
+
+PACKAGE_ROOT_FILES = {
+    "SKILL.md",
+    "AGENTS.md",
+    "INSTALL.md",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "VERSION",
+    "capabilities.json",
+}
+PACKAGE_SUBDIRS = {"scripts", "skills", "conformance"}
+REQUIRED_FILES = sorted(PACKAGE_ROOT_FILES)
+REQUIRED_SUBDIRS = sorted(PACKAGE_SUBDIRS)
+
 EXCLUDED_DIRS = {
     ".git",
     ".hg",
@@ -38,8 +51,30 @@ EXCLUDED_DIRS = {
     "build",
     "dist",
 }
-EXCLUDED_FILENAMES = {".DS_Store", "Thumbs.db", "desktop.ini", ".gitignore", ".gitattributes", "tags"}
-EXCLUDED_EXTENSIONS = {".pyc", ".pyo", ".pyd", ".class", ".o", ".obj", ".swp", ".swo", ".bak", ".orig", ".tmp", ".temp", ".log", ".zip"}
+EXCLUDED_FILENAMES = {
+    ".DS_Store",
+    "Thumbs.db",
+    "desktop.ini",
+    ".gitignore",
+    ".gitattributes",
+    "tags",
+}
+EXCLUDED_EXTENSIONS = {
+    ".pyc",
+    ".pyo",
+    ".pyd",
+    ".class",
+    ".o",
+    ".obj",
+    ".swp",
+    ".swo",
+    ".bak",
+    ".orig",
+    ".tmp",
+    ".temp",
+    ".log",
+    ".zip",
+}
 
 
 def is_excluded_dir(dirname: str) -> bool:
@@ -57,7 +92,7 @@ def is_excluded_file(filename: str) -> bool:
 def validate_structure(source_dir: Path) -> tuple[bool, list[str]]:
     issues: list[str] = []
     for required in REQUIRED_FILES:
-        if not (source_dir / required).exists():
+        if not (source_dir / required).is_file():
             issues.append(f"Missing required file: {required}")
     for required in REQUIRED_SUBDIRS:
         if not (source_dir / required).is_dir():
@@ -66,22 +101,37 @@ def validate_structure(source_dir: Path) -> tuple[bool, list[str]]:
 
 
 def collect_files(source_dir: Path, output_path: Path | None = None) -> list[tuple[Path, str]]:
-    collected: list[tuple[Path, str]] = []
+    source_dir = source_dir.resolve()
     resolved_output = output_path.resolve() if output_path else None
+    collected: list[tuple[Path, str]] = []
+
     for root, dirs, files in os.walk(source_dir):
-        dirs[:] = sorted(dirname for dirname in dirs if not is_excluded_dir(dirname))
-        for filename in sorted(files):
+        root_path = Path(root).resolve()
+        if root_path == source_dir:
+            dirs[:] = sorted(dirname for dirname in dirs if dirname in PACKAGE_SUBDIRS)
+            candidate_files = sorted(filename for filename in files if filename in PACKAGE_ROOT_FILES)
+        else:
+            dirs[:] = sorted(dirname for dirname in dirs if not is_excluded_dir(dirname))
+            candidate_files = sorted(files)
+
+        for filename in candidate_files:
             if is_excluded_file(filename):
                 continue
-            absolute_path = (Path(root) / filename).resolve()
+            absolute_path = (root_path / filename).resolve()
             if resolved_output and absolute_path == resolved_output:
                 continue
             relative_path = absolute_path.relative_to(source_dir)
             collected.append((absolute_path, f"{ARCHIVE_ROOT}/{relative_path.as_posix()}"))
+
     return collected
 
 
-def create_package(source_dir: Path, output_path: Path, compression_level: int = 9, strict: bool = True) -> dict[str, Any]:
+def create_package(
+    source_dir: Path,
+    output_path: Path,
+    compression_level: int = 9,
+    strict: bool = True,
+) -> dict[str, Any]:
     source_dir = source_dir.resolve()
     output_path = output_path.resolve()
     if not source_dir.exists():
@@ -112,7 +162,12 @@ def create_package(source_dir: Path, output_path: Path, compression_level: int =
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
-    with zipfile.ZipFile(output_path, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=compression_level) as archive:
+    with zipfile.ZipFile(
+        output_path,
+        mode="w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=compression_level,
+    ) as archive:
         for absolute_path, archive_path in files:
             file_size = absolute_path.stat().st_size
             archive.write(absolute_path, archive_path)
@@ -123,7 +178,9 @@ def create_package(source_dir: Path, output_path: Path, compression_level: int =
 
     stats["total_compressed_bytes"] = output_path.stat().st_size
     original = stats["total_original_bytes"]
-    stats["compression_ratio_percent"] = round((1 - stats["total_compressed_bytes"] / original) * 100, 1) if original else 0.0
+    stats["compression_ratio_percent"] = (
+        round((1 - stats["total_compressed_bytes"] / original) * 100, 1) if original else 0.0
+    )
     return stats
 
 
@@ -139,9 +196,10 @@ def verify_package(zip_path: Path) -> tuple[bool, list[str]]:
             names = {info.filename for info in archive.infolist()}
             for info in archive.infolist():
                 name = info.filename
+                parts = Path(name).parts
                 if name.startswith("/") or (len(name) > 1 and name[1] == ":"):
                     issues.append(f"Absolute path: {name}")
-                if ".." in Path(name).parts:
+                if ".." in parts:
                     issues.append(f"Parent traversal: {name}")
                 if "\\" in name:
                     issues.append(f"Backslash in path: {name}")
@@ -151,6 +209,12 @@ def verify_package(zip_path: Path) -> tuple[bool, list[str]]:
                     issues.append(f"Excluded file included: {name}")
                 if info.compress_type != zipfile.ZIP_DEFLATED:
                     issues.append(f"Wrong compression for {name}")
+                if len(parts) < 2 or parts[0] != ARCHIVE_ROOT:
+                    issues.append(f"Unexpected archive root: {name}")
+                elif len(parts) == 2 and parts[1] not in PACKAGE_ROOT_FILES:
+                    issues.append(f"Unapproved root package member: {name}")
+                elif len(parts) > 2 and parts[1] not in PACKAGE_SUBDIRS:
+                    issues.append(f"Unapproved package subdirectory: {name}")
             for required in REQUIRED_FILES:
                 expected = f"{ARCHIVE_ROOT}/{required}"
                 if expected not in names:
@@ -212,7 +276,8 @@ def main() -> int:
             return 0
         if args.dry_run:
             files = collect_files(args.source.resolve(), args.output.resolve())
-            print(json.dumps([archive for _, archive in files], indent=2) if args.json else "\n".join(archive for _, archive in files))
+            payload = [archive for _, archive in files]
+            print(json.dumps(payload, indent=2) if args.json else "\n".join(payload))
             return 0
         stats = create_package(args.source, args.output, args.compression_level, args.strict)
         print(json.dumps(stats, indent=2) if args.json else format_report(stats))

@@ -34,6 +34,9 @@ jobs:
       - name: Verify first-run contract
         run: npm run check:first-run
 
+      - name: Verify maintained script syntax
+        run: npm run check:evidence-script
+
       - name: Verify host-native plugin contracts
         run: |
           npm run check:codex-projection
@@ -64,11 +67,8 @@ jobs:
       - name: Verify OpenCode runtime plugin
         run: node tests/test_opencode_plugin.mjs
 
-      - name: Verify OpenCode install and removal lifecycle
+      - name: Verify OpenCode project-local lifecycle
         run: node tests/test_hakim_opencode_lifecycle.mjs
-
-      - name: Verify OpenCode realpath containment
-        run: node tests/test_native_plugin_realpath_containment.mjs
 
       - name: Verify host fallback and lifecycle contracts
         run: |
@@ -97,8 +97,8 @@ jobs:
       - name: Run public Python tests
         run: npm run test:public:py
 
-      - name: Build skill package
-        run: npm run package:skill
+      - name: Build skill archive
+        run: mkdir -p dist && python core/hakim-skill/scripts/package_skill.py --source core/hakim-skill --output dist/hakim-skill.zip
 
-      - name: Build native plugin package
-        run: npm run build:native-plugin
+      - name: Verify skill package
+        run: python scripts/verify_package.py dist/hakim-skill.zip

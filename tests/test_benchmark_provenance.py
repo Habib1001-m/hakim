@@ -4,7 +4,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CANONICAL = ROOT / "core" / "hakim-skill" / "SKILL.md"
-BENCHMARK = ROOT / "core" / "hakim-skill" / "assets" / "benchmark_results.md"
+LEGACY_BENCHMARK = ROOT / "core" / "hakim-skill" / "assets" / "benchmark_results.md"
 
 
 class BenchmarkProvenanceTests(unittest.TestCase):
@@ -26,33 +26,18 @@ class BenchmarkProvenanceTests(unittest.TestCase):
         self.assertIn("Ponytail-derived values", text)
         self.assertIn("not accepted as independent Hakim", text)
 
-    def test_benchmark_asset_is_a_provenance_contract(self):
-        text = BENCHMARK.read_text(encoding="utf-8")
-        required = (
-            "Accepted independent Hakim benchmark:** no",
-            "INDEPENDENT_HAKIM_BENCHMARK=NOT_ESTABLISHED",
-            "PREVIOUS_HAKIM_PERFORMANCE_CLAIMS=WITHDRAWN",
-            "PREVIOUS_STATISTICAL_CLAIMS=WITHDRAWN",
-            "PUBLIC_PERFORMANCE_OR_ROI_CLAIMS=HOLD",
-            "Minimum contract for a future Hakim benchmark",
-            "No quantified performance or ROI statement is currently accepted.",
+    def test_legacy_benchmark_asset_is_not_shipped(self):
+        self.assertFalse(
+            LEGACY_BENCHMARK.exists(),
+            "withdrawn benchmark-era documentation must not return to the active skill package",
         )
-        for fragment in required:
-            self.assertIn(fragment, text)
 
-        unsupported_claims = (
-            "Hakim skill delivers **measurable, statistically significant improvements**",
-            "All improvements statistically significant",
-            "Cohen's d",
-            "True improvement likely",
-        )
-        for fragment in unsupported_claims:
-            self.assertNotIn(fragment, text)
-
-    def test_runtime_validation_is_not_benchmark_validation(self):
-        text = BENCHMARK.read_text(encoding="utf-8")
-        self.assertIn("RUNTIME_ADAPTER_PASS_IMPLIES_BENCHMARK_PASS=NO", text)
-        self.assertIn("does not prove", text)
+    def test_runtime_validation_is_not_promoted_to_benchmark_evidence(self):
+        text = CANONICAL.read_text(encoding="utf-8")
+        self.assertIn("Host runtime validation remains environment-specific", text)
+        self.assertIn("does not establish", text)
+        self.assertIn("independent benchmark result", text)
+        self.assertIn("separate accepted evidence", text)
 
 
 if __name__ == "__main__":

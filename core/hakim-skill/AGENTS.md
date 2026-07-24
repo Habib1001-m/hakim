@@ -1,396 +1,153 @@
-# AGENTS.md: Global Rules for Repository Agents
+# AGENTS.md: Repository Rules for Hakim
 
-**Version:** 1.0.0  
-**Last Updated:** 2026-07-09  
-**Scope:** All agents working on this repository  
-**Authority:** This file takes precedence over SKILL.md for repository operations.
-
----
+**Scope:** agents modifying the Hakim source repository or canonical skill package  
+**Authority:** repository-operation rules only; product behavior remains defined by the canonical skill and capability contract.
 
 ## Purpose
 
-This file defines the global rules for any AI agent (Claude, GPT, Gemini, local models) that modifies, tests, or deploys the Hakim skill package. These rules apply to the **repository itself**, not to the skill's behavior when activated in user contexts.
+Use this file when changing Hakim itself. Do not treat it as a user-facing capability specification and do not promote historical research, examples, or local development artifacts into product claims.
 
-**Key Distinction:**
-- `SKILL.md` → Rules the agent follows when *using* the skill
-- `AGENTS.md` → Rules the agent follows when *building* the skill
+## Authority map
 
----
+Use one authoritative source per question:
 
-## Core Principles
+- Hakim decision behavior: `SKILL.md`.
+- Capability identifiers and host mappings: `capabilities.json`.
+- Repository modification rules: this file.
+- Product installation: `INSTALL.md` plus the maintained host integration.
+- Supported-host status and boundaries: repository `SUPPORTED_HOSTS.md`.
+- Package membership and layout: the current package builder and package verification checks.
+- Deterministic Python audit-helper behavior: `scripts/audit_complexity.py`.
+- Live public release metadata: repository `VERSION`, manifests, changelog, and public release checks.
 
-### Principle 1: Self-Application
+Tests, examples, archived evidence, and research notes are not higher authority than these sources.
 
-This repository must follow Hakim principles. Every file in this repo is subject to the 7-level ladder. If you find bloat in the skill package itself, fix it.
+## Current product boundary
 
-**Examples:**
-- ❌ Adding a `utils/helpers.py` for a 3-line function
-- ✅ Inlining the function where it's used
-- ❌ Importing `requests` for a single HTTP call
-- ✅ Using `urllib.request` from stdlib
+Hakim `1.0.0-beta.1` is a public beta coding-governance product with maintained surfaces for Codex, Claude Code, GitHub Copilot, and OpenCode.
 
-### Principle 2: Minimal Context Footprint
+The maintained product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm package, central marketplace/directory publication, signing, notarization, or universal host compatibility.
 
-Every addition to this repo increases the context agents must load. Before adding a file, ask:
-1. Does this need to exist? (YAGNI)
-2. Can this content live in an existing file?
-3. Can this be generated on-demand instead of stored?
+Do not reintroduce a historical implementation or document as a current product surface merely because it remains in source history.
 
-### Principle 3: Single Source of Truth
+## Core repository rules
 
-Each concept has exactly one authoritative location:
-- **Skill behavior** → `SKILL.md`
-- **Repository rules** → `AGENTS.md` (this file)
-- **Mathematical derivations** → `references/grpo_mathematics.md`
-- **Stdlib replacements** → `references/yagni_guidelines.md`
-- **Workflow patterns** → `references/workflow_patterns.md`
-- **Progressive disclosure** → `references/progressive_disclosure.md`
-- **Complexity auditing** → `scripts/audit_complexity.py`
-- **Packaging** → `scripts/package_skill.py`
-- **Technical debt** → `assets/technical_debt_ledger.json`
-- **Benchmarks** → `assets/benchmark_results.md`
+### 1. Apply Hakim to Hakim
 
-Never duplicate content across files.
+Before adding code, files, dependencies, configuration, or documentation:
 
-### Principle 4: Backward Compatibility
+1. Ask whether the change is needed.
+2. Reuse an existing implementation or source of truth when possible.
+3. Prefer standard-library and host-native behavior over custom infrastructure.
+4. Keep the smallest safe diff that preserves security, privacy, accessibility, data integrity, rollback safety, and user trust.
 
-Do not break existing integrations:
-- MCP namespace must remain `hakim.*`
-- A2A message schema must remain stable
-- YAML frontmatter fields must not be removed (only added)
-- Slash commands (`/hakim`, `/hakim-review`, etc.) must not change semantics
+### 2. Inspect before editing
 
-### Principle 5: Audit Everything
+Read the affected source, callers or consumers, tests, manifests, and active documentation before changing behavior. Do not infer current truth from filenames, old issue text, archived documents, or historical comments alone.
 
-Every change must pass the quality gates before merging:
-- G1-G7 gates must all pass
-- T-YAML-001 through T-BENCH-006 must all pass
-- R1-R6 reviews must achieve ≥85% weighted score
+### 3. Keep product claims evidence-bound
 
----
+A passing unit test, package build, structural projection check, or local smoke test proves only the scope it actually checks.
 
-## File Modification Rules
+Do not convert those results into claims of:
 
-### Adding Files
+- universal compatibility;
+- correctness or security approval;
+- benchmark superiority;
+- performance, token, cost, adoption, or ROI improvement;
+- marketplace publication or third-party approval.
 
-**Before adding any file, answer:**
-1. Does this functionality already exist in the repo?
-2. Can this be a section in an existing file instead of a new file?
-3. Is this file required for L1/L2/L3 Progressive Disclosure?
+Use `NOT_ESTABLISHED` when the repository does not contain accepted evidence.
 
-**Allowed additions:**
-- New reference files in `/references` (with justification)
-- New scripts in `/scripts` (must use stdlib only)
-- New assets in `/assets` (must be referenced by SKILL.md)
+### 4. Preserve host-native differences
 
-**Forbidden additions:**
-- Top-level files beyond `SKILL.md` and `AGENTS.md`
-- New subdirectories beyond `/scripts`, `/references`, `/assets`
-- README files in subdirectories (use main AGENTS.md)
-- License files beyond the root `LICENSE`
+Capability parity is semantic. Invocation syntax, lifecycle behavior, permissions, trust, sandboxing, and plugin policy may differ by host.
 
-### Modifying SKILL.md
+Do not force Codex, Claude Code, GitHub Copilot, and OpenCode into a lowest-common-denominator adapter or copy a host-specific command into canonical documentation as if it were universal.
 
-**Mandatory checks before modifying:**
-1. YAML frontmatter remains valid (G1)
-2. 7-level ladder remains complete and ordered (G2)
-3. Token budgets not exceeded (L1 ≤150, L2 ≤3000)
-4. All 6 slash commands preserved
-5. Persistence mechanism preserved
+### 5. Keep distribution-relative documentation portable
 
-**Forbidden modifications:**
-- Removing ladder rungs
-- Reordering ladder rungs
-- Changing skill name from `hakim`
-- Removing intensity levels
-- Removing empirical results table
+Canonical capability text may be projected into multiple installed distributions. Therefore:
 
-### Modifying Scripts
+- do not require a source-repository path such as `core/hakim-skill/...` from an installed capability;
+- do not reference a file unless that capability can operate without it or the active distribution actually ships it;
+- describe optional helpers and example assets as optional;
+- keep repository-development commands in repository documentation, not in host-neutral runtime instructions.
 
-**Mandatory checks:**
-1. All imports remain stdlib-only (G4)
-2. Function signatures remain backward-compatible
-3. CLI arguments preserved
-4. Exit codes preserved (0=success, 1=failure)
+### 6. Keep public and internal governance separate
 
-**Required after modification:**
-- Run the script against itself: `python scripts/audit_complexity.py scripts/`
-- Verify no new violations introduced
-- Update docstrings if behavior changes
+The public repository contains public product code, documentation, tests, manifests, and CI only. Do not add private taskboards, internal worklogs, evaluator archives, operator transcripts, credentials, private evidence packets, or local control-plane artifacts.
 
----
+Use public issues and pull-request descriptions only for public product work that belongs in the repository history.
 
-## Testing Before Commit
+## Canonical skill changes
 
-### Pre-Commit Checklist
+When changing `SKILL.md` or canonical capability skills:
 
-Every commit must pass these checks:
+- preserve the seven-rung decision ladder unless an explicitly approved product change replaces it;
+- preserve the four modes `lite`, `full`, `ultra`, and `off` unless an approved product change replaces them;
+- update `capabilities.json` when capability identity or host mapping changes;
+- update host projections when canonical behavior changes;
+- keep examples host-neutral unless they are explicitly labeled for one host;
+- remove stale or unavailable resource references instead of copying them across projections.
 
-```bash
-# 1. YAML validation
-python -c "import yaml; yaml.safe_load(open('SKILL.md').read().split('---')[1])"
+Projection equality is not sufficient evidence of correctness. A projection that faithfully copies a broken canonical reference is still broken.
 
-# 2. Ladder completeness
-grep -c "Does this need to exist" SKILL.md  # must be 1
-grep -c "Already in this codebase" SKILL.md  # must be 1
-grep -c "Stdlib does it" SKILL.md  # must be 1
-grep -c "Native platform feature" SKILL.md  # must be 1
-grep -c "Already-installed dependency" SKILL.md  # must be 1
-grep -c "Can it be one line" SKILL.md  # must be 1
-grep -c "Only then" SKILL.md  # must be 1
+## Scripts and dependencies
 
-# 3. Stdlib compliance
-python -c "
-import ast, sys
-for f in ['scripts/audit_complexity.py', 'scripts/package_skill.py']:
-    tree = ast.parse(open(f).read())
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.Import, ast.ImportFrom)):
-            print(f'{f}: {ast.unparse(node)}')
-"
+Prefer existing repository scripts and standard-library capabilities. Add a dependency only when the current product requirement cannot be met safely with existing code, the standard library, or the host platform.
 
-# 4. Package test
-python scripts/package_skill.py --source . --output /tmp/test-hakim.zip
-unzip -l /tmp/test-hakim.zip | grep -v '__pycache__' | grep -v '\.pyc'
+When changing a script:
 
-# 5. Self-audit
-python scripts/audit_complexity.py . --output json > /tmp/audit.json
-python -c "import json; d=json.load(open('/tmp/audit.json')); exit(0 if d['summary']['total_violations'] == 0 else 1)"
-```
+- preserve documented CLI behavior unless the change explicitly updates that contract;
+- keep exit codes and error behavior documented where users or CI depend on them;
+- update tests and documentation in the same change when behavior changes;
+- never document an example command that has not been checked against the actual parser or implementation.
 
-### Continuous Integration Requirements
+## Documentation rules
 
-If this repo has CI configured, the pipeline must:
-1. Run all 6 tests (T-YAML-001 → T-BENCH-006)
-2. Run all 7 gates (G1-G7)
-3. Generate `skill-package.zip` as artifact
-4. Fail the build if any gate or test fails
+Active documentation must describe the current product, not a previous architecture.
 
----
+For every command, flag, path, version, package member, host capability, and quantitative statement:
 
-## Language & Communication
+1. identify the authoritative implementation or upstream contract;
+2. verify the claim against it;
+3. keep the claim no broader than the evidence;
+4. prefer linking to changing host behavior rather than duplicating large upstream manuals;
+5. remove obsolete claims instead of preserving them for historical interest inside active product docs.
 
-### Documentation Language
+Research or prototype material that is retained must be clearly non-authoritative and must not be included in the shipped runtime package unless the maintained product actually depends on it.
 
-- **SKILL.md**: English (for broad agent compatibility)
-- **AGENTS.md**: English (this file)
-- **References**: English
-- **Code comments**: English
-- **Commit messages**: English
+## Validation
 
-### Writing Style
+Run the smallest relevant existing checks for the change. Before proposing public release readiness, the final head must pass the repository's current public CI and package checks on that same head.
 
-**Required:**
-- Concise, direct sentences
-- Active voice
-- Technical precision
-- Concrete examples over abstract descriptions
-
-**Forbidden:**
-- Emojis in code or documentation
-- Conversational filler ("as you can see", "let's dive in")
-- Marketing language ("revolutionary", "cutting-edge")
-- Redundant adjectives
-
-### Commit Messages
-
-**Format:**
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-**Types:**
-- `feat`: New feature (new reference, new script)
-- `fix`: Bug fix (script error, broken ladder)
-- `docs`: Documentation only
-- `refactor`: Code change, no feature/fix
-- `test`: Test additions/changes
-- `chore`: Maintenance
-
-**Examples:**
-```
-feat(references): add roofline_model.md
-
-Add detailed Roofline Model documentation with A100 metrics.
-Supports L3 Progressive Disclosure for performance-related tasks.
-
-Closes #42
-```
-
-```
-fix(scripts): audit_complexity.py missed nested async functions
-
-The AST walker was skipping AsyncFunctionDef nodes when calculating
-nesting depth. Now handles both FunctionDef and AsyncFunctionDef.
-
-Fixes #87
-```
-
----
-
-## Build Process
-
-### Generating the Package
+Common repository-level checks include:
 
 ```bash
-# From the hakim-skill directory root
-python scripts/package_skill.py --source . --output hakim-skill-package.zip
+npm test
+npm run doctor
+npm run package:skill
 ```
 
-### Verifying the Package
+Use more focused checks when changing a host integration or lifecycle path. Do not invent legacy gate names or score thresholds that the current CI does not implement.
 
-```bash
-# List contents
-unzip -l hakim-skill-package.zip
+A generated package is a local build artifact. Package creation does not establish publication, signing, third-party attestation, or runtime compatibility.
 
-# Expected structure:
-# hakim-skill/SKILL.md
-# hakim-skill/AGENTS.md
-# hakim-skill/scripts/audit_complexity.py
-# hakim-skill/scripts/package_skill.py
-# hakim-skill/references/yagni_guidelines.md
-# hakim-skill/references/grpo_mathematics.md
-# hakim-skill/references/workflow_patterns.md
-# hakim-skill/references/progressive_disclosure.md
-# hakim-skill/assets/technical_debt_ledger.json
-# hakim-skill/assets/benchmark_results.md
+## Security and vulnerability handling
 
-# Verify no absolute paths
-python -c "
-import zipfile
-with zipfile.ZipFile('hakim-skill-package.zip', 'r') as zf:
-    for name in zf.namelist():
-        if name.startswith('/') or ':/' in name or '..' in name:
-            raise SystemExit(f'Bad path: {name}')
-print('All paths valid')
-"
-```
+Do not weaken permission checks, trust boundaries, path-safety checks, rollback behavior, or refusal states to reduce code.
 
-### Deploying to MCP Router
+Do not put exploit details, credentials, private source, sensitive paths, or unsanitized runtime evidence in a public issue. Follow the repository security policy for vulnerability reporting.
 
-```bash
-# Assuming mcp CLI is installed
-mcp deploy hakim-skill-package.zip --namespace hakim
-mcp list-skills | grep hakim
-```
+## Change completion
 
----
+Before describing a task as complete:
 
-## Forbidden Actions
+- verify the final diff and affected projections;
+- run the relevant checks;
+- confirm active documentation matches the implementation;
+- confirm packaged documentation does not reference absent resources;
+- state any remaining compatibility or runtime uncertainty explicitly.
 
-The following actions are **strictly prohibited** and will be rejected in code review:
-
-### 1. Adding Third-Party Dependencies
-
-**Forbidden:**
-- Adding `requirements.txt` with external packages
-- Adding `package.json` with npm dependencies
-- Importing non-stdlib modules in scripts
-
-**Exception:** None. Rewrite using stdlib.
-
-### 2. Breaking Progressive Disclosure
-
-**Forbidden:**
-- Moving YAML frontmatter to a separate file
-- Loading L2 content at L1 stage
-- Auto-loading all references at skill activation
-
-### 3. Diluting the Ladder
-
-**Forbidden:**
-- Removing any of the 7 rungs
-- Reordering rungs
-- Adding "escape hatches" that bypass rungs
-- Weakening rung descriptions
-
-### 4. Removing Empirical Evidence
-
-**Forbidden:**
-- Deleting benchmark results
-- Removing the n=4 methodology
-- Hiding negative results
-
-### 5. Emoji Pollution
-
-**Forbidden:**
-- Emojis in SKILL.md
-- Emojis in AGENTS.md
-- Emojis in scripts
-- Emojis in commit messages
-- Emojis in PR descriptions
-
-### 6. Scope Creep
-
-**Forbidden:**
-- Adding non-coding features (translation, recipes, prose)
-- Adding GUI/visual components
-- Adding network-dependent features
-- Adding features that require external services
-
----
-
-## Quick Reference
-
-### File Locations
-
-| Need | Location |
-|------|----------|
-| Skill behavior | `SKILL.md` |
-| Repo rules | `AGENTS.md` (this file) |
-| Audit codebase | `scripts/audit_complexity.py` |
-| Package skill | `scripts/package_skill.py` |
-| Stdlib replacements | `references/yagni_guidelines.md` |
-| GRPO equations | `references/grpo_mathematics.md` |
-| Workflow patterns | `references/workflow_patterns.md` |
-| Progressive disclosure | `references/progressive_disclosure.md` |
-| Technical debt | `assets/technical_debt_ledger.json` |
-| Benchmarks | `assets/benchmark_results.md` |
-
-### Common Commands
-
-```bash
-# Audit the repo itself
-python scripts/audit_complexity.py . --intensity ultra
-
-# Package for deployment
-python scripts/package_skill.py --source . --output hakim-skill-package.zip
-
-# Validate YAML
-python -c "import yaml, re; c=open('SKILL.md').read(); m=re.match(r'^---\n(.*?)\n---', c, re.DOTALL); print(yaml.safe_load(m.group(1))['name'])"
-
-# Check ladder completeness
-grep -E "(Does this need|Already in|Stdlib does|Native platform|Already-installed|Can it be one|Only then)" SKILL.md
-```
-
-### Emergency Contacts
-
-**If you find:**
-- Ladder violation in this repo → Open issue with `[LADDER]` prefix
-- Third-party dependency added → Revert immediately, open issue with `[STDLIB]` prefix
-- Benchmark manipulation → Open issue with `[INTEGRITY]` prefix
-- Security vulnerability → Private report, do not open public issue
-
----
-
-## Version History
-
-| Version | Date | Change |
-|---------|------|--------|
-| 1.0.0 | 2026-07-09 | Initial release |
-
----
-
-## License
-
-This file is part of the Hakim skill package and is licensed under MIT.
-See root `LICENSE` file for full terms.
-
----
-
-**END OF AGENTS.md**
-```
+Do not mark a pull request Ready or merge it solely because documentation is internally consistent. Final acceptance requires evidence on the exact final head and explicit operator approval.

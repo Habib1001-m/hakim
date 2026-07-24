@@ -27,14 +27,14 @@ Use this one-screen reference. Capability scope is shared; installation and invo
 | `hakim-gain` | Show accepted evidence status without unsupported metrics. |
 | `hakim-help` | Show this reference without changing state. |
 
+Hakim maintains one canonical capability registry, but installed host plugins are not required to expose the source-repository registry path. Use the active host's discovered skills, commands, or agents as the runtime surface.
+
 ## Native host surfaces
 
 - **Codex:** `codex plugin marketplace add Habib1001-m/hakim`, install `hakim@hakim` from `/plugins`, then use skills such as `$hakim:hakim`, `$hakim:hakim-review`, and `$hakim:hakim-help`.
 - **Claude Code:** `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim`; explicit commands are `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, and `/hakim:help`.
 - **GitHub Copilot:** `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim`; inspect skills with `/skills list` and specialized agents with `/agent`.
 - **OpenCode:** install the guarded project-local bundle from a Hakim source checkout, then use `/hakim full`, `/hakim-review`, `/hakim-audit`, `/hakim-debt`, `/hakim-gain`, or `/hakim-help`.
-
-The canonical capability map is `core/hakim-skill/capabilities.json`.
 
 ## Distribution boundary
 
