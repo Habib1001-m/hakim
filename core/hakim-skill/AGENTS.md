@@ -26,7 +26,7 @@ Tests, examples, archived evidence, and research notes are not higher authority 
 
 Hakim `1.0.0-beta.1` is a public beta coding-governance product with maintained surfaces for Codex, Claude Code, GitHub Copilot, and OpenCode.
 
-The maintained product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm package, central marketplace/directory publication, signing, notarization, or universal host compatibility.
+The maintained product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm registry publication, central marketplace/directory publication, signing, notarization, or universal host compatibility. The private root package metadata may be used as a bounded Git transport surface for OpenCode without becoming an npm registry release.
 
 Do not reintroduce a historical implementation or document as a current product surface merely because it remains in source history.
 
@@ -132,7 +132,7 @@ npm run package:skill
 
 Use more focused checks when changing a host integration or lifecycle path. Do not invent legacy gate names or score thresholds that the current CI does not implement.
 
-A generated package is a local build artifact. Package creation does not establish publication, signing, third-party attestation, or runtime compatibility.
+A generated package is a local build artifact. Package creation does not establish registry publication, signing, third-party attestation, or runtime compatibility.
 
 ## Security and vulnerability handling
 
