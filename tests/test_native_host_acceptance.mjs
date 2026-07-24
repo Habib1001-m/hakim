@@ -16,7 +16,33 @@ const current = validateProjection(projection, version);
 assert.equal(current.ok, true, current.errors.join('\n'));
 assert.equal(current.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.deepEqual(Object.keys(projection.hosts).sort(), [...EXPECTED_HOSTS].sort());
-assert.ok(EXPECTED_HOSTS.every((host) => projection.hosts[host].status === 'NOT_RUN'));
+
+for (const host of ['codex', 'claude-code', 'github-copilot']) {
+  assert.equal(projection.hosts[host].status, 'PASS');
+  assert.equal(typeof projection.hosts[host].evidence_ref, 'string');
+  assert.ok(projection.hosts[host].evidence_ref.length > 0);
+}
+
+assert.equal(projection.hosts.opencode.status, 'NOT_RUN');
+assert.match(projection.hosts.opencode.product_path, /Git-backed npx project-local install/);
+assert.equal(projection.hosts.opencode.host_version, null);
+assert.equal(projection.hosts.opencode.verified_at, null);
+assert.equal(projection.hosts.opencode.evidence_ref, null);
+
+const blank = structuredClone(projection);
+for (const host of EXPECTED_HOSTS) {
+  blank.hosts[host] = {
+    ...blank.hosts[host],
+    status: 'NOT_RUN',
+    host_version: null,
+    verified_at: null,
+    evidence_ref: null,
+  };
+}
+blank.overall_status = computeOverall(blank.hosts);
+const blankResult = validateProjection(blank, version);
+assert.equal(blankResult.ok, true, blankResult.errors.join('\n'));
+assert.equal(blankResult.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 
 const accepted = structuredClone(projection);
 for (const host of EXPECTED_HOSTS) {
@@ -24,7 +50,7 @@ for (const host of EXPECTED_HOSTS) {
     ...accepted.hosts[host],
     status: 'PASS',
     host_version: 'test-host-1.0.0',
-    verified_at: '2026-07-24',
+    verified_at: '2026-07-25',
     evidence_ref: `public-evidence:${host}`,
   };
 }
