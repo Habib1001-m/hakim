@@ -93,14 +93,12 @@ jobs:
 
       - name: Verify public repository and package boundaries
         run: |
+          npm run check:workflow-policy
           npm run check:public-boundary
           npm run check:public-package
 
       - name: Run public Python tests
         run: npm run test:public:py
 
-      - name: Build skill archive
-        run: mkdir -p dist && python core/hakim-skill/scripts/package_skill.py --source core/hakim-skill --output dist/hakim-skill.zip
-
-      - name: Verify skill package
-        run: python scripts/verify_package.py dist/hakim-skill.zip
+      - name: Build and verify release bundle
+        run: npm run package:release
