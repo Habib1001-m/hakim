@@ -11,14 +11,15 @@ Hakim `1.0.0-beta.1` is public beta software. Support means the repository maint
 
 ## Current native live-host acceptance
 
-The public-safe, machine-readable projection is [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). It records accepted current native journeys separately for Codex, Claude Code, GitHub Copilot, and OpenCode.
+The public-safe, machine-readable projection is [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). It records current-path acceptance separately for Codex, Claude Code, GitHub Copilot, and OpenCode.
 
 - `PASS` requires an observed real-host install/start/invocation journey plus a public-safe evidence reference for the journey being claimed.
 - `NOT_RUN` means no accepted live-host journey is recorded for the claimed path.
 - `FAIL` and `BLOCKED` require an attempted journey plus a public-safe evidence reference.
 - Structural, packaging, smoke, projection, or CI success does not change a live-host status.
 - A transport-only first-run improvement that invokes the same runtime bundle still requires its own evidence before Hakim describes that exact transport as accepted.
-- The existing OpenCode `PASS` evidence covers the guarded project-local install/runtime journey observed before the Git-backed bootstrap was added; it must not be silently reused as evidence that the new one-command transport itself was observed.
+- Codex, Claude Code, and GitHub Copilot currently remain `PASS`; OpenCode is `NOT_RUN` for the Git-backed bootstrap until that exact journey is observed.
+- Earlier guarded project-local OpenCode `PASS` evidence remains bounded historical evidence and must not be silently reused as evidence that the new one-command transport itself was observed.
 - Private acceptance ledgers and release authorization are intentionally outside the public repository and are not reconstructed from this projection.
 
 ## Design rule
