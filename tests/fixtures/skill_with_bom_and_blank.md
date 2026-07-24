@@ -18,8 +18,8 @@ lite, full, ultra, off.
 ## Persistence
 Stay active.
 
-## Commands
-/hakim
+## Capabilities
+hakim
 
 ## Deliberate Technical Debt Ledger
 Document shortcuts.
