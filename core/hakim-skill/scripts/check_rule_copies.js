@@ -224,7 +224,7 @@ function main() {
   const copyAnalysis = analyzeSkill(copyContent);
   const diffs = compare(primaryAnalysis, copyAnalysis);
   const result = { original: { path: primaryPath, hash: primaryAnalysis.file_hash_short }, copy: { path: comparePath, hash: copyAnalysis.file_hash_short }, identical: diffs.length === 0, diff_count: diffs.length, diffs };
-  console.log(jsonMode ? JSON.stringify(result, null, 2) : formatComparisonText(diffs, primaryPath, copyPath));
+  console.log(jsonMode ? JSON.stringify(result, null, 2) : formatComparisonText(diffs, primaryPath, comparePath));
   process.exit(diffs.length === 0 ? 0 : 1);
 }
 
