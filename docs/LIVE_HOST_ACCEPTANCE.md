@@ -66,13 +66,28 @@ Inside Copilot CLI, verify `/skills list` and `/agent`, then invoke a Hakim skil
 
 ### OpenCode
 
-Use a disposable or deliberately selected test repository. For an unreleased candidate, pin the Git package spec to the exact candidate commit instead of testing a moving branch:
+Use a disposable or deliberately selected test repository. Normal user first-run uses the documented Git-backed `npx --package=github:Habib1001-m/hakim ...` bootstrap and does not require an npm 11 upgrade.
+
+For an unreleased acceptance candidate, evidence must still identify the exact 40-character commit. npm CLI has a known upstream bug for exact Git commit refs that reproduces on npm `10.9.8` as `GitFetcher requires an Arborist constructor to pack a tarball` (npm/cli#6723); the upstream fix landed in the npm 11 line. To preserve exact-SHA evidence without changing the system npm, run npm 11 one-shot through the existing npx executable:
 
 ```bash
 cd /path/to/test-project
-npx --yes --package=github:Habib1001-m/hakim#<40-char-candidate-sha> hakim-opencode install --dry-run
-npx --yes --package=github:Habib1001-m/hakim#<40-char-candidate-sha> hakim-opencode install
+SOURCE_SHA=<40-char-candidate-sha>
+
+npx --yes --package=npm@11 npm exec --yes \
+  --package="github:Habib1001-m/hakim#$SOURCE_SHA" -- \
+  hakim-opencode status --json
+
+npx --yes --package=npm@11 npm exec --yes \
+  --package="github:Habib1001-m/hakim#$SOURCE_SHA" -- \
+  hakim-opencode install --dry-run --json
+
+npx --yes --package=npm@11 npm exec --yes \
+  --package="github:Habib1001-m/hakim#$SOURCE_SHA" -- \
+  hakim-opencode install --json
 ```
+
+This wrapper is acceptance tooling for immutable commit evidence; it is not a new global npm requirement and does not modify the system npm installation.
 
 Then start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
 
