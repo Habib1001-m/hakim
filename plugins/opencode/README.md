@@ -8,7 +8,7 @@
 The plugin loads project-locally from:
 
 ```text
-.opencode/plugins/hakim.mjs
+.opencode/plugins/hakim.js
 ```
 
 It uses OpenCode configuration and prompt hooks to:
@@ -26,7 +26,7 @@ Repository tests cover the documented hook shapes and guarded project-local file
 ```text
 .opencode/
 ├── plugins/
-│   └── hakim.mjs
+│   └── hakim.js
 └── hakim-runtime/
     ├── loaders/
     │   └── hakim-loader.mjs
@@ -41,7 +41,7 @@ Repository tests cover the documented hook shapes and guarded project-local file
             └── hakim-help/SKILL.md
 ```
 
-The installer does **not** create or modify `opencode.json`. OpenCode discovers the project-local plugin from `.opencode/plugins/`; the plugin registers the installed skill path at load time.
+The installer does **not** create or modify `opencode.json`. OpenCode discovers project-local plugins from `.opencode/plugins/`; Hakim installs the adapter with a `.js` filename so it participates in OpenCode's current JavaScript/TypeScript plugin discovery, and the plugin registers the installed skill path at load time.
 
 ## Install
 

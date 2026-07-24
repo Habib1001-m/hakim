@@ -16,6 +16,7 @@ const install = read('core/hakim-skill/INSTALL.md');
 const changelog = read('CHANGELOG.md');
 const security = read('SECURITY.md');
 const limitations = read('KNOWN_LIMITATIONS.md');
+const liveAcceptance = read('docs/LIVE_HOST_ACCEPTANCE.md');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
 const nativeAcceptance = JSON.parse(read('conformance/native-host-acceptance.json'));
 const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
@@ -40,6 +41,8 @@ assert.equal(nativeAcceptance.product_version, version);
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
 assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
+assert.equal(packageJson.scripts['accept:host'], 'node scripts/hakim_live_host_acceptance.mjs');
+assert.equal(packageJson.scripts['accept:host:json'], 'node scripts/hakim_live_host_acceptance.mjs --json');
 assert.equal(codexManifest.version, version);
 assert.equal(claudeManifest.version, version);
 assert.equal(copilotManifest.version, version);
@@ -64,6 +67,9 @@ assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
 assert.match(install, /npm run plan:install -- --host all/);
 assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
+assert.match(liveAcceptance, /npm run accept:host -- --host codex/);
+assert.match(liveAcceptance, /--apply.*intentionally refused/);
+assert.match(liveAcceptance, /candidate evidence packet/i);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -103,6 +109,7 @@ const productDocs = [
   'SUPPORTED_HOSTS.md',
   'SECURITY.md',
   'KNOWN_LIMITATIONS.md',
+  'docs/LIVE_HOST_ACCEPTANCE.md',
   'core/hakim-skill/INSTALL.md',
   'plugins/README.md',
   'plugins/codex/README.md',

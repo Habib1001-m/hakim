@@ -49,8 +49,10 @@ jobs:
       - name: Verify cross-host conformance
         run: npm run check:conformance
 
-      - name: Verify native host preflight contract
-        run: node tests/test_hakim_host_preflight.mjs
+      - name: Verify native host acceptance contracts
+        run: |
+          node tests/test_hakim_host_preflight.mjs
+          node tests/test_hakim_live_host_acceptance.mjs
 
       - name: Verify core governance contracts
         run: |

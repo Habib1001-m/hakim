@@ -34,6 +34,11 @@ test('argument parser requires target and preserves dry-run default', () => {
 
 test('installer dry-run is non-mutating, apply creates exact bundle, and repeat is idempotent', async () => withRepository(({ target }) => {
   const bundle = buildOpenCodeBundle(ROOT);
+  assert.equal(
+    bundle.files.find((file) => file.source_relative === 'plugins/opencode/hakim.mjs')?.target_relative,
+    '.opencode/plugins/hakim.js',
+    'installed plugin filename must use an OpenCode-discoverable .js extension',
+  );
 
   const dryRun = installOpenCodeAdapter({ target, apply: false }, ROOT);
   assert.equal(dryRun.status, 'PASS');
@@ -58,7 +63,7 @@ test('installer dry-run is non-mutating, apply creates exact bundle, and repeat 
 }));
 
 test('installer refuses a conflicting pre-existing plugin without modifying it', async () => withRepository(({ target }) => {
-  const plugin = path.join(target, '.opencode', 'plugins', 'hakim.mjs');
+  const plugin = path.join(target, '.opencode', 'plugins', 'hakim.js');
   fs.mkdirSync(path.dirname(plugin), { recursive: true });
   fs.writeFileSync(plugin, 'export default () => ({ custom: true });\n');
   const before = fs.readFileSync(plugin, 'utf8');
@@ -114,7 +119,7 @@ test('remover dry-run is non-mutating and exact removal preserves unrelated Open
   assert.equal(dryRun.status, 'PASS');
   assert.equal(dryRun.state, 'READY_TO_REMOVE');
   assert.equal(dryRun.filesystem_changed, false);
-  assert.equal(fs.existsSync(path.join(target, '.opencode', 'plugins', 'hakim.mjs')), true);
+  assert.equal(fs.existsSync(path.join(target, '.opencode', 'plugins', 'hakim.js')), true);
 
   const removed = removeOpenCodeAdapter({ target, apply: true }, ROOT);
   assert.equal(removed.status, 'PASS');
@@ -122,7 +127,7 @@ test('remover dry-run is non-mutating and exact removal preserves unrelated Open
   assert.equal(removed.removal_performed, true);
   assert.equal(fs.readFileSync(unrelated, 'utf8'), 'preserve me\n');
   assert.equal(fs.existsSync(path.join(target, '.opencode')), true);
-  assert.equal(fs.existsSync(path.join(target, '.opencode', 'plugins', 'hakim.mjs')), false);
+  assert.equal(fs.existsSync(path.join(target, '.opencode', 'plugins', 'hakim.js')), false);
   assert.equal(fs.existsSync(path.join(target, '.opencode', 'hakim-runtime')), false);
 
   const repeated = removeOpenCodeAdapter({ target, apply: true }, ROOT);
@@ -134,7 +139,7 @@ test('remover dry-run is non-mutating and exact removal preserves unrelated Open
 test('remover refuses a modified file and leaves the full bundle untouched', async () => withRepository(({ target }) => {
   const installed = installOpenCodeAdapter({ target, apply: true }, ROOT);
   assert.equal(installed.state, 'CREATED');
-  const plugin = path.join(target, '.opencode', 'plugins', 'hakim.mjs');
+  const plugin = path.join(target, '.opencode', 'plugins', 'hakim.js');
   fs.appendFileSync(plugin, '\n// local customization\n');
   const before = fs.readFileSync(plugin, 'utf8');
 

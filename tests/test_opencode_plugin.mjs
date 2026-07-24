@@ -47,6 +47,8 @@ test('OpenCode plugin registers canonical commands and skills path without overw
   );
   assert.match(config.command.hakim.template, /\$1/);
   assert.match(config.command['hakim-audit'].template, /native skill tool/);
+  assert.match(config.command['hakim-help'].template, /show the Hakim quick reference/);
+  assert.match(config.command['hakim-help'].template, /Do not require additional arguments/);
   assert.equal(config.skills.paths.length, 1);
   assert.equal(config.skills.paths[0], path.join(ROOT, 'core', 'hakim-skill', 'skills'));
 
@@ -106,7 +108,7 @@ test('copied project-local bundle resolves without repository-relative imports',
   fs.mkdirSync(path.join(runtimeDir, 'loaders'), { recursive: true });
   fs.mkdirSync(path.join(runtimeDir, 'hakim-skill'), { recursive: true });
 
-  fs.copyFileSync(PLUGIN_PATH, path.join(pluginDir, 'hakim.mjs'));
+  fs.copyFileSync(PLUGIN_PATH, path.join(pluginDir, 'hakim.js'));
   fs.copyFileSync(
     path.join(ROOT, 'core', 'loaders', 'hakim-loader.mjs'),
     path.join(runtimeDir, 'loaders', 'hakim-loader.mjs'),
@@ -126,7 +128,7 @@ test('copied project-local bundle resolves without repository-relative imports',
   );
 
   try {
-    const load = await loadPlugin(path.join(pluginDir, 'hakim.mjs'));
+    const load = await loadPlugin(path.join(pluginDir, 'hakim.js'));
     const hooks = await load({});
     const config = {};
     await hooks.config(config);
@@ -134,6 +136,7 @@ test('copied project-local bundle resolves without repository-relative imports',
       config.skills.paths[0],
       path.join(runtimeDir, 'hakim-skill', 'skills'),
     );
+    assert.match(config.command['hakim-help'].template, /Do not require additional arguments/);
     const system = await transform(hooks, 'installed');
     assert.match(system[0], /# Hakim activation \(full\)/);
     assert.match(system[0], /## The Ladder/);

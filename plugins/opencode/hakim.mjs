@@ -1,7 +1,7 @@
 // Hakim OpenCode plugin adapter.
 //
 // Project-local usage after installation:
-//   .opencode/plugins/hakim.mjs
+//   .opencode/plugins/hakim.js
 //
 // The adapter does not embed the Hakim ruleset. It resolves the canonical
 // loader, capability contract, and skill sources from either this repository
@@ -82,6 +82,12 @@ function commandDefinition(capability) {
     return {
       description: 'Set Hakim mode for this OpenCode session: lite, full, ultra, or off.',
       template: 'Apply Hakim mode $1 to this request. Valid modes: lite, full, ultra, off. Request: $ARGUMENTS',
+    };
+  }
+  if (capability.id === 'hakim-help') {
+    return {
+      description: capability.purpose,
+      template: 'Load the `hakim-help` skill with OpenCode\'s native skill tool and show the Hakim quick reference. Do not require additional arguments. Additional user context (optional): $ARGUMENTS',
     };
   }
   return {
