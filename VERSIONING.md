@@ -35,6 +35,20 @@ remove the prerelease label.
 
 Build metadata is not currently used for shipped Hakim product identity.
 
+## Immutable evidence identity
+
+A version string identifies the product line, not a moving source checkout. Any
+future external evaluator campaign, benchmark, third-party validation, or release
+candidate evidence must also record an immutable Hakim identity such as:
+
+- an exact 40-character source commit;
+- an immutable Git tag that resolves to that commit; or
+- a published release artifact whose manifest/checksum records the source identity.
+
+Two observations against different `main` revisions must not be pooled merely
+because both revisions report the same prerelease version. External evaluator
+recruitment is currently suspended; this rule governs any future relaunch.
+
 ## Change classification
 
 ### PATCH-level compatible change
@@ -89,6 +103,21 @@ Each claim requires its own evidence. Conversely, accepted live-host evidence do
 not require an immediate version change when the shipped product contract has not
 changed.
 
+## Reproducible package identity
+
+The maintained skill ZIP is intended to be byte-reproducible for equivalent
+maintained source content. The package writer therefore normalizes archive member
+ordering, timestamps, and file modes instead of inheriting checkout filesystem
+metadata.
+
+`SHA256SUMS` and the release manifest prove integrity against a particular artifact;
+they are not themselves proof of reproducibility. Reproducibility is separately
+covered by a regression that rebuilds after source mtime changes and requires
+byte-identical output.
+
+Signing, notarization, an SBOM, and third-party attestation remain separate claims
+and are not implied by reproducibility or checksums.
+
 ## Public-beta release review
 
 Before a new version tag or GitHub release is recommended for operator approval:
@@ -98,11 +127,13 @@ Before a new version tag or GitHub release is recommended for operator approval:
 3. `npm run check:workflow-policy` passes.
 4. `npm run check:public-boundary`, `npm run check:public-package`, and
    `npm run check:native-acceptance` pass.
-5. `npm run package:release` builds and verifies the skill ZIP, `SHA256SUMS`, and
-   JSON release manifest.
+5. `npm run package:release` builds and verifies the reproducible skill ZIP,
+   `SHA256SUMS`, and JSON release manifest.
 6. Release notes state supported hosts, the bounded live-host evidence, known
    limitations, and unsupported distribution channels.
 7. Security and documentation truth remain consistent with the release candidate.
+8. Any external or third-party evidence cited by the release identifies the exact
+   immutable Hakim commit/tag/artifact it evaluated.
 
 A successful public-beta review does not automatically authorize publication,
 create a tag, publish a GitHub release, or publish to a central marketplace. Those
