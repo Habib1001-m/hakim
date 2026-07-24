@@ -17,12 +17,22 @@ class CIGateRegressionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "skill"
             source.mkdir()
-            (source / "scripts").mkdir()
-            (source / "SKILL.md").write_text(
-                "---\nname: hakim\ndescription: test\nargument-hint: x\n---\n",
-                encoding="utf-8",
-            )
-            (source / "AGENTS.md").write_text("# agents\n", encoding="utf-8")
+            for directory in ["scripts", "skills", "conformance"]:
+                (source / directory).mkdir()
+
+            fixtures = {
+                "SKILL.md": "---\nname: hakim\ndescription: test\nargument-hint: x\n---\n",
+                "AGENTS.md": "# agents\n",
+                "INSTALL.md": "# install\n",
+                "README.md": "# readme\n",
+                "LICENSE": "MIT\n",
+                "THIRD_PARTY_NOTICES.md": "# notices\n",
+                "VERSION": "0.0.0-test\n",
+                "capabilities.json": "{}\n",
+            }
+            for name, content in fixtures.items():
+                (source / name).write_text(content, encoding="utf-8")
+
             output = source / "hakim-skill-package.zip"
             output.write_bytes(b"stale package")
 
@@ -34,7 +44,6 @@ class CIGateRegressionTests(unittest.TestCase):
                     str(source),
                     "--output",
                     str(output),
-                    "--no-strict",
                 ],
                 cwd=ROOT,
                 text=True,
