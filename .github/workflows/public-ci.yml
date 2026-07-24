@@ -20,34 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
-      - name: Diagnose archive token in root docs
-        run: '! find core/hakim-skill -maxdepth 1 -type f -name "*.md" -exec grep -lF "ARCHIVE_POLICY.md" {} + | grep -q .'
-
-      - name: Diagnose archive token in capability docs
-        run: '! grep -R -lF --include="*.md" "ARCHIVE_POLICY.md" core/hakim-skill/skills 2>/dev/null | grep -q .'
-
-      - name: Diagnose archive token in references
-        run: '! grep -R -lF --include="*.md" "ARCHIVE_POLICY.md" core/hakim-skill/references 2>/dev/null | grep -q .'
-
-      - name: Diagnose archive token in assets
-        run: '! grep -R -lF --include="*.md" "ARCHIVE_POLICY.md" core/hakim-skill/assets 2>/dev/null | grep -q .'
-
-      - name: Diagnose archive token in scripts
-        run: '! grep -R -lF --include="*.md" "ARCHIVE_POLICY.md" core/hakim-skill/scripts 2>/dev/null | grep -q .'
-
-      - name: Diagnose archive token in conformance
-        run: '! grep -R -lF --include="*.md" "ARCHIVE_POLICY.md" core/hakim-skill/conformance 2>/dev/null | grep -q .'
-
-      - name: Diagnose archive token in other package docs
-        run: |
-          ! find core/hakim-skill -mindepth 2 -type f -name "*.md" \
-            ! -path "core/hakim-skill/skills/*" \
-            ! -path "core/hakim-skill/references/*" \
-            ! -path "core/hakim-skill/assets/*" \
-            ! -path "core/hakim-skill/scripts/*" \
-            ! -path "core/hakim-skill/conformance/*" \
-            -exec grep -lF "ARCHIVE_POLICY.md" {} + | grep -q .
-
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
@@ -125,38 +97,8 @@ jobs:
       - name: Run public Python tests
         run: npm run test:public:py
 
-      - name: Diagnose source-checkout audit command
-        run: '! grep -R -nF --include="*.md" "python core/hakim-skill/scripts/audit_complexity.py" core/hakim-skill'
-
-      - name: Diagnose missing archive authority
-        run: '! grep -R -nF --include="*.md" "ARCHIVE_POLICY.md" core/hakim-skill'
-
-      - name: Diagnose obsolete MCP deploy command
-        run: '! grep -R -nF --include="*.md" "mcp deploy hakim-skill-package.zip" core/hakim-skill'
-
-      - name: Diagnose obsolete MCP compatibility contract
-        run: '! grep -R -nF --include="*.md" "MCP namespace must remain" core/hakim-skill'
-
-      - name: Diagnose obsolete A2A compatibility contract
-        run: '! grep -R -nF --include="*.md" "A2A message schema must remain" core/hakim-skill'
-
-      - name: Diagnose obsolete private test taxonomy
-        run: '! grep -R -nF --include="*.md" "T-YAML-001" core/hakim-skill'
-
-      - name: Diagnose obsolete private review taxonomy
-        run: '! grep -R -nF --include="*.md" "R1-R6 reviews" core/hakim-skill'
-
       - name: Build skill archive
         run: mkdir -p dist && python core/hakim-skill/scripts/package_skill.py --source core/hakim-skill --output dist/hakim-skill.zip
 
-      - name: Verify skill package structure
-        run: python scripts/verify_package.py dist/hakim-skill.zip --section structure
-
-      - name: Verify skill package documentation
-        run: python scripts/verify_package.py dist/hakim-skill.zip --section docs
-
-      - name: Verify skill package conformance
-        run: python scripts/verify_package.py dist/hakim-skill.zip --section conformance
-
-      - name: Verify complete skill package
+      - name: Verify skill package
         run: python scripts/verify_package.py dist/hakim-skill.zip
