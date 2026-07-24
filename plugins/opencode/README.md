@@ -142,7 +142,7 @@ These checks prove deterministic plugin wiring, the bounded Git-package bootstra
 
 - The Git-backed bootstrap is a transport layer over the same project-local installer/remover; it does not introduce a second global lifecycle architecture.
 - Project-local plugin and lifecycle behavior is covered by the public test suite.
-- A new first-run transport must still receive accepted real-host evidence before Hakim treats that exact journey as independently accepted.
+- A new first-run transport requires separate real-host evidence before Hakim treats that exact journey as independently accepted.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
