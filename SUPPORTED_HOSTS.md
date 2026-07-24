@@ -1,6 +1,6 @@
 # Supported Hosts
 
-Hakim `1.0.0-beta.1` is public beta software. Support means the repository maintains a documented, gated product surface for the host; it does not imply universal compatibility.
+Hakim `1.0.0-beta.1` is public beta software. Support means the repository maintains a documented, gated product surface for the host; it does not imply universal compatibility or live-host acceptance.
 
 | Host | Maintained product surface | Native UX | Current boundary |
 |---|---|---|---|
@@ -8,6 +8,16 @@ Hakim `1.0.0-beta.1` is public beta software. Support means the repository maint
 | Claude Code | Native marketplace plugin with six user commands, hidden canonical skills, lifecycle hooks, and specialized plugin agents | `claude plugin marketplace add Habib1001-m/hakim` + `claude plugin install hakim@hakim` | Claude installation scope, managed policy, permissions, plugin cache, and trust remain authoritative |
 | GitHub Copilot | Native marketplace plugin with six skills and five custom agents; repository instructions retained as optional baseline | `copilot plugin marketplace add Habib1001-m/hakim` + `copilot plugin install hakim@hakim` | Copilot policy, enabled plugins, repository access, and agent tool permissions remain authoritative |
 | OpenCode | Guarded project-local native plugin bundle with create-only installation, canonical hash manifest, exact-match removal, quarantine-backed removal, and rollback | source checkout → guarded dry-run/apply installer → normal OpenCode startup | No npm/global installer or cross-process lifecycle lock is claimed; validation is bounded to documented versions/test environments; installer intentionally does not edit `opencode.json` |
+
+## Current native live-host acceptance
+
+The public-safe, machine-readable projection is [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). It records the current native product path separately for Codex, Claude Code, GitHub Copilot, and OpenCode.
+
+- `PASS` requires an observed real-host install/start/invocation journey on the current product path plus a public-safe evidence reference.
+- `NOT_RUN` means no accepted current-native live-host journey is recorded in the public projection.
+- `FAIL` and `BLOCKED` require an attempted current-native journey plus a public-safe evidence reference.
+- Structural, packaging, smoke, projection, or CI success does not change a live-host status.
+- Private acceptance ledgers and release authorization are intentionally outside the public repository and are not reconstructed from this projection.
 
 ## Design rule
 
