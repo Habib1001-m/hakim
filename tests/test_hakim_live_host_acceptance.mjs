@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   SUPPORTED_HOSTS,
   buildLiveAcceptance,
   parseArgs,
+  validateOutputPath,
 } from '../scripts/hakim_live_host_acceptance.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -111,4 +114,15 @@ const blockedVersion = buildLiveAcceptance(
 assert.equal(blockedVersion.candidate_status, 'INCOMPLETE');
 assert.equal(blockedVersion.host_binary.version_probe.reason, 'BINARY_NOT_FOUND');
 
-console.log('live host acceptance harness stays read-only and produces reviewable candidate evidence only');
+const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-live-evidence-'));
+try {
+  const outputPath = path.join(outputRoot, 'nested', 'candidate.json');
+  assert.equal(validateOutputPath(outputPath), path.resolve(outputPath));
+  assert.equal(fs.existsSync(path.dirname(outputPath)), true);
+  fs.writeFileSync(outputPath, '{}\n', 'utf8');
+  assert.throws(() => validateOutputPath(outputPath), /refusing overwrite/);
+} finally {
+  fs.rmSync(outputRoot, { recursive: true, force: true });
+}
+
+console.log('live host acceptance harness stays read-only and produces create-only reviewable candidate evidence');
