@@ -63,6 +63,7 @@ const retiredDocumentMarkers = [
   ['Private OpenCode', 'setup'].join(' '),
 ];
 
+const historicalDocumentExceptions = new Set(['CHANGELOG.md']);
 const errors = [];
 
 for (const relative of forbiddenPaths) {
@@ -98,9 +99,10 @@ function scanPublicDocuments(directory, relativeRoot = '') {
       continue;
     }
     if (!entry.isFile() || !documentExtensions.has(path.extname(entry.name).toLowerCase())) continue;
+    if (historicalDocumentExceptions.has(relative)) continue;
     const text = fs.readFileSync(absolute, 'utf8');
     for (const marker of retiredDocumentMarkers) {
-      if (text.includes(marker)) errors.push(`retired public-document marker in ${relative}: ${marker}`);
+      if (text.includes(marker)) errors.push(`retired active-document marker in ${relative}: ${marker}`);
     }
   }
 }
