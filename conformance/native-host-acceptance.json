@@ -14,10 +14,10 @@
   "hosts": {
     "codex": {
       "product_path": "Git marketplace plugin install -> trust bundled SessionStart hook -> start a new thread -> invoke an installed Hakim skill",
-      "status": "NOT_RUN",
-      "host_version": null,
-      "verified_at": null,
-      "evidence_ref": null
+      "status": "PASS",
+      "host_version": "codex-cli 0.145.0",
+      "verified_at": "2026-07-24T12:22:38.758Z",
+      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/8#issuecomment-5069793976"
     },
     "claude-code": {
       "product_path": "Git marketplace plugin install -> start Claude Code -> invoke a Hakim command or plugin agent",
