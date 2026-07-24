@@ -12,6 +12,27 @@ if (!fs.existsSync(packagePath)) {
 } else {
   const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
   if (pkg.private !== true) errors.push('package.json must remain private');
+  if (pkg.bin?.['hakim-opencode'] !== 'scripts/hakim_opencode_cli.mjs') {
+    errors.push('Git-backed OpenCode bootstrap bin is missing or unexpected');
+  }
+  const expectedBootstrapFiles = [
+    'core/hakim-skill/SKILL.md',
+    'core/hakim-skill/capabilities.json',
+    'core/hakim-skill/skills',
+    'core/loaders/hakim-loader.mjs',
+    'plugins/opencode/hakim.mjs',
+    'scripts/hakim_opencode_cli.mjs',
+    'scripts/hakim_opencode_install.mjs',
+    'scripts/hakim_opencode_remove.mjs',
+    'scripts/lib/opencode_bundle.mjs',
+  ];
+  if (!Array.isArray(pkg.files) || pkg.files.length !== expectedBootstrapFiles.length) {
+    errors.push('Git-backed bootstrap package files allowlist has unexpected size');
+  } else {
+    for (const relative of expectedBootstrapFiles) {
+      if (!pkg.files.includes(relative)) errors.push(`Git-backed bootstrap package missing allowlisted path: ${relative}`);
+    }
+  }
   if (pkg.scripts?.test !== 'npm run test:public') {
     errors.push('test must route to test:public');
   }
@@ -58,6 +79,7 @@ for (const relative of [
   'core/hakim-skill/SKILL.md',
   'core/hakim-skill/AGENTS.md',
   'scripts/hakim_doctor.mjs',
+  'scripts/hakim_opencode_cli.mjs',
   'scripts/verify_package.py',
 ]) {
   if (!fs.existsSync(path.join(root, relative))) {
