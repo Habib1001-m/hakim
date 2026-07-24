@@ -140,9 +140,7 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
   const nativeHostStatuses = Object.fromEntries(
     Object.entries(nativeAcceptance?.hosts || {}).map(([host, value]) => [host, value?.status || null]),
   );
-  const externalEvaluation = nativeOverall === 'PASS'
-    ? 'SUSPENDED_FOR_PRODUCT_REMEDIATION'
-    : 'BLOCKED_ON_LIVE_HOST_EVIDENCE';
+  const externalEvaluation = 'SUSPENDED_FOR_PRODUCT_REMEDIATION';
 
   return {
     schema_version: 1,
@@ -170,7 +168,7 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
     next_safe_action: failed.length > 0
       ? `Run the first failing check directly: ${failed[0].command}`
       : nativeOverall !== 'PASS'
-        ? 'Run current native host acceptance journeys on real supported hosts before any external evaluator campaign.'
+        ? 'Complete POST-BETA-R1 remediation tracked in GitHub issue #14 by collecting the pending current native host acceptance evidence before any external evaluator campaign.'
         : 'Complete POST-BETA-R1 remediation tracked in GitHub issue #14 before relaunching external evaluator recruitment.',
     checks: results,
   };
