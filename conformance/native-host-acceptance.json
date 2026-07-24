@@ -28,10 +28,10 @@
     },
     "github-copilot": {
       "product_path": "Git marketplace plugin install -> verify installed skills/agents -> invoke a Hakim skill or agent",
-      "status": "NOT_RUN",
-      "host_version": null,
-      "verified_at": null,
-      "evidence_ref": null
+      "status": "PASS",
+      "host_version": "GitHub Copilot CLI 1.0.74.",
+      "verified_at": "2026-07-24T13:47:07.371Z",
+      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/8#issuecomment-5070551461"
     },
     "opencode": {
       "product_path": "Guarded project-local install -> start OpenCode from the target project -> invoke a Hakim command/skill",
