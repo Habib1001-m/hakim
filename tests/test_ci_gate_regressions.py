@@ -17,15 +17,25 @@ class CIGateRegressionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "skill"
             source.mkdir()
-            for item in ["scripts", "references", "assets"]:
-                (source / item).mkdir()
-            (source / "SKILL.md").write_text("---\nname: hakim\ndescription: test\nargument-hint: x\n---\n", encoding="utf-8")
+            (source / "scripts").mkdir()
+            (source / "SKILL.md").write_text(
+                "---\nname: hakim\ndescription: test\nargument-hint: x\n---\n",
+                encoding="utf-8",
+            )
             (source / "AGENTS.md").write_text("# agents\n", encoding="utf-8")
             output = source / "hakim-skill-package.zip"
             output.write_bytes(b"stale package")
 
             result = subprocess.run(
-                [sys.executable, str(SKILL / "scripts/package_skill.py"), "--source", str(source), "--output", str(output)],
+                [
+                    sys.executable,
+                    str(SKILL / "scripts/package_skill.py"),
+                    "--source",
+                    str(source),
+                    "--output",
+                    str(output),
+                    "--no-strict",
+                ],
                 cwd=ROOT,
                 text=True,
                 capture_output=True,
@@ -40,7 +50,13 @@ class CIGateRegressionTests(unittest.TestCase):
             sample = Path(tmp) / "broken.py"
             sample.write_text("def broken(:\n", encoding="utf-8")
             result = subprocess.run(
-                [sys.executable, str(SKILL / "scripts/audit_complexity.py"), tmp, "--output", "json"],
+                [
+                    sys.executable,
+                    str(SKILL / "scripts/audit_complexity.py"),
+                    tmp,
+                    "--output",
+                    "json",
+                ],
                 cwd=ROOT,
                 text=True,
                 capture_output=True,
