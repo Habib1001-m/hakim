@@ -6,6 +6,8 @@ All notable public changes to Hakim are recorded here.
 
 ### Changed
 
+- Withdrew the premature External Public-Beta Evaluator Campaign before any external report was accepted (`0/5`). External evaluator recruitment is suspended while product-readiness remediation is completed under GitHub issue #14; this does not change the accepted current-native live-host evidence.
+- Repaired `hakim doctor` so current external-evaluation truth is reported as `SUSPENDED_FOR_PRODUCT_REMEDIATION` instead of the stale pre-promotion `ELIGIBLE_FOR_OPERATOR_REVIEW` state, and made `doctor --fast` a real lightweight subset rather than the full check set under a different label.
 - Completed current-native live-host acceptance for Codex, Claude Code, GitHub Copilot CLI, and OpenCode; the public acceptance projection now records all four maintained hosts as `PASS`, while private release authorization remains separate.
 - Fixed the OpenCode project-local product path discovered during live acceptance: the canonical `.mjs` source is installed as the host-discoverable `.opencode/plugins/hakim.js` runtime artifact, and zero-argument `/hakim-help` now loads the native help skill and displays the reference without requesting missing input.
 - Reconciled public-beta versioning and Ponytail-to-Hakim migration documentation with the current `1.0.0-beta.1` product, and extended the first-run truth gate to cover those release-critical documents.
