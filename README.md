@@ -6,6 +6,8 @@ Hakim is an evidence-bound coding governance toolkit for AI-assisted development
 
 Hakim `1.0.0-beta.1` is public beta software distributed from source and host-native Git marketplaces. It is not published to npm and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
+Public beta is the release channel, not a claim that every current native host journey has live acceptance. Current public-safe live-host status is recorded in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). Private acceptance ledgers and release authorization remain outside the public repository.
+
 ## Quick start
 
 Choose the coding host you already use. Codex, Claude Code, and GitHub Copilot can install Hakim directly from this GitHub repository; they do not require cloning Hakim first.
@@ -105,30 +107,8 @@ Each host intentionally uses its strongest native extension model rather than a 
 
 A passing deterministic check means only that the enabled rule set found no matching violation. It is not a substitute for correctness, security, architecture, semantic review, or live host validation.
 
+The public native-host acceptance projection is current-product-only. A host reaches `PASS` there only with an accepted real-host install/start/invocation observation and a public-safe evidence reference. Structural or CI success does not promote a live-host status.
+
 Hakim does not claim model-quality improvement, universal compatibility, performance gains, token savings, return on investment, or complete protection from unrelated local processes.
 
 See [Known Limitations](KNOWN_LIMITATIONS.md).
-
-## Privacy
-
-Hakim does not implement a product telemetry collection service. Repository conformance and evidence schemas are local validation artifacts, not product telemetry. Hakim does not enable raw prompt or source-code logging.
-
-Do not commit credentials, private prompts, sensitive evidence, or customer source code to bug reports or test fixtures.
-
-## Security
-
-Report suspected vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-MIT. See [LICENSE](LICENSE).
-
-## Upstream relationship
-
-Hakim is an independently maintained governance-focused derivative of Ponytail. It is not a GitHub fork, not an official Ponytail distribution, and does not claim automatic compatibility or synchronization.
-
-See [UPSTREAM.md](UPSTREAM.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
