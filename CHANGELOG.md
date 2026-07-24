@@ -17,6 +17,7 @@ All notable public changes to Hakim are recorded here.
 - Added a public-safe current-native host acceptance projection that requires real-host evidence before any host can reach `PASS`; private acceptance ledgers and release authorization remain outside the public repository.
 - Separated public repository health from private runtime/release authorization in `hakim doctor` and exposed external beta promotion as `HOLD_FOR_LIVE_HOST_EVIDENCE` until current native journeys are accepted.
 - Reconciled `pyproject.toml` and phase-history metadata with the public-beta product state and removed obsolete public state/readiness scripts that depended on private or deleted state.
+- Added a bounded current-native live-host acceptance harness that detects host/version state, prints the exact operator journey, and creates reviewable candidate evidence without installing plugins or mutating the public acceptance projection.
 
 ## 1.0.0-beta.1
 
