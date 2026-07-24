@@ -6,6 +6,9 @@ All notable public changes to Hakim are recorded here.
 
 ### Changed
 
+- Completed current-native live-host acceptance for Codex, Claude Code, GitHub Copilot CLI, and OpenCode; the public acceptance projection now records all four maintained hosts as `PASS`, while private release authorization remains separate.
+- Fixed the OpenCode project-local product path discovered during live acceptance: the canonical `.mjs` source is installed as the host-discoverable `.opencode/plugins/hakim.js` runtime artifact, and zero-argument `/hakim-help` now loads the native help skill and displays the reference without requesting missing input.
+- Reconciled public-beta versioning and Ponytail-to-Hakim migration documentation with the current `1.0.0-beta.1` product, and extended the first-run truth gate to cover those release-critical documents.
 - Reconciled release/readiness claims with the maintained host-native product paths after R2.
 - Removed the obsolete global OpenCode prerelease packaging path from public package scripts and CI gates; the maintained OpenCode product path is the guarded project-local installer/remover.
 - Bounded OpenCode lifecycle claims to the project-local implementation: create-only installation, canonical hash verification, exact-match removal, quarantine-backed removal, and rollback are maintained; a cross-process lifecycle lock is not claimed.
