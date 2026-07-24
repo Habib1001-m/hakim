@@ -21,10 +21,10 @@
     },
     "claude-code": {
       "product_path": "Git marketplace plugin install -> start Claude Code -> invoke a Hakim command or plugin agent",
-      "status": "NOT_RUN",
-      "host_version": null,
-      "verified_at": null,
-      "evidence_ref": null
+      "status": "PASS",
+      "host_version": "2.1.218 (Claude Code)",
+      "verified_at": "2026-07-24T12:52:41.809Z",
+      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/8#issuecomment-5070039220"
     },
     "github-copilot": {
       "product_path": "Git marketplace plugin install -> verify installed skills/agents -> invoke a Hakim skill or agent",
