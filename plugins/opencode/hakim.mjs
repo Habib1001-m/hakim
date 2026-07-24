@@ -84,6 +84,12 @@ function commandDefinition(capability) {
       template: 'Apply Hakim mode $1 to this request. Valid modes: lite, full, ultra, off. Request: $ARGUMENTS',
     };
   }
+  if (capability.id === 'hakim-help') {
+    return {
+      description: capability.purpose,
+      template: 'Load the `hakim-help` skill with OpenCode\'s native skill tool and show the Hakim quick reference. Do not require additional arguments. Additional user context (optional): $ARGUMENTS',
+    };
+  }
   return {
     description: capability.purpose,
     template: `Load the \`${capability.id}\` skill with OpenCode's native skill tool and apply it to: $ARGUMENTS`,
