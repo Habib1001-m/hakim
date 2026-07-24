@@ -19,9 +19,18 @@ assert.equal(
   new Set(CHECK_DEFINITIONS.map((item) => item.id)).size,
   CHECK_DEFINITIONS.length,
 );
-assert.equal(selectChecks(true).length, 6);
+assert.equal(selectChecks(true).length, 4);
 assert.equal(selectChecks(false).length, 6);
-assert.ok(selectChecks(true).every((item) => item.tier === 'integration'));
+assert.deepEqual(
+  selectChecks(true).map((item) => item.id),
+  [
+    'rule_integrity',
+    'native_host_acceptance_projection',
+    'public_repository_boundary',
+    'public_package_surface',
+  ],
+);
+assert.ok(selectChecks(true).every((item) => item.fast === true));
 assert.ok(!selectChecks(false).some((item) => item.id === 'runtime_readiness'));
 assert.ok(selectChecks(false).some((item) => item.id === 'native_host_acceptance_projection'));
 
@@ -67,8 +76,9 @@ assert.equal(report.runtime.acceptance_status, 'OUT_OF_SCOPE_PUBLIC_REPOSITORY')
 assert.equal(report.runtime.accepted_verdicts, null);
 assert.equal(report.public_release_readiness, 'OUT_OF_SCOPE_PUBLIC_REPOSITORY');
 assert.equal(report.native_host_acceptance.overall_status, 'PASS');
-assert.equal(report.external_beta_promotion, 'ELIGIBLE_FOR_OPERATOR_REVIEW');
-assert.match(report.next_safe_action, /Review the public release candidate/);
+assert.equal(report.external_beta_promotion, 'SUSPENDED_FOR_PRODUCT_REMEDIATION');
+assert.match(report.next_safe_action, /POST-BETA-R1 remediation/);
+assert.match(report.next_safe_action, /issue #14/);
 
 const text = formatText(report);
 assert.match(text, /MODE=READ_ONLY/);
@@ -76,7 +86,7 @@ assert.match(text, /CHECKS=6\/6 PASS/);
 assert.match(text, /RUNTIME_ACCEPTANCE=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /PUBLIC_RELEASE_READINESS=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /NATIVE_HOST_ACCEPTANCE=PASS/);
-assert.match(text, /EXTERNAL_BETA_PROMOTION=ELIGIBLE_FOR_OPERATOR_REVIEW/);
+assert.match(text, /EXTERNAL_BETA_PROMOTION=SUSPENDED_FOR_PRODUCT_REMEDIATION/);
 
 const help = spawnSync(
   process.execPath,
@@ -92,6 +102,8 @@ assert.match(help.stdout, /npm run doctor/);
 assert.match(help.stdout, /read-only mode/);
 assert.match(help.stdout, /outside the public/);
 assert.match(help.stdout, /native live-host status/);
+assert.match(help.stdout, /--fast.*lightweight/);
+assert.match(help.stdout, /suspended for product remediation/);
 
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'),
@@ -110,4 +122,4 @@ assert.equal(
   'node scripts/hakim_doctor.mjs --fast --json',
 );
 
-console.log('public Hakim doctor separates repository health, private acceptance, and current native live-host evidence');
+console.log('public Hakim doctor separates repository health, private acceptance, native-host evidence, and suspended evaluator recruitment');
