@@ -27,11 +27,15 @@ const codexMarketplace = JSON.parse(read('.agents/plugins/marketplace.json'));
 const copilotMarketplace = JSON.parse(read('.github/plugin/marketplace.json'));
 
 const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
+const opencodeBootstrap = 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install';
 assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
 
 assert.equal(version, '1.0.0-beta.1');
 assert.equal(packageJson.version, version);
 assert.equal(packageJson.private, true);
+assert.equal(packageJson.bin['hakim-opencode'], 'scripts/hakim_opencode_cli.mjs');
+assert.ok(packageJson.files.includes('plugins/opencode/hakim.mjs'));
+assert.ok(packageJson.files.includes('core/hakim-skill/skills'));
 assert.equal(pyproject.project.version, version);
 assert.equal(pyproject['tool.hakim'].release_channel, 'public-beta');
 assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
@@ -81,6 +85,8 @@ for (const obsolete of [
 assert.equal(fs.existsSync(path.join(root, 'docs/EXTERNAL_BETA_EVALUATION.md')), false, 'suspended evaluator guide must not remain active');
 assert.equal(fs.existsSync(path.join(root, '.github/ISSUE_TEMPLATE/public-beta-feedback.yml')), false, 'suspended evaluator issue form must not remain active');
 
+assert.match(readme, /^## What changes with Hakim$/m);
+assert.match(readme, /need\? → reuse existing code\?/);
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
 assert.match(install, /npm run plan:install -- --host all/);
@@ -90,7 +96,7 @@ assert.match(liveAcceptance, /--apply.*intentionally refused/);
 assert.match(liveAcceptance, /candidate evidence packet/i);
 assert.match(readme, /^## Product readiness$/m);
 assert.match(readme, /POST-BETA-R1/);
-assert.match(readme, /external evaluator recruitment is currently suspended/i);
+assert.match(readme, /External evaluator recruitment is suspended/i);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -114,13 +120,18 @@ assert.match(combinedFirstRun, /copilot plugin marketplace add Habib1001-m\/haki
 assert.match(combinedFirstRun, /copilot plugin install hakim@hakim/);
 assert.match(combinedFirstRun, /\/skills list/);
 assert.match(combinedFirstRun, /\/agent/);
-assert.match(combinedFirstRun, /npm run install:opencode -- --target \/path\/to\/project --apply/);
+assert.ok(combinedFirstRun.includes(opencodeBootstrap));
+assert.match(combinedFirstRun, /Git-backed bootstrap/);
+assert.match(combinedFirstRun, /does not edit `opencode\.json`/);
 
 const opencodeReadme = read('plugins/opencode/README.md');
+assert.ok(opencodeReadme.includes(opencodeBootstrap));
+assert.match(opencodeReadme, /Source-checkout fallback/);
+assert.match(opencodeReadme, /separate real-host evidence/);
 for (const text of [readme, install, opencodeReadme]) {
   assert.ok(!/npm run plan:install[^\n]*-- --target/.test(text), 'plan:install examples must not contain a second npm separator before --target');
 }
-assert.ok(install.includes('npm run plan:install -- --host opencode --target /path/to/project'));
+assert.ok(install.includes('npm run plan:install -- --host opencode --target /path/to/repository'));
 assert.ok(opencodeReadme.includes('npm run plan:install -- --host opencode --target /path/to/repository'));
 
 const productDocs = [
@@ -131,6 +142,7 @@ const productDocs = [
   'SECURITY.md',
   'KNOWN_LIMITATIONS.md',
   'VERSIONING.md',
+  'docs/ARCHITECTURE.md',
   'docs/LIVE_HOST_ACCEPTANCE.md',
   'core/hakim-skill/INSTALL.md',
   'core/hakim-skill/MIGRATION.md',
@@ -169,4 +181,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} native/product hosts, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, no-clone OpenCode bootstrap, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
