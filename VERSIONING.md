@@ -1,38 +1,45 @@
 # Versioning Policy
 
-**Status:** Current policy  
-**Applies from:** Hakim `1.0.0`
+**Status:** Current public-beta policy  
+**Applies from:** Hakim `1.0.0-beta.1`
 
 ## Canonical version
 
-`core/hakim-skill/VERSION` is the canonical Hakim version source. The following
-surfaces must match it in the same change:
+`core/hakim-skill/VERSION` is the canonical Hakim version source. Public product
+metadata that carries a Hakim version must match it in the same change, including:
 
 - `package.json`;
 - `pyproject.toml`;
 - `core/hakim-skill/SKILL.md` frontmatter;
 - `plugins/codex/.codex-plugin/plugin.json`;
-- `plugins/claude-code/.claude-plugin/plugin.json`.
+- `plugins/claude-code/.claude-plugin/plugin.json`;
+- `plugins/copilot/plugin.json`;
+- versioned Claude Code and GitHub Copilot marketplace entries;
+- `conformance/native-host-acceptance.json` product version.
 
-`npm run check:metadata` enforces synchronization.
+`npm run check:first-run` enforces the maintained public version-parity contract,
+and `npm test` includes that gate.
 
 ## Version format
 
-Hakim uses plain semantic versions:
+Hakim uses Semantic Versioning, including prerelease identifiers while a release
+channel is explicitly prerelease software:
 
 ```text
-MAJOR.MINOR.PATCH
+MAJOR.MINOR.PATCH[-PRERELEASE]
 ```
 
-The canonical version file must not contain prerelease labels or build metadata.
-Release-candidate identity belongs in the Git ref, workflow run, or release note,
-not in a version field that would break current metadata parity.
+The current public-beta version is `1.0.0-beta.1`. A stable `1.0.0` version is a
+separate release decision; live-host acceptance or repository CI does not silently
+remove the prerelease label.
+
+Build metadata is not currently used for shipped Hakim product identity.
 
 ## Change classification
 
-### PATCH
+### PATCH-level compatible change
 
-Use a patch increment for backward-compatible corrections that do not expand the
+Use a patch-level compatible change for corrections that do not expand or break the
 canonical capability contract, including:
 
 - documentation corrections;
@@ -41,9 +48,12 @@ canonical capability contract, including:
 - security fixes that preserve supported behavior;
 - implementation corrections behind an unchanged command contract.
 
-### MINOR
+During the public beta, such changes may be released under a later beta identifier
+instead of implying that stable `1.0.0` has been reached.
 
-Use a minor increment for backward-compatible product capability expansion,
+### MINOR-level capability expansion
+
+Use a minor-level capability change for backward-compatible product expansion,
 including:
 
 - a new canonical capability;
@@ -52,9 +62,9 @@ including:
 - a newly supported host adapter after its acceptance gate passes;
 - a new machine-readable schema version that remains compatible with existing data.
 
-### MAJOR
+### MAJOR-level breaking change
 
-Use a major increment for an intentional breaking change, including:
+Treat an intentional breaking change as major in compatibility impact, including:
 
 - removal or incompatible behavior change of a canonical capability;
 - incompatible changes to modes or policy profiles;
@@ -62,49 +72,57 @@ Use a major increment for an intentional breaking change, including:
 - removal of a supported host surface without a migration path;
 - changes that invalidate existing repository integration contracts.
 
+Prerelease status does not excuse hiding a known breaking change; release notes must
+state it explicitly.
+
 ## Evidence and release independence
 
-A version increment does not establish:
+A version change does not establish:
 
-- runtime conformance;
+- live-host acceptance;
 - benchmark performance;
-- public release readiness;
-- marketplace publication;
+- public release authorization;
+- central marketplace or directory publication;
 - enterprise support.
 
-Each claim requires its own accepted evidence. Conversely, an accepted runtime
-verdict does not require an immediate version increment when no shipped contract
+Each claim requires its own evidence. Conversely, accepted live-host evidence does
+not require an immediate version change when the shipped product contract has not
 changed.
 
-## Release candidate rule
+## Public-beta release review
 
-Before a version tag or controlled release candidate is accepted:
+Before a new version tag or GitHub release is recommended for operator approval:
 
-1. `npm test` passes.
-2. `npm run test:release` passes in the intended release environment.
-3. `npm run package:release` produces and verifies the ZIP, `SHA256SUMS`, and JSON
-   manifest.
-4. Release notes state supported hosts, deferred cases, known limitations, and
-   unsupported distribution channels.
-5. Metadata versions match the canonical version.
-6. Security and documentation truth gates pass.
+1. `npm test` passes on the intended release commit.
+2. `npm run doctor` reports repository health separately from private authorization.
+3. `npm run check:workflow-policy` passes.
+4. `npm run check:public-boundary`, `npm run check:public-package`, and
+   `npm run check:native-acceptance` pass.
+5. `npm run package:release` builds and verifies the skill ZIP, `SHA256SUMS`, and
+   JSON release manifest.
+6. Release notes state supported hosts, the bounded live-host evidence, known
+   limitations, and unsupported distribution channels.
+7. Security and documentation truth remain consistent with the release candidate.
 
-A successful release-candidate workflow does not automatically authorize public
-publication. `PUBLIC_RELEASE_READINESS` must change through an explicit accepted
-decision.
+A successful public-beta review does not automatically authorize publication,
+create a tag, publish a GitHub release, or publish to a central marketplace. Those
+are explicit operator actions.
 
 ## Changelog policy
 
 - User-visible and operator-visible changes are recorded under `Unreleased`.
 - A release moves applicable entries to a dated version section.
-- Historical prerelease labels may remain in the changelog as history, but they are
-  not current metadata.
-- Withdrawn or corrected claims must remain discoverable with their replacement and
-  reason; they must not be silently rewritten as if they were never published.
+- Historical prerelease labels may remain as history when they were actually used.
+- Withdrawn or corrected claims remain discoverable with their replacement and
+  reason; they are not silently rewritten as if they never existed.
 
 ## Compatibility policy
 
-Hakim currently maintains repository contracts on a best-effort private pre-release
-basis. No general backward-compatibility guarantee, support window, or long-term
-support line is claimed. When public distribution becomes eligible, the support
-window and deprecation policy must be defined before publication.
+Hakim `1.0.0-beta.1` is public beta software with bounded current-native acceptance
+recorded in `conformance/native-host-acceptance.json`. That evidence is not a
+universal operating-system, model, provider, editor, or organization-policy
+compatibility guarantee.
+
+No long-term support line, formal support window, or general backward-compatibility
+guarantee is currently claimed. A stable-release support and deprecation policy
+must be defined before Hakim claims such guarantees.
