@@ -16,9 +16,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 ARCHIVE_ROOT = "hakim-skill"
 DEFAULT_OUTPUT = "hakim-skill-package.zip"
+FIXED_ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+FIXED_FILE_MODE = 0o100644
 
 PACKAGE_ROOT_FILES = {
     "SKILL.md",
@@ -126,6 +128,14 @@ def collect_files(source_dir: Path, output_path: Path | None = None) -> list[tup
     return collected
 
 
+def deterministic_zip_info(archive_path: str) -> zipfile.ZipInfo:
+    info = zipfile.ZipInfo(filename=archive_path, date_time=FIXED_ZIP_TIMESTAMP)
+    info.compress_type = zipfile.ZIP_DEFLATED
+    info.create_system = 3
+    info.external_attr = FIXED_FILE_MODE << 16
+    return info
+
+
 def create_package(
     source_dir: Path,
     output_path: Path,
@@ -169,10 +179,16 @@ def create_package(
         compresslevel=compression_level,
     ) as archive:
         for absolute_path, archive_path in files:
-            file_size = absolute_path.stat().st_size
-            archive.write(absolute_path, archive_path)
+            content = absolute_path.read_bytes()
+            info = deterministic_zip_info(archive_path)
+            archive.writestr(
+                info,
+                content,
+                compress_type=zipfile.ZIP_DEFLATED,
+                compresslevel=compression_level,
+            )
             stats["files_included"] += 1
-            stats["total_original_bytes"] += file_size
+            stats["total_original_bytes"] += len(content)
             directory = Path(archive_path).parts[1] if len(Path(archive_path).parts) > 1 else "(root)"
             stats["files_by_dir"][directory] = stats["files_by_dir"].get(directory, 0) + 1
 
@@ -209,6 +225,10 @@ def verify_package(zip_path: Path) -> tuple[bool, list[str]]:
                     issues.append(f"Excluded file included: {name}")
                 if info.compress_type != zipfile.ZIP_DEFLATED:
                     issues.append(f"Wrong compression for {name}")
+                if info.date_time != FIXED_ZIP_TIMESTAMP:
+                    issues.append(f"Non-deterministic timestamp for {name}")
+                if info.create_system != 3 or (info.external_attr >> 16) != FIXED_FILE_MODE:
+                    issues.append(f"Non-deterministic file mode for {name}")
                 if len(parts) < 2 or parts[0] != ARCHIVE_ROOT:
                     issues.append(f"Unexpected archive root: {name}")
                 elif len(parts) == 2 and parts[1] not in PACKAGE_ROOT_FILES:
