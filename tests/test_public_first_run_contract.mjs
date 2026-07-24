@@ -42,9 +42,16 @@ assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
 assert.equal(pyproject['tool.hakim'].phase, undefined);
 assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
 assert.equal(nativeAcceptance.product_version, version);
-assert.equal(nativeAcceptance.overall_status, 'PASS');
+assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
-for (const host of expectedHosts) assert.equal(nativeAcceptance.hosts[host].status, 'PASS');
+for (const host of ['codex', 'claude-code', 'github-copilot']) {
+  assert.equal(nativeAcceptance.hosts[host].status, 'PASS');
+}
+assert.equal(nativeAcceptance.hosts.opencode.status, 'NOT_RUN');
+assert.match(nativeAcceptance.hosts.opencode.product_path, /Git-backed npx project-local install/);
+assert.equal(nativeAcceptance.hosts.opencode.host_version, null);
+assert.equal(nativeAcceptance.hosts.opencode.verified_at, null);
+assert.equal(nativeAcceptance.hosts.opencode.evidence_ref, null);
 assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
 assert.equal(packageJson.scripts['accept:host'], 'node scripts/hakim_live_host_acceptance.mjs');
@@ -187,4 +194,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, no-clone OpenCode bootstrap, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, OpenCode Git-bootstrap evidence pending, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
