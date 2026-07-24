@@ -33,6 +33,7 @@ Hakim `1.0.0-beta.1` remains public beta software.
 
 ## Privacy and support
 
-- Telemetry is disabled by default.
-- Raw prompts and source code are not logged by default.
+- Hakim does not implement a product telemetry collection service.
+- Hakim does not enable raw prompt or source-code logging.
+- Repository evidence and outcome schemas are local validation artifacts, not product telemetry.
 - Security response and maintenance are best-effort.
