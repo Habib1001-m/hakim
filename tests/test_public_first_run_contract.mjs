@@ -103,6 +103,10 @@ assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
 assert.match(liveAcceptance, /npm run accept:host -- --host codex/);
 assert.match(liveAcceptance, /--apply.*intentionally refused/);
 assert.match(liveAcceptance, /candidate evidence packet/i);
+assert.match(liveAcceptance, /npx --yes --package=npm@11 npm exec --yes/);
+assert.match(liveAcceptance, /github:Habib1001-m\/hakim#\$SOURCE_SHA/);
+assert.match(liveAcceptance, /npm\/cli#6723/);
+assert.match(liveAcceptance, /not a new global npm requirement/);
 assert.match(readme, /^## Product readiness$/m);
 assert.match(readme, /POST-BETA-R1/);
 assert.match(readme, /External evaluator recruitment is suspended/i);
@@ -130,6 +134,7 @@ assert.match(combinedFirstRun, /copilot plugin install hakim@hakim/);
 assert.match(combinedFirstRun, /\/skills list/);
 assert.match(combinedFirstRun, /\/agent/);
 assert.ok(combinedFirstRun.includes(opencodeBootstrap));
+assert.ok(!combinedFirstRun.includes('--package=npm@11'), 'normal OpenCode first-run must not require the npm 11 acceptance wrapper');
 assert.match(combinedFirstRun, /Git-backed bootstrap/);
 assert.match(combinedFirstRun, /does not edit `opencode\.json`/);
 
