@@ -112,3 +112,27 @@ The public native-host acceptance projection is current-product-only. A host rea
 Hakim does not claim model-quality improvement, universal compatibility, performance gains, token savings, return on investment, or complete protection from unrelated local processes.
 
 See [Known Limitations](KNOWN_LIMITATIONS.md).
+
+## Privacy
+
+Hakim does not implement a product telemetry collection service. Repository conformance and evidence schemas are local validation artifacts, not product telemetry. Hakim does not enable raw prompt or source-code logging.
+
+Do not commit credentials, private prompts, sensitive evidence, or customer source code to bug reports or test fixtures.
+
+## Security
+
+Report suspected vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+## Upstream relationship
+
+Hakim is an independently maintained governance-focused derivative of Ponytail. It is not a GitHub fork, not an official Ponytail distribution, and does not claim automatic compatibility or synchronization.
+
+See [UPSTREAM.md](UPSTREAM.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
