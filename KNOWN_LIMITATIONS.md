@@ -29,10 +29,11 @@ Hakim `1.0.0-beta.1` remains public beta software.
 
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
-- Public beta identifies the release channel; it does not imply that every current native host journey has live acceptance.
-- Current native live-host status is recorded in `conformance/native-host-acceptance.json`. Public CI cannot promote a host from `NOT_RUN` to `PASS`.
-- Private acceptance ledgers and release authorization are intentionally outside the public product repository; their absence is not evidence of either acceptance or rejection.
-- External beta promotion should remain on hold while the public native-host projection is `HOLD_FOR_LIVE_HOST_EVIDENCE`.
+- Current native live-host acceptance is recorded in `conformance/native-host-acceptance.json`; all four maintained current-native paths currently have accepted `PASS` evidence, but that evidence remains bounded to the observed environments and journeys.
+- Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
+- Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.
+- External evaluator recruitment is currently suspended for POST-BETA-R1 product remediation. The withdrawn campaign accepted no external reports, and native-host acceptance must not be converted into a claim of independent product usefulness or retention.
+- Any future external evaluation must identify an immutable Hakim source/tag/release reference so observations cannot silently refer to different revisions under the same prerelease version string.
 - Hakim makes no general claims about model quality, speed, token use, cost, adoption, safety improvement, or return on investment.
 
 ## Privacy and support
