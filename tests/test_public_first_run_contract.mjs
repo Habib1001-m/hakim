@@ -3,11 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SUPPORTED_HOSTS } from '../scripts/hakim_install_plan.mjs';
+import { parseTomlScalarTables } from '../scripts/lib/structured_metadata.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const packageJson = JSON.parse(read('package.json'));
+const pyproject = parseTomlScalarTables(read('pyproject.toml'));
 const version = read('core/hakim-skill/VERSION').trim();
 const readme = read('README.md');
 const install = read('core/hakim-skill/INSTALL.md');
@@ -15,6 +17,7 @@ const changelog = read('CHANGELOG.md');
 const security = read('SECURITY.md');
 const limitations = read('KNOWN_LIMITATIONS.md');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
+const nativeAcceptance = JSON.parse(read('conformance/native-host-acceptance.json'));
 const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
 const claudeManifest = JSON.parse(read('plugins/claude-code/.claude-plugin/plugin.json'));
 const copilotManifest = JSON.parse(read('plugins/copilot/plugin.json'));
@@ -28,6 +31,13 @@ assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
 assert.equal(version, '1.0.0-beta.1');
 assert.equal(packageJson.version, version);
 assert.equal(packageJson.private, true);
+assert.equal(pyproject.project.version, version);
+assert.equal(pyproject['tool.hakim'].release_channel, 'public-beta');
+assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
+assert.equal(pyproject['tool.hakim'].phase, undefined);
+assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
+assert.equal(nativeAcceptance.product_version, version);
+assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
 assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
 assert.equal(codexManifest.version, version);
@@ -41,6 +51,14 @@ assert.ok(readme.includes('Hakim `' + version + '` is public beta software'));
 assert.match(security, new RegExp(escapeRegExp(version)));
 assert.match(limitations, new RegExp(escapeRegExp(version)));
 assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
+
+for (const obsolete of [
+  'scripts/check_product_state_truth.mjs',
+  'scripts/check_transition_state_truth.mjs',
+  'scripts/check_runtime_conformance_readiness.mjs',
+]) {
+  assert.equal(fs.existsSync(path.join(root, obsolete)), false, `obsolete public state checker still exists: ${obsolete}`);
+}
 
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
