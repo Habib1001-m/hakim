@@ -64,7 +64,8 @@ test('system transform injects canonical full rules into one system entry', asyn
   assert.equal(system.length, 1);
   assert.match(system[0], /^BASE/);
   assert.match(system[0], /# Hakim activation \(full\)/);
-  assert.match(system[0], /Canonical source: core\/hakim-skill\/SKILL\.md/);
+  assert.match(system[0], /Canonical Hakim policy loaded from the active distribution\./);
+  assert.doesNotMatch(system[0], /Canonical source: core\/hakim-skill\/SKILL\.md/);
   assert.match(system[0], /## The Ladder/);
 });
 
@@ -139,6 +140,7 @@ test('copied project-local bundle resolves without repository-relative imports',
     assert.match(config.command['hakim-help'].template, /Do not require additional arguments/);
     const system = await transform(hooks, 'installed');
     assert.match(system[0], /# Hakim activation \(full\)/);
+    assert.match(system[0], /active distribution/);
     assert.match(system[0], /## The Ladder/);
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
