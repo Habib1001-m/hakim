@@ -1,0 +1,139 @@
+name: Hakim public-beta feedback
+description: Report a real external evaluation of Hakim 1.0.0-beta.1 on a maintained host.
+title: "[Beta feedback]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for evaluating Hakim. Please report only public-safe evidence. Do not include credentials, private prompts, customer data, proprietary source code, or private repository contents.
+
+  - type: checkboxes
+    id: evaluator_boundary
+    attributes:
+      label: Evaluator boundary
+      options:
+        - label: I was not part of Hakim's maintainer live-host acceptance run.
+          required: true
+        - label: I used Hakim on a real repository task rather than reviewing documentation only.
+          required: true
+
+  - type: input
+    id: hakim_version
+    attributes:
+      label: Hakim version
+      description: The Hakim product version you evaluated.
+      placeholder: 1.0.0-beta.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: host
+    attributes:
+      label: Host
+      options:
+        - Codex
+        - Claude Code
+        - GitHub Copilot CLI
+        - OpenCode
+    validations:
+      required: true
+
+  - type: input
+    id: host_version
+    attributes:
+      label: Host version
+      placeholder: Exact version shown by the host CLI/app
+    validations:
+      required: true
+
+  - type: textarea
+    id: install_activation
+    attributes:
+      label: Installation and activation experience
+      description: State which documented install path you used, whether it worked, and where you needed extra help.
+      placeholder: I followed the documented host path. Installation... Activation...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: independent_first_run
+    attributes:
+      label: Could you reach an active Hakim without maintainer intervention?
+      options:
+        - Yes
+        - Partly — I needed clarification
+        - No
+    validations:
+      required: true
+
+  - type: input
+    id: capability
+    attributes:
+      label: Hakim capability used
+      description: Name at least one capability you actually invoked.
+      placeholder: hakim-review
+    validations:
+      required: true
+
+  - type: textarea
+    id: real_task
+    attributes:
+      label: Real task evaluated
+      description: Describe the task category and goal without exposing private repository content.
+      placeholder: Reviewed a small refactor PR for removable complexity...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Outcome
+      options:
+        - Useful
+        - Neutral
+        - Confusing
+        - Obstructive
+        - Failed
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome_evidence
+    attributes:
+      label: What happened?
+      description: Describe the observed result and why you selected the outcome above.
+    validations:
+      required: true
+
+  - type: textarea
+    id: friction
+    attributes:
+      label: UX friction or defects
+      description: Report confusing steps, unnecessary work, errors, or product defects. Write "None observed" when appropriate.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: retention
+    attributes:
+      label: Would you keep Hakim enabled for normal development?
+      options:
+        - Yes
+        - Maybe
+        - No
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Public-safe reproduction details
+      description: Required only for concrete defects. Include commands or steps that are safe to publish; omit private content.
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public evidence safety
+      options:
+        - label: This report contains no credentials, secrets, private prompts, customer data, proprietary source code, or private governance material.
+          required: true
