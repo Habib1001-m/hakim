@@ -264,8 +264,9 @@ export function buildLiveAcceptance(options, root = ROOT, dependencies = {}) {
   };
 }
 
-function validateOutputPath(outputPath) {
+export function validateOutputPath(outputPath) {
   const resolved = path.resolve(outputPath);
+  if (fs.existsSync(resolved)) throw new Error(`output already exists; refusing overwrite: ${resolved}`);
   const parent = path.dirname(resolved);
   fs.mkdirSync(parent, { recursive: true });
   return resolved;
@@ -297,11 +298,12 @@ function usage() {
   return [
     'Usage:',
     '  npm run accept:host -- --host <codex|claude-code|github-copilot|opencode> [--binary <path-or-name>] [--cwd <directory>] [--target <repository>] [--json]',
-    '  npm run accept:host -- --host <host> --record --installation <PASS|FAIL|BLOCKED> --activation <PASS|FAIL|BLOCKED> --invocation <PASS|FAIL|BLOCKED> --evidence-ref <public-safe-ref> [--verified-at <ISO>] [--output <path>] [--json]',
+    '  npm run accept:host -- --host <host> --record --installation <PASS|FAIL|BLOCKED> --activation <PASS|FAIL|BLOCKED> --invocation <PASS|FAIL|BLOCKED> --evidence-ref <public-safe-ref> [--verified-at <ISO>] [--output <new-path>] [--json]',
     '',
     'Default mode is read-only: detects the host binary/version, validates Hakim install planning, and prints the exact current-native journey.',
     '--record builds a candidate evidence packet after the operator has actually observed the live journey. It never edits conformance/native-host-acceptance.json.',
     '--apply is intentionally refused. Marketplace installation, trust, activation, and project-local installation remain explicit operator actions.',
+    '--output is create-only and refuses to overwrite an existing evidence packet.',
     'For OpenCode recording, --target <repository> is required.',
   ].join('\n');
 }
@@ -313,7 +315,9 @@ function main() {
   if (options.help) { console.log(usage()); return; }
   const report = buildLiveAcceptance(options);
   if (options.output) {
-    const outputPath = validateOutputPath(options.output);
+    let outputPath;
+    try { outputPath = validateOutputPath(options.output); }
+    catch (error) { console.error(`Error: ${error.message}`); process.exit(2); }
     fs.writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
   }
   console.log(options.json ? JSON.stringify(report, null, 2) : formatText(report));
