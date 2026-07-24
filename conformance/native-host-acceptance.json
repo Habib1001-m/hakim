@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "product_version": "1.0.0-beta.1",
+  "scope": "current-native-product-paths",
+  "projection_updated_at": "2026-07-24",
+  "source_policy": "Public-safe projection only; private acceptance ledgers and release authorization remain outside the public repository.",
+  "overall_status": "HOLD_FOR_LIVE_HOST_EVIDENCE",
+  "status_semantics": {
+    "PASS": "A current native end-to-end install/start/invocation journey was observed on a real host and has a public-safe evidence reference.",
+    "NOT_RUN": "No accepted current-native live-host journey is recorded in this public projection.",
+    "FAIL": "A current native end-to-end journey was attempted and failed with a public-safe evidence reference.",
+    "BLOCKED": "A current native end-to-end journey was attempted but host policy, permissions, or environment prevented completion; a public-safe evidence reference is required."
+  },
+  "hosts": {
+    "codex": {
+      "product_path": "Git marketplace plugin install -> trust bundled SessionStart hook -> start a new thread -> invoke an installed Hakim skill",
+      "status": "NOT_RUN",
+      "host_version": null,
+      "verified_at": null,
+      "evidence_ref": null
+    },
+    "claude-code": {
+      "product_path": "Git marketplace plugin install -> start Claude Code -> invoke a Hakim command or plugin agent",
+      "status": "NOT_RUN",
+      "host_version": null,
+      "verified_at": null,
+      "evidence_ref": null
+    },
+    "github-copilot": {
+      "product_path": "Git marketplace plugin install -> verify installed skills/agents -> invoke a Hakim skill or agent",
+      "status": "NOT_RUN",
+      "host_version": null,
+      "verified_at": null,
+      "evidence_ref": null
+    },
+    "opencode": {
+      "product_path": "Guarded project-local install -> start OpenCode from the target project -> invoke a Hakim command/skill",
+      "status": "NOT_RUN",
+      "host_version": null,
+      "verified_at": null,
+      "evidence_ref": null
+    }
+  }
+}

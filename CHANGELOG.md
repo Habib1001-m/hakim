@@ -14,6 +14,9 @@ All notable public changes to Hakim are recorded here.
 - Made `hakim-audit`, `hakim-debt`, and `hakim-help` distribution-portable: installed capabilities no longer require source-checkout-only paths or absent helper/example resources.
 - Changed canonical skill packaging from an implicit recursive include model to an explicit maintained root-file and subdirectory allowlist, with regression and semantic package checks that reject legacy documentation drift.
 - Aligned privacy documentation with the implementation boundary: Hakim does not implement a product telemetry collection service and does not enable raw prompt or source-code logging.
+- Added a public-safe current-native host acceptance projection that requires real-host evidence before any host can reach `PASS`; private acceptance ledgers and release authorization remain outside the public repository.
+- Separated public repository health from private runtime/release authorization in `hakim doctor` and exposed external beta promotion as `HOLD_FOR_LIVE_HOST_EVIDENCE` until current native journeys are accepted.
+- Reconciled `pyproject.toml` and phase-history metadata with the public-beta product state and removed obsolete public state/readiness scripts that depended on private or deleted state.
 
 ## 1.0.0-beta.1
 

@@ -27,6 +27,12 @@ export const CHECK_DEFINITIONS = Object.freeze([
     args: [],
   },
   {
+    id: 'native_host_acceptance_projection',
+    tier: 'integration',
+    script: 'scripts/check_native_host_acceptance.mjs',
+    args: [],
+  },
+  {
     id: 'public_repository_boundary',
     tier: 'integration',
     script: 'scripts/check_public_repository_boundary.mjs',
@@ -60,6 +66,20 @@ export function readVersion(root = ROOT) {
     path.join(root, 'core', 'hakim-skill', 'VERSION'),
     'utf8',
   ).trim();
+}
+
+export function readNativeAcceptance(root = ROOT) {
+  try {
+    return JSON.parse(
+      fs.readFileSync(path.join(root, 'conformance', 'native-host-acceptance.json'), 'utf8'),
+    );
+  } catch {
+    return {
+      scope: 'current-native-product-paths',
+      overall_status: 'UNKNOWN',
+      hosts: {},
+    };
+  }
 }
 
 function parseJson(text) {
@@ -108,8 +128,15 @@ export function runCheck(check, runner = spawnSync) {
   };
 }
 
-export function buildReport(results, version, scope = 'FULL') {
+export function buildReport(results, version, scope = 'FULL', nativeAcceptance = readNativeAcceptance()) {
   const failed = results.filter((item) => item.status !== 'PASS');
+  const nativeOverall = nativeAcceptance?.overall_status || 'UNKNOWN';
+  const nativeHostStatuses = Object.fromEntries(
+    Object.entries(nativeAcceptance?.hosts || {}).map(([host, value]) => [host, value?.status || null]),
+  );
+  const externalPromotion = nativeOverall === 'PASS'
+    ? 'ELIGIBLE_FOR_OPERATOR_REVIEW'
+    : 'HOLD_FOR_LIVE_HOST_EVIDENCE';
 
   return {
     schema_version: 1,
@@ -124,13 +151,21 @@ export function buildReport(results, version, scope = 'FULL') {
       failed: failed.map((item) => item.id),
     },
     runtime: {
-      acceptance_status: 'NOT_EVALUATED',
+      acceptance_status: 'OUT_OF_SCOPE_PUBLIC_REPOSITORY',
       accepted_verdicts: null,
     },
-    public_release_readiness: 'NOT_EVALUATED',
+    public_release_readiness: 'OUT_OF_SCOPE_PUBLIC_REPOSITORY',
+    native_host_acceptance: {
+      scope: nativeAcceptance?.scope || null,
+      overall_status: nativeOverall,
+      hosts: nativeHostStatuses,
+    },
+    external_beta_promotion: externalPromotion,
     next_safe_action: failed.length > 0
       ? `Run the first failing check directly: ${failed[0].command}`
-      : 'Run npm test and review the public release candidate before publication.',
+      : externalPromotion !== 'ELIGIBLE_FOR_OPERATOR_REVIEW'
+        ? 'Run current native host acceptance journeys on real supported hosts before external beta promotion.'
+        : 'Review the public release candidate and accepted live-host evidence before external promotion.',
     checks: results,
   };
 }
@@ -144,8 +179,10 @@ export function formatText(report) {
     `HAKIM_VERSION=${report.hakim_version}`,
     `REPOSITORY_HEALTH=${report.repository_health}`,
     `CHECKS=${report.check_summary.passed}/${report.check_summary.total} PASS`,
-    'RUNTIME_ACCEPTANCE=NOT_EVALUATED',
-    'PUBLIC_RELEASE_READINESS=NOT_EVALUATED',
+    'RUNTIME_ACCEPTANCE=OUT_OF_SCOPE_PUBLIC_REPOSITORY',
+    'PUBLIC_RELEASE_READINESS=OUT_OF_SCOPE_PUBLIC_REPOSITORY',
+    `NATIVE_HOST_ACCEPTANCE=${report.native_host_acceptance.overall_status}`,
+    `EXTERNAL_BETA_PROMOTION=${report.external_beta_promotion}`,
     '',
     '[Checks]',
   ];
@@ -172,8 +209,10 @@ function usage() {
     '  node scripts/hakim_doctor.mjs [--fast] [--json]',
     '',
     'Runs the maintained public Hakim repository checks in read-only mode.',
-    'The doctor does not evaluate runtime acceptance or public release readiness',
-    'and never changes repository or host state.',
+    'Private runtime acceptance and release authorization are outside the public',
+    'repository scope. Current native live-host status is reported separately from',
+    'conformance/native-host-acceptance.json. The doctor never changes repository',
+    'or host state.',
   ].join('\n');
 }
 
@@ -195,7 +234,7 @@ function main() {
 
   const scope = options.fast ? 'FAST' : 'FULL';
   const results = selectChecks(options.fast).map((check) => runCheck(check));
-  const report = buildReport(results, readVersion(), scope);
+  const report = buildReport(results, readVersion(), scope, readNativeAcceptance());
 
   console.log(options.json ? JSON.stringify(report, null, 2) : formatText(report));
   process.exit(report.repository_health === 'PASS' ? 0 : 1);

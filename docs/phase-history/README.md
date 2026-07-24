@@ -1,5 +1,5 @@
 # Phase History
 
-Historical planning and implementation evidence currently remains in the root `_phase-*` directories.
+Historical planning, implementation evidence, private taskboards, and internal review archives are intentionally outside the public product repository.
 
-This directory is reserved for a later archival migration. Phase D.0 preserves existing evidence and does not delete or rewrite phase history.
+This public directory does not claim that private historical material exists at any repository-relative path and is not an authority for current product, release, or acceptance state.
