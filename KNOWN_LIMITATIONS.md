@@ -5,7 +5,8 @@ Hakim `1.0.0-beta.1` remains public beta software.
 ## Distribution
 
 - The source repository is public.
-- No npm package or central marketplace/directory listing is currently published.
+- No npm registry package/publication or central marketplace/directory listing is currently provided.
+- OpenCode's Git-backed bootstrap uses npm/npx only as transport/command execution for the public Git repository; it does not create a registry publication or global Hakim/OpenCode installation.
 - Local skill-package build outputs are not signed, notarized, or externally attested.
 - No SBOM or public support SLA is currently provided.
 
