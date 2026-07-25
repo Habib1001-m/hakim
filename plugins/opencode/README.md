@@ -19,7 +19,7 @@ It uses OpenCode configuration and prompt hooks to:
 - keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
 - remove session-local mode state when a session-deleted event is observed.
 
-Repository tests cover the documented hook shapes, Git-backed bootstrap package surface, and guarded project-local file lifecycle. Live host compatibility remains bounded to accepted real-host evidence and does not establish universal OpenCode compatibility.
+Repository tests cover the documented hook shapes, Git-backed bootstrap package surface, and guarded project-local file lifecycle. The public acceptance projection separately records accepted real-host evidence for the Git-backed path on OpenCode `1.17.13`; that evidence remains bounded to the observed environment and does not establish universal OpenCode compatibility.
 
 ## Project-local installed layout
 
@@ -136,13 +136,14 @@ npm test
 npm run check:evidence-script
 ```
 
-These checks prove deterministic plugin wiring, the bounded Git-package bootstrap surface, and the documented guarded project-local file lifecycle only. They do not promote live-host acceptance.
+These checks prove deterministic plugin wiring, the bounded Git-package bootstrap surface, and the documented guarded project-local file lifecycle only. They do not create or replace live-host acceptance evidence.
 
 ## Evidence boundaries
 
 - The Git-backed bootstrap is a transport layer over the same project-local installer/remover; it does not introduce a second global lifecycle architecture.
 - Project-local plugin and lifecycle behavior is covered by the public test suite.
-- A new first-run transport requires separate real-host evidence before Hakim treats that exact journey as independently accepted.
+- A new or materially changed first-run transport requires separate real-host evidence before Hakim treats that exact journey as independently accepted.
+- The current Git-backed journey has accepted evidence tied to immutable candidate `b442820d2803955d0f7f33b405bd096f443d4d72` and OpenCode `1.17.13`; future materially changed transports require fresh evidence.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
