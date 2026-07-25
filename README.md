@@ -18,7 +18,7 @@ Hakim `1.0.0-beta.1` is public beta software distributed from public source and 
 
 All four maintained current-native product paths — Codex, Claude Code, GitHub Copilot CLI, and the Git-backed project-local OpenCode bootstrap — have accepted real-host install/start/invocation evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication.
 
-External evaluator recruitment is suspended while the public product surface is remediated under [#14](https://github.com/Habib1001-m/hakim/issues/14). Private release authorization remains outside the public repository.
+POST-BETA-R1 remediation is complete and merged through [#15](https://github.com/Habib1001-m/hakim/pull/15). External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch. Private release authorization remains outside the public repository.
 
 ## Quick start
 
@@ -118,9 +118,9 @@ Each host intentionally uses its strongest native extension model rather than a 
 
 ## Product readiness
 
-Current native runtime acceptance is not the same thing as full product readiness. The comprehensive post-acceptance review identified public-surface, documentation, release-reproducibility, provenance, and first-run UX remediation that must be completed before external evaluator recruitment is relaunched.
+Current native runtime acceptance is not the same thing as full product readiness. POST-BETA-R1 closed the public-surface, documentation, release-reproducibility, provenance, and first-run UX remediation identified by the comprehensive post-acceptance review.
 
-The remediation program is tracked publicly in [POST-BETA-R1 — Public Surface Reduction & Truth Reconciliation (#14)](https://github.com/Habib1001-m/hakim/issues/14). The withdrawn evaluator campaign (#12) accepted no external reports.
+The completed remediation program is recorded in [#14](https://github.com/Habib1001-m/hakim/issues/14) and merged through [#15](https://github.com/Habib1001-m/hakim/pull/15). The withdrawn evaluator campaign (#12) accepted no external reports. External evaluator recruitment remains suspended; any future relaunch requires a separate explicit product decision and does not follow automatically from remediation completion or native-host acceptance.
 
 ## Evidence boundaries
 
