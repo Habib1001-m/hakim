@@ -42,16 +42,17 @@ assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
 assert.equal(pyproject['tool.hakim'].phase, undefined);
 assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
 assert.equal(nativeAcceptance.product_version, version);
-assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
+assert.equal(nativeAcceptance.overall_status, 'PASS');
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
-for (const host of ['codex', 'claude-code', 'github-copilot']) {
+for (const host of expectedHosts) {
   assert.equal(nativeAcceptance.hosts[host].status, 'PASS');
+  assert.equal(typeof nativeAcceptance.hosts[host].evidence_ref, 'string');
+  assert.ok(nativeAcceptance.hosts[host].evidence_ref.length > 0);
 }
-assert.equal(nativeAcceptance.hosts.opencode.status, 'NOT_RUN');
 assert.match(nativeAcceptance.hosts.opencode.product_path, /Git-backed npx project-local install/);
-assert.equal(nativeAcceptance.hosts.opencode.host_version, null);
-assert.equal(nativeAcceptance.hosts.opencode.verified_at, null);
-assert.equal(nativeAcceptance.hosts.opencode.evidence_ref, null);
+assert.equal(nativeAcceptance.hosts.opencode.host_version, '1.17.13');
+assert.equal(nativeAcceptance.hosts.opencode.verified_at, '2026-07-25T12:39:25.944Z');
+assert.equal(nativeAcceptance.hosts.opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/14#issuecomment-5078407875');
 assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
 assert.equal(packageJson.scripts['accept:host'], 'node scripts/hakim_live_host_acceptance.mjs');
@@ -69,6 +70,7 @@ assert.match(limitations, new RegExp(escapeRegExp(version)));
 assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
 assert.match(changelog, /Withdrew the premature External Public-Beta Evaluator Campaign/);
 assert.match(changelog, /private-prerelease/);
+assert.match(changelog, /Git-backed OpenCode.*accepted real-host evidence/i);
 
 for (const obsolete of [
   'scripts/check_product_state_truth.mjs',
@@ -113,6 +115,8 @@ assert.match(liveAcceptance, /does not upgrade or replace the system npm/);
 assert.match(readme, /^## Product readiness$/m);
 assert.match(readme, /POST-BETA-R1/);
 assert.match(readme, /External evaluator recruitment is suspended/i);
+assert.match(readme, /all four maintained current-native product paths have accepted real-host evidence/i);
+assert.match(limitations, /all four maintained current-native product paths have accepted `PASS` evidence/i);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -187,6 +191,8 @@ const stalePublicTokens = [
   'verify:native-prerelease',
   'OPEN FOR EXTERNAL EVALUATOR SUBMISSIONS',
   'five independent accepted evaluator reports',
+  'OpenCode is `NOT_RUN`',
+  'OpenCode first-run path is `NOT_RUN`',
 ];
 
 for (const relative of productDocs) {
@@ -202,4 +208,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, OpenCode Git-bootstrap evidence pending, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts with accepted current-path evidence, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
