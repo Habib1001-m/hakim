@@ -46,7 +46,7 @@ OpenCode mode state is process-local and session-scoped where a session ID is pr
 
 Repository-hosted native Git marketplaces are maintained for Codex, Claude Code, and GitHub Copilot. OpenCode uses a Git-backed bootstrap that creates the guarded project-local native plugin bundle; Hakim is not published to the npm registry and does not claim a global OpenCode installer, central plugin-directory listing, signing, notarization, or universal host compatibility.
 
-The earlier Git-backed OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` has accepted real-host install/start/invocation evidence on OpenCode `1.17.13`, but that evidence is bounded to the earlier create-only lifecycle. The current manifest-backed lifecycle and idempotent runtime are a materially changed product path and require fresh real-host evidence before this changed path is promoted as accepted.
+The current manifest-backed OpenCode lifecycle and idempotent runtime have accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`. The observed journey covered clean managed install/start/invocation, accepted-old-to-managed upgrade, and newer-CLI removal of the supported older installation. Earlier candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical evidence for the earlier create-only lifecycle only.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 
