@@ -71,7 +71,9 @@ jobs:
         run: node tests/test_opencode_plugin.mjs
 
       - name: Verify OpenCode project-local lifecycle
-        run: node tests/test_hakim_opencode_lifecycle.mjs
+        run: |
+          node tests/test_hakim_opencode_lifecycle.mjs
+          node tests/test_hakim_opencode_adversarial_transactions.mjs
 
       - name: Verify host fallback and lifecycle contracts
         run: |
@@ -115,8 +117,8 @@ jobs:
         with:
           node-version: "22"
           package-manager-cache: false
-      - name: Run public JavaScript suite on Node 22
-        run: npm run test:public:js
+      - name: Run shipped-package compatibility suite on Node 22
+        run: npm run test:node-compat
 
   node26-compatibility:
     runs-on: ubuntu-latest
@@ -129,5 +131,5 @@ jobs:
         with:
           node-version: "26"
           package-manager-cache: false
-      - name: Run public JavaScript suite on Node 26
-        run: npm run test:public:js
+      - name: Run shipped-package compatibility suite on Node 26
+        run: npm run test:node-compat
