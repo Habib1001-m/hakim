@@ -35,7 +35,7 @@ Hakim `1.0.0-beta.1` remains public beta software.
 - Earlier guarded source-checkout OpenCode evidence remains bounded historical evidence and is not substituted for the accepted Git-backed transport evidence.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
 - Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.
-- External evaluator recruitment is currently suspended for POST-BETA-R1 product remediation. The withdrawn campaign accepted no external reports, and native-host acceptance must not be converted into a claim of independent product usefulness or retention.
+- POST-BETA-R1 remediation is complete. External evaluator recruitment remains suspended, the withdrawn campaign accepted no external reports, and any future relaunch requires a separate explicit product decision. Native-host acceptance must not be converted into a claim of independent product usefulness or retention.
 - Any future external evaluation must identify an immutable Hakim source/tag/release reference so observations cannot silently refer to different revisions under the same prerelease version string.
 - Hakim makes no general claims about model quality, speed, token use, cost, adoption, safety improvement, or return on investment.
 
