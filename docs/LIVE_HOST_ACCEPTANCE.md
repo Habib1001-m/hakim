@@ -101,7 +101,7 @@ Then start OpenCode from that project and invoke `/hakim-help` or another Hakim 
 
 OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The current managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state.
 
-The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` proves the earlier create-only lifecycle only. The current manifest-backed lifecycle and idempotent runtime are materially changed and remain `NOT_RUN` in the public projection until fresh exact-candidate real-host evidence is accepted.
+The current managed path has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`. The observation covered clean install/start/invocation, accepted-old-to-managed upgrade, and newer-CLI removal of the supported older installation. Earlier candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains accepted historical evidence for the earlier create-only lifecycle only.
 
 ## 3. Record a candidate evidence packet
 
