@@ -17,6 +17,7 @@ if (!fs.existsSync(packagePath)) {
     errors.push('Git-backed OpenCode bootstrap bin is missing or unexpected');
   }
   const expectedBootstrapFiles = [
+    'core/hakim-skill/VERSION',
     'core/hakim-skill/SKILL.md',
     'core/hakim-skill/capabilities.json',
     'core/hakim-skill/skills',
@@ -69,6 +70,7 @@ if (!fs.existsSync(packagePath)) {
 }
 
 for (const relative of [
+  'core/hakim-skill/VERSION',
   'core/hakim-skill/SKILL.md',
   'core/hakim-skill/AGENTS.md',
   'scripts/hakim_doctor.mjs',
