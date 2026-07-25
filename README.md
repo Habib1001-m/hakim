@@ -16,7 +16,7 @@ For example, when a repository already has a parser that safely handles the requ
 
 Hakim `1.0.0-beta.1` is public beta software distributed from public source and host-native Git marketplaces. It is not published to the npm registry and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
-Codex, Claude Code, and GitHub Copilot currently retain accepted real-host evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). The current manifest-backed OpenCode lifecycle is materially different from the earlier accepted create-only candidate, so OpenCode is intentionally `NOT_RUN` and overall native-host acceptance is `HOLD_FOR_LIVE_HOST_EVIDENCE` until a fresh exact-candidate install/start/invocation journey is accepted. The earlier OpenCode `1.17.13` evidence at `b442820d2803955d0f7f33b405bd096f443d4d72` remains bounded historical evidence only.
+All four maintained current-native product paths — Codex, Claude Code, GitHub Copilot CLI, and the Git-backed managed project-local OpenCode lifecycle — have accepted real-host evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). The current OpenCode path was accepted on OpenCode `1.18.5` after a clean managed install, real invocation, accepted-old-to-managed upgrade, and newer-CLI removal of the supported older installation. That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication.
 
 POST-BETA-R1 remediation is complete and merged through [#15](https://github.com/Habib1001-m/hakim/pull/15). External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch. Private release authorization remains outside the public repository.
 
@@ -120,7 +120,7 @@ Each host intentionally uses its strongest native extension model rather than a 
 
 Current native runtime acceptance is not the same thing as full product readiness. POST-BETA-R1 closed the public-surface, documentation, release-reproducibility, provenance, and first-run UX remediation identified by the comprehensive post-acceptance review.
 
-The current post-merge hardening slice is tracked in [#18](https://github.com/Habib1001-m/hakim/issues/18). Its structural lifecycle, runtime, adversarial, and Node-matrix checks are separate from the fresh OpenCode live-host evidence still required for the materially changed managed lifecycle. The withdrawn evaluator campaign (#12) accepted no external reports; evaluator recruitment remains suspended and any future relaunch requires a separate explicit product decision.
+The post-merge hardening slice tracked in [#18](https://github.com/Habib1001-m/hakim/issues/18) closes the inherited OpenCode lifecycle safety, upgradeability, runtime-idempotence, session-state, Node-support, help-truth, and truth-gate findings identified by traceability review. The changed managed OpenCode path now has fresh accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3`. The withdrawn evaluator campaign (#12) accepted no external reports; evaluator recruitment remains suspended and any future relaunch requires a separate explicit product decision.
 
 ## Evidence boundaries
 
