@@ -36,6 +36,7 @@ for (const required of [
   'scripts/lib/opencode_transaction.mjs',
   'plugins/opencode/hakim.mjs',
   'core/loaders/hakim-loader.mjs',
+  'core/hakim-skill/VERSION',
   'core/hakim-skill/SKILL.md',
   'core/hakim-skill/capabilities.json',
   'core/hakim-skill/skills/hakim-help/SKILL.md',
