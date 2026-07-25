@@ -32,8 +32,8 @@ Hakim `1.0.0-beta.1` remains public beta software.
 
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
-- Codex, Claude Code, and GitHub Copilot currently retain accepted `PASS` evidence in `conformance/native-host-acceptance.json`.
-- The current manifest-backed OpenCode lifecycle is intentionally `NOT_RUN`, making overall native-host acceptance `HOLD_FOR_LIVE_HOST_EVIDENCE` until a fresh exact-candidate real-host install/start/invocation journey is accepted.
+- All four maintained current-native product paths have accepted `PASS` evidence in `conformance/native-host-acceptance.json`.
+- The manifest-backed OpenCode lifecycle was accepted on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`, covering clean install/start/invocation plus accepted-old-to-managed upgrade and newer-CLI removal of the supported older installation.
 - OpenCode evidence from candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains bounded historical evidence for the earlier create-only lifecycle and is not reused for the changed managed lifecycle.
 - Earlier guarded source-checkout OpenCode evidence also remains bounded historical evidence.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
