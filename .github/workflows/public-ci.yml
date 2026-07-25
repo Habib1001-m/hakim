@@ -117,8 +117,18 @@ jobs:
         with:
           node-version: "22"
           package-manager-cache: false
-      - name: Run shipped-package compatibility suite on Node 22
-        run: npm run test:node-compat
+      - name: Node 22 support contract
+        run: node tests/test_node_support_contract.mjs
+      - name: Node 22 OpenCode plugin runtime
+        run: node tests/test_opencode_plugin.mjs
+      - name: Node 22 OpenCode lifecycle
+        run: node tests/test_hakim_opencode_lifecycle.mjs
+      - name: Node 22 adversarial transactions
+        run: node tests/test_hakim_opencode_adversarial_transactions.mjs
+      - name: Node 22 Git bootstrap CLI
+        run: node tests/test_hakim_opencode_cli.mjs
+      - name: Node 22 public package boundary
+        run: node scripts/check_public_package_surface.mjs
 
   node26-compatibility:
     runs-on: ubuntu-latest
@@ -131,5 +141,15 @@ jobs:
         with:
           node-version: "26"
           package-manager-cache: false
-      - name: Run shipped-package compatibility suite on Node 26
-        run: npm run test:node-compat
+      - name: Node 26 support contract
+        run: node tests/test_node_support_contract.mjs
+      - name: Node 26 OpenCode plugin runtime
+        run: node tests/test_opencode_plugin.mjs
+      - name: Node 26 OpenCode lifecycle
+        run: node tests/test_hakim_opencode_lifecycle.mjs
+      - name: Node 26 adversarial transactions
+        run: node tests/test_hakim_opencode_adversarial_transactions.mjs
+      - name: Node 26 Git bootstrap CLI
+        run: node tests/test_hakim_opencode_cli.mjs
+      - name: Node 26 public package boundary
+        run: node scripts/check_public_package_surface.mjs
