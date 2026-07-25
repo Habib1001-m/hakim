@@ -15,6 +15,7 @@ for (const required of [
   'test_hakim_opencode_lifecycle.mjs',
   'test_hakim_opencode_adversarial_transactions.mjs',
   'test_hakim_opencode_cli.mjs',
+  'test_hakim_opencode_package_surface.mjs',
   'check_public_package_surface.mjs',
 ]) {
   assert.ok(compatScript.includes(required), `test:node-compat missing ${required}`);
@@ -31,10 +32,12 @@ for (const version of ['22', '26']) {
     'OpenCode lifecycle',
     'adversarial transactions',
     'Git bootstrap CLI',
+    'npm package inventory',
     'public package boundary',
   ]) {
     assert.match(workflow, new RegExp(`Node ${version} ${step}`), `Node ${version} compatibility job missing ${step}`);
   }
 }
+assert.match(workflow, /Verify OpenCode Git bootstrap CLI and package[\s\S]*test_hakim_opencode_cli\.mjs[\s\S]*test_hakim_opencode_package_surface\.mjs/, 'Node 24 primary job must verify CLI and npm package inventory');
 
 console.log('node support contract OK: shipped package engines >=22, CI covers Node 22/24/26');
