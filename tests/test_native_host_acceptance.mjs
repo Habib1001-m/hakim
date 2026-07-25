@@ -28,13 +28,14 @@ for (const host of EXPECTED_HOSTS) {
 }
 
 assert.match(projection.hosts.opencode.product_path, /managed project-local install\/adopt\/upgrade/);
-assert.equal(projection.hosts.opencode.host_version, '1.18.5');
-assert.equal(projection.hosts.opencode.verified_at, '2026-07-25T19:10:17.917Z');
+assert.equal(projection.hosts.opencode.host_version, '1.17.13');
+assert.equal(projection.hosts.opencode.verified_at, '2026-07-26');
 assert.equal(
   projection.hosts.opencode.evidence_ref,
-  'https://github.com/Habib1001-m/hakim/issues/18#issuecomment-5080155506',
+  'https://github.com/Habib1001-m/hakim/pull/21#issuecomment-5080940335',
 );
-assert.ok(!JSON.stringify(projection.hosts.opencode).includes('5078407875'), 'current OpenCode path must not reuse earlier evidence');
+assert.ok(!JSON.stringify(projection.hosts.opencode).includes('5080155506'), 'current bounded-sentinel runtime must not reuse the prior OpenCode evidence reference');
+assert.ok(!JSON.stringify(projection.hosts.opencode).includes('5078407875'), 'current OpenCode path must not reuse earlier create-only evidence');
 
 const blank = structuredClone(projection);
 for (const host of EXPECTED_HOSTS) {
@@ -78,4 +79,4 @@ const legacyResult = validateProjection(legacy, version);
 assert.equal(legacyResult.ok, false);
 assert.ok(legacyResult.errors.some((error) => /legacy acceptance marker/.test(error)));
 
-console.log('native host acceptance projection preserves current-path evidence boundaries and accepted hardened OpenCode state');
+console.log('native host acceptance projection preserves current-path evidence boundaries and accepted bounded-sentinel OpenCode runtime state');
