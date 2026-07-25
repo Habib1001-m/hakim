@@ -41,13 +41,13 @@ Hakim maintains one canonical capability registry, but installed host plugins ar
 
 OpenCode installation is project-local. The current managed lifecycle creates `.opencode/hakim-runtime/install-manifest.json`, can adopt an exact recognized pre-manifest installation, can transactionally upgrade a complete verified supported older installation, and lets a newer CLI remove a supported older verified installation. Removal and rollback move owned bytes into same-filesystem quarantine and verify after the move before deletion; changed or independently reappearing user state is preserved no-clobber.
 
-OpenCode mode state is process-local and session-scoped where a session ID is present. Reused system outputs contain at most one `<!-- hakim-system:v1 mode=... -->` activation block; repeated transforms do not duplicate Hakim instructions, mode changes replace the block, and `off` removes it.
+OpenCode mode state is process-local and session-scoped where a session ID is present. Reused system outputs contain at most one Hakim-owned activation range bounded by `<!-- hakim-system:v1 mode=... -->` and `<!-- /hakim-system:v1 -->`; repeated transforms do not duplicate Hakim instructions, mode changes replace only that range, `off` removes only that range, and unrelated system content around it is preserved.
 
 ## Distribution boundary
 
 Repository-hosted native Git marketplaces are maintained for Codex, Claude Code, and GitHub Copilot. OpenCode uses a Git-backed bootstrap that creates the guarded project-local native plugin bundle; Hakim is not published to the npm registry and does not claim a global OpenCode installer, central plugin-directory listing, signing, notarization, or universal host compatibility.
 
-The current manifest-backed OpenCode lifecycle and idempotent runtime have accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`. The observed journey covered clean managed install/start/invocation, accepted-old-to-managed upgrade, and newer-CLI removal of the supported older installation. Earlier candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical evidence for the earlier create-only lifecycle only.
+The current bounded-sentinel OpenCode runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`, covering clean managed install/start/invocation and successful Hakim runtime use. Candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as proof of the changed sentinel runtime. Earlier candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical evidence for the earlier create-only lifecycle only.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 
