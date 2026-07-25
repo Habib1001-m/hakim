@@ -140,7 +140,7 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
   const nativeHostStatuses = Object.fromEntries(
     Object.entries(nativeAcceptance?.hosts || {}).map(([host, value]) => [host, value?.status || null]),
   );
-  const externalEvaluation = 'SUSPENDED_FOR_PRODUCT_REMEDIATION';
+  const externalEvaluation = 'SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION';
 
   return {
     schema_version: 1,
@@ -168,8 +168,8 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
     next_safe_action: failed.length > 0
       ? `Run the first failing check directly: ${failed[0].command}`
       : nativeOverall !== 'PASS'
-        ? 'Complete POST-BETA-R1 remediation tracked in GitHub issue #14 by collecting the pending current native host acceptance evidence before any external evaluator campaign.'
-        : 'Complete POST-BETA-R1 remediation tracked in GitHub issue #14 before relaunching external evaluator recruitment.',
+        ? 'Capture and accept fresh real-host evidence for the current OpenCode managed lifecycle tracked in GitHub issue #18, then reconcile the native-host projection. External evaluator relaunch remains a separate explicit product decision.'
+        : 'Current public repository and native-host evidence are reconciled. Do not relaunch external evaluator recruitment without a separate explicit product decision.',
     checks: results,
   };
 }
@@ -216,9 +216,9 @@ function usage() {
     '`--fast` runs the lightweight integrity, native-acceptance, and public-boundary subset.',
     'Private runtime acceptance and release authorization are outside the public',
     'repository scope. Current native live-host status is reported separately from',
-    'conformance/native-host-acceptance.json. External evaluator recruitment is',
-    'currently suspended for product remediation. The doctor never changes repository',
-    'or host state.',
+    'conformance/native-host-acceptance.json. External evaluator recruitment remains',
+    'suspended pending a separate explicit product decision. The doctor never changes',
+    'repository or host state.',
   ].join('\n');
 }
 
