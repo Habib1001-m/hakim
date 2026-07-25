@@ -16,7 +16,7 @@ For example, when a repository already has a parser that safely handles the requ
 
 Hakim `1.0.0-beta.1` is public beta software distributed from public source and host-native Git marketplaces. It is not published to the npm registry and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
-The current native paths for Codex, Claude Code, and GitHub Copilot CLI have accepted real-host evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). OpenCode's new Git-backed project-local bootstrap is structurally tested but is currently `NOT_RUN` in that current-product projection until its exact install/start/invocation journey receives fresh real-host evidence. Earlier guarded project-local OpenCode evidence remains bounded historical evidence and is not reused to promote the new transport.
+All four maintained current-native product paths — Codex, Claude Code, GitHub Copilot CLI, and the Git-backed project-local OpenCode bootstrap — have accepted real-host install/start/invocation evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication.
 
 External evaluator recruitment is suspended while the public product surface is remediated under [#14](https://github.com/Habib1001-m/hakim/issues/14). Private release authorization remains outside the public repository.
 
