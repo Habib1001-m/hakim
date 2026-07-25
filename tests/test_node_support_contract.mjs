@@ -9,9 +9,12 @@ const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 
 const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'public-ci.yml'), 'utf8');
 
 assert.equal(packageJson.engines?.node, '>=22', 'Hakim must not claim EOL Node 18/20 support');
-assert.match(workflow, /node-version: "24"/, 'primary Public CI must retain Node 24 LTS coverage');
-assert.match(workflow, /node:\s*\["22", "26"\]/, 'compatibility matrix must cover the minimum supported LTS and current Node release');
-assert.match(workflow, /node-version: \$\{\{ matrix\.node \}\}/, 'compatibility job must execute the declared matrix');
-assert.match(workflow, /npm run test:public:js/, 'compatibility matrix must run the complete public JavaScript suite');
+for (const version of ['22', '24', '26']) {
+  assert.match(workflow, new RegExp(`node-version: "${version}"`), `Public CI must cover Node ${version}`);
+}
+assert.match(workflow, /node22-compatibility:/, 'Public CI must keep an explicit minimum-version compatibility job');
+assert.match(workflow, /node26-compatibility:/, 'Public CI must keep an explicit current-version compatibility job');
+assert.match(workflow, /Run public JavaScript suite on Node 22[\s\S]*npm run test:public:js/, 'Node 22 compatibility job must run the complete public JavaScript suite');
+assert.match(workflow, /Run public JavaScript suite on Node 26[\s\S]*npm run test:public:js/, 'Node 26 compatibility job must run the complete public JavaScript suite');
 
 console.log('node support contract OK: engines >=22, CI covers Node 22/24/26');
