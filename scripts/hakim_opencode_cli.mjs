@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { installOpenCodeAdapter } from './hakim_opencode_install.mjs';
@@ -140,4 +141,13 @@ function main() {
   process.exit(payload.status === 'PASS' ? 0 : 1);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_PATH) main();
+function isDirectExecution() {
+  if (!process.argv[1]) return false;
+  try {
+    return fs.realpathSync(process.argv[1]) === fs.realpathSync(SCRIPT_PATH);
+  } catch {
+    return path.resolve(process.argv[1]) === path.resolve(SCRIPT_PATH);
+  }
+}
+
+if (isDirectExecution()) main();
