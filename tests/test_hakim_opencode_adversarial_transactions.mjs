@@ -6,9 +6,14 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { inspectStatus } from '../scripts/hakim_opencode_cli.mjs';
 import { installOpenCodeAdapter } from '../scripts/hakim_opencode_install.mjs';
 import { removeOpenCodeAdapter } from '../scripts/hakim_opencode_remove.mjs';
-import { buildOpenCodeBundle } from '../scripts/lib/opencode_bundle.mjs';
+import {
+  INSTALL_MANIFEST_RELATIVE_PATH,
+  buildOpenCodeBundle,
+  sha256,
+} from '../scripts/lib/opencode_bundle.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -101,6 +106,30 @@ test('P0-03: rollback race preserves a concurrent replacement even when it occur
     fs.writeFileSync = originalWrite;
     fs.renameSync = originalRename;
   }
+}));
+
+test('forged same-version manifest cannot redefine customized Hakim paths as removable ownership', async () => withRepository(({ target }) => {
+  assert.equal(installOpenCodeAdapter({ target, apply: true }, ROOT).state, 'CREATED');
+
+  const plugin = path.join(target, '.opencode', 'plugins', 'hakim.js');
+  const customBytes = Buffer.from('export default () => ({ userOwned: true });\n');
+  fs.writeFileSync(plugin, customBytes);
+
+  const manifestPath = path.join(target, INSTALL_MANIFEST_RELATIVE_PATH);
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const pluginRecord = manifest.files.find((record) => record.target_relative === '.opencode/plugins/hakim.js');
+  pluginRecord.sha256 = sha256(customBytes);
+  pluginRecord.size = customBytes.length;
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+  const status = inspectStatus(target, ROOT);
+  assert.equal(status.status, 'FAIL');
+  assert.equal(status.state, 'MANIFEST_UNSUPPORTED');
+
+  const remove = removeOpenCodeAdapter({ target, apply: true }, ROOT);
+  assert.equal(remove.status, 'FAIL');
+  assert.equal(remove.state, 'REFUSED_MANIFEST_UNSUPPORTED');
+  assert.deepEqual(fs.readFileSync(plugin), customBytes, 'forged ownership metadata must never authorize deletion');
 }));
 
 console.log('test_hakim_opencode_adversarial_transactions.mjs: ok');
