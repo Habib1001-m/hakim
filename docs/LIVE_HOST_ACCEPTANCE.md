@@ -6,7 +6,7 @@ This document defines the public-safe workflow for accepting Hakim `1.0.0-beta.1
 
 A green repository CI run is not live-host acceptance.
 
-A host or materially changed first-run transport can be promoted by public evidence only after the exact end-to-end journey has been observed on the real host and a public-safe evidence reference has been reviewed.
+A host or materially changed first-run, lifecycle, or runtime path can be promoted by public evidence only after the exact end-to-end journey has been observed on the real host and a public-safe evidence reference has been reviewed.
 
 Hakim never asks for credentials, private prompts, customer source code, authentication tokens, or private governance records as live-host evidence.
 
@@ -81,14 +81,17 @@ node "$NPM11_ROOT/node_modules/npm/bin/npm-cli.js" --version
 
 node "$NPM11_NPX" --yes \
   --package="github:Habib1001-m/hakim#$SOURCE_SHA" \
+  -- \
   hakim-opencode status --json
 
 node "$NPM11_NPX" --yes \
   --package="github:Habib1001-m/hakim#$SOURCE_SHA" \
+  -- \
   hakim-opencode install --dry-run --json
 
 node "$NPM11_NPX" --yes \
   --package="github:Habib1001-m/hakim#$SOURCE_SHA" \
+  -- \
   hakim-opencode install --json
 ```
 
@@ -96,9 +99,9 @@ This is acceptance-only tooling for immutable commit evidence. It does not upgra
 
 Then start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
 
-OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. Hakim's bootstrap reuses the guarded create-only lifecycle, verifies the installed bundle, does not edit `opencode.json`, and creates no global Hakim/OpenCode state.
+OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The current managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state.
 
-The previously recorded OpenCode `PASS` proves the earlier guarded project-local install/start/invocation journey. It does not automatically prove this new Git-backed first-run transport. Record separate evidence for the exact candidate commit before promoting that transport as accepted.
+The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` proves the earlier create-only lifecycle only. The current manifest-backed lifecycle and idempotent runtime are materially changed and remain `NOT_RUN` in the public projection until fresh exact-candidate real-host evidence is accepted.
 
 ## 3. Record a candidate evidence packet
 
@@ -147,9 +150,9 @@ A candidate packet is evidence for review, not authorization to change the publi
 
 Review the candidate packet and its evidence reference. Then, and only then, update the corresponding host/product-path evidence when the reviewed observation actually covers the claimed journey.
 
-Do not broaden old evidence to a new transport, version, or journey merely because the runtime payload is similar.
+Do not broaden old evidence to a new transport, lifecycle, runtime behavior, version, or journey merely because part of the payload is similar.
 
-External evaluator recruitment is currently `SUSPENDED_FOR_PRODUCT_REMEDIATION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
+External evaluator recruitment is currently `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
 
 ## Upstream host references
 
