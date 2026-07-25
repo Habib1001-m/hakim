@@ -22,6 +22,7 @@ import {
 import {
   restoreQuarantinedBytesNoClobber,
   rollbackCreatedRecordsNoClobber,
+  validateManagedInstallationAuthority,
 } from './lib/opencode_transaction.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
@@ -256,7 +257,8 @@ function upgradeInstallation(targetRoot, bundle, managed, currentManifest, base,
     const staged = stageNewInstallation(newRoot, bundle, currentManifest);
 
     const rechecked = detectManagedInstallation(targetRoot, bundle);
-    if (!sameManagedInstallation(managed, rechecked)) throw new Error('installed Hakim state changed during upgrade preflight');
+    const recheckedAuthority = validateManagedInstallationAuthority(rechecked, bundle);
+    if (!recheckedAuthority.ok || !sameManagedInstallation(managed, rechecked)) throw new Error('installed Hakim state changed during upgrade preflight');
 
     moved = moveOldInstallation(targetRoot, managed, oldRoot);
     createDirectories(targetRoot, directories, createdDirectories);
@@ -353,6 +355,8 @@ export function installOpenCodeAdapter(options, root = ROOT) {
   const managed = detectManagedInstallation(target.target_root, bundle);
   const inspection = managed.inspection?.counts || null;
   const withInspection = { ...base, inspection, managed_state: managed.state, managed_manifest_source: managed.manifest_source };
+  const authority = validateManagedInstallationAuthority(managed, bundle);
+  if (!authority.ok) return result(withInspection, 'FAIL', `REFUSED_${authority.state}`, authority.message);
 
   if (managed.state === 'EXACT_MATCH' && manifestsEquivalent(managed.manifest, currentManifest)) {
     return result(withInspection, 'PASS', 'ALREADY_MATCHES', 'The project-local OpenCode adapter and persistent install manifest already match the canonical Hakim bundle.', {
