@@ -82,10 +82,11 @@ assert.deepEqual(report.native_host_acceptance.hosts, {
   'github-copilot': 'PASS',
   opencode: 'PASS',
 });
-assert.equal(report.external_beta_promotion, 'SUSPENDED_FOR_PRODUCT_REMEDIATION');
-assert.match(report.next_safe_action, /Complete POST-BETA-R1 remediation/);
-assert.match(report.next_safe_action, /issue #14/);
-assert.match(report.next_safe_action, /before relaunching external evaluator recruitment/);
+assert.equal(report.external_beta_promotion, 'SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION');
+assert.match(report.next_safe_action, /POST-BETA-R1 is complete/);
+assert.match(report.next_safe_action, /separate explicit product decision/);
+assert.ok(!report.next_safe_action.includes('Complete POST-BETA-R1 remediation'));
+assert.ok(!report.next_safe_action.includes('issue #14'));
 
 const text = formatText(report);
 assert.match(text, /MODE=READ_ONLY/);
@@ -93,7 +94,7 @@ assert.match(text, /CHECKS=6\/6 PASS/);
 assert.match(text, /RUNTIME_ACCEPTANCE=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /PUBLIC_RELEASE_READINESS=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /NATIVE_HOST_ACCEPTANCE=PASS/);
-assert.match(text, /EXTERNAL_BETA_PROMOTION=SUSPENDED_FOR_PRODUCT_REMEDIATION/);
+assert.match(text, /EXTERNAL_BETA_PROMOTION=SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION/);
 
 const help = spawnSync(
   process.execPath,
@@ -110,7 +111,8 @@ assert.match(help.stdout, /read-only mode/);
 assert.match(help.stdout, /outside the public/);
 assert.match(help.stdout, /native live-host status/);
 assert.match(help.stdout, /--fast.*lightweight/);
-assert.match(help.stdout, /suspended for product remediation/);
+assert.match(help.stdout, /suspended pending a separate explicit product decision/);
+assert.ok(!help.stdout.includes('suspended for product remediation'));
 
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'),
@@ -129,4 +131,4 @@ assert.equal(
   'node scripts/hakim_doctor.mjs --fast --json',
 );
 
-console.log('public Hakim doctor separates repository health, private acceptance, native-host evidence, and suspended evaluator recruitment');
+console.log('public Hakim doctor separates repository health, private acceptance, native-host evidence, and post-remediation evaluator suspension');
