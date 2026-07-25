@@ -3,7 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { buildPlan as buildInstallPlan } from './hakim_install_plan.mjs';
+import {
+  OPENCODE_BOOTSTRAP,
+  buildPlan as buildInstallPlan,
+} from './hakim_install_plan.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
@@ -46,7 +49,7 @@ const JOURNEYS = Object.freeze({
     ['invocation', 'Invoke a Hakim skill or agent and verify the installed plugin responds.'],
   ],
   opencode: [
-    ['installation', 'Run the guarded Hakim project-local installer against the target repository and confirm an exact installed bundle.'],
+    ['installation', 'Run the Git-backed Hakim bootstrap from the target repository and confirm the guarded project-local bundle reaches an exact installed state.'],
     ['activation', 'Start OpenCode from the target repository so project-local .opencode/plugins content is loaded.'],
     ['invocation', 'Invoke /hakim-help or another Hakim command/skill and verify the project-local plugin responds.'],
   ],
@@ -68,9 +71,10 @@ const INSTALL_COMMANDS = Object.freeze({
     'Verify with copilot plugin list, /skills list, and /agent.',
   ],
   opencode: [
-    'npm run install:opencode -- --target <repository>',
-    'npm run install:opencode -- --target <repository> --apply',
+    `${OPENCODE_BOOTSTRAP} --target <repository>`,
+    `${OPENCODE_BOOTSTRAP} --target <repository> --dry-run`,
     'Start OpenCode from <repository> and invoke /hakim-help.',
+    'For acceptance of an unreleased candidate, use an exact Git commit in the package spec and record that immutable commit in the public-safe evidence reference.',
   ],
 });
 
@@ -267,28 +271,35 @@ export function buildLiveAcceptance(options, root = ROOT, dependencies = {}) {
 export function validateOutputPath(outputPath) {
   const resolved = path.resolve(outputPath);
   if (fs.existsSync(resolved)) throw new Error(`output already exists; refusing overwrite: ${resolved}`);
-  const parent = path.dirname(resolved);
-  fs.mkdirSync(parent, { recursive: true });
+  fs.mkdirSync(path.dirname(resolved), { recursive: true });
   return resolved;
 }
 
-export function formatText(report) {
+function formatText(report) {
   const lines = [
     'Hakim Current-Native Live Host Acceptance',
     `MODE=${report.mode}`,
     `HOST=${report.host}`,
     `CANDIDATE_STATUS=${report.candidate_status}`,
-    `HOST_BINARY=${report.host_binary.requested}`,
-    `HOST_BINARY_RESOLVED=${report.host_binary.resolved || 'NOT_FOUND'}`,
-    `HOST_VERSION=${report.host_binary.version_probe.version || 'NOT_DETECTED'}`,
+    `HOST_BINARY=${report.host_binary.resolved || 'NOT_FOUND'}`,
+    `HOST_VERSION_STATUS=${report.host_binary.version_probe.status}`,
+    `HOST_VERSION=${report.host_binary.version_probe.version || 'UNKNOWN'}`,
     `INSTALL_PLAN_STATUS=${report.install_plan.status}`,
-    `INSTALL_TARGET_STATE=${report.install_plan.target_state || 'UNKNOWN'}`,
-    `INSTALL_OBSERVED=${report.journey.find((item) => item.id === 'installation')?.observation}`,
-    `ACTIVATION_OBSERVED=${report.journey.find((item) => item.id === 'activation')?.observation}`,
-    `INVOCATION_OBSERVED=${report.journey.find((item) => item.id === 'invocation')?.observation}`,
-    `EVIDENCE_REF=${report.evidence_ref || 'NONE'}`,
-    'HOST_MUTATION_PERFORMED=NO',
-    'PROJECTION_MUTATION_PERFORMED=NO',
+    `INSTALL_MODE=${report.install_plan.distribution_mode || 'UNKNOWN'}`,
+    `TARGET_STATE=${report.install_plan.target_state || 'UNKNOWN'}`,
+    '',
+    '[Install / start journey]',
+    ...report.install_commands.map((command) => `- ${command}`),
+    '',
+    '[Observed checkpoints]',
+    ...report.journey.map((item) => `- ${item.id}: ${item.observation} — ${item.description}`),
+    '',
+    `EVIDENCE_REF=${report.evidence_ref || 'NOT_RECORDED'}`,
+    `VERIFIED_AT=${report.verified_at || 'NOT_RECORDED'}`,
+    'HOST_INSTALLATION_PERFORMED_BY_HARNESS=NO',
+    'HOST_CONFIGURATION_MUTATED_BY_HARNESS=NO',
+    'ACCEPTANCE_PROJECTION_MUTATED_BY_HARNESS=NO',
+    'RAW_HOST_OUTPUT_CAPTURED=NO',
     `NEXT_SAFE_ACTION=${report.next_safe_action}`,
   ];
   return lines.join('\n');
@@ -297,31 +308,40 @@ export function formatText(report) {
 function usage() {
   return [
     'Usage:',
-    '  npm run accept:host -- --host <codex|claude-code|github-copilot|opencode> [--binary <path-or-name>] [--cwd <directory>] [--target <repository>] [--json]',
-    '  npm run accept:host -- --host <host> --record --installation <PASS|FAIL|BLOCKED> --activation <PASS|FAIL|BLOCKED> --invocation <PASS|FAIL|BLOCKED> --evidence-ref <public-safe-ref> [--verified-at <ISO>] [--output <new-path>] [--json]',
+    '  npm run accept:host -- --host <codex|claude-code|github-copilot|opencode> [--binary <path>] [--target <repository>]',
+    '  npm run accept:host -- --host <host> --record --installation <PASS|FAIL|BLOCKED|NOT_RECORDED> --activation <...> --invocation <...> --evidence-ref <public-safe-ref> [--verified-at <ISO-8601>] [--output <path>] [--json]',
     '',
-    'Default mode is read-only: detects the host binary/version, validates Hakim install planning, and prints the exact current-native journey.',
-    '--record builds a candidate evidence packet after the operator has actually observed the live journey. It never edits conformance/native-host-acceptance.json.',
-    '--apply is intentionally refused. Marketplace installation, trust, activation, and project-local installation remain explicit operator actions.',
-    '--output is create-only and refuses to overwrite an existing evidence packet.',
-    'For OpenCode recording, --target <repository> is required.',
+    'The harness is read-only with respect to the host and acceptance projection.',
+    'It probes only the requested host --version automatically and prints the product journey.',
+    'Installation, trust/approval, startup, invocation, and evidence review remain explicit operator actions.',
+    'For an unreleased Git-backed OpenCode candidate, test an exact Git commit and include that immutable identity in the public-safe evidence reference.',
+    '`--apply` is intentionally refused. `--output` is create-only and writes only a candidate evidence packet.',
   ].join('\n');
 }
 
 function main() {
   let options;
-  try { options = parseArgs(process.argv.slice(2)); }
-  catch (error) { console.error(`Error: ${error.message}`); console.error(usage()); process.exit(2); }
-  if (options.help) { console.log(usage()); return; }
-  const report = buildLiveAcceptance(options);
-  if (options.output) {
-    let outputPath;
-    try { outputPath = validateOutputPath(options.output); }
-    catch (error) { console.error(`Error: ${error.message}`); process.exit(2); }
-    fs.writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+  try {
+    options = parseArgs(process.argv.slice(2));
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    console.error(usage());
+    process.exit(2);
   }
-  console.log(options.json ? JSON.stringify(report, null, 2) : formatText(report));
-  process.exit(['PASS', 'INSPECT_ONLY'].includes(report.candidate_status) ? 0 : 1);
+
+  if (options.help) {
+    console.log(usage());
+    return;
+  }
+
+  const report = buildLiveAcceptance(options);
+  const rendered = options.json ? JSON.stringify(report, null, 2) : formatText(report);
+  if (options.output) {
+    const outputPath = validateOutputPath(options.output);
+    fs.writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+  }
+  console.log(rendered);
+  process.exit(report.candidate_status === 'FAIL' ? 1 : 0);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_PATH) main();

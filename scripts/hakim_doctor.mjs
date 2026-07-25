@@ -11,36 +11,42 @@ export const CHECK_DEFINITIONS = Object.freeze([
   {
     id: 'rule_integrity',
     tier: 'integration',
+    fast: true,
     script: 'core/hakim-skill/scripts/check_rule_copies.js',
     args: ['core/hakim-skill/SKILL.md', '--json'],
   },
   {
     id: 'upstream_relationship',
     tier: 'integration',
+    fast: false,
     script: 'scripts/check_upstream_relationship.mjs',
     args: [],
   },
   {
     id: 'cross_adapter_conformance',
     tier: 'integration',
+    fast: false,
     script: 'scripts/check_cross_adapter_conformance.mjs',
     args: [],
   },
   {
     id: 'native_host_acceptance_projection',
     tier: 'integration',
+    fast: true,
     script: 'scripts/check_native_host_acceptance.mjs',
     args: [],
   },
   {
     id: 'public_repository_boundary',
     tier: 'integration',
+    fast: true,
     script: 'scripts/check_public_repository_boundary.mjs',
     args: [],
   },
   {
     id: 'public_package_surface',
     tier: 'integration',
+    fast: true,
     script: 'scripts/check_public_package_surface.mjs',
     args: [],
   },
@@ -57,8 +63,8 @@ export function parseArgs(args) {
   };
 }
 
-export function selectChecks(_fast, definitions = CHECK_DEFINITIONS) {
-  return [...definitions];
+export function selectChecks(fast, definitions = CHECK_DEFINITIONS) {
+  return fast ? definitions.filter((item) => item.fast === true) : [...definitions];
 }
 
 export function readVersion(root = ROOT) {
@@ -134,9 +140,7 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
   const nativeHostStatuses = Object.fromEntries(
     Object.entries(nativeAcceptance?.hosts || {}).map(([host, value]) => [host, value?.status || null]),
   );
-  const externalPromotion = nativeOverall === 'PASS'
-    ? 'ELIGIBLE_FOR_OPERATOR_REVIEW'
-    : 'HOLD_FOR_LIVE_HOST_EVIDENCE';
+  const externalEvaluation = 'SUSPENDED_FOR_PRODUCT_REMEDIATION';
 
   return {
     schema_version: 1,
@@ -160,12 +164,12 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
       overall_status: nativeOverall,
       hosts: nativeHostStatuses,
     },
-    external_beta_promotion: externalPromotion,
+    external_beta_promotion: externalEvaluation,
     next_safe_action: failed.length > 0
       ? `Run the first failing check directly: ${failed[0].command}`
-      : externalPromotion !== 'ELIGIBLE_FOR_OPERATOR_REVIEW'
-        ? 'Run current native host acceptance journeys on real supported hosts before external beta promotion.'
-        : 'Review the public release candidate and accepted live-host evidence before external promotion.',
+      : nativeOverall !== 'PASS'
+        ? 'Complete POST-BETA-R1 remediation tracked in GitHub issue #14 by collecting the pending current native host acceptance evidence before any external evaluator campaign.'
+        : 'Complete POST-BETA-R1 remediation tracked in GitHub issue #14 before relaunching external evaluator recruitment.',
     checks: results,
   };
 }
@@ -209,9 +213,11 @@ function usage() {
     '  node scripts/hakim_doctor.mjs [--fast] [--json]',
     '',
     'Runs the maintained public Hakim repository checks in read-only mode.',
+    '`--fast` runs the lightweight integrity, native-acceptance, and public-boundary subset.',
     'Private runtime acceptance and release authorization are outside the public',
     'repository scope. Current native live-host status is reported separately from',
-    'conformance/native-host-acceptance.json. The doctor never changes repository',
+    'conformance/native-host-acceptance.json. External evaluator recruitment is',
+    'currently suspended for product remediation. The doctor never changes repository',
     'or host state.',
   ].join('\n');
 }

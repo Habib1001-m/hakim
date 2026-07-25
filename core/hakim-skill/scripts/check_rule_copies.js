@@ -16,7 +16,7 @@ const CRITICAL_SECTIONS = [
   { id: 'ladder', header: '## The Ladder' },
   { id: 'intensity', header: '## Intensity Levels' },
   { id: 'persistence', header: '## Persistence' },
-  { id: 'commands', header: '## Commands' },
+  { id: 'capabilities', header: '## Capabilities' },
   { id: 'debt_ledger', header: '## Deliberate Technical Debt Ledger' },
   { id: 'lazy_not_negligent', header: '## Lazy, Not Negligent' },
 ];

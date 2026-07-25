@@ -11,6 +11,21 @@ const forbiddenPaths = [
   'ARCHIVE_POLICY.md',
   'REVIEW-GUIDE.md',
   'conformance/runtime-acceptance-ledger.json',
+  'docs/EXTERNAL_BETA_EVALUATION.md',
+  '.github/ISSUE_TEMPLATE/public-beta-feedback.yml',
+  'docs/agentic-ai-reference-SPEC.md',
+  'docs/theoretical-reference',
+  'plugins/hermes',
+  'plugins/gemini-antigravity',
+  'packaging/native-plugin',
+  'scripts/build_native_plugin_package.mjs',
+  'scripts/pack_native_plugin_tarball.mjs',
+  'scripts/verify_native_plugin_prerelease.mjs',
+  'scripts/run_native_plugin_opencode_smoke.sh',
+  'tests/verify_native_plugin_opencode_smoke.mjs',
+  'tests/test_native_plugin_tarball.mjs',
+  'tests/test_native_plugin_realpath_containment.mjs',
+  'tests/test_native_plugin_transactional_lifecycle.mjs',
 ];
 
 const publicSurfaces = [
@@ -35,6 +50,20 @@ const forbiddenMarkers = [
   ['status', 'transition-state.json'].join('/'),
 ];
 
+const retiredDocumentMarkers = [
+  ['private', 'prerelease'].join('-'),
+  ['OPEN FOR EXTERNAL', 'EVALUATOR SUBMISSIONS'].join(' '),
+  ['docs/EXTERNAL_BETA', 'EVALUATION.md'].join('_'),
+  ['public-beta', 'feedback.yml'].join('-'),
+  ['agentic-ai', 'reference'].join('-'),
+  ['theoretical', 'reference'].join('-'),
+  ['~/.', 'hermes/'].join(''),
+  ['hermes', 'agent'].join('-'),
+  ['ponytail', 'mode'].join('-'),
+  ['Private OpenCode', 'setup'].join(' '),
+];
+
+const historicalDocumentExceptions = new Set(['CHANGELOG.md']);
 const errors = [];
 
 for (const relative of forbiddenPaths) {
@@ -56,6 +85,29 @@ for (const relative of publicSurfaces) {
     }
   }
 }
+
+const documentExtensions = new Set(['.md', '.json', '.toml', '.yml', '.yaml']);
+const skippedDirectories = new Set(['.git', 'node_modules', 'dist']);
+
+function scanPublicDocuments(directory, relativeRoot = '') {
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (entry.isDirectory() && skippedDirectories.has(entry.name)) continue;
+    const absolute = path.join(directory, entry.name);
+    const relative = path.posix.join(relativeRoot, entry.name);
+    if (entry.isDirectory()) {
+      scanPublicDocuments(absolute, relative);
+      continue;
+    }
+    if (!entry.isFile() || !documentExtensions.has(path.extname(entry.name).toLowerCase())) continue;
+    if (historicalDocumentExceptions.has(relative)) continue;
+    const text = fs.readFileSync(absolute, 'utf8');
+    for (const marker of retiredDocumentMarkers) {
+      if (text.includes(marker)) errors.push(`retired active-document marker in ${relative}: ${marker}`);
+    }
+  }
+}
+
+scanPublicDocuments(root);
 
 const workflow = path.join(root, '.github', 'workflows', 'public-ci.yml');
 if (!fs.existsSync(workflow)) {

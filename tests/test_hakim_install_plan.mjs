@@ -5,6 +5,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
+  OPENCODE_BOOTSTRAP,
   SUPPORTED_HOSTS,
   buildPlan,
   compareCopilotTarget,
@@ -21,6 +22,7 @@ const sourceCopilot = path.join(repoRoot, '.github', 'copilot-instructions.md');
 const expectedVersion = fs.readFileSync(path.join(repoRoot, 'core/hakim-skill/VERSION'), 'utf8').trim();
 
 assert.deepEqual(SUPPORTED_HOSTS, ['codex', 'claude-code', 'github-copilot', 'opencode']);
+assert.equal(OPENCODE_BOOTSTRAP, 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install');
 assert.deepEqual(parseArgs([]), { host: 'all', target: null, json: false, help: false });
 assert.deepEqual(parseArgs(['--host', 'codex', '--json']), { host: 'codex', target: null, json: true, help: false });
 assert.deepEqual(parseArgs(['--host=github-copilot', '--target=/tmp/example']), { host: 'github-copilot', target: '/tmp/example', json: false, help: false });
@@ -65,9 +67,13 @@ assert.deepEqual(copilot.native_agents, ['hakim-reviewer', 'hakim-auditor', 'hak
 
 const opencodeNoTarget = inspectOpenCode(null, repoRoot);
 assert.equal(opencodeNoTarget.status, 'PASS');
-assert.equal(opencodeNoTarget.distribution_mode, 'PROJECT_LOCAL_INSTALLER');
-assert.equal(opencodeNoTarget.target_state, 'NOT_COMPARED');
-assert.match(opencodeNoTarget.next_safe_action, /install:opencode/);
+assert.equal(opencodeNoTarget.support_boundary, 'PROJECT_LOCAL_NATIVE_PLUGIN');
+assert.equal(opencodeNoTarget.distribution_mode, 'GIT_BACKED_PROJECT_LOCAL_INSTALLER');
+assert.equal(opencodeNoTarget.target_state, 'READY_FOR_GIT_BOOTSTRAP');
+assert.equal(opencodeNoTarget.persistent_installation, 'PROJECT_LOCAL');
+assert.equal(opencodeNoTarget.invocation, OPENCODE_BOOTSTRAP);
+assert.match(opencodeNoTarget.next_safe_action, /target repository/);
+assert.match(opencodeNoTarget.next_safe_action, /--dry-run/);
 
 const noTarget = compareCopilotTarget(null, repoRoot);
 assert.equal(noTarget.target_state, 'NOT_COMPARED');
@@ -85,7 +91,8 @@ try {
   assert.equal(opencodeAbsent.status, 'PASS');
   assert.equal(opencodeAbsent.target_state, 'ABSENT');
   assert.equal(opencodeAbsent.automatic_changes, false);
-  assert.match(opencodeAbsent.next_safe_action, /--apply after review/);
+  assert.match(opencodeAbsent.next_safe_action, /hakim-opencode install/);
+  assert.match(opencodeAbsent.next_safe_action, /--target/);
 
   const targetFile = path.join(tempRoot, '.github', 'copilot-instructions.md');
   fs.mkdirSync(path.dirname(targetFile), { recursive: true });
@@ -117,6 +124,8 @@ assert.match(formatted, /\[github-copilot\]/);
 assert.match(formatted, /copilot plugin install hakim@hakim/);
 assert.match(formatted, /INSTALL_IDENTITY=hakim@hakim/);
 assert.match(formatted, /\[opencode\]/);
+assert.match(formatted, /MODE=GIT_BACKED_PROJECT_LOCAL_INSTALLER/);
+assert.match(formatted, /INVOCATION=npx --yes --package=github:Habib1001-m\/hakim hakim-opencode install/);
 
 const cli = spawnSync(process.execPath, ['scripts/hakim_install_plan.mjs', '--host', 'all', '--json'], { cwd: repoRoot, encoding: 'utf8' });
 assert.equal(cli.status, 0, cli.stderr);
@@ -128,6 +137,7 @@ assert.equal(cliPlan.hakim_version, expectedVersion);
 assert.equal(cliPlan.plans.find((item) => item.host === 'codex').distribution_mode, 'NATIVE_GIT_MARKETPLACE');
 assert.equal(cliPlan.plans.find((item) => item.host === 'claude-code').distribution_mode, 'NATIVE_MARKETPLACE');
 assert.equal(cliPlan.plans.find((item) => item.host === 'github-copilot').distribution_mode, 'NATIVE_MARKETPLACE');
+assert.equal(cliPlan.plans.find((item) => item.host === 'opencode').distribution_mode, 'GIT_BACKED_PROJECT_LOCAL_INSTALLER');
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 assert.equal(packageJson.scripts['plan:install'], 'node scripts/hakim_install_plan.mjs');
@@ -135,4 +145,4 @@ assert.equal(packageJson.scripts['plan:install:json'], 'node scripts/hakim_insta
 assert.match(packageJson.scripts['test:integration:js'], /tests\/test_hakim_install_plan\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_install_plan\.mjs/);
 
-console.log('read-only Hakim installation planning covers native Codex, Claude, and Copilot marketplaces plus OpenCode project-local install');
+console.log('read-only Hakim installation planning covers native Codex, Claude, Copilot marketplaces and the Git-backed OpenCode project-local bootstrap');

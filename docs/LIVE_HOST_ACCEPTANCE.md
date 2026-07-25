@@ -6,7 +6,7 @@ This document defines the public-safe workflow for accepting Hakim `1.0.0-beta.1
 
 A green repository CI run is not live-host acceptance.
 
-A host can be promoted to `PASS` in `conformance/native-host-acceptance.json` only after a current native end-to-end journey has been observed on the real host and a public-safe evidence reference has been reviewed.
+A host or materially changed first-run transport can be promoted by public evidence only after the exact end-to-end journey has been observed on the real host and a public-safe evidence reference has been reviewed.
 
 Hakim never asks for credentials, private prompts, customer source code, authentication tokens, or private governance records as live-host evidence.
 
@@ -26,7 +26,7 @@ The command is read-only. It:
 - resolves the requested host binary;
 - runs only the host's `--version` probe;
 - validates Hakim's current install-plan contract;
-- prints the current native install/start/invocation checklist;
+- prints the current install/start/invocation checklist;
 - does not install a plugin, change host configuration, start an interactive host, or edit the acceptance projection.
 
 `--apply` is intentionally refused.
@@ -66,16 +66,39 @@ Inside Copilot CLI, verify `/skills list` and `/agent`, then invoke a Hakim skil
 
 ### OpenCode
 
-Use a disposable or deliberately selected test repository:
+Use a disposable or deliberately selected test repository. Normal user first-run uses the documented Git-backed `npx --package=github:Habib1001-m/hakim ...` bootstrap and does not require npm 11.
+
+For an unreleased acceptance candidate, evidence must still identify the exact 40-character commit. npm CLI has a known upstream bug for exact Git commit refs that reproduces on npm `10.9.8` as `GitFetcher requires an Arborist constructor to pack a tarball` (npm/cli#6723); the fix is available in npm 11. To preserve the exact `npx` product transport without changing the system npm, install npm 11 only into a disposable directory and invoke its bundled `npx-cli.js` directly:
 
 ```bash
-npm run install:opencode -- --target /path/to/test-project
-npm run install:opencode -- --target /path/to/test-project --apply
+cd /path/to/test-project
+SOURCE_SHA=<40-char-candidate-sha>
+NPM11_ROOT="$(mktemp -d /tmp/hakim-npm11.XXXXXX)"
+
+npm install --prefix "$NPM11_ROOT" --no-save --ignore-scripts --no-audit --no-fund npm@11
+NPM11_NPX="$NPM11_ROOT/node_modules/npm/bin/npx-cli.js"
+node "$NPM11_ROOT/node_modules/npm/bin/npm-cli.js" --version
+
+node "$NPM11_NPX" --yes \
+  --package="github:Habib1001-m/hakim#$SOURCE_SHA" \
+  hakim-opencode status --json
+
+node "$NPM11_NPX" --yes \
+  --package="github:Habib1001-m/hakim#$SOURCE_SHA" \
+  hakim-opencode install --dry-run --json
+
+node "$NPM11_NPX" --yes \
+  --package="github:Habib1001-m/hakim#$SOURCE_SHA" \
+  hakim-opencode install --json
 ```
 
-Start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
+This is acceptance-only tooling for immutable commit evidence. It does not upgrade or replace the system npm, does not alter the normal OpenCode quick start, and still exercises npm 11's `npx` path against the exact Git candidate rather than substituting a different package-install transport.
 
-OpenCode loads project-local plugins from `.opencode/plugins/`; Hakim's installer remains create-only and does not edit `opencode.json`.
+Then start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
+
+OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. Hakim's bootstrap reuses the guarded create-only lifecycle, verifies the installed bundle, does not edit `opencode.json`, and creates no global Hakim/OpenCode state.
+
+The previously recorded OpenCode `PASS` proves the earlier guarded project-local install/start/invocation journey. It does not automatically prove this new Git-backed first-run transport. Record separate evidence for the exact candidate commit before promoting that transport as accepted.
 
 ## 3. Record a candidate evidence packet
 
@@ -94,7 +117,7 @@ npm run accept:host -- --host claude-code \
   --json
 ```
 
-For OpenCode, include the tested target repository:
+For OpenCode, include the tested target repository and make the evidence reference identify the exact candidate commit used by the Git-backed command:
 
 ```bash
 npm run accept:host -- --host opencode \
@@ -103,8 +126,8 @@ npm run accept:host -- --host opencode \
   --installation PASS \
   --activation PASS \
   --invocation PASS \
-  --evidence-ref 'issue:8#opencode-live' \
-  --output dist/live-host-acceptance/opencode.json \
+  --evidence-ref 'issue:<number>#comment-containing-exact-40-char-sha' \
+  --output dist/live-host-acceptance/opencode-git-bootstrap.json \
   --json
 ```
 
@@ -113,7 +136,8 @@ The candidate becomes `PASS` only when:
 - all three observed checkpoints are `PASS`;
 - the host binary is resolved;
 - the host version is detected from the real binary;
-- a non-empty public-safe evidence reference is supplied.
+- a non-empty public-safe evidence reference is supplied;
+- for an unreleased Git-backed OpenCode candidate, the public-safe evidence identifies the immutable candidate commit actually tested.
 
 `--output` is create-only. The harness refuses to overwrite an existing evidence packet; use a new path for every run so earlier evidence remains inspectable.
 
@@ -121,11 +145,11 @@ A candidate packet is evidence for review, not authorization to change the publi
 
 ## 4. Promote only after review
 
-Review the candidate packet and its evidence reference. Then, and only then, update the corresponding host entry in `conformance/native-host-acceptance.json`.
+Review the candidate packet and its evidence reference. Then, and only then, update the corresponding host/product-path evidence when the reviewed observation actually covers the claimed journey.
 
-Do not alter unresolved hosts. Keep them `NOT_RUN`, `FAIL`, or `BLOCKED` as the observed evidence requires.
+Do not broaden old evidence to a new transport, version, or journey merely because the runtime payload is similar.
 
-External beta promotion remains `HOLD_FOR_LIVE_HOST_EVIDENCE` until the public projection reaches `PASS` under its own validator.
+External evaluator recruitment is currently `SUSPENDED_FOR_PRODUCT_REMEDIATION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
 
 ## Upstream host references
 

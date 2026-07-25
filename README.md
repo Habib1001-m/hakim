@@ -1,16 +1,28 @@
 # Hakim (حَكِيم)
 
-Hakim is an evidence-bound coding governance toolkit for AI-assisted development. It guides agents and reviewers toward the smallest safe change, keeps claims tied to inspectable evidence, and refuses conclusions that exceed the observed scope.
+Hakim makes AI coding agents do less — deliberately. Before adding code, it asks whether the work is needed, whether the repository already solves it, and whether the standard library or host platform can do the job. The goal is the smallest safe change, with completion and quality claims tied to inspectable evidence.
+
+## What changes with Hakim
+
+Without a constraint like Hakim, a coding agent can satisfy a small request by adding a helper, dependency, abstraction, and tests around all of them. Hakim changes the order of decisions:
+
+```text
+need? → reuse existing code? → stdlib? → native platform? → existing dependency? → one clear line? → minimum custom code
+```
+
+For example, when a repository already has a parser that safely handles the requested format, Hakim directs the agent to reuse that parser instead of creating a second abstraction. It does not promise that fewer lines are always better: security, privacy, migrations, rollback safety, accessibility, data integrity, and user trust remain hard boundaries.
 
 ## Status
 
-Hakim `1.0.0-beta.1` is public beta software distributed from source and host-native Git marketplaces. It is not published to npm and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
+Hakim `1.0.0-beta.1` is public beta software distributed from public source and host-native Git marketplaces. It is not published to the npm registry and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
-All four maintained current-native product paths have accepted real-host install/start/invocation evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication. Private release authorization remains outside the public repository.
+All four maintained current-native product paths — Codex, Claude Code, GitHub Copilot CLI, and the Git-backed project-local OpenCode bootstrap — have accepted real-host install/start/invocation evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication.
+
+External evaluator recruitment is suspended while the public product surface is remediated under [#14](https://github.com/Habib1001-m/hakim/issues/14). Private release authorization remains outside the public repository.
 
 ## Quick start
 
-Choose the coding host you already use. Codex, Claude Code, and GitHub Copilot can install Hakim directly from this GitHub repository; they do not require cloning Hakim first.
+Choose the coding host you already use. None of the maintained first-run commands below requires manually cloning Hakim.
 
 ### Codex
 
@@ -42,35 +54,36 @@ Verify with `copilot plugin list`, `/skills list`, and `/agent`. The plugin prov
 
 ### OpenCode
 
-OpenCode currently uses Hakim's guarded project-local installer. From a Hakim checkout:
+From the target repository:
 
 ```bash
-git clone https://github.com/Habib1001-m/hakim.git
-cd hakim
-npm run install:opencode -- --target /path/to/project
-npm run install:opencode -- --target /path/to/project --apply
+npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
 ```
 
-Start OpenCode from the target project and use `/hakim-help` or `/hakim full ...`. The installer is create-only, verifies the canonical bundle paths and hashes, and does not edit `opencode.json`.
+The Git-backed bootstrap invokes Hakim's guarded project-local installer directly from the public repository. It creates only the canonical `.opencode` Hakim bundle, refuses conflicting or unsafe state, verifies hashes after creation, and does not edit `opencode.json` or install global Hakim state.
 
-See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle and trust boundaries.
+Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
+
+See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries.
 
 ## Core capabilities
 
 - A canonical coding policy focused on minimal, safe changes.
 - Native host plugins for Codex, Claude Code, and GitHub Copilot.
-- A guarded project-local native OpenCode plugin bundle.
+- A guarded project-local native OpenCode plugin bundle with Git-backed bootstrap.
 - Host-specialized skills, agents, commands, and lifecycle controls where the host supports them.
 - Deterministic PR Guardian checks for dependency and evidence-boundary drift.
 - Bounded review, audit, doctor, host-preflight, and install-planning commands.
 - OpenCode canonical-manifest hashing, create-only installation, exact-match removal, quarantine-backed removal, and rollback safeguards.
-- Local packaging and verification tools that do not require a runtime service.
+- Byte-reproducible canonical skill packaging and local checksum/manifest verification without a runtime service.
 
 ## Requirements
 
-For product use, install the supported host you intend to use. Repository development and local validation additionally require:
+For product use, install the supported host you intend to use. The OpenCode Git-backed bootstrap additionally requires Node.js/npm; Node.js 18 or newer is the declared minimum.
 
-- Node.js 18 or newer. This is the declared minimum; Public CI currently validates Node.js 24.
+Repository development and local validation additionally require:
+
+- Node.js 18 or newer. Public CI currently validates Node.js 24.
 - Python 3.10 or newer. Maintained Python tooling uses Python 3.10+ syntax; Public CI currently validates Python 3.11.
 - Git.
 
@@ -90,7 +103,7 @@ Build the canonical skill package:
 npm run package:skill
 ```
 
-Generated skill packages are local build outputs. They are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
+The skill ZIP normalizes archive ordering, timestamps, and file modes so equivalent maintained source content can produce byte-identical output. Generated packages and checksums are still local build evidence; they are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
 
 ## Supported hosts
 
@@ -101,19 +114,19 @@ Hakim maintains product surfaces for:
 - GitHub Copilot
 - OpenCode
 
-Each host intentionally uses its strongest native extension model rather than a lowest-common-denominator adapter. Host-native approval, trust, sandboxing, activation, plugin policy, and removal controls remain authoritative. See [Supported Hosts](SUPPORTED_HOSTS.md).
+Each host intentionally uses its strongest native extension model rather than a lowest-common-denominator adapter. Host-native approval, trust, sandboxing, activation, plugin policy, and removal controls remain authoritative. See [Supported Hosts](SUPPORTED_HOSTS.md) and [Architecture](docs/ARCHITECTURE.md).
 
-## External public-beta evaluation
+## Product readiness
 
-Developers outside the maintainer acceptance run can participate in Hakim's bounded external beta campaign. Use Hakim on a real repository task, then submit the structured **Hakim public-beta feedback** issue form.
+Current native runtime acceptance is not the same thing as full product readiness. The comprehensive post-acceptance review identified public-surface, documentation, release-reproducibility, provenance, and first-run UX remediation that must be completed before external evaluator recruitment is relaunched.
 
-See [External Public-Beta Evaluation](docs/EXTERNAL_BETA_EVALUATION.md) for the evaluation journey, evidence boundary, and campaign decision semantics. The campaign targets five independent accepted evaluator reports and does not convert that small sample into an invented success percentage.
+The remediation program is tracked publicly in [POST-BETA-R1 — Public Surface Reduction & Truth Reconciliation (#14)](https://github.com/Habib1001-m/hakim/issues/14). The withdrawn evaluator campaign (#12) accepted no external reports.
 
 ## Evidence boundaries
 
 A passing deterministic check means only that the enabled rule set found no matching violation. It is not a substitute for correctness, security, architecture, semantic review, or live host validation.
 
-The public native-host acceptance projection is current-product-only. A host reaches `PASS` there only with an accepted real-host install/start/invocation observation and a public-safe evidence reference. Structural or CI success does not promote a live-host status.
+The public native-host acceptance projection is current-product evidence. A new or materially changed first-run journey requires accepted real-host observation before that exact journey is promoted by evidence. Structural or CI success alone does not create live-host acceptance.
 
 Hakim does not claim model-quality improvement, universal compatibility, performance gains, token savings, return on investment, or complete protection from unrelated local processes.
 

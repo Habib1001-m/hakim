@@ -2,7 +2,7 @@
   "schema_version": 1,
   "product_version": "1.0.0-beta.1",
   "scope": "current-native-product-paths",
-  "projection_updated_at": "2026-07-24",
+  "projection_updated_at": "2026-07-25",
   "source_policy": "Public-safe projection only; private acceptance ledgers and release authorization remain outside the public repository.",
   "overall_status": "PASS",
   "status_semantics": {
@@ -34,11 +34,11 @@
       "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/8#issuecomment-5070551461"
     },
     "opencode": {
-      "product_path": "Guarded project-local install -> start OpenCode from the target project -> invoke a Hakim command/skill",
+      "product_path": "Git-backed npx project-local install -> start OpenCode from the target project -> invoke a Hakim command/skill",
       "status": "PASS",
       "host_version": "1.17.13",
-      "verified_at": "2026-07-24T14:24:46.470Z",
-      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/8#issuecomment-5070906776"
+      "verified_at": "2026-07-25T12:39:25.944Z",
+      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/14#issuecomment-5078407875"
     }
   }
 }

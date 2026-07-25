@@ -13,10 +13,15 @@ const { spawnSync } = require('node:child_process');
   assert.equal(loader.normalizeMode('ULTRA'), 'ultra');
   assert.match(loader.getRules('off'), /Hakim disabled/);
   assert.match(loader.getRules('full'), /## The Ladder/);
+  assert.match(loader.getRules('full'), /active distribution/);
+  assert.doesNotMatch(loader.getRules('full'), /Canonical source: core\/hakim-skill\/SKILL\.md/);
 
-  for (const dir of ['claude-code', 'codex', 'copilot', 'hermes', 'opencode', 'gemini-antigravity']) {
+  for (const dir of ['claude-code', 'codex', 'copilot', 'opencode']) {
     assert.ok(fs.existsSync(path.join(root, 'plugins', dir, 'README.md')), `${dir} README missing`);
     assert.ok(!fs.existsSync(path.join(root, 'plugins', dir, 'SKILL.md')), `${dir} must not duplicate canonical SKILL.md at plugin root`);
+  }
+  for (const retired of ['hermes', 'gemini-antigravity']) {
+    assert.equal(fs.existsSync(path.join(root, 'plugins', retired)), false, `${retired} placeholder must not remain in the public plugin tree`);
   }
 
   const capabilityIds = ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'];
@@ -51,5 +56,5 @@ const { spawnSync } = require('node:child_process');
   assert.equal(claudeOutput.hookSpecificOutput.hookEventName, 'SessionStart');
   assert.match(claudeOutput.hookSpecificOutput.additionalContext, /Hakim 1\.0\.0-beta\.1 plugin is active/);
 
-  console.log('test_plugin_smoke.js: executable native host surfaces ok');
+  console.log('test_plugin_smoke.js: maintained native host surfaces ok');
 })();
