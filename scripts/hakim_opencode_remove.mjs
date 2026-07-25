@@ -14,17 +14,16 @@ import {
   validateDirectoryChain,
   validateTargetRoot,
 } from './lib/opencode_bundle.mjs';
-import { restoreQuarantinedBytesNoClobber } from './lib/opencode_transaction.mjs';
+import {
+  restoreQuarantinedBytesNoClobber,
+  validateManagedInstallationAuthority,
+} from './lib/opencode_transaction.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
 
 function publicManifest(manifest) {
-  return manifest?.files?.map((file) => ({
-    target_relative: file.target_relative,
-    sha256: file.sha256,
-    size: file.size,
-  })) || [];
+  return manifest?.files?.map((file) => ({ target_relative: file.target_relative, sha256: file.sha256, size: file.size })) || [];
 }
 
 function result(base, status, state, nextSafeAction, mutation = {}) {
@@ -48,11 +47,7 @@ function result(base, status, state, nextSafeAction, mutation = {}) {
 
 function installedManifestRecord(managed) {
   if (managed.manifest_source !== 'INSTALLED_MANIFEST' || !managed.manifest_record) return null;
-  return {
-    target_relative: INSTALL_MANIFEST_RELATIVE_PATH,
-    sha256: managed.manifest_record.raw_sha256,
-    size: managed.manifest_record.raw_size,
-  };
+  return { target_relative: INSTALL_MANIFEST_RELATIVE_PATH, sha256: managed.manifest_record.raw_sha256, size: managed.manifest_record.raw_size };
 }
 
 function moveManagedInstallation(targetRoot, managed, workRoot) {
@@ -103,17 +98,12 @@ export function removeOpenCodeAdapter(options, root = ROOT) {
     managed_state: managed.state,
     managed_manifest_source: managed.manifest_source,
   };
+  const authority = validateManagedInstallationAuthority(managed, bundle);
+  if (!authority.ok) return result(withInspection, 'FAIL', `REFUSED_${authority.state}`, authority.message);
 
-  if (managed.state === 'ABSENT') {
-    return result(withInspection, 'PASS', 'ALREADY_ABSENT', 'No supported managed Hakim OpenCode bundle is present; no change is needed.');
-  }
+  if (managed.state === 'ABSENT') return result(withInspection, 'PASS', 'ALREADY_ABSENT', 'No supported managed Hakim OpenCode bundle is present; no change is needed.');
   if (!['EXACT_MATCH', 'LEGACY_EXACT_MATCH', 'UNMANIFESTED_CURRENT_EXACT'].includes(managed.state)) {
-    return result(
-      withInspection,
-      'FAIL',
-      `REFUSED_${managed.state}`,
-      managed.message || 'Preserve the current OpenCode paths and reconcile them manually; removal is allowed only for a complete byte-verified supported Hakim-owned installation.',
-    );
+    return result(withInspection, 'FAIL', `REFUSED_${managed.state}`, managed.message || 'Preserve the current OpenCode paths and reconcile them manually; removal is allowed only for a complete byte-verified supported Hakim-owned installation.');
   }
   if (!options.apply) {
     return result(withInspection, 'PASS', 'READY_TO_REMOVE', `Verified Hakim ${managed.manifest.product_version} is removable. Rerun without --dry-run to quarantine, verify, and remove only the owned bytes.`, {
@@ -127,8 +117,6 @@ export function removeOpenCodeAdapter(options, root = ROOT) {
     workRoot = createPrivateWorkRoot(target.target_root, 'hakim-remove');
     moved = moveManagedInstallation(target.target_root, managed, workRoot);
 
-    // Every owned path has left the live namespace and the exact moved bytes
-    // have been re-hashed. Only now may quarantine be deleted.
     const removedDirectories = removeEmptyDirectories(target.target_root, directories);
     fs.rmSync(workRoot, { recursive: true });
 
