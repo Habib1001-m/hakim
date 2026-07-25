@@ -76,11 +76,11 @@ Native marketplace plugin with six skills and five custom agents. `.github/copil
 
 ### OpenCode
 
-Native project-local plugin installed by the same guarded create-only lifecycle regardless of entry point. Normal first-run uses a Git-backed `npx` bootstrap from the public Hakim repository, while source-checkout `npm run` commands remain development/inspection fallbacks. The bootstrap package exposes only the OpenCode CLI, installer/remover, canonical loader/policy/capabilities, and OpenCode plugin resources through an explicit package allowlist.
+Native project-local plugin installed by the same guarded lifecycle regardless of entry point. Normal first-run uses a Git-backed `npx` bootstrap from the public Hakim repository, while source-checkout `npm run` commands remain development/inspection fallbacks. The bootstrap package exposes only the OpenCode CLI, installer/remover, canonical loader/policy/capabilities, and OpenCode plugin resources through an explicit package allowlist.
 
 The maintained lifecycle refuses conflicting or unsafe target state, verifies canonical hashes, never edits `opencode.json`, and uses exact-match removal with quarantine/rollback safeguards. The Git-backed bootstrap does not publish Hakim to the npm registry and does not create a global Hakim/OpenCode installation.
 
-Because first-run transport is part of the observed product journey, structural tests for the new bootstrap do not silently replace the earlier live-host evidence. The exact Git-backed install/start/invocation journey requires fresh accepted real-host evidence before it is independently promoted.
+The exact Git-backed install/start/invocation journey has accepted real-host evidence on OpenCode `1.17.13`. Structural tests do not silently extend that evidence to a materially changed transport, host version, or journey; those changes require fresh accepted observation before promotion.
 
 ## Runtime and filesystem boundaries
 
@@ -101,6 +101,12 @@ Keep these claims separate:
 5. **Performance or quality improvement** — requires dedicated accepted evidence; it is not inferred from any item above.
 
 Current native runtime evidence for the four maintained hosts is recorded publicly. External evaluator recruitment remains suspended after POST-BETA-R1 completion and requires a separate explicit product decision before any relaunch; it must not be inferred from native-host `PASS` status. A newly introduced first-run transport must carry its own accepted observation before that exact transport is described as live accepted.
+
+### Truth-gate design
+
+Facts that already have structured authorities — version, host acceptance status, host evidence references, capability IDs, release channel, and package metadata — must be parsed and compared structurally rather than inferred from prose wording. Free-form documentation remains explanatory projection, not the source of those facts.
+
+Exact prose and stale-token assertions are allowed only as deliberate negative tripwires for retired language or dangerous obsolete instructions. They are not semantic proof that documentation is correct: a passing substring check cannot promote a claim, and a wording-only edit must not be treated as new evidence. When a fact becomes important enough to gate product state, prefer a structured authority plus a projection check over expanding positive prose matching.
 
 ## Packaging and release
 
