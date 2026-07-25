@@ -15,12 +15,14 @@ import {
   manifestFromBundle,
   manifestsEquivalent,
   moveVerifiedRecordToWorkRoot,
-  removeCreatedRecordIfUnchanged,
-  restoreQuarantinedRecords,
   sha256,
   validateDirectoryChain,
   validateTargetRoot,
 } from './lib/opencode_bundle.mjs';
+import {
+  restoreQuarantinedBytesNoClobber,
+  rollbackCreatedRecordsNoClobber,
+} from './lib/opencode_transaction.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
@@ -110,26 +112,6 @@ function writeRecordCreateOnly(targetRoot, record, bytes) {
   if (!verified.ok) throw new Error(`${record.target_relative} hash mismatch after write`);
 }
 
-function rollbackCreated(targetRoot, createdRecords, createdDirectories) {
-  const errors = [];
-  for (const record of [...createdRecords].reverse()) {
-    try {
-      const outcome = removeCreatedRecordIfUnchanged(targetRoot, record);
-      if (!outcome.ok) errors.push(outcome.message);
-    } catch (error) {
-      errors.push(`${record.target_relative}: ${error.message}`);
-    }
-  }
-  for (const relative of [...createdDirectories].reverse()) {
-    try {
-      fs.rmdirSync(path.join(targetRoot, relative));
-    } catch (error) {
-      if (!['ENOENT', 'ENOTEMPTY'].includes(error.code)) errors.push(`${relative}: ${error.message}`);
-    }
-  }
-  return errors;
-}
-
 function stagePath(workRoot, targetRelative) {
   const prefix = `${OPENCODE_ROOT}/`;
   if (!targetRelative.startsWith(prefix)) throw new Error(`unsafe staged target: ${targetRelative}`);
@@ -166,9 +148,7 @@ function installStagedRecord(targetRoot, stagedItem) {
 function moveOldInstallation(targetRoot, managed, oldRoot) {
   const moved = [];
   try {
-    for (const record of managed.manifest.files) {
-      moved.push(moveVerifiedRecordToWorkRoot(targetRoot, oldRoot, record));
-    }
+    for (const record of managed.manifest.files) moved.push(moveVerifiedRecordToWorkRoot(targetRoot, oldRoot, record));
     const manifest = installedManifestRecord(managed);
     if (manifest) moved.push(moveVerifiedRecordToWorkRoot(targetRoot, oldRoot, manifest));
     return moved;
@@ -204,13 +184,15 @@ function adoptManifest(targetRoot, bundle, currentManifest, base, directories) {
       installed_product_version: currentManifest.product_version,
     });
   } catch (error) {
-    const rollbackErrors = rollbackCreated(targetRoot, [record], createdDirectories);
-    return result(base, 'FAIL', rollbackErrors.length === 0 ? 'MANIFEST_ADOPTION_FAILED_ROLLED_BACK' : 'MANIFEST_ADOPTION_FAILED_ROLLBACK_INCOMPLETE', error.message, {
+    const rollback = rollbackCreatedRecordsNoClobber(targetRoot, [record], createdDirectories);
+    return result(base, 'FAIL', rollback.rollback_complete ? 'MANIFEST_ADOPTION_FAILED_ROLLED_BACK' : 'MANIFEST_ADOPTION_FAILED_ROLLBACK_INCOMPLETE', error.message, {
       write_attempted: true,
       write_performed: true,
-      filesystem_changed: rollbackErrors.length > 0,
+      filesystem_changed: !rollback.rollback_complete,
       rollback_attempted: true,
-      rollback_complete: rollbackErrors.length === 0,
+      rollback_complete: rollback.rollback_complete,
+      quarantine_retained: rollback.quarantine_retained,
+      quarantine_path: rollback.quarantine_path,
       installed_product_version: currentManifest.product_version,
     });
   }
@@ -243,15 +225,17 @@ function createInstallation(targetRoot, bundle, currentManifest, base, directori
       installed_product_version: currentManifest.product_version,
     });
   } catch (error) {
-    const rollbackErrors = rollbackCreated(targetRoot, createdRecords, createdDirectories);
-    return result(base, 'FAIL', rollbackErrors.length === 0 ? 'CREATE_FAILED_ROLLED_BACK' : 'CREATE_FAILED_ROLLBACK_INCOMPLETE', error.message, {
+    const rollback = rollbackCreatedRecordsNoClobber(targetRoot, createdRecords, createdDirectories);
+    return result(base, 'FAIL', rollback.rollback_complete ? 'CREATE_FAILED_ROLLED_BACK' : 'CREATE_FAILED_ROLLBACK_INCOMPLETE', error.message, {
       write_attempted: true,
       write_performed: createdRecords.length > 0,
-      filesystem_changed: rollbackErrors.length > 0,
+      filesystem_changed: !rollback.rollback_complete,
       rollback_attempted: createdRecords.length > 0 || createdDirectories.length > 0,
-      rollback_complete: rollbackErrors.length === 0,
-      created_files: rollbackErrors.length === 0 ? [] : createdRecords.map((record) => record.target_relative),
-      created_directories: rollbackErrors.length === 0 ? [] : createdDirectories,
+      rollback_complete: rollback.rollback_complete,
+      quarantine_retained: rollback.quarantine_retained,
+      quarantine_path: rollback.quarantine_path,
+      created_files: rollback.rollback_complete ? [] : createdRecords.map((record) => record.target_relative),
+      created_directories: rollback.rollback_complete ? [] : createdDirectories,
       installed_product_version: currentManifest.product_version,
     });
   }
@@ -301,22 +285,27 @@ function upgradeInstallation(targetRoot, bundle, managed, currentManifest, base,
   } catch (error) {
     if (error.quarantined_record) moved.push(error.quarantined_record);
     if (error.moved_records) moved = error.moved_records;
-    const rollbackErrors = [];
-    for (const record of [...createdRecords].reverse()) {
+
+    const createdRollback = rollbackCreatedRecordsNoClobber(targetRoot, createdRecords, createdDirectories);
+    const oldRecovery = restoreQuarantinedBytesNoClobber(moved);
+    const rollbackErrors = [...createdRollback.errors, ...oldRecovery.errors];
+    const rollbackComplete = rollbackErrors.length === 0;
+
+    let quarantineRetained = createdRollback.quarantine_retained;
+    let quarantinePath = createdRollback.quarantine_path;
+    if (workRoot) {
       try {
-        const outcome = removeCreatedRecordIfUnchanged(targetRoot, record);
-        if (!outcome.ok) rollbackErrors.push(outcome.message);
-      } catch (rollbackError) {
-        rollbackErrors.push(`${record.target_relative}: ${rollbackError.message}`);
+        if (rollbackComplete) fs.rmSync(workRoot, { recursive: true, force: true });
+        else {
+          quarantineRetained = true;
+          quarantinePath ||= workRoot;
+        }
+      } catch {
+        quarantineRetained = true;
+        quarantinePath ||= workRoot;
       }
     }
-    rollbackErrors.push(...restoreQuarantinedRecords(moved));
-    const rollbackComplete = rollbackErrors.length === 0;
-    let quarantineRetained = false;
-    if (workRoot) {
-      if (rollbackComplete) fs.rmSync(workRoot, { recursive: true, force: true });
-      else quarantineRetained = true;
-    }
+
     return result(base, 'FAIL', rollbackComplete ? 'UPGRADE_FAILED_ROLLED_BACK' : 'UPGRADE_FAILED_ROLLBACK_INCOMPLETE', error.message, {
       write_attempted: true,
       write_performed: moved.length > 0 || createdRecords.length > 0,
@@ -324,7 +313,7 @@ function upgradeInstallation(targetRoot, bundle, managed, currentManifest, base,
       rollback_attempted: moved.length > 0 || createdRecords.length > 0,
       rollback_complete: rollbackComplete,
       quarantine_retained: quarantineRetained,
-      quarantine_path: quarantineRetained ? workRoot : null,
+      quarantine_path: quarantinePath,
       created_files: rollbackComplete ? [] : createdRecords.map((record) => record.target_relative),
       created_directories: rollbackComplete ? [] : createdDirectories,
       previous_product_version: previousVersion,
@@ -372,7 +361,7 @@ export function installOpenCodeAdapter(options, root = ROOT) {
     });
   }
 
-  if (['MANIFEST_INVALID', 'UNSAFE', 'PARTIAL_OR_MODIFIED', 'UNMANAGED_CONFLICT'].includes(managed.state)) {
+  if (['MANIFEST_INVALID', 'MANIFEST_UNSUPPORTED', 'UNSAFE', 'PARTIAL_OR_MODIFIED', 'UNMANAGED_CONFLICT'].includes(managed.state)) {
     return result(withInspection, 'FAIL', `REFUSED_${managed.state}`, managed.message || 'Preserve the existing OpenCode paths and reconcile them manually; unsafe or unowned state is never overwritten.');
   }
 
@@ -429,9 +418,9 @@ function usage() {
     '  npm run install:opencode -- --target <repository> --apply',
     '  npm run install:opencode:json -- --target <repository> [--apply]',
     '',
-    'Dry-run is the default. Installation creates new state or transactionally upgrades only a complete verified Hakim-owned installation.',
-    'A persistent install manifest makes future cross-version upgrade/removal verifiable without trusting the newer package payload.',
-    'Unsafe, partial, modified, symlinked, or unowned targets are refused. opencode.json is never edited.',
+    'Dry-run is the default. Installation creates new state or transactionally upgrades only a complete verified supported Hakim-owned installation.',
+    'A persistent install manifest makes future cross-version upgrade/removal verifiable without trusting arbitrary local ownership metadata.',
+    'Unsafe, partial, modified, symlinked, unsupported-manifest, or unowned targets are refused. opencode.json is never edited.',
   ].join('\n');
 }
 
