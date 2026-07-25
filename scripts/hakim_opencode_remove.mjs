@@ -11,10 +11,10 @@ import {
   detectManagedInstallation,
   moveVerifiedRecordToWorkRoot,
   removeEmptyDirectories,
-  restoreQuarantinedRecords,
   validateDirectoryChain,
   validateTargetRoot,
 } from './lib/opencode_bundle.mjs';
+import { restoreQuarantinedBytesNoClobber } from './lib/opencode_transaction.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
@@ -58,9 +58,7 @@ function installedManifestRecord(managed) {
 function moveManagedInstallation(targetRoot, managed, workRoot) {
   const moved = [];
   try {
-    for (const record of managed.manifest.files) {
-      moved.push(moveVerifiedRecordToWorkRoot(targetRoot, workRoot, record));
-    }
+    for (const record of managed.manifest.files) moved.push(moveVerifiedRecordToWorkRoot(targetRoot, workRoot, record));
     const manifest = installedManifestRecord(managed);
     if (manifest) moved.push(moveVerifiedRecordToWorkRoot(targetRoot, workRoot, manifest));
     return moved;
@@ -114,7 +112,7 @@ export function removeOpenCodeAdapter(options, root = ROOT) {
       withInspection,
       'FAIL',
       `REFUSED_${managed.state}`,
-      managed.message || 'Preserve the current OpenCode paths and reconcile them manually; removal is allowed only for a complete byte-verified Hakim-owned installation.',
+      managed.message || 'Preserve the current OpenCode paths and reconcile them manually; removal is allowed only for a complete byte-verified supported Hakim-owned installation.',
     );
   }
   if (!options.apply) {
@@ -129,8 +127,8 @@ export function removeOpenCodeAdapter(options, root = ROOT) {
     workRoot = createPrivateWorkRoot(target.target_root, 'hakim-remove');
     moved = moveManagedInstallation(target.target_root, managed, workRoot);
 
-    // At this point the exact bytes that left the live namespace have been
-    // re-hashed in quarantine. Only now may they be deleted.
+    // Every owned path has left the live namespace and the exact moved bytes
+    // have been re-hashed. Only now may quarantine be deleted.
     const removedDirectories = removeEmptyDirectories(target.target_root, directories);
     fs.rmSync(workRoot, { recursive: true });
 
@@ -157,13 +155,19 @@ export function removeOpenCodeAdapter(options, root = ROOT) {
   } catch (error) {
     if (error.quarantined_record) moved.push(error.quarantined_record);
     if (error.moved_records) moved = error.moved_records;
-    const restorationErrors = restoreQuarantinedRecords(moved);
-    const rollbackComplete = restorationErrors.length === 0;
+
+    const recovery = restoreQuarantinedBytesNoClobber(moved);
+    const rollbackComplete = recovery.errors.length === 0;
     let quarantineRetained = false;
     if (workRoot) {
-      if (rollbackComplete) fs.rmSync(workRoot, { recursive: true, force: true });
-      else quarantineRetained = true;
+      try {
+        if (rollbackComplete) fs.rmSync(workRoot, { recursive: true, force: true });
+        else quarantineRetained = true;
+      } catch {
+        quarantineRetained = true;
+      }
     }
+
     return result(withInspection, 'FAIL', rollbackComplete ? 'REMOVE_FAILED_RESTORED' : 'REMOVE_FAILED_RESTORE_INCOMPLETE', error.message, {
       mutation_attempted: true,
       removal_performed: moved.length > 0,
@@ -204,8 +208,8 @@ function usage() {
     '  npm run remove:opencode:json -- --target <repository> [--apply]',
     '',
     'Dry-run is the default. Removal accepts a complete verified supported installed manifest, including an older supported version.',
-    'Owned files are moved into same-filesystem quarantine and re-hashed before deletion; rollback is no-clobber.',
-    'Modified, partial, symlinked, malformed-manifest, or unowned OpenCode paths are preserved.',
+    'Owned files are moved into same-filesystem quarantine and re-hashed before deletion; rollback restores the actual quarantined bytes no-clobber.',
+    'Modified, partial, symlinked, malformed/unsupported-manifest, or unowned OpenCode paths are preserved.',
   ].join('\n');
 }
 
