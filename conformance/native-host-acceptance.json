@@ -2,7 +2,7 @@
   "schema_version": 1,
   "product_version": "1.0.0-beta.1",
   "scope": "current-native-product-paths",
-  "projection_updated_at": "2026-07-25",
+  "projection_updated_at": "2026-07-26",
   "source_policy": "Public-safe projection only; private acceptance ledgers and release authorization remain outside the public repository.",
   "overall_status": "PASS",
   "status_semantics": {
@@ -36,9 +36,9 @@
     "opencode": {
       "product_path": "Git-backed npx managed project-local install/adopt/upgrade -> start OpenCode from the target project -> invoke a Hakim command/skill",
       "status": "PASS",
-      "host_version": "1.18.5",
-      "verified_at": "2026-07-25T19:10:17.917Z",
-      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/18#issuecomment-5080155506"
+      "host_version": "1.17.13",
+      "verified_at": "2026-07-26",
+      "evidence_ref": "https://github.com/Habib1001-m/hakim/pull/21#issuecomment-5080940335"
     }
   }
 }

@@ -22,6 +22,7 @@ Hakim `1.0.0-beta.1` remains public beta software.
 
 - OpenCode's managed project-local lifecycle validates the canonical bundle and lifecycle manifest, refuses unsafe or conflicting state, supports bounded create/adopt/transactional-upgrade transitions, and can remove a supported older verified installation with a newer CLI.
 - Removal and rollback move Hakim-owned bytes into same-filesystem quarantine and verify the moved bytes before deletion. Concurrently replaced or independently reappearing user state is preserved no-clobber.
+- OpenCode prompt ownership is bounded by explicit start/end sentinels. Hakim removes only its own bounded activation range and preserves unrelated system content before or after that range; an unbounded legacy marker is not destructively guessed.
 - The maintained OpenCode project-local lifecycle does not claim a cross-process operation lock or immunity to malicious/concurrent filesystem replacement outside its validated checkpoints.
 - These safeguards reduce risk but do not prevent every action by unrelated local processes.
 - Force overwrite and force removal are not implemented.
@@ -33,8 +34,9 @@ Hakim `1.0.0-beta.1` remains public beta software.
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
 - All four maintained current-native product paths have accepted `PASS` evidence in `conformance/native-host-acceptance.json`.
-- The manifest-backed OpenCode lifecycle was accepted on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`, covering clean install/start/invocation plus accepted-old-to-managed upgrade and newer-CLI removal of the supported older installation.
-- OpenCode evidence from candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains bounded historical evidence for the earlier create-only lifecycle and is not reused for the changed managed lifecycle.
+- The current bounded-sentinel OpenCode runtime was accepted on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`, covering clean managed install/start/invocation and successful `/hakim-help` plus `/hakim full ...` runtime use.
+- OpenCode evidence from candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` on OpenCode `1.18.5` remains bounded to the unchanged manifest-backed accepted-old-to-managed upgrade and newer-CLI removal journey; it is not reused for the changed bounded-sentinel runtime.
+- OpenCode evidence from candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains bounded historical evidence for the earlier create-only lifecycle.
 - Earlier guarded source-checkout OpenCode evidence also remains bounded historical evidence.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
 - Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.

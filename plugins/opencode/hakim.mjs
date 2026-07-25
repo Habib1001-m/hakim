@@ -14,6 +14,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const VALID_MODES = new Set(['lite', 'full', 'ultra', 'off']);
 const ACTIVATION_SENTINEL_PREFIX = '<!-- hakim-system:v1 mode=';
+const ACTIVATION_SENTINEL_END = '<!-- /hakim-system:v1 -->';
 
 function regularFile(candidate) {
   try {
@@ -105,8 +106,19 @@ function stripHakimActivation(value) {
   const text = String(value ?? '');
   const markerIndex = text.lastIndexOf(ACTIVATION_SENTINEL_PREFIX);
   if (markerIndex < 0) return { text, changed: false };
+
+  const endIndex = text.indexOf(ACTIVATION_SENTINEL_END, markerIndex);
+  if (endIndex < 0) {
+    // An unbounded/legacy marker does not prove ownership of trailing host or plugin text.
+    return { text, changed: false };
+  }
+
   const before = text.slice(0, markerIndex).replace(/\s+$/u, '');
-  return { text: before, changed: true };
+  const after = text.slice(endIndex + ACTIVATION_SENTINEL_END.length).replace(/^\s+/u, '');
+  return {
+    text: [before, after].filter((part) => part.length > 0).join('\n\n'),
+    changed: true,
+  };
 }
 
 function reconcileSystemOutput(output, mode, instructions = null) {
@@ -119,7 +131,7 @@ function reconcileSystemOutput(output, mode, instructions = null) {
   output.system = cleaned;
   if (mode === 'off') return;
 
-  const block = `${ACTIVATION_SENTINEL_PREFIX}${mode} -->\n${instructions}`;
+  const block = `${ACTIVATION_SENTINEL_PREFIX}${mode} -->\n${instructions}\n${ACTIVATION_SENTINEL_END}`;
   if (output.system.length > 0) {
     output.system[output.system.length - 1] += `\n\n${block}`;
   } else {

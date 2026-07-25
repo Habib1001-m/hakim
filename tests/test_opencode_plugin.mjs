@@ -102,6 +102,26 @@ test('system transform is idempotent on reused output and replaces mode blocks i
   assert.deepEqual(output.system, ['BASE']);
 });
 
+test('system transform preserves foreign trailing system content when reconciling or disabling Hakim', async () => {
+  const load = await loadPlugin();
+  const hooks = await load({});
+  const output = { system: ['BASE'] };
+  const foreign = '<!-- foreign-plugin -->\nFOREIGN SYSTEM CONTENT';
+
+  await applyTransform(hooks, output, 'coexistence');
+  output.system[0] += `\n\n${foreign}`;
+
+  await applyTransform(hooks, output, 'coexistence');
+  assert.match(output.system[0], /FOREIGN SYSTEM CONTENT/, 'Hakim reconciliation must not delete trailing system content it does not own');
+  assert.equal(occurrences(output.system[0], SENTINEL), 1);
+  assert.equal(occurrences(output.system[0], 'FOREIGN SYSTEM CONTENT'), 1);
+
+  await hooks['command.execute.before']({ command: 'hakim', arguments: 'off', sessionID: 'coexistence' });
+  await applyTransform(hooks, output, 'coexistence');
+  assert.equal(occurrences(output.system[0], SENTINEL), 0);
+  assert.match(output.system[0], /FOREIGN SYSTEM CONTENT/, 'disabling Hakim must remove only Hakim-owned content');
+});
+
 test('session mode matrix isolates sessions, fallback state, deletion, invalid requests, and fresh instances', async () => {
   const logs = [];
   const load = await loadPlugin();
