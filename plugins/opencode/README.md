@@ -160,8 +160,8 @@ These checks prove their deterministic repository/package scope only. They do no
 ## Evidence boundaries
 
 - The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
-- The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` proves the earlier create-only path only.
-- This manifest-backed create/adopt/upgrade/removal and idempotent-runtime hardening materially changes the observed product path and therefore requires **separate real-host evidence** for this changed journey before it is promoted as accepted.
+- The current managed lifecycle has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`; the observation covered clean managed install/start/invocation, accepted-old-to-managed upgrade, and supported older-version removal with the newer CLI.
+- The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains historical evidence for the earlier create-only path only.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
