@@ -113,10 +113,13 @@ assert.match(liveAcceptance, /npm\/cli#6723/);
 assert.ok(!liveAcceptance.includes('npx --yes --package=npm@11 npm exec --yes'), 'acceptance docs must not use the nested npm exec wrapper');
 assert.match(liveAcceptance, /does not upgrade or replace the system npm/);
 assert.match(readme, /^## Product readiness$/m);
-assert.match(readme, /POST-BETA-R1/);
-assert.match(readme, /External evaluator recruitment is suspended/i);
+assert.match(readme, /POST-BETA-R1 remediation is complete/i);
+assert.match(readme, /External evaluator recruitment remains suspended/i);
+assert.match(readme, /separate explicit product decision/i);
 assert.match(readme, /all four maintained current-native product paths.*accepted real-host install\/start\/invocation evidence/i);
 assert.match(limitations, /all four maintained current-native product paths have accepted `PASS` evidence/i);
+assert.match(limitations, /POST-BETA-R1 remediation is complete/i);
+assert.match(limitations, /separate explicit product decision/i);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -193,6 +196,10 @@ const stalePublicTokens = [
   'five independent accepted evaluator reports',
   'OpenCode is `NOT_RUN`',
   'OpenCode first-run path is `NOT_RUN`',
+  'SUSPENDED_FOR_PRODUCT_REMEDIATION',
+  'is suspended while the public product surface is remediated',
+  'must be completed before external evaluator recruitment is relaunched',
+  'currently suspended for POST-BETA-R1 product remediation',
 ];
 
 for (const relative of productDocs) {
@@ -208,4 +215,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts with accepted current-path evidence, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts with accepted current-path evidence, ${documentedScripts.size} documented npm scripts, version ${version}, evaluator recruitment suspended pending explicit product decision`);
