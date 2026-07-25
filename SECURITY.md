@@ -21,9 +21,11 @@ expected and observed behavior, impact, and any mitigation already tested.
 
 Hakim's maintained product paths use defensive controls appropriate to each host.
 For the project-local OpenCode lifecycle these include canonical content hashes,
-refusal of symlink/non-regular or conflicting target state, create-only writes,
-exact-match removal, quarantine-backed removal, and rollback on failed mutation.
-Public CI uses least-privilege permissions and immutable action references.
+refusal of symlink/non-regular or conflicting target state, bounded manifest
+adoption, staged transactional upgrade with rollback, manifest-authorized removal
+of current or explicitly supported older exact installations, quarantine-backed
+recovery, and post-mutation verification. Public CI uses least-privilege
+permissions and immutable action references.
 
 These controls reduce risk but do not prove the absence of vulnerabilities. The
 project-local OpenCode lifecycle does not claim a cross-process operation lock or
