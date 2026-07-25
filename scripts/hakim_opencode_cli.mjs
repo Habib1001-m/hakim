@@ -11,6 +11,7 @@ import {
   manifestsEquivalent,
   validateTargetRoot,
 } from './lib/opencode_bundle.mjs';
+import { validateManagedInstallationAuthority } from './lib/opencode_transaction.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
@@ -52,8 +53,24 @@ export function inspectStatus(target, root = ROOT) {
     const bundle = buildOpenCodeBundle(root);
     const currentManifest = manifestFromBundle(bundle);
     const managed = detectManagedInstallation(targetState.target_root, bundle);
-    const unsafe = ['MANIFEST_INVALID', 'UNSAFE', 'PARTIAL_OR_MODIFIED', 'UNMANAGED_CONFLICT'].includes(managed.state);
+    const authority = validateManagedInstallationAuthority(managed, bundle);
+    if (!authority.ok) {
+      return {
+        schema_version: 1,
+        action: 'status',
+        status: 'FAIL',
+        state: authority.state,
+        target_root: targetState.target_root,
+        filesystem_changed: false,
+        product_version: bundle.product_version,
+        installed_product_version: managed.manifest?.product_version || null,
+        manifest_source: managed.manifest_source,
+        inspection: managed.inspection?.counts || null,
+        next_safe_action: authority.message,
+      };
+    }
 
+    const unsafe = ['MANIFEST_INVALID', 'UNSAFE', 'PARTIAL_OR_MODIFIED', 'UNMANAGED_CONFLICT'].includes(managed.state);
     let state = managed.state;
     let nextSafeAction = 'Preserve the existing OpenCode paths and inspect them manually.';
     if (managed.state === 'ABSENT') {
@@ -129,8 +146,8 @@ function usage() {
     '  hakim-opencode remove [--target <repository>] [--dry-run] [--json]',
     '',
     'The target defaults to the current directory.',
-    '`install` creates a new managed bundle, adopts an exact legacy/current bundle into lifecycle metadata, or transactionally upgrades a complete verified older installation.',
-    '`remove` can remove a complete verified supported older installation using its persisted/accepted manifest; modified or partial state is refused.',
+    '`install` creates a new managed bundle, adopts an exact legacy/current bundle into lifecycle metadata, or transactionally upgrades a complete verified supported older installation.',
+    '`remove` can remove a complete verified supported older installation using its persisted/accepted manifest; modified, partial, unsupported-manifest, or unowned state is refused.',
     'No command edits opencode.json or installs global OpenCode state.',
   ].join('\n');
 }
