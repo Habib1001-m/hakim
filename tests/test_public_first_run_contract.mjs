@@ -70,7 +70,7 @@ assert.match(limitations, new RegExp(escapeRegExp(version)));
 assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
 assert.match(changelog, /Withdrew the premature External Public-Beta Evaluator Campaign/);
 assert.match(changelog, /private-prerelease/);
-assert.match(changelog, /Git-backed OpenCode.*accepted real-host evidence/i);
+assert.match(changelog, /accepted real-host evidence for the Git-backed OpenCode/i);
 
 for (const obsolete of [
   'scripts/check_product_state_truth.mjs',
@@ -115,7 +115,7 @@ assert.match(liveAcceptance, /does not upgrade or replace the system npm/);
 assert.match(readme, /^## Product readiness$/m);
 assert.match(readme, /POST-BETA-R1/);
 assert.match(readme, /External evaluator recruitment is suspended/i);
-assert.match(readme, /all four maintained current-native product paths have accepted real-host evidence/i);
+assert.match(readme, /all four maintained current-native product paths.*accepted real-host install\/start\/invocation evidence/i);
 assert.match(limitations, /all four maintained current-native product paths have accepted `PASS` evidence/i);
 
 const hostSurfaces = new Map([
