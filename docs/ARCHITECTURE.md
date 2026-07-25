@@ -82,7 +82,7 @@ The maintained lifecycle persists a bounded install manifest; supports create, e
 
 OpenCode prompt activation is sentinel-backed and idempotent. Session-specific modes are isolated; deletion affects only that session; missing-session calls use process fallback; and a fresh plugin instance resets to the configured default rather than sharing state across processes or projects.
 
-The earlier Git-backed OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains accepted historical evidence for the earlier create-only lifecycle on OpenCode `1.17.13`. It does not authorize the materially changed manifest-backed lifecycle; fresh live-host evidence is required before that changed path is promoted.
+The current managed path has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`. The observation covered clean managed install/start/invocation, accepted-old-to-managed transactional upgrade, and removal of the supported older installation using the newer CLI. Earlier evidence at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical for the earlier create-only lifecycle only.
 
 ## Runtime and filesystem boundaries
 
@@ -102,7 +102,7 @@ Keep these claims separate:
 4. **Release authorization** — explicit operator decision outside ordinary CI success.
 5. **Performance or quality improvement** — requires dedicated accepted evidence; it is not inferred from any item above.
 
-Current native runtime evidence for Codex, Claude Code, and GitHub Copilot is recorded publicly. OpenCode evidence must be bounded to the exact product path it observed. External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch; it must not be inferred from native-host acceptance status.
+Current native runtime evidence for Codex, Claude Code, GitHub Copilot, and the managed OpenCode product path is recorded publicly. Each evidence record is bounded to the exact path and environment it observed. External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch; it must not be inferred from native-host acceptance status.
 
 ## Truth-gate policy
 
