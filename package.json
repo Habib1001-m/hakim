@@ -8,6 +8,7 @@
     "hakim-opencode": "scripts/hakim_opencode_cli.mjs"
   },
   "files": [
+    "core/hakim-skill/VERSION",
     "core/hakim-skill/SKILL.md",
     "core/hakim-skill/capabilities.json",
     "core/hakim-skill/skills",
