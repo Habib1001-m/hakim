@@ -58,7 +58,7 @@ Hakim does not add MCP, LSP, A2A, a workflow engine, a telemetry service, or ano
 
 Host projections may add native metadata or UX, but they must preserve canonical semantics. Projection checks detect drift; they do not prove that the canonical policy itself is correct.
 
-`hakim-gain` is retained in the current beta for compatibility even though its maintained behavior is evidence/status reporting rather than a quantified performance-gain claim. A rename would be a separate capability migration, not a cosmetic edit in this remediation slice.
+`hakim-gain` is retained in the current beta for compatibility even though its maintained behavior is evidence/status reporting rather than a quantified performance-gain claim. A rename would be a separate capability migration, not a cosmetic closure-truth edit.
 
 ## Host surfaces
 
@@ -100,7 +100,7 @@ Keep these claims separate:
 4. **Release authorization** — explicit operator decision outside ordinary CI success.
 5. **Performance or quality improvement** — requires dedicated accepted evidence; it is not inferred from any item above.
 
-Current native runtime evidence for the four maintained hosts is recorded publicly. External evaluator recruitment is suspended during POST-BETA-R1 remediation and must not be inferred from native-host `PASS` status. A newly introduced first-run transport must carry its own accepted observation before that exact transport is described as live accepted.
+Current native runtime evidence for the four maintained hosts is recorded publicly. External evaluator recruitment remains suspended after POST-BETA-R1 completion and requires a separate explicit product decision before any relaunch; it must not be inferred from native-host `PASS` status. A newly introduced first-run transport must carry its own accepted observation before that exact transport is described as live accepted.
 
 ## Packaging and release
 
