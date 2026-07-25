@@ -98,7 +98,7 @@ Then start OpenCode from that project and invoke `/hakim-help` or another Hakim 
 
 OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. Hakim's bootstrap reuses the guarded create-only lifecycle, verifies the installed bundle, does not edit `opencode.json`, and creates no global Hakim/OpenCode state.
 
-The previously recorded OpenCode `PASS` proves the earlier guarded project-local install/start/invocation journey. It does not automatically prove this new Git-backed first-run transport. Record separate evidence for the exact candidate commit before promoting that transport as accepted.
+The earlier guarded source-checkout OpenCode `PASS` remains bounded historical evidence. The current Git-backed bootstrap has its own accepted immutable-candidate evidence in `conformance/native-host-acceptance.json`; that evidence must not be broadened to a future materially changed transport, version, or journey without another separate observation.
 
 ## 3. Record a candidate evidence packet
 
@@ -149,7 +149,7 @@ Review the candidate packet and its evidence reference. Then, and only then, upd
 
 Do not broaden old evidence to a new transport, version, or journey merely because the runtime payload is similar.
 
-External evaluator recruitment is currently `SUSPENDED_FOR_PRODUCT_REMEDIATION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
+External evaluator recruitment is currently `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
 
 ## Upstream host references
 
