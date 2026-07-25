@@ -17,10 +17,11 @@ It uses OpenCode configuration and prompt hooks to:
 - add the installed canonical Hakim skills directory to `config.skills.paths` without duplicate entries;
 - inject the canonical Hakim policy through the installed shared loader instead of embedding another rules copy;
 - keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
-- keep system-prompt activation idempotent with one Hakim sentinel block even when OpenCode reuses the same output object or the mode changes;
+- keep system-prompt activation idempotent with one bounded Hakim start/end sentinel range even when OpenCode reuses the same output object or the mode changes;
+- preserve unrelated system content before and after the Hakim-owned activation range;
 - remove session-local mode state when a session-deleted event is observed.
 
-Repository tests cover the documented hook shapes, Git-backed package surface, managed project-local lifecycle, adversarial verification-to-mutation races, and multi-session state isolation. Live-host acceptance remains a separate evidence layer.
+Repository tests cover the documented hook shapes, Git-backed package surface, managed project-local lifecycle, adversarial verification-to-mutation races, foreign system-content coexistence, and multi-session state isolation. Live-host acceptance remains a separate evidence layer.
 
 ## Project-local installed layout
 
@@ -106,7 +107,7 @@ Examples after installation:
 
 Mode state is process-local. Explicit session IDs are isolated from one another; deleting one session removes only that session's mode state. Commands without a session ID use the process fallback. A fresh plugin process resets to `HAKIM_DEFAULT_MODE` (or `full` when unset/invalid); state is not persisted across host restarts, projects, user profiles, or machines.
 
-The activation hook keeps at most one `<!-- hakim-system:v1 mode=... -->` block in a reused system output. Repeated transforms do not duplicate Hakim instructions; changing modes replaces the previous block, and `off` removes it.
+The activation hook keeps at most one Hakim-owned block delimited by `<!-- hakim-system:v1 mode=... -->` and `<!-- /hakim-system:v1 -->` in a reused system output. Repeated transforms do not duplicate Hakim instructions; changing modes replaces only that bounded range, `off` removes only that range, and unrelated system content around it is preserved. A legacy start marker without a matching end marker is left untouched rather than destructively guessing its boundary.
 
 The plugin never overwrites an existing OpenCode command with the same name.
 
@@ -160,7 +161,8 @@ These checks prove their deterministic repository/package scope only. They do no
 ## Evidence boundaries
 
 - The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
-- The current managed lifecycle has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`; the observation covered clean managed install/start/invocation, accepted-old-to-managed upgrade, and supported older-version removal with the newer CLI.
+- The current bounded-sentinel runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`; the observation covered clean managed install/start/invocation plus successful Hakim help/full-mode use.
+- Candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as proof of the changed bounded-sentinel runtime.
 - The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains historical evidence for the earlier create-only path only.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
