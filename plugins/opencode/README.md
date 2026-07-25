@@ -17,9 +17,10 @@ It uses OpenCode configuration and prompt hooks to:
 - add the installed canonical Hakim skills directory to `config.skills.paths` without duplicate entries;
 - inject the canonical Hakim policy through the installed shared loader instead of embedding another rules copy;
 - keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
+- keep system-prompt activation idempotent with one Hakim sentinel block even when OpenCode reuses the same output object or the mode changes;
 - remove session-local mode state when a session-deleted event is observed.
 
-Repository tests cover the documented hook shapes, Git-backed bootstrap package surface, and guarded project-local file lifecycle. The public acceptance projection separately records accepted real-host evidence for the Git-backed path on OpenCode `1.17.13`; that evidence remains bounded to the observed environment and does not establish universal OpenCode compatibility.
+Repository tests cover the documented hook shapes, Git-backed package surface, managed project-local lifecycle, adversarial verification-to-mutation races, and multi-session state isolation. Live-host acceptance remains a separate evidence layer.
 
 ## Project-local installed layout
 
@@ -28,6 +29,7 @@ Repository tests cover the documented hook shapes, Git-backed bootstrap package 
 ├── plugins/
 │   └── hakim.js
 └── hakim-runtime/
+    ├── install-manifest.json
     ├── loaders/
     │   └── hakim-loader.mjs
     └── hakim-skill/
@@ -41,7 +43,9 @@ Repository tests cover the documented hook shapes, Git-backed bootstrap package 
             └── hakim-help/SKILL.md
 ```
 
-The installer does **not** create or modify `opencode.json`. OpenCode discovers project-local plugins from `.opencode/plugins/`; Hakim installs the adapter with a `.js` filename and registers the installed skill path at load time.
+`install-manifest.json` is bounded lifecycle metadata for Hakim-owned paths. It records the installed product version plus exact target paths, sizes, and SHA-256 hashes. It is treated as untrusted local input: schema, adapter, version support, target inventory, and byte matches are validated before it can authorize mutation.
+
+The installer does **not** create or modify `opencode.json`. OpenCode discovers the project-local plugin from `.opencode/plugins/`; Hakim registers the installed skill path at load time.
 
 ## Install — Git-backed bootstrap
 
@@ -51,7 +55,7 @@ From the repository where you want to use Hakim:
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
 ```
 
-That command fetches Hakim from GitHub through npm's Git-package transport and runs the bounded `hakim-opencode` bootstrap. It does **not** publish or install `@habib/hakim` from the npm registry, and it does not create global Hakim/OpenCode state.
+That command fetches Hakim through npm's Git-package transport and runs the bounded `hakim-opencode` bootstrap. It does **not** publish or install `@habib/hakim` from the npm registry, and it creates no global Hakim/OpenCode state.
 
 The target defaults to the current directory. To inspect without writing:
 
@@ -65,17 +69,15 @@ To inspect current state:
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode status
 ```
 
-For immutable reproduction, replace the moving default branch with an exact accepted Git commit or tag in the Git package spec when one is required by the evidence workflow.
+For immutable reproduction or acceptance, use an exact Git commit in the package spec when the evidence workflow requires one.
 
-Installation is create-only. It refuses:
+The managed installer supports three safe paths:
 
-- a missing or unsafe target repository;
-- unsafe `.opencode` directory components;
-- a pre-existing different plugin or runtime file;
-- a partial bundle, even when the files that exist match;
-- any automatic overwrite or partial repair.
+1. **Create** — all Hakim target paths are absent; write the canonical bundle and persistent manifest.
+2. **Adopt** — an exact recognized pre-manifest installation already matches; add only the persistent manifest.
+3. **Upgrade** — a complete verified supported older Hakim installation is present; stage the new payload, quarantine and post-move verify the old owned bytes, install the new payload create-only, write the new manifest last, and roll back no-clobber if any step fails.
 
-Every created file is checked against the canonical manifest. A failed partial creation attempts to roll back only the files and directories created by that operation.
+It refuses malformed/unsupported manifests, unsafe directory components, partial or modified state, symlinks/non-regular files, unowned conflicts, automatic partial repair, and any overwrite that cannot be proven to be an exact supported Hakim-owned transition.
 
 ## Source-checkout fallback
 
@@ -87,7 +89,7 @@ npm run install:opencode -- --target /path/to/repository
 npm run install:opencode -- --target /path/to/repository --apply
 ```
 
-The first two commands are read-only/dry-run surfaces. The final command applies the same create-only project-local lifecycle used by the Git-backed bootstrap.
+The first two commands are read-only/dry-run surfaces. The final command applies the same managed create/adopt/upgrade lifecycle used by the Git-backed bootstrap.
 
 ## Use
 
@@ -102,13 +104,15 @@ Examples after installation:
 /hakim-help Explain the available Hakim capabilities.
 ```
 
-The mode is session/process-local. It is not persisted to a user profile or shared across machines. `HAKIM_DEFAULT_MODE` may set the process default to `lite`, `full`, `ultra`, or `off`; invalid values normalize to `full` through the canonical loader.
+Mode state is process-local. Explicit session IDs are isolated from one another; deleting one session removes only that session's mode state. Commands without a session ID use the process fallback. A fresh plugin process resets to `HAKIM_DEFAULT_MODE` (or `full` when unset/invalid); state is not persisted across host restarts, projects, user profiles, or machines.
+
+The activation hook keeps at most one `<!-- hakim-system:v1 mode=... -->` block in a reused system output. Repeated transforms do not duplicate Hakim instructions; changing modes replaces the previous block, and `off` removes it.
 
 The plugin never overwrites an existing OpenCode command with the same name.
 
 ## Remove
 
-From the target repository, exact-match removal is one command:
+From the target repository:
 
 ```bash
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove
@@ -120,30 +124,44 @@ Dry-run first when desired:
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove --dry-run
 ```
 
-Removal proceeds only when every installed Hakim file is a complete byte-identical match for the current canonical bundle. Before removal, the exact files are copied into a private quarantine directory and verified again. If removal fails after mutation starts, Hakim attempts restoration from that quarantine. Modified, partial, symlink, non-regular, or unrelated OpenCode paths are preserved. The `.opencode` directory itself and unrelated content are never removed.
+Removal accepts a complete byte-verified supported installed manifest, including a supported older Hakim version; it does not require the currently executing package payload to be byte-identical to the older installed payload.
+
+For mutation, Hakim moves each owned live file into a private same-filesystem quarantine and **re-hashes the moved bytes after the rename before deletion is allowed**. Only after all owned files have left the live namespace and their quarantined bytes are verified is the quarantine deleted. If a file changes in the final verify-to-rename window, removal fails and restores the actual changed quarantined bytes to the original path with no-clobber semantics. If the original path independently reappears, Hakim does not overwrite it and retains recovery data instead of deleting user state.
+
+Modified, partial, malformed/unsupported-manifest, symlinked, non-regular, or unowned OpenCode paths are preserved. The `.opencode` directory itself and unrelated content are never removed.
+
+## Rollback boundary
+
+Create and upgrade rollback use the same ownership rule: Hakim may remove only bytes it created and can still prove unchanged. Rollback never performs a live-path `hash → unlink` sequence. An unchanged Hakim-created file is moved to private same-filesystem quarantine, verified after the move, and then discarded. A concurrent replacement is preserved in place or restored from the actual quarantined bytes; Hakim reports rollback incomplete rather than deleting it.
 
 ## Concurrency boundary
 
-The maintained project-local installer/remover does not claim a cross-process lifecycle lock. It validates target state at defined checkpoints and refuses unsafe or changed state, but it does not claim immunity to a malicious or concurrent filesystem replacement between every check and mutation. Treat the target repository as an operator-controlled trust boundary during install or removal.
+The maintained lifecycle still does not claim a cross-process lock or immunity from arbitrary hostile filesystem actors. Concurrent changes can make an operation refuse or roll back. The safety guarantee is narrower: a verification-to-mutation race must not silently authorize deletion of bytes Hakim did not verify after they left the live namespace, and rollback must not clobber an independently reappeared path.
+
+## Node runtime contract
+
+The shipped Git-backed package declares Node `>=22`. Public CI keeps the full repository gate on Node 24 and separately exercises the shipped OpenCode plugin, lifecycle, adversarial transaction tests, CLI/symlink path, npm package inventory, and package boundary on Node 22 and Node 26. This is a JavaScript runtime contract, not universal OpenCode/OS compatibility.
 
 ## Validate repository-side behavior
 
 ```bash
 node tests/test_opencode_plugin.mjs
 node tests/test_hakim_opencode_lifecycle.mjs
+node tests/test_hakim_opencode_adversarial_transactions.mjs
 node tests/test_hakim_opencode_cli.mjs
+node tests/test_hakim_opencode_package_surface.mjs
+node tests/test_node_support_contract.mjs
 npm test
 npm run check:evidence-script
 ```
 
-These checks prove deterministic plugin wiring, the bounded Git-package bootstrap surface, and the documented guarded project-local file lifecycle only. They do not create or replace live-host acceptance evidence.
+These checks prove their deterministic repository/package scope only. They do not create or replace real-host acceptance evidence.
 
 ## Evidence boundaries
 
-- The Git-backed bootstrap is a transport layer over the same project-local installer/remover; it does not introduce a second global lifecycle architecture.
-- Project-local plugin and lifecycle behavior is covered by the public test suite.
-- A new or materially changed first-run transport requires separate real-host evidence before Hakim treats that exact journey as independently accepted.
-- The current Git-backed journey has accepted evidence tied to immutable candidate `b442820d2803955d0f7f33b405bd096f443d4d72` and OpenCode `1.17.13`; future materially changed transports require fresh evidence.
+- The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
+- The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` proves the earlier create-only path only.
+- This manifest-backed create/adopt/upgrade/removal and idempotent-runtime hardening materially changes the observed product path. It requires fresh real-host install/start/invocation evidence before the changed path is promoted as accepted.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
