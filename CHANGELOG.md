@@ -6,6 +6,7 @@ All notable public changes to Hakim are recorded here.
 
 ### Changed
 
+- Reconciled post-merge closure truth after POST-BETA-R1 completed: `hakim doctor` and active public documentation now report evaluator recruitment as `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION` rather than describing the completed remediation program as still in progress. This does not relaunch the withdrawn evaluator campaign or authorize stable `1.0.0`.
 - Withdrew the premature External Public-Beta Evaluator Campaign before any external report was accepted (`0/5`). External evaluator recruitment is suspended while product-readiness remediation is completed under GitHub issue #14; this does not change previously accepted live-host evidence.
 - Repaired `hakim doctor` so current external-evaluation truth is reported as `SUSPENDED_FOR_PRODUCT_REMEDIATION` instead of the stale pre-promotion `ELIGIBLE_FOR_OPERATOR_REVIEW` state, and made `doctor --fast` a real lightweight subset rather than the full check set under a different label.
 - Deleted the retired global/private-prerelease OpenCode distribution implementation, tarball/verifier tooling, global lifecycle code, smoke harness, and tests instead of leaving executable alternate architecture outside maintained CI.
