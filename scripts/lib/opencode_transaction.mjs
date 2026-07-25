@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  SUPPORTED_LEGACY_MANIFESTS,
   createPrivateWorkRoot,
   inspectEntry,
   moveVerifiedRecordToWorkRoot,
@@ -11,6 +12,25 @@ import {
 function verifyBytes(pathname, expectedSize, expectedHash) {
   const bytes = fs.readFileSync(pathname);
   return bytes.length === expectedSize && sha256(bytes) === expectedHash;
+}
+
+export function validateManagedInstallationAuthority(managed, bundle) {
+  if (!managed?.manifest) return { ok: true };
+  const supportedVersions = new Set([
+    bundle.product_version,
+    ...SUPPORTED_LEGACY_MANIFESTS.map((manifest) => manifest.product_version),
+  ]);
+  if (!supportedVersions.has(managed.manifest.product_version)) {
+    return { ok: false, state: 'MANIFEST_UNSUPPORTED', message: `unsupported installed Hakim version: ${managed.manifest.product_version}` };
+  }
+
+  const expectedTargets = bundle.files.map((file) => file.target_relative).sort();
+  const actualTargets = managed.manifest.files.map((file) => file.target_relative).sort();
+  if (actualTargets.length !== expectedTargets.length || actualTargets.some((value, index) => value !== expectedTargets[index])) {
+    return { ok: false, state: 'MANIFEST_UNSUPPORTED', message: 'installed manifest inventory does not match the supported Hakim target inventory' };
+  }
+
+  return { ok: true };
 }
 
 /**
@@ -107,16 +127,12 @@ export function rollbackCreatedRecordsNoClobber(targetRoot, createdRecords, crea
           if (recovery.errors.length > 0) errors.push(...recovery.errors);
           errors.push(`${record.target_relative}: changed during rollback; changed bytes were preserved rather than deleted`);
         } else {
-          // A changed live file is deliberately preserved in place.
           errors.push(`${record.target_relative}: ${error.message}`);
         }
       }
     }
   }
 
-  // Exact Hakim-created bytes have already left the live namespace and were
-  // post-move verified. Deleting the private root now cannot delete a concurrent
-  // replacement at the original path.
   let quarantineRetained = false;
   if (workRoot) {
     try {
