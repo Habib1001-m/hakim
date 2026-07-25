@@ -123,7 +123,7 @@ The install/remove commands exercise the same managed project-local lifecycle im
 
 OpenCode mode state is process-local and session-scoped where a session ID is present. Reused prompt outputs contain at most one Hakim activation sentinel; repeated transforms do not duplicate the policy, mode changes replace the block, and `off` removes it. Fresh plugin processes reset to the configured default rather than sharing state across projects or host restarts.
 
-Repository-side behavior is structurally and adversarially tested across the supported Node runtime contract. The earlier accepted OpenCode `1.17.13` journey at immutable candidate `b442820d2803955d0f7f33b405bd096f443d4d72` proves the earlier create-only lifecycle only. The manifest-backed create/adopt/upgrade/removal and idempotent-runtime changes require fresh real-host install/start/invocation evidence before this changed path is promoted as accepted.
+Repository-side behavior is structurally and adversarially tested across the supported Node runtime contract. The current manifest-backed create/adopt/upgrade/removal and idempotent-runtime path has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`, including clean install/start/invocation, accepted-old-to-managed upgrade, and supported older-version removal with the newer CLI. The earlier OpenCode `1.17.13` journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical evidence for the earlier create-only lifecycle only.
 
 ## Inspect all maintained product surfaces
 
