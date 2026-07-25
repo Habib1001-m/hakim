@@ -56,6 +56,7 @@ jobs:
 
       - name: Verify core governance contracts
         run: |
+          node tests/test_node_support_contract.mjs
           node tests/test_rule_copies.js
           node tests/test_rule_missing_section.js
           node tests/test_upstream_relationship.js
@@ -102,3 +103,31 @@ jobs:
 
       - name: Build and verify release bundle
         run: npm run package:release
+
+  node22-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - name: Setup Node.js 22
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: "22"
+          package-manager-cache: false
+      - name: Run public JavaScript suite on Node 22
+        run: npm run test:public:js
+
+  node26-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - name: Setup Node.js 26
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Run public JavaScript suite on Node 26
+        run: npm run test:public:js
