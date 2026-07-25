@@ -16,6 +16,7 @@ const install = read('core/hakim-skill/INSTALL.md');
 const changelog = read('CHANGELOG.md');
 const security = read('SECURITY.md');
 const limitations = read('KNOWN_LIMITATIONS.md');
+const architecture = read('docs/ARCHITECTURE.md');
 const liveAcceptance = read('docs/LIVE_HOST_ACCEPTANCE.md');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
 const nativeAcceptance = JSON.parse(read('conformance/native-host-acceptance.json'));
@@ -96,6 +97,8 @@ for (const obsolete of [
 assert.equal(fs.existsSync(path.join(root, 'docs/EXTERNAL_BETA_EVALUATION.md')), false, 'suspended evaluator guide must not remain active');
 assert.equal(fs.existsSync(path.join(root, '.github/ISSUE_TEMPLATE/public-beta-feedback.yml')), false, 'suspended evaluator issue form must not remain active');
 
+// Structured acceptance above is authoritative. These prose checks guard only the
+// maintained user-facing projection; they do not promote product state or evidence.
 assert.match(readme, /^## What changes with Hakim$/m);
 assert.match(readme, /need\? → reuse existing code\?/);
 assert.match(readme, /^## Quick start$/m);
@@ -120,6 +123,9 @@ assert.match(readme, /all four maintained current-native product paths.*accepted
 assert.match(limitations, /all four maintained current-native product paths have accepted `PASS` evidence/i);
 assert.match(limitations, /POST-BETA-R1 remediation is complete/i);
 assert.match(limitations, /separate explicit product decision/i);
+assert.match(architecture, /Facts that already have structured authorities/);
+assert.match(architecture, /negative tripwires/);
+assert.match(architecture, /not semantic proof/i);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -158,6 +164,17 @@ for (const text of [readme, install, opencodeReadme]) {
 assert.ok(install.includes('npm run plan:install -- --host opencode --target /path/to/repository'));
 assert.ok(opencodeReadme.includes('npm run plan:install -- --host opencode --target /path/to/repository'));
 
+const helpDocs = [
+  'core/hakim-skill/skills/hakim-help/SKILL.md',
+  'plugins/codex/skills/hakim-help/SKILL.md',
+  'plugins/claude-code/skills/hakim-help/SKILL.md',
+  'plugins/copilot/skills/hakim-help/SKILL.md',
+];
+for (const relative of helpDocs) {
+  const text = read(relative);
+  assert.match(text, /accepted real-host install\/start\/invocation evidence on OpenCode `1\.17\.13`/i, `${relative} must project accepted OpenCode live evidence`);
+}
+
 const productDocs = [
   'README.md',
   'CHANGELOG.md',
@@ -175,6 +192,7 @@ const productDocs = [
   'plugins/claude-code/README.md',
   'plugins/opencode/README.md',
   'plugins/copilot/README.md',
+  ...helpDocs,
 ];
 const activeTruthDocs = productDocs.filter((relative) => relative !== 'CHANGELOG.md');
 
@@ -200,6 +218,7 @@ const stalePublicTokens = [
   'is suspended while the public product surface is remediated',
   'must be completed before external evaluator recruitment is relaunched',
   'currently suspended for POST-BETA-R1 product remediation',
+  'structurally tested, but structural or CI evidence does not by itself establish that exact first-run transport as live-host accepted',
 ];
 
 for (const relative of productDocs) {
