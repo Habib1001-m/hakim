@@ -55,6 +55,7 @@ function publicManifest(bundle) {
 }
 
 function result(base, status, state, nextSafeAction, mutation = {}) {
+  const hasInstalledVersion = Object.prototype.hasOwnProperty.call(mutation, 'installed_product_version');
   return {
     ...base,
     status,
@@ -69,7 +70,7 @@ function result(base, status, state, nextSafeAction, mutation = {}) {
     created_files: mutation.created_files || [],
     created_directories: mutation.created_directories || [],
     previous_product_version: mutation.previous_product_version ?? null,
-    installed_product_version: mutation.installed_product_version ?? base.product_version ?? null,
+    installed_product_version: hasInstalledVersion ? mutation.installed_product_version : (base.product_version ?? null),
     next_safe_action: nextSafeAction,
   };
 }
@@ -319,7 +320,7 @@ function upgradeInstallation(targetRoot, bundle, managed, currentManifest, base,
       created_files: rollbackComplete ? [] : createdRecords.map((record) => record.target_relative),
       created_directories: rollbackComplete ? [] : createdDirectories,
       previous_product_version: previousVersion,
-      installed_product_version: currentManifest.product_version,
+      installed_product_version: rollbackComplete ? previousVersion : null,
     });
   }
 }

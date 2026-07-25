@@ -73,6 +73,7 @@ jobs:
       - name: Verify OpenCode project-local lifecycle
         run: |
           node tests/test_hakim_opencode_lifecycle.mjs
+          node tests/test_post_beta_r2_p1_truth.mjs
           node tests/test_hakim_opencode_adversarial_transactions.mjs
 
       - name: Verify OpenCode Git bootstrap CLI and package
@@ -127,7 +128,9 @@ jobs:
       - name: Node 22 OpenCode plugin runtime
         run: node tests/test_opencode_plugin.mjs
       - name: Node 22 OpenCode lifecycle
-        run: node tests/test_hakim_opencode_lifecycle.mjs
+        run: |
+          node tests/test_hakim_opencode_lifecycle.mjs
+          node tests/test_post_beta_r2_p1_truth.mjs
       - name: Node 22 adversarial transactions
         run: node tests/test_hakim_opencode_adversarial_transactions.mjs
       - name: Node 22 Git bootstrap CLI
@@ -153,7 +156,9 @@ jobs:
       - name: Node 26 OpenCode plugin runtime
         run: node tests/test_opencode_plugin.mjs
       - name: Node 26 OpenCode lifecycle
-        run: node tests/test_hakim_opencode_lifecycle.mjs
+        run: |
+          node tests/test_hakim_opencode_lifecycle.mjs
+          node tests/test_post_beta_r2_p1_truth.mjs
       - name: Node 26 adversarial transactions
         run: node tests/test_hakim_opencode_adversarial_transactions.mjs
       - name: Node 26 Git bootstrap CLI

@@ -136,11 +136,26 @@ export function runCheck(check, runner = spawnSync) {
 
 export function buildReport(results, version, scope = 'FULL', nativeAcceptance = readNativeAcceptance()) {
   const failed = results.filter((item) => item.status !== 'PASS');
+  const doctorHealth = failed.length === 0 ? 'PASS' : 'FAIL';
   const nativeOverall = nativeAcceptance?.overall_status || 'UNKNOWN';
   const nativeHostStatuses = Object.fromEntries(
     Object.entries(nativeAcceptance?.hosts || {}).map(([host, value]) => [host, value?.status || null]),
   );
+  const nativeHostsNeedingEvidence = Object.entries(nativeHostStatuses)
+    .filter(([, status]) => status !== 'PASS')
+    .map(([host]) => host);
   const externalEvaluation = 'SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION';
+
+  let nextSafeAction;
+  if (failed.length > 0) {
+    nextSafeAction = `Run the first failing check directly: ${failed[0].command}`;
+  } else if (nativeOverall !== 'PASS') {
+    nextSafeAction = nativeHostsNeedingEvidence.length > 0
+      ? `Capture and accept fresh real-host evidence for the non-PASS native host path(s): ${nativeHostsNeedingEvidence.join(', ')}, then reconcile the native-host projection. External evaluator relaunch remains a separate explicit product decision.`
+      : 'Reconcile the native-host acceptance projection: overall status is not PASS but no non-PASS host detail is recorded. External evaluator relaunch remains a separate explicit product decision.';
+  } else {
+    nextSafeAction = 'Current maintained doctor checks and native-host evidence are reconciled. Do not relaunch external evaluator recruitment without a separate explicit product decision.';
+  }
 
   return {
     schema_version: 1,
@@ -148,7 +163,8 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
     scope,
     mutation_performed: false,
     hakim_version: version,
-    repository_health: failed.length === 0 ? 'PASS' : 'FAIL',
+    doctor_health: doctorHealth,
+    repository_health: 'OUT_OF_SCOPE_DOCTOR',
     check_summary: {
       passed: results.length - failed.length,
       total: results.length,
@@ -165,11 +181,7 @@ export function buildReport(results, version, scope = 'FULL', nativeAcceptance =
       hosts: nativeHostStatuses,
     },
     external_beta_promotion: externalEvaluation,
-    next_safe_action: failed.length > 0
-      ? `Run the first failing check directly: ${failed[0].command}`
-      : nativeOverall !== 'PASS'
-        ? 'Capture and accept fresh real-host evidence for the current OpenCode managed lifecycle tracked in GitHub issue #18, then reconcile the native-host projection. External evaluator relaunch remains a separate explicit product decision.'
-        : 'Current public repository and native-host evidence are reconciled. Do not relaunch external evaluator recruitment without a separate explicit product decision.',
+    next_safe_action: nextSafeAction,
     checks: results,
   };
 }
@@ -181,6 +193,7 @@ export function formatText(report) {
     `SCOPE=${report.scope}`,
     'MUTATION_PERFORMED=NO',
     `HAKIM_VERSION=${report.hakim_version}`,
+    `DOCTOR_HEALTH=${report.doctor_health}`,
     `REPOSITORY_HEALTH=${report.repository_health}`,
     `CHECKS=${report.check_summary.passed}/${report.check_summary.total} PASS`,
     'RUNTIME_ACCEPTANCE=OUT_OF_SCOPE_PUBLIC_REPOSITORY',
@@ -212,10 +225,10 @@ function usage() {
     '  npm run doctor:fast',
     '  node scripts/hakim_doctor.mjs [--fast] [--json]',
     '',
-    'Runs the maintained public Hakim repository checks in read-only mode.',
+    'Runs Hakim\'s bounded maintained public doctor checks in read-only mode.',
     '`--fast` runs the lightweight integrity, native-acceptance, and public-boundary subset.',
-    'Private runtime acceptance and release authorization are outside the public',
-    'repository scope. Current native live-host status is reported separately from',
+    'Whole-repository health, private runtime acceptance, and release authorization are outside',
+    'this doctor result. Current native live-host status is reported separately from',
     'conformance/native-host-acceptance.json. External evaluator recruitment remains',
     'suspended pending a separate explicit product decision. The doctor never changes',
     'repository or host state.',
@@ -243,7 +256,7 @@ function main() {
   const report = buildReport(results, readVersion(), scope, readNativeAcceptance());
 
   console.log(options.json ? JSON.stringify(report, null, 2) : formatText(report));
-  process.exit(report.repository_health === 'PASS' ? 0 : 1);
+  process.exit(report.doctor_health === 'PASS' ? 0 : 1);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_PATH) {
