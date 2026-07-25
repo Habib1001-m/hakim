@@ -5,6 +5,8 @@ import {
   SUPPORTED_LEGACY_MANIFESTS,
   createPrivateWorkRoot,
   inspectEntry,
+  manifestFromBundle,
+  manifestsEquivalent,
   moveVerifiedRecordToWorkRoot,
   sha256,
 } from './opencode_bundle.mjs';
@@ -30,16 +32,22 @@ export function validateManagedInstallationAuthority(managed, bundle) {
     return { ok: false, state: 'MANIFEST_UNSUPPORTED', message: 'installed manifest inventory does not match the supported Hakim target inventory' };
   }
 
+  // A manifest claiming the currently executing version must be exactly the
+  // current canonical manifest. This blocks a forged same-version ownership
+  // record from redefining customized bytes as Hakim-owned. Older versions are
+  // accepted only inside the explicitly supported version/inventory boundary;
+  // their own persisted hashes remain the source for byte verification.
+  if (
+    managed.manifest_source === 'INSTALLED_MANIFEST'
+    && managed.manifest.product_version === bundle.product_version
+    && !manifestsEquivalent(managed.manifest, manifestFromBundle(bundle))
+  ) {
+    return { ok: false, state: 'MANIFEST_UNSUPPORTED', message: 'same-version install manifest does not match the current canonical Hakim manifest' };
+  }
+
   return { ok: true };
 }
 
-/**
- * Restore the exact bytes currently held in quarantine, not the older expected
- * ownership hash. This is intentional: if an external actor changed a file in
- * the verification→rename window, Hakim must preserve those changed bytes.
- * The original path is restored only when absent; an independently reappeared
- * path is never overwritten.
- */
 export function restoreQuarantinedBytesNoClobber(items) {
   const errors = [];
   const restored = [];
@@ -94,14 +102,6 @@ function removeEmptyCreatedDirectories(targetRoot, createdDirectories, errors) {
   }
 }
 
-/**
- * Roll back files created by Hakim without ever performing hash→unlink on the
- * live path. Each unchanged Hakim-created file is renamed into a private
- * same-filesystem work root and re-hashed after the move before it is discarded.
- * If the bytes changed before or during the move, those user/external bytes are
- * preserved in place or restored from quarantine and rollback is reported as
- * incomplete rather than deleting them.
- */
 export function rollbackCreatedRecordsNoClobber(targetRoot, createdRecords, createdDirectories = []) {
   const errors = [];
   const movedOwned = [];
