@@ -66,7 +66,8 @@ assert.equal(nativeAcceptance.overall_status, 'PASS');
 
 const report = buildReport(passingResults, '1.0.0-beta.1', 'FULL', nativeAcceptance);
 assert.equal(report.mode, 'READ_ONLY');
-assert.equal(report.repository_health, 'PASS');
+assert.equal(report.doctor_health, 'PASS');
+assert.equal(report.repository_health, 'OUT_OF_SCOPE_DOCTOR');
 assert.deepEqual(report.check_summary, {
   passed: 6,
   total: 6,
@@ -83,11 +84,13 @@ assert.deepEqual(report.native_host_acceptance.hosts, {
   opencode: 'PASS',
 });
 assert.equal(report.external_beta_promotion, 'SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION');
-assert.match(report.next_safe_action, /native-host evidence are reconciled/i);
+assert.match(report.next_safe_action, /maintained doctor checks and native-host evidence are reconciled/i);
 assert.match(report.next_safe_action, /separate explicit product decision/i);
 
 const text = formatText(report);
 assert.match(text, /MODE=READ_ONLY/);
+assert.match(text, /DOCTOR_HEALTH=PASS/);
+assert.match(text, /REPOSITORY_HEALTH=OUT_OF_SCOPE_DOCTOR/);
 assert.match(text, /CHECKS=6\/6 PASS/);
 assert.match(text, /RUNTIME_ACCEPTANCE=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /PUBLIC_RELEASE_READINESS=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
@@ -106,7 +109,7 @@ const help = spawnSync(
 assert.equal(help.status, 0, help.stderr);
 assert.match(help.stdout, /npm run doctor/);
 assert.match(help.stdout, /read-only mode/);
-assert.match(help.stdout, /outside the public/);
+assert.match(help.stdout, /whole-repository health/i);
 assert.match(help.stdout, /native live-host status/);
 assert.match(help.stdout, /--fast.*lightweight/);
 assert.match(help.stdout, /suspended pending a separate explicit product decision/i);
@@ -128,4 +131,4 @@ assert.equal(
   'node scripts/hakim_doctor.mjs --fast --json',
 );
 
-console.log('public Hakim doctor separates repository health, accepted native-host evidence, and explicit evaluator decision state');
+console.log('public Hakim doctor reports bounded doctor health separately from whole-repository, native-host, and evaluator decision state');
