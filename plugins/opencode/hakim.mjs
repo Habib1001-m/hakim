@@ -13,6 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const VALID_MODES = new Set(['lite', 'full', 'ultra', 'off']);
+const ACTIVATION_SENTINEL_PREFIX = '<!-- hakim-system:v1 mode=';
 
 function regularFile(candidate) {
   try {
@@ -100,6 +101,32 @@ function firstArgument(value) {
   return String(value || '').trim().split(/\s+/)[0]?.toLowerCase() || '';
 }
 
+function stripHakimActivation(value) {
+  const text = String(value ?? '');
+  const markerIndex = text.lastIndexOf(ACTIVATION_SENTINEL_PREFIX);
+  if (markerIndex < 0) return { text, changed: false };
+  const before = text.slice(0, markerIndex).replace(/\s+$/u, '');
+  return { text: before, changed: true };
+}
+
+function reconcileSystemOutput(output, mode, instructions = null) {
+  if (!Array.isArray(output.system)) output.system = [];
+  const cleaned = [];
+  for (const entry of output.system) {
+    const stripped = stripHakimActivation(entry);
+    if (stripped.text.length > 0 || !stripped.changed) cleaned.push(stripped.text);
+  }
+  output.system = cleaned;
+  if (mode === 'off') return;
+
+  const block = `${ACTIVATION_SENTINEL_PREFIX}${mode} -->\n${instructions}`;
+  if (output.system.length > 0) {
+    output.system[output.system.length - 1] += `\n\n${block}`;
+  } else {
+    output.system.push(block);
+  }
+}
+
 export default async function hakimOpenCodePlugin({ client } = {}) {
   const bundle = resolveBundle();
   const loader = await import(pathToFileURL(bundle.loaderPath).href);
@@ -127,16 +154,12 @@ export default async function hakimOpenCodePlugin({ client } = {}) {
     config: async (config) => {
       config.command = config.command || {};
       for (const capability of capabilities) {
-        if (!config.command[capability.id]) {
-          config.command[capability.id] = commandDefinition(capability);
-        }
+        if (!config.command[capability.id]) config.command[capability.id] = commandDefinition(capability);
       }
 
       config.skills = config.skills || {};
       config.skills.paths = config.skills.paths || [];
-      if (!config.skills.paths.includes(bundle.skillsDir)) {
-        config.skills.paths.push(bundle.skillsDir);
-      }
+      if (!config.skills.paths.includes(bundle.skillsDir)) config.skills.paths.push(bundle.skillsDir);
     },
 
     'command.execute.before': async (input) => {
@@ -157,15 +180,8 @@ export default async function hakimOpenCodePlugin({ client } = {}) {
       const mode = input?.sessionID && sessionModes.has(input.sessionID)
         ? sessionModes.get(input.sessionID)
         : fallbackMode;
-      if (mode === 'off') return;
-
-      const instructions = loader.getRules(mode, { skillPath: bundle.skillPath });
-      if (!Array.isArray(output.system)) output.system = [];
-      if (output.system.length > 0) {
-        output.system[output.system.length - 1] += `\n\n${instructions}`;
-      } else {
-        output.system.push(instructions);
-      }
+      const instructions = mode === 'off' ? null : loader.getRules(mode, { skillPath: bundle.skillPath });
+      reconcileSystemOutput(output, mode, instructions);
     },
 
     event: async (payload = {}) => {
