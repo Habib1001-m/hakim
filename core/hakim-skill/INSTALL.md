@@ -105,7 +105,7 @@ npm run remove:opencode -- --target /path/to/repository
 
 The install command is dry-run unless `--apply` is present. These commands exercise the same project-local bundle/lifecycle implementation used by the Git-backed bootstrap; they are not a requirement for normal first-run use.
 
-The new Git-backed bootstrap is structurally covered by repository tests, but that does not by itself promote a new live-host acceptance claim. Any release that treats this exact first-run journey as the accepted OpenCode path must carry separate accepted real-host evidence.
+The Git-backed bootstrap is structurally covered by repository tests, but structural checks do not create live-host acceptance. The current public acceptance projection separately records an accepted install/start/invocation journey for this Git-backed path on OpenCode `1.17.13`, tied to immutable candidate evidence. That acceptance remains bounded to the observed environment and does not imply universal compatibility.
 
 ## Inspect all maintained product surfaces
 
