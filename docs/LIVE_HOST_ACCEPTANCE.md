@@ -99,13 +99,13 @@ This is acceptance-only tooling for immutable commit evidence. It does not upgra
 
 Then start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
 
-OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The current managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state.
+OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The current managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state. Prompt activation is bounded by explicit start/end sentinels so Hakim removes only its owned system range and preserves unrelated trailing content.
 
-The current managed path has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`. The observation covered clean install/start/invocation, accepted-old-to-managed upgrade, and newer-CLI removal of the supported older installation. Earlier candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains accepted historical evidence for the earlier create-only lifecycle only.
+The current bounded-sentinel runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`. The observation covered clean managed install/start/invocation plus successful `/hakim-help` and `/hakim full ...` runtime use. Earlier candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as evidence for the changed sentinel runtime. Earlier candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains accepted historical evidence for the earlier create-only lifecycle only.
 
 ## 3. Record a candidate evidence packet
 
-After actually observing the journey, rerun the harness with the three checkpoints and a public-safe evidence reference.
+After actually observing the journey, rerun the harness with the three checkpoints and a public-safe evidence reference when you need a local structured packet for review.
 
 Example:
 
@@ -144,13 +144,13 @@ The candidate becomes `PASS` only when:
 
 `--output` is create-only. The harness refuses to overwrite an existing evidence packet; use a new path for every run so earlier evidence remains inspectable.
 
-A candidate packet is evidence for review, not authorization to change the public acceptance projection.
+A candidate packet is evidence for review, not authorization to change the public acceptance projection. A public-safe issue/PR comment that directly records the observed checkpoints, resolved host/version, immutable candidate identity, and evidence boundary may also serve as the projection's `evidence_ref`; do not fabricate a packet that was not actually produced by the harness.
 
 ## 4. Promote only after review
 
-Review the candidate packet and its evidence reference. Then, and only then, update the corresponding host/product-path evidence when the reviewed observation actually covers the claimed journey.
+Review the candidate packet and/or public-safe evidence reference. Then, and only then, update the corresponding host/product-path evidence when the reviewed observation actually covers the claimed journey.
 
-Do not broaden old evidence to a new transport, lifecycle, runtime behavior, version, or journey merely because part of the payload is similar.
+Do not broaden old evidence to a new transport, lifecycle, runtime behavior, version, or journey merely because part of the payload is similar. Evidence for unchanged subpaths may remain bounded to the candidate on which those subpaths were actually observed, while changed runtime behavior requires its own fresh evidence.
 
 External evaluator recruitment is currently `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
 
