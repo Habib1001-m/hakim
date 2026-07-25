@@ -9,18 +9,32 @@ const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 
 const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'public-ci.yml'), 'utf8');
 
 assert.equal(packageJson.engines?.node, '>=22', 'Hakim must not claim EOL Node 18/20 support');
-assert.match(packageJson.scripts?.['test:node-compat'] || '', /test_opencode_plugin\.mjs/);
-assert.match(packageJson.scripts?.['test:node-compat'] || '', /test_hakim_opencode_lifecycle\.mjs/);
-assert.match(packageJson.scripts?.['test:node-compat'] || '', /test_hakim_opencode_adversarial_transactions\.mjs/);
-assert.match(packageJson.scripts?.['test:node-compat'] || '', /test_hakim_opencode_cli\.mjs/);
-assert.match(packageJson.scripts?.['test:node-compat'] || '', /check_public_package_surface\.mjs/);
+const compatScript = packageJson.scripts?.['test:node-compat'] || '';
+for (const required of [
+  'test_opencode_plugin.mjs',
+  'test_hakim_opencode_lifecycle.mjs',
+  'test_hakim_opencode_adversarial_transactions.mjs',
+  'test_hakim_opencode_cli.mjs',
+  'check_public_package_surface.mjs',
+]) {
+  assert.ok(compatScript.includes(required), `test:node-compat missing ${required}`);
+}
 
 for (const version of ['22', '24', '26']) {
   assert.match(workflow, new RegExp(`node-version: "${version}"`), `Public CI must cover Node ${version}`);
 }
-assert.match(workflow, /node22-compatibility:/, 'Public CI must keep an explicit minimum-version compatibility job');
-assert.match(workflow, /node26-compatibility:/, 'Public CI must keep an explicit current-version compatibility job');
-assert.match(workflow, /Run shipped-package compatibility suite on Node 22[\s\S]*npm run test:node-compat/, 'Node 22 job must run the shipped-package compatibility suite');
-assert.match(workflow, /Run shipped-package compatibility suite on Node 26[\s\S]*npm run test:node-compat/, 'Node 26 job must run the shipped-package compatibility suite');
+for (const version of ['22', '26']) {
+  assert.match(workflow, new RegExp(`node${version}-compatibility:`), `Public CI must keep Node ${version} compatibility job`);
+  for (const step of [
+    'support contract',
+    'OpenCode plugin runtime',
+    'OpenCode lifecycle',
+    'adversarial transactions',
+    'Git bootstrap CLI',
+    'public package boundary',
+  ]) {
+    assert.match(workflow, new RegExp(`Node ${version} ${step}`), `Node ${version} compatibility job missing ${step}`);
+  }
+}
 
 console.log('node support contract OK: shipped package engines >=22, CI covers Node 22/24/26');
