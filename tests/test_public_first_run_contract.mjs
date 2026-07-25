@@ -44,6 +44,7 @@ assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
 assert.equal(pyproject['tool.hakim'].phase, undefined);
 assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
 
+// Current host-acceptance truth is structural. Do not infer it from prose.
 assert.equal(nativeAcceptance.product_version, version);
 assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
@@ -120,8 +121,6 @@ assert.match(liveAcceptance, /does not upgrade or replace the system npm/);
 assert.match(readme, /^## Product readiness$/m);
 assert.match(readme, /POST-BETA-R1/);
 assert.match(readme, /External evaluator recruitment remains suspended/i);
-assert.match(readme, /OpenCode is intentionally `NOT_RUN`/i);
-assert.match(limitations, /OpenCode lifecycle is intentionally `NOT_RUN`/i);
 
 const hostSurfaces = new Map([
   ['codex', 'Codex'],
@@ -153,7 +152,7 @@ assert.match(combinedFirstRun, /does not edit `opencode\.json`/);
 const opencodeReadme = read('plugins/opencode/README.md');
 assert.ok(opencodeReadme.includes(opencodeBootstrap));
 assert.match(opencodeReadme, /Source-checkout fallback/);
-assert.match(opencodeReadme, /fresh real-host install\/start\/invocation evidence|fresh real-host evidence/i);
+assert.match(opencodeReadme, /^## Evidence boundaries$/m);
 for (const text of [readme, install, opencodeReadme]) {
   assert.ok(!/npm run plan:install[^\n]*-- --target/.test(text), 'plan:install examples must not contain a second npm separator before --target');
 }
@@ -196,6 +195,7 @@ const stalePublicTokens = [
   'verify:native-prerelease',
   'OPEN FOR EXTERNAL EVALUATOR SUBMISSIONS',
   'five independent accepted evaluator reports',
+  'SUSPENDED_FOR_PRODUCT_REMEDIATION',
 ];
 
 for (const relative of productDocs) {
@@ -211,4 +211,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, OpenCode changed-path HOLD is structured truth, ${documentedScripts.size} documented npm scripts, version ${version}`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, OpenCode changed-path HOLD is structural truth, ${documentedScripts.size} documented npm scripts, version ${version}`);
