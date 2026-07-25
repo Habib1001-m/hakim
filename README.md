@@ -16,9 +16,9 @@ For example, when a repository already has a parser that safely handles the requ
 
 Hakim `1.0.0-beta.1` is public beta software distributed from public source and host-native Git marketplaces. It is not published to the npm registry and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
-All four maintained current-native product paths — Codex, Claude Code, GitHub Copilot CLI, and the Git-backed project-local OpenCode bootstrap — have accepted real-host install/start/invocation evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication.
+All four maintained current-native product paths — Codex, Claude Code, GitHub Copilot CLI, and the Git-backed managed project-local OpenCode lifecycle — have accepted real-host evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). The current OpenCode path was accepted on OpenCode `1.18.5` after a clean managed install, real invocation, accepted-old-to-managed upgrade, and newer-CLI removal of the supported older installation. That bounded evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication.
 
-External evaluator recruitment is suspended while the public product surface is remediated under [#14](https://github.com/Habib1001-m/hakim/issues/14). Private release authorization remains outside the public repository.
+POST-BETA-R1 remediation is complete and merged through [#15](https://github.com/Habib1001-m/hakim/pull/15). External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch. Private release authorization remains outside the public repository.
 
 ## Quick start
 
@@ -60,7 +60,7 @@ From the target repository:
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
 ```
 
-The Git-backed bootstrap invokes Hakim's guarded project-local installer directly from the public repository. It creates only the canonical `.opencode` Hakim bundle, refuses conflicting or unsafe state, verifies hashes after creation, and does not edit `opencode.json` or install global Hakim state.
+The Git-backed bootstrap invokes Hakim's guarded project-local managed lifecycle directly from the public repository. It persists an exact install manifest, supports bounded create/adopt/transactional-upgrade paths, can remove a supported older verified installation with a newer CLI, refuses conflicting or unsafe state, and does not edit `opencode.json` or install global Hakim state.
 
 Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
 
@@ -74,16 +74,16 @@ See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific life
 - Host-specialized skills, agents, commands, and lifecycle controls where the host supports them.
 - Deterministic PR Guardian checks for dependency and evidence-boundary drift.
 - Bounded review, audit, doctor, host-preflight, and install-planning commands.
-- OpenCode canonical-manifest hashing, create-only installation, exact-match removal, quarantine-backed removal, and rollback safeguards.
+- OpenCode persistent lifecycle manifests, create/adopt/transactional-upgrade support, supported older-version removal, same-filesystem quarantine with post-move verification, and no-clobber rollback safeguards.
 - Byte-reproducible canonical skill packaging and local checksum/manifest verification without a runtime service.
 
 ## Requirements
 
-For product use, install the supported host you intend to use. The OpenCode Git-backed bootstrap additionally requires Node.js/npm; Node.js 18 or newer is the declared minimum.
+For product use, install the supported host you intend to use. The OpenCode Git-backed bootstrap additionally requires Node.js/npm; the shipped package declares Node.js `>=22`.
 
 Repository development and local validation additionally require:
 
-- Node.js 18 or newer. Public CI currently validates Node.js 24.
+- Node.js 22 or newer. Public CI runs the full repository gate on Node.js 24 and exercises the shipped OpenCode package/runtime on Node.js 22 and 26 as compatibility edges.
 - Python 3.10 or newer. Maintained Python tooling uses Python 3.10+ syntax; Public CI currently validates Python 3.11.
 - Git.
 
@@ -118,15 +118,15 @@ Each host intentionally uses its strongest native extension model rather than a 
 
 ## Product readiness
 
-Current native runtime acceptance is not the same thing as full product readiness. The comprehensive post-acceptance review identified public-surface, documentation, release-reproducibility, provenance, and first-run UX remediation that must be completed before external evaluator recruitment is relaunched.
+Current native runtime acceptance is not the same thing as full product readiness. POST-BETA-R1 closed the public-surface, documentation, release-reproducibility, provenance, and first-run UX remediation identified by the comprehensive post-acceptance review.
 
-The remediation program is tracked publicly in [POST-BETA-R1 — Public Surface Reduction & Truth Reconciliation (#14)](https://github.com/Habib1001-m/hakim/issues/14). The withdrawn evaluator campaign (#12) accepted no external reports.
+The post-merge hardening slice tracked in [#18](https://github.com/Habib1001-m/hakim/issues/18) closes the inherited OpenCode lifecycle safety, upgradeability, runtime-idempotence, session-state, Node-support, help-truth, and truth-gate findings identified by traceability review. The changed managed OpenCode path now has fresh accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3`. The withdrawn evaluator campaign (#12) accepted no external reports; evaluator recruitment remains suspended and any future relaunch requires a separate explicit product decision.
 
 ## Evidence boundaries
 
 A passing deterministic check means only that the enabled rule set found no matching violation. It is not a substitute for correctness, security, architecture, semantic review, or live host validation.
 
-The public native-host acceptance projection is current-product evidence. A new or materially changed first-run journey requires accepted real-host observation before that exact journey is promoted by evidence. Structural or CI success alone does not create live-host acceptance.
+The public native-host acceptance projection is current-product evidence. A new or materially changed lifecycle, first-run journey, or runtime behavior requires accepted real-host observation before that exact path is promoted by evidence. Structural or CI success alone does not create live-host acceptance.
 
 Hakim does not claim model-quality improvement, universal compatibility, performance gains, token savings, return on investment, or complete protection from unrelated local processes.
 

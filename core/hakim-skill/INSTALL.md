@@ -65,7 +65,7 @@ Inside Copilot CLI use `/skills list` and `/agent` to inspect Hakim's six skills
 
 ## OpenCode
 
-Hakim remains a guarded **project-local** OpenCode plugin, but normal installation no longer requires cloning Hakim first.
+Hakim is a guarded **project-local** OpenCode plugin. Normal installation does not require cloning Hakim first.
 
 From the target repository:
 
@@ -73,7 +73,7 @@ From the target repository:
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
 ```
 
-This uses npm only as Git transport/command execution for the public GitHub repository. Hakim is still not published to the npm registry, and the command creates no global Hakim/OpenCode installation.
+This uses npm only as Git transport/command execution for the public GitHub repository. Hakim is not published to the npm registry, and the command creates no global Hakim/OpenCode installation. The shipped bootstrap declares Node `>=22`.
 
 The target defaults to the current directory. Optional read-only inspection:
 
@@ -82,15 +82,29 @@ npx --yes --package=github:Habib1001-m/hakim hakim-opencode install --dry-run
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode status
 ```
 
-Start OpenCode from that repository and use `/hakim-help` or `/hakim full ...`. Installation is create-only, validates the canonical file manifest and target paths, refuses unsafe partial/different bundles, and does not edit `opencode.json`.
+The managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, which records the installed product version plus the exact Hakim-owned target paths, sizes, and SHA-256 hashes. That file is treated as untrusted input and is validated before mutation.
 
-Exact-match removal is also project-local:
+Install supports only bounded verified transitions:
+
+- **create** when all Hakim target paths are absent;
+- **adopt** when a recognized exact pre-manifest installation already matches and only lifecycle metadata is missing;
+- **upgrade** when a complete verified supported older Hakim installation is present. The new payload is staged first, old owned bytes are moved into same-filesystem quarantine and verified after the move, new files are installed create-only, and the new manifest is written last.
+
+Partial, modified, unsafe, symlinked, malformed/unsupported-manifest, or unowned conflicting state is refused. Hakim never edits `opencode.json`.
+
+After installation, start OpenCode from that repository and use `/hakim-help` or `/hakim full ...`.
+
+Removal remains project-local:
 
 ```bash
 npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove
 ```
 
-The remover quarantines and verifies the canonical files before mutation and attempts restoration on failure. Modified, partial, unsafe, or unrelated OpenCode state is preserved.
+A newer CLI can remove a complete byte-verified supported older installation using its persisted/accepted lifecycle manifest; removal does not require the newer payload to equal the older installed payload.
+
+For mutation, each owned live file is renamed into private same-filesystem quarantine and re-hashed **after the move**. Quarantine is deleted only after all owned bytes have been verified outside the live namespace. If bytes change in the final verify-to-rename window, the operation fails and restores the actual quarantined bytes no-clobber. An independently reappeared target is never overwritten.
+
+Create/upgrade rollback follows the same rule: Hakim may discard only bytes it created and can still verify after they leave the live namespace. A concurrent replacement is preserved; rollback reports incomplete rather than deleting user state.
 
 ### Source-checkout fallback
 
@@ -103,9 +117,13 @@ npm run install:opencode -- --target /path/to/repository --apply
 npm run remove:opencode -- --target /path/to/repository
 ```
 
-The install command is dry-run unless `--apply` is present. These commands exercise the same project-local bundle/lifecycle implementation used by the Git-backed bootstrap; they are not a requirement for normal first-run use.
+The install/remove commands exercise the same managed project-local lifecycle implementation used by the Git-backed bootstrap; they are not a requirement for normal first-run use.
 
-The Git-backed bootstrap is structurally covered by repository tests, but structural checks do not create live-host acceptance. The current public acceptance projection separately records an accepted install/start/invocation journey for this Git-backed path on OpenCode `1.17.13`, tied to immutable candidate evidence. That acceptance remains bounded to the observed environment and does not imply universal compatibility.
+### Runtime and evidence boundary
+
+OpenCode mode state is process-local and session-scoped where a session ID is present. Reused prompt outputs contain at most one Hakim activation sentinel; repeated transforms do not duplicate the policy, mode changes replace the block, and `off` removes it. Fresh plugin processes reset to the configured default rather than sharing state across projects or host restarts.
+
+Repository-side behavior is structurally and adversarially tested across the supported Node runtime contract. The current manifest-backed create/adopt/upgrade/removal and idempotent-runtime path has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`, including clean install/start/invocation, accepted-old-to-managed upgrade, and supported older-version removal with the newer CLI. The earlier OpenCode `1.17.13` journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical evidence for the earlier create-only lifecycle only.
 
 ## Inspect all maintained product surfaces
 

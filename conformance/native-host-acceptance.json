@@ -34,11 +34,11 @@
       "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/8#issuecomment-5070551461"
     },
     "opencode": {
-      "product_path": "Git-backed npx project-local install -> start OpenCode from the target project -> invoke a Hakim command/skill",
+      "product_path": "Git-backed npx managed project-local install/adopt/upgrade -> start OpenCode from the target project -> invoke a Hakim command/skill",
       "status": "PASS",
-      "host_version": "1.17.13",
-      "verified_at": "2026-07-25T12:39:25.944Z",
-      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/14#issuecomment-5078407875"
+      "host_version": "1.18.5",
+      "verified_at": "2026-07-25T19:10:17.917Z",
+      "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/18#issuecomment-5080155506"
     }
   }
 }

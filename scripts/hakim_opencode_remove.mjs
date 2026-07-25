@@ -1,30 +1,29 @@
 #!/usr/bin/env node
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from './hakim_opencode_install.mjs';
 import {
-  OPENCODE_ROOT,
+  INSTALL_MANIFEST_RELATIVE_PATH,
   buildOpenCodeBundle,
   bundleDirectories,
-  inspectEntry,
-  inspectInstalledBundle,
+  createPrivateWorkRoot,
+  detectManagedInstallation,
+  moveVerifiedRecordToWorkRoot,
   removeEmptyDirectories,
-  sha256,
   validateDirectoryChain,
   validateTargetRoot,
 } from './lib/opencode_bundle.mjs';
+import {
+  restoreQuarantinedBytesNoClobber,
+  validateManagedInstallationAuthority,
+} from './lib/opencode_transaction.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
 
-function publicManifest(bundle) {
-  return bundle.files.map((file) => ({
-    target_relative: file.target_relative,
-    sha256: file.sha256,
-    size: file.size,
-  }));
+function publicManifest(manifest) {
+  return manifest?.files?.map((file) => ({ target_relative: file.target_relative, sha256: file.sha256, size: file.size })) || [];
 }
 
 function result(base, status, state, nextSafeAction, mutation = {}) {
@@ -41,74 +40,28 @@ function result(base, status, state, nextSafeAction, mutation = {}) {
     quarantine_path: mutation.quarantine_path ?? null,
     removed_files: mutation.removed_files || [],
     removed_directories: mutation.removed_directories || [],
+    installed_product_version: mutation.installed_product_version ?? null,
     next_safe_action: nextSafeAction,
   };
 }
 
-function quarantineRelative(targetRelative) {
-  const normalized = targetRelative.replace(/^\.opencode\//, '');
-  if (!normalized || normalized.startsWith('..') || path.isAbsolute(normalized)) {
-    throw new Error(`unsafe quarantine target: ${targetRelative}`);
-  }
-  return normalized;
+function installedManifestRecord(managed) {
+  if (managed.manifest_source !== 'INSTALLED_MANIFEST' || !managed.manifest_record) return null;
+  return { target_relative: INSTALL_MANIFEST_RELATIVE_PATH, sha256: managed.manifest_record.raw_sha256, size: managed.manifest_record.raw_size };
 }
 
-function createQuarantineRoot(targetRoot) {
-  const parent = path.join(targetRoot, OPENCODE_ROOT);
-  for (let attempt = 0; attempt < 8; attempt += 1) {
-    const token = crypto.randomBytes(8).toString('hex');
-    const candidate = path.join(parent, `.hakim-remove-${process.pid}-${token}`);
-    try {
-      fs.mkdirSync(candidate, { mode: 0o700 });
-      return candidate;
-    } catch (error) {
-      if (error.code !== 'EEXIST') throw error;
-    }
+function moveManagedInstallation(targetRoot, managed, workRoot) {
+  const moved = [];
+  try {
+    for (const record of managed.manifest.files) moved.push(moveVerifiedRecordToWorkRoot(targetRoot, workRoot, record));
+    const manifest = installedManifestRecord(managed);
+    if (manifest) moved.push(moveVerifiedRecordToWorkRoot(targetRoot, workRoot, manifest));
+    return moved;
+  } catch (error) {
+    if (error.quarantined_record) moved.push(error.quarantined_record);
+    error.moved_records = moved;
+    throw error;
   }
-  throw new Error('could not allocate a unique quarantine directory');
-}
-
-function backupBundle(targetRoot, bundle, quarantineRoot) {
-  const backups = [];
-  for (const file of bundle.files) {
-    const targetPath = path.join(targetRoot, file.target_relative);
-    const state = inspectEntry(targetPath, 'file');
-    if (!state.ok) throw new Error(`${file.target_relative} changed before backup: ${state.state}`);
-    const current = fs.readFileSync(targetPath);
-    if (sha256(current) !== file.sha256) throw new Error(`${file.target_relative} changed before backup`);
-
-    const backupPath = path.join(quarantineRoot, quarantineRelative(file.target_relative));
-    fs.mkdirSync(path.dirname(backupPath), { recursive: true, mode: 0o700 });
-    fs.copyFileSync(targetPath, backupPath, fs.constants.COPYFILE_EXCL);
-    const backupState = inspectEntry(backupPath, 'file');
-    if (!backupState.ok || sha256(fs.readFileSync(backupPath)) !== file.sha256) {
-      throw new Error(`${file.target_relative} quarantine verification failed`);
-    }
-    backups.push({ file, targetPath, backupPath });
-  }
-  return backups;
-}
-
-function restoreRemoved(backups, removedTargets) {
-  const errors = [];
-  for (const item of backups) {
-    if (!removedTargets.has(item.targetPath)) continue;
-    const targetState = inspectEntry(item.targetPath, 'file');
-    if (targetState.state !== 'MISSING') {
-      errors.push(`${item.file.target_relative}: target reappeared; not overwritten`);
-      continue;
-    }
-    try {
-      fs.mkdirSync(path.dirname(item.targetPath), { recursive: true, mode: 0o755 });
-      fs.copyFileSync(item.backupPath, item.targetPath, fs.constants.COPYFILE_EXCL);
-      if (sha256(fs.readFileSync(item.targetPath)) !== item.file.sha256) {
-        errors.push(`${item.file.target_relative}: restored hash mismatch`);
-      }
-    } catch (error) {
-      errors.push(`${item.file.target_relative}: ${error.message}`);
-    }
-  }
-  return errors;
 }
 
 export function removeOpenCodeAdapter(options, root = ROOT) {
@@ -116,121 +69,105 @@ export function removeOpenCodeAdapter(options, root = ROOT) {
   try {
     bundle = buildOpenCodeBundle(root);
   } catch (error) {
-    return result({ schema_version: 1, mode: options.apply ? 'APPLY_REMOVE_EXACT_MATCH' : 'DRY_RUN' }, 'FAIL', 'SOURCE_INVALID', error.message);
+    return result({ schema_version: 1, mode: options.apply ? 'APPLY_REMOVE_MANAGED' : 'DRY_RUN' }, 'FAIL', 'SOURCE_INVALID', error.message);
   }
 
   const target = validateTargetRoot(options.target);
   const base = {
     schema_version: 1,
     adapter: bundle.adapter,
-    mode: options.apply ? 'APPLY_REMOVE_EXACT_MATCH' : 'DRY_RUN',
+    mode: options.apply ? 'APPLY_REMOVE_MANAGED' : 'DRY_RUN',
     target_root: target.target_root,
     modified_target_removal_allowed: false,
     opencode_config_mutation: false,
     unrelated_path_removal_allowed: false,
     mutation_scope: bundle.mutation_scope,
-    manifest: publicManifest(bundle),
+    install_manifest_path: INSTALL_MANIFEST_RELATIVE_PATH,
   };
   if (!target.ok) return result(base, 'FAIL', target.state, target.message);
 
   const directories = bundleDirectories(bundle);
   const directoryCheck = validateDirectoryChain(target.target_root, directories);
-  if (!directoryCheck.ok) {
-    return result({ ...base, refused_path: directoryCheck.path }, 'FAIL', directoryCheck.state, directoryCheck.message);
-  }
+  if (!directoryCheck.ok) return result({ ...base, refused_path: directoryCheck.path }, 'FAIL', directoryCheck.state, directoryCheck.message);
 
-  const installed = inspectInstalledBundle(target.target_root, bundle);
-  const withInspection = { ...base, inspection: installed.counts };
-  if (installed.aggregate_state === 'ABSENT') {
-    return result(withInspection, 'PASS', 'ALREADY_ABSENT', 'No canonical Hakim OpenCode bundle is present; no change is needed.');
-  }
-  if (installed.aggregate_state !== 'EXACT_MATCH') {
-    return result(
-      withInspection,
-      'FAIL',
-      installed.aggregate_state === 'UNSAFE' ? 'REFUSED_UNSAFE_TARGET' : 'REFUSED_PARTIAL_OR_MODIFIED',
-      'Preserve the current OpenCode paths and reconcile them manually; removal is allowed only for one complete exact canonical bundle.',
-    );
+  const managed = detectManagedInstallation(target.target_root, bundle);
+  const withInspection = {
+    ...base,
+    manifest: publicManifest(managed.manifest),
+    inspection: managed.inspection?.counts || null,
+    managed_state: managed.state,
+    managed_manifest_source: managed.manifest_source,
+  };
+  const authority = validateManagedInstallationAuthority(managed, bundle);
+  if (!authority.ok) return result(withInspection, 'FAIL', `REFUSED_${authority.state}`, authority.message);
+
+  if (managed.state === 'ABSENT') return result(withInspection, 'PASS', 'ALREADY_ABSENT', 'No supported managed Hakim OpenCode bundle is present; no change is needed.');
+  if (!['EXACT_MATCH', 'LEGACY_EXACT_MATCH', 'UNMANIFESTED_CURRENT_EXACT'].includes(managed.state)) {
+    return result(withInspection, 'FAIL', `REFUSED_${managed.state}`, managed.message || 'Preserve the current OpenCode paths and reconcile them manually; removal is allowed only for a complete byte-verified supported Hakim-owned installation.');
   }
   if (!options.apply) {
-    return result(withInspection, 'PASS', 'READY_TO_REMOVE', 'Review the exact-match manifest, then rerun with --apply to remove only the Hakim bundle.');
+    return result(withInspection, 'PASS', 'READY_TO_REMOVE', `Verified Hakim ${managed.manifest.product_version} is removable. Rerun without --dry-run to quarantine, verify, and remove only the owned bytes.`, {
+      installed_product_version: managed.manifest.product_version,
+    });
   }
 
-  let quarantineRoot = null;
-  let backups = [];
-  const removedTargets = new Set();
+  let workRoot = null;
+  let moved = [];
   try {
-    quarantineRoot = createQuarantineRoot(target.target_root);
-    backups = backupBundle(target.target_root, bundle, quarantineRoot);
+    workRoot = createPrivateWorkRoot(target.target_root, 'hakim-remove');
+    moved = moveManagedInstallation(target.target_root, managed, workRoot);
 
-    const secondInspection = inspectInstalledBundle(target.target_root, bundle);
-    if (secondInspection.aggregate_state !== 'EXACT_MATCH') {
-      throw new Error('installed bundle changed after quarantine backup');
+    const removedDirectories = removeEmptyDirectories(target.target_root, directories);
+    fs.rmSync(workRoot, { recursive: true });
+
+    const finalState = detectManagedInstallation(target.target_root, bundle);
+    if (finalState.state !== 'ABSENT') {
+      return result({ ...withInspection, final_managed_state: finalState.state }, 'FAIL', 'POST_REMOVE_VERIFY_FAILED', 'Managed Hakim paths remain after removal; inspect the target manually.', {
+        mutation_attempted: true,
+        removal_performed: true,
+        filesystem_changed: true,
+        removed_files: managed.manifest.files.map((file) => file.target_relative),
+        removed_directories: removedDirectories,
+        installed_product_version: managed.manifest.product_version,
+      });
     }
 
-    for (const item of backups) {
-      const currentState = inspectEntry(item.targetPath, 'file');
-      if (!currentState.ok || sha256(fs.readFileSync(item.targetPath)) !== item.file.sha256) {
-        throw new Error(`${item.file.target_relative} changed before removal`);
-      }
-      fs.unlinkSync(item.targetPath);
-      removedTargets.add(item.targetPath);
-    }
+    return result(withInspection, 'PASS', 'REMOVED', `Hakim ${managed.manifest.product_version} was removed after quarantine verification; unrelated .opencode content was preserved.`, {
+      mutation_attempted: true,
+      removal_performed: true,
+      filesystem_changed: true,
+      removed_files: managed.manifest.files.map((file) => file.target_relative),
+      removed_directories: removedDirectories,
+      installed_product_version: managed.manifest.product_version,
+    });
   } catch (error) {
-    const restorationErrors = backups.length > 0 ? restoreRemoved(backups, removedTargets) : [];
+    if (error.quarantined_record) moved.push(error.quarantined_record);
+    if (error.moved_records) moved = error.moved_records;
+
+    const recovery = restoreQuarantinedBytesNoClobber(moved);
+    const rollbackComplete = recovery.errors.length === 0;
     let quarantineRetained = false;
-    if (quarantineRoot) {
+    if (workRoot) {
       try {
-        fs.rmSync(quarantineRoot, { recursive: true, force: true });
+        if (rollbackComplete) fs.rmSync(workRoot, { recursive: true, force: true });
+        else quarantineRetained = true;
       } catch {
         quarantineRetained = true;
       }
     }
-    return result(withInspection, 'FAIL', restorationErrors.length === 0 ? 'REMOVE_FAILED_RESTORED' : 'REMOVE_FAILED_RESTORE_INCOMPLETE', error.message, {
+
+    return result(withInspection, 'FAIL', rollbackComplete ? 'REMOVE_FAILED_RESTORED' : 'REMOVE_FAILED_RESTORE_INCOMPLETE', error.message, {
       mutation_attempted: true,
-      removal_performed: removedTargets.size > 0,
-      filesystem_changed: restorationErrors.length > 0 || quarantineRetained,
-      rollback_attempted: removedTargets.size > 0,
-      rollback_complete: restorationErrors.length === 0,
+      removal_performed: moved.length > 0,
+      filesystem_changed: !rollbackComplete,
+      rollback_attempted: moved.length > 0,
+      rollback_complete: rollbackComplete,
       quarantine_retained: quarantineRetained,
-      quarantine_path: quarantineRetained ? quarantineRoot : null,
-      removed_files: restorationErrors.length === 0 ? [] : [...removedTargets].map((value) => path.relative(target.target_root, value)),
+      quarantine_path: quarantineRetained ? workRoot : null,
+      removed_files: rollbackComplete ? [] : moved.map((item) => item.record.target_relative),
+      installed_product_version: managed.manifest.product_version,
     });
   }
-
-  const removedDirectories = removeEmptyDirectories(target.target_root, directories);
-  try {
-    fs.rmSync(quarantineRoot, { recursive: true });
-  } catch (error) {
-    return result(withInspection, 'FAIL', 'REMOVED_QUARANTINE_RETAINED', `The canonical adapter was removed, but quarantine cleanup failed: ${error.message}`, {
-      mutation_attempted: true,
-      removal_performed: true,
-      filesystem_changed: true,
-      quarantine_retained: true,
-      quarantine_path: quarantineRoot,
-      removed_files: bundle.files.map((file) => file.target_relative),
-      removed_directories: removedDirectories,
-    });
-  }
-
-  const finalInspection = inspectInstalledBundle(target.target_root, bundle);
-  if (finalInspection.aggregate_state !== 'ABSENT') {
-    return result({ ...base, inspection: finalInspection.counts }, 'FAIL', 'POST_REMOVE_VERIFY_FAILED', 'One or more Hakim OpenCode bundle paths remain; inspect the target manually.', {
-      mutation_attempted: true,
-      removal_performed: true,
-      filesystem_changed: true,
-      removed_files: bundle.files.map((file) => file.target_relative),
-      removed_directories: removedDirectories,
-    });
-  }
-
-  return result({ ...base, inspection: finalInspection.counts }, 'PASS', 'REMOVED', 'The exact canonical Hakim OpenCode bundle was removed; unrelated .opencode content was preserved.', {
-    mutation_attempted: true,
-    removal_performed: true,
-    filesystem_changed: true,
-    removed_files: bundle.files.map((file) => file.target_relative),
-    removed_directories: removedDirectories,
-  });
 }
 
 export function formatText(report) {
@@ -258,8 +195,9 @@ function usage() {
     '  npm run remove:opencode -- --target <repository> --apply',
     '  npm run remove:opencode:json -- --target <repository> [--apply]',
     '',
-    'Dry-run is the default. Removal requires one complete byte-identical bundle.',
-    'Modified, partial, symlink, non-regular, or unrelated OpenCode paths are preserved.',
+    'Dry-run is the default. Removal accepts a complete verified supported installed manifest, including an older supported version.',
+    'Owned files are moved into same-filesystem quarantine and re-hashed before deletion; rollback restores the actual quarantined bytes no-clobber.',
+    'Modified, partial, symlinked, malformed/unsupported-manifest, or unowned OpenCode paths are preserved.',
   ].join('\n');
 }
 

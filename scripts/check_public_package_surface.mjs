@@ -12,10 +12,12 @@ if (!fs.existsSync(packagePath)) {
 } else {
   const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
   if (pkg.private !== true) errors.push('package.json must remain private');
+  if (pkg.engines?.node !== '>=22') errors.push('public Node support contract must be >=22');
   if (pkg.bin?.['hakim-opencode'] !== 'scripts/hakim_opencode_cli.mjs') {
     errors.push('Git-backed OpenCode bootstrap bin is missing or unexpected');
   }
   const expectedBootstrapFiles = [
+    'core/hakim-skill/VERSION',
     'core/hakim-skill/SKILL.md',
     'core/hakim-skill/capabilities.json',
     'core/hakim-skill/skills',
@@ -25,6 +27,7 @@ if (!fs.existsSync(packagePath)) {
     'scripts/hakim_opencode_install.mjs',
     'scripts/hakim_opencode_remove.mjs',
     'scripts/lib/opencode_bundle.mjs',
+    'scripts/lib/opencode_transaction.mjs',
   ];
   if (!Array.isArray(pkg.files) || pkg.files.length !== expectedBootstrapFiles.length) {
     errors.push('Git-backed bootstrap package files allowlist has unexpected size');
@@ -33,9 +36,7 @@ if (!fs.existsSync(packagePath)) {
       if (!pkg.files.includes(relative)) errors.push(`Git-backed bootstrap package missing allowlisted path: ${relative}`);
     }
   }
-  if (pkg.scripts?.test !== 'npm run test:public') {
-    errors.push('test must route to test:public');
-  }
+  if (pkg.scripts?.test !== 'npm run test:public') errors.push('test must route to test:public');
   for (const script of [
     'test:public',
     'test:public:js',
@@ -60,31 +61,24 @@ if (!fs.existsSync(packagePath)) {
     'benchmark:verify',
     'evaluate:clean-journey',
   ]) {
-    if (pkg.scripts?.[internalScript]) {
-      errors.push(`internal package script remains: ${internalScript}`);
-    }
+    if (pkg.scripts?.[internalScript]) errors.push(`internal package script remains: ${internalScript}`);
   }
 
-  for (const obsoleteDistributionScript of [
-    'build:native-plugin',
-    'verify:native-prerelease',
-  ]) {
-    if (pkg.scripts?.[obsoleteDistributionScript]) {
-      errors.push(`obsolete distribution script remains: ${obsoleteDistributionScript}`);
-    }
+  for (const obsoleteDistributionScript of ['build:native-plugin', 'verify:native-prerelease']) {
+    if (pkg.scripts?.[obsoleteDistributionScript]) errors.push(`obsolete distribution script remains: ${obsoleteDistributionScript}`);
   }
 }
 
 for (const relative of [
+  'core/hakim-skill/VERSION',
   'core/hakim-skill/SKILL.md',
   'core/hakim-skill/AGENTS.md',
   'scripts/hakim_doctor.mjs',
   'scripts/hakim_opencode_cli.mjs',
+  'scripts/lib/opencode_transaction.mjs',
   'scripts/verify_package.py',
 ]) {
-  if (!fs.existsSync(path.join(root, relative))) {
-    errors.push(`missing required public file: ${relative}`);
-  }
+  if (!fs.existsSync(path.join(root, relative))) errors.push(`missing required public file: ${relative}`);
 }
 
 for (const relative of [
@@ -104,9 +98,7 @@ for (const relative of [
   'tests/test_native_plugin_realpath_containment.mjs',
   'tests/test_native_plugin_transactional_lifecycle.mjs',
 ]) {
-  if (fs.existsSync(path.join(root, relative))) {
-    errors.push(`retired public product surface remains: ${relative}`);
-  }
+  if (fs.existsSync(path.join(root, relative))) errors.push(`retired public product surface remains: ${relative}`);
 }
 
 const payload = { ok: errors.length === 0, errors };

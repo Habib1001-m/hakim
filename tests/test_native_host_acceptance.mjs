@@ -27,13 +27,14 @@ for (const host of EXPECTED_HOSTS) {
   assert.ok(projection.hosts[host].evidence_ref.length > 0);
 }
 
-assert.match(projection.hosts.opencode.product_path, /Git-backed npx project-local install/);
-assert.equal(projection.hosts.opencode.host_version, '1.17.13');
-assert.equal(projection.hosts.opencode.verified_at, '2026-07-25T12:39:25.944Z');
+assert.match(projection.hosts.opencode.product_path, /managed project-local install\/adopt\/upgrade/);
+assert.equal(projection.hosts.opencode.host_version, '1.18.5');
+assert.equal(projection.hosts.opencode.verified_at, '2026-07-25T19:10:17.917Z');
 assert.equal(
   projection.hosts.opencode.evidence_ref,
-  'https://github.com/Habib1001-m/hakim/issues/14#issuecomment-5078407875',
+  'https://github.com/Habib1001-m/hakim/issues/18#issuecomment-5080155506',
 );
+assert.ok(!JSON.stringify(projection.hosts.opencode).includes('5078407875'), 'current OpenCode path must not reuse earlier evidence');
 
 const blank = structuredClone(projection);
 for (const host of EXPECTED_HOSTS) {
@@ -77,4 +78,4 @@ const legacyResult = validateProjection(legacy, version);
 assert.equal(legacyResult.ok, false);
 assert.ok(legacyResult.errors.some((error) => /legacy acceptance marker/.test(error)));
 
-console.log('native host acceptance projection preserves current-product live-evidence boundaries');
+console.log('native host acceptance projection preserves current-path evidence boundaries and accepted hardened OpenCode state');

@@ -76,17 +76,19 @@ Native marketplace plugin with six skills and five custom agents. `.github/copil
 
 ### OpenCode
 
-Native project-local plugin installed by the same guarded create-only lifecycle regardless of entry point. Normal first-run uses a Git-backed `npx` bootstrap from the public Hakim repository, while source-checkout `npm run` commands remain development/inspection fallbacks. The bootstrap package exposes only the OpenCode CLI, installer/remover, canonical loader/policy/capabilities, and OpenCode plugin resources through an explicit package allowlist.
+Native project-local plugin installed by the same guarded managed lifecycle regardless of entry point. Normal first-run uses a Git-backed `npx` bootstrap from the public Hakim repository, while source-checkout `npm run` commands remain development/inspection fallbacks. The bootstrap package exposes only the OpenCode CLI, installer/remover, transaction helper, canonical loader/policy/capabilities, and OpenCode plugin resources through an explicit package allowlist.
 
-The maintained lifecycle refuses conflicting or unsafe target state, verifies canonical hashes, never edits `opencode.json`, and uses exact-match removal with quarantine/rollback safeguards. The Git-backed bootstrap does not publish Hakim to the npm registry and does not create a global Hakim/OpenCode installation.
+The maintained lifecycle persists a bounded install manifest; supports create, exact legacy/current adoption, transactional supported-version upgrade, and supported older-version removal; never edits `opencode.json`; and preserves unrelated `.opencode` content. Mutation uses same-filesystem quarantine plus post-move byte verification. Rollback restores actual quarantined bytes no-clobber and does not authorize deletion from a forged same-version ownership manifest.
 
-Because first-run transport is part of the observed product journey, structural tests for the new bootstrap do not silently replace the earlier live-host evidence. The exact Git-backed install/start/invocation journey requires fresh accepted real-host evidence before it is independently promoted.
+OpenCode prompt activation is sentinel-backed and idempotent. Session-specific modes are isolated; deletion affects only that session; missing-session calls use process fallback; and a fresh plugin instance resets to the configured default rather than sharing state across processes or projects.
+
+The current managed path has accepted real-host evidence on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`. The observation covered clean managed install/start/invocation, accepted-old-to-managed transactional upgrade, and removal of the supported older installation using the newer CLI. Earlier evidence at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical for the earlier create-only lifecycle only.
 
 ## Runtime and filesystem boundaries
 
 Host-native permission, approval, sandbox, trust, plugin, managed-policy, and removal controls remain authoritative.
 
-Hakim's own mutation-capable code must be narrower than the user request and explicit about its mutation boundary. Current maintained OpenCode installation never overwrites an existing Hakim path or edits `opencode.json`.
+Hakim's own mutation-capable code must be narrower than the user request and explicit about its mutation boundary. Current maintained OpenCode installation never edits `opencode.json` and refuses unsafe, partial, modified, unsupported-manifest, or unowned conflicting state.
 
 Child processes used by maintained repository tooling should use bounded time/output behavior and avoid shell interpolation where possible.
 
@@ -100,13 +102,23 @@ Keep these claims separate:
 4. **Release authorization** — explicit operator decision outside ordinary CI success.
 5. **Performance or quality improvement** — requires dedicated accepted evidence; it is not inferred from any item above.
 
-Current native runtime evidence for the four maintained hosts is recorded publicly. External evaluator recruitment is suspended during POST-BETA-R1 remediation and must not be inferred from native-host `PASS` status. A newly introduced first-run transport must carry its own accepted observation before that exact transport is described as live accepted.
+Current native runtime evidence for Codex, Claude Code, GitHub Copilot, and the managed OpenCode product path is recorded publicly. Each evidence record is bounded to the exact path and environment it observed. External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch; it must not be inferred from native-host acceptance status.
+
+## Truth-gate policy
+
+Structured facts have structured authorities. Version, release channel, capability IDs, package metadata, supported-host acceptance state, host version, timestamps, and evidence references must be parsed and compared from machine-readable or structural sources rather than inferred from wording in README prose.
+
+Free-form documentation is a projection of those authorities. Exact prose or stale-token assertions are permitted only as deliberate **negative tripwires** for retired language, unsafe obsolete instructions, or known truth-drift phrases. They are **not semantic proof** that documentation is correct, they cannot promote acceptance or release state, and a harmless copy edit must not be treated as new evidence.
+
+When a fact becomes important enough to gate product state, prefer adding or reusing a structured authority and testing the projection against it rather than expanding positive substring matching. A passing prose-tripwire test means only that the checked obsolete wording is absent; it does not prove the replacement claim.
 
 ## Packaging and release
 
 The canonical skill package uses an explicit allowlist rather than recursively shipping the source tree. ZIP member order, timestamps, and file modes are normalized so equivalent maintained source content can produce a byte-reproducible archive.
 
 The root repository package is private and is not an npm registry release. Its `files` allowlist exists only to make the Git-backed OpenCode bootstrap bounded when npm/npx fetches Hakim directly from GitHub.
+
+The shipped Git-backed package declares Node `>=22`. Public CI keeps the full repository gate on Node 24 and separately exercises the shipped OpenCode runtime/package surface on Node 22 and Node 26. That matrix is evidence for the declared JavaScript runtime floor/range, not for universal OpenCode or operating-system compatibility.
 
 Checksums prove artifact integrity against a recorded digest. Reproducibility is a separate claim and must be tested independently.
 

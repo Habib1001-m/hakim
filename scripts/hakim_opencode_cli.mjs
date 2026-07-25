@@ -4,21 +4,21 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { installOpenCodeAdapter } from './hakim_opencode_install.mjs';
 import { removeOpenCodeAdapter } from './hakim_opencode_remove.mjs';
-import { buildOpenCodeBundle, inspectInstalledBundle, validateTargetRoot } from './lib/opencode_bundle.mjs';
+import {
+  buildOpenCodeBundle,
+  detectManagedInstallation,
+  manifestFromBundle,
+  manifestsEquivalent,
+  validateTargetRoot,
+} from './lib/opencode_bundle.mjs';
+import { validateManagedInstallationAuthority } from './lib/opencode_transaction.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
 const ACTIONS = new Set(['install', 'remove', 'status']);
 
 export function parseCliArgs(argv, cwd = process.cwd()) {
-  const options = {
-    action: null,
-    target: cwd,
-    dryRun: false,
-    json: false,
-    help: false,
-  };
-
+  const options = { action: null, target: cwd, dryRun: false, json: false, help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (!options.action && ACTIONS.has(token)) options.action = token;
@@ -31,7 +31,6 @@ export function parseCliArgs(argv, cwd = process.cwd()) {
     else if (token === '--help' || token === '-h') options.help = true;
     else throw new Error(`unknown argument: ${token}`);
   }
-
   if (!options.help && !options.action) throw new Error('action is required: install, remove, or status');
   return options;
 }
@@ -52,20 +51,59 @@ export function inspectStatus(target, root = ROOT) {
 
   try {
     const bundle = buildOpenCodeBundle(root);
-    const installed = inspectInstalledBundle(targetState.target_root, bundle);
+    const currentManifest = manifestFromBundle(bundle);
+    const managed = detectManagedInstallation(targetState.target_root, bundle);
+    const authority = validateManagedInstallationAuthority(managed, bundle);
+    if (!authority.ok) {
+      return {
+        schema_version: 1,
+        action: 'status',
+        status: 'FAIL',
+        state: authority.state,
+        target_root: targetState.target_root,
+        filesystem_changed: false,
+        product_version: bundle.product_version,
+        installed_product_version: managed.manifest?.product_version || null,
+        manifest_source: managed.manifest_source,
+        inspection: managed.inspection?.counts || null,
+        next_safe_action: authority.message,
+      };
+    }
+
+    const unsafe = ['MANIFEST_INVALID', 'UNSAFE', 'PARTIAL_OR_MODIFIED', 'UNMANAGED_CONFLICT'].includes(managed.state);
+    let state = managed.state;
+    let nextSafeAction = 'Preserve the existing OpenCode paths and inspect them manually.';
+    if (managed.state === 'ABSENT') {
+      state = 'ABSENT';
+      nextSafeAction = 'Run `hakim-opencode install` from this repository to install Hakim.';
+    } else if (managed.state === 'EXACT_MATCH' && manifestsEquivalent(managed.manifest, currentManifest)) {
+      state = 'EXACT_MATCH';
+      nextSafeAction = 'Hakim matches the current canonical project-local OpenCode bundle and persistent install manifest.';
+    } else if (managed.state === 'UNMANIFESTED_CURRENT_EXACT' && manifestsEquivalent(managed.manifest, currentManifest)) {
+      state = 'EXACT_MATCH_MANIFEST_MISSING';
+      nextSafeAction = 'Run `hakim-opencode install` to add only the persistent lifecycle manifest.';
+    } else if (managed.state === 'LEGACY_EXACT_MATCH' && manifestsEquivalent(managed.manifest, currentManifest)) {
+      state = 'LEGACY_EXACT_MATCH_MANIFEST_MISSING';
+      nextSafeAction = 'Run `hakim-opencode install` to adopt the accepted legacy beta.1 installation into persistent lifecycle metadata.';
+    } else if (['EXACT_MATCH', 'LEGACY_EXACT_MATCH', 'UNMANIFESTED_CURRENT_EXACT'].includes(managed.state)) {
+      state = 'UPGRADE_AVAILABLE';
+      nextSafeAction = `Verified Hakim ${managed.manifest.product_version} is installed; run \`hakim-opencode install --dry-run\` to inspect the upgrade to ${currentManifest.product_version}.`;
+    } else if (managed.message) {
+      nextSafeAction = managed.message;
+    }
+
     return {
       schema_version: 1,
       action: 'status',
-      status: installed.aggregate_state === 'UNSAFE' ? 'FAIL' : 'PASS',
-      state: installed.aggregate_state,
+      status: unsafe ? 'FAIL' : 'PASS',
+      state,
       target_root: targetState.target_root,
       filesystem_changed: false,
-      inspection: installed.counts,
-      next_safe_action: installed.aggregate_state === 'EXACT_MATCH'
-        ? 'Hakim matches the canonical project-local OpenCode bundle.'
-        : installed.aggregate_state === 'ABSENT'
-          ? 'Run `hakim-opencode install` from this repository to install Hakim.'
-          : 'Preserve the existing OpenCode paths and reconcile them manually; automatic overwrite is prohibited.',
+      product_version: bundle.product_version,
+      installed_product_version: managed.manifest?.product_version || null,
+      manifest_source: managed.manifest_source,
+      inspection: managed.inspection?.counts || null,
+      next_safe_action: nextSafeAction,
     };
   } catch (error) {
     return {
@@ -83,13 +121,7 @@ export function inspectStatus(target, root = ROOT) {
 export function runAction(options, root = ROOT) {
   const target = path.resolve(options.target);
   if (options.action === 'status') return inspectStatus(target, root);
-
-  const mutationOptions = {
-    target,
-    apply: !options.dryRun,
-    json: options.json,
-    help: false,
-  };
+  const mutationOptions = { target, apply: !options.dryRun, json: options.json, help: false };
   if (options.action === 'install') return installOpenCodeAdapter(mutationOptions, root);
   return removeOpenCodeAdapter(mutationOptions, root);
 }
@@ -114,8 +146,8 @@ function usage() {
     '  hakim-opencode remove [--target <repository>] [--dry-run] [--json]',
     '',
     'The target defaults to the current directory.',
-    '`install` is an explicit create-only mutation; use --dry-run to inspect first.',
-    '`remove` mutates only when the installed bundle is an exact canonical match.',
+    '`install` creates a new managed bundle, adopts an exact legacy/current bundle into lifecycle metadata, or transactionally upgrades a complete verified supported older installation.',
+    '`remove` can remove a complete verified supported older installation using its persisted/accepted manifest; modified, partial, unsupported-manifest, or unowned state is refused.',
     'No command edits opencode.json or installs global OpenCode state.',
   ].join('\n');
 }
@@ -129,12 +161,10 @@ function main() {
     console.error(usage());
     process.exit(2);
   }
-
   if (options.help) {
     console.log(usage());
     return;
   }
-
   const report = runAction(options);
   const payload = { ...report, action: options.action };
   console.log(options.json ? JSON.stringify(payload, null, 2) : formatText(payload));

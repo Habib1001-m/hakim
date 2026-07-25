@@ -82,10 +82,9 @@ assert.deepEqual(report.native_host_acceptance.hosts, {
   'github-copilot': 'PASS',
   opencode: 'PASS',
 });
-assert.equal(report.external_beta_promotion, 'SUSPENDED_FOR_PRODUCT_REMEDIATION');
-assert.match(report.next_safe_action, /Complete POST-BETA-R1 remediation/);
-assert.match(report.next_safe_action, /issue #14/);
-assert.match(report.next_safe_action, /before relaunching external evaluator recruitment/);
+assert.equal(report.external_beta_promotion, 'SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION');
+assert.match(report.next_safe_action, /native-host evidence are reconciled/i);
+assert.match(report.next_safe_action, /separate explicit product decision/i);
 
 const text = formatText(report);
 assert.match(text, /MODE=READ_ONLY/);
@@ -93,7 +92,7 @@ assert.match(text, /CHECKS=6\/6 PASS/);
 assert.match(text, /RUNTIME_ACCEPTANCE=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /PUBLIC_RELEASE_READINESS=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /NATIVE_HOST_ACCEPTANCE=PASS/);
-assert.match(text, /EXTERNAL_BETA_PROMOTION=SUSPENDED_FOR_PRODUCT_REMEDIATION/);
+assert.match(text, /EXTERNAL_BETA_PROMOTION=SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION/);
 
 const help = spawnSync(
   process.execPath,
@@ -110,7 +109,7 @@ assert.match(help.stdout, /read-only mode/);
 assert.match(help.stdout, /outside the public/);
 assert.match(help.stdout, /native live-host status/);
 assert.match(help.stdout, /--fast.*lightweight/);
-assert.match(help.stdout, /suspended for product remediation/);
+assert.match(help.stdout, /suspended pending a separate explicit product decision/i);
 
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'),
@@ -129,4 +128,4 @@ assert.equal(
   'node scripts/hakim_doctor.mjs --fast --json',
 );
 
-console.log('public Hakim doctor separates repository health, private acceptance, native-host evidence, and suspended evaluator recruitment');
+console.log('public Hakim doctor separates repository health, accepted native-host evidence, and explicit evaluator decision state');

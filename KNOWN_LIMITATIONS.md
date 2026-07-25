@@ -14,28 +14,31 @@ Hakim `1.0.0-beta.1` remains public beta software.
 
 - Supported-host evidence is bounded to documented environments.
 - Codex `0.131.0+` is the compatibility floor for this beta's default-on bundled plugin-hook contract. In tag `rust-v0.130.0`, `plugin_hooks` was still under development and disabled by default; in `rust-v0.131.0`, it is stable and enabled by default.
+- The shipped Git-backed OpenCode package declares Node `>=22`; Public CI exercises its package/runtime surface on Node 22, 24, and 26. That is not a claim of universal OS or OpenCode-version compatibility.
 - Universal operating-system, editor-version, provider, and model compatibility is not established.
 - Host-native approval, activation, sandboxing, and removal remain authoritative.
 
 ## Security
 
-- OpenCode's project-local installer validates the canonical bundle, refuses unsafe or conflicting target state, and uses create-only writes; the remover requires an exact canonical match and uses quarantine plus restoration on failure.
+- OpenCode's managed project-local lifecycle validates the canonical bundle and lifecycle manifest, refuses unsafe or conflicting state, supports bounded create/adopt/transactional-upgrade transitions, and can remove a supported older verified installation with a newer CLI.
+- Removal and rollback move Hakim-owned bytes into same-filesystem quarantine and verify the moved bytes before deletion. Concurrently replaced or independently reappearing user state is preserved no-clobber.
 - The maintained OpenCode project-local lifecycle does not claim a cross-process operation lock or immunity to malicious/concurrent filesystem replacement outside its validated checkpoints.
 - These safeguards reduce risk but do not prevent every action by unrelated local processes.
 - Force overwrite and force removal are not implemented.
-- Ambiguous, mismatched, or unsafe states are intentionally refused.
+- Ambiguous, mismatched, partial, unsupported-manifest, or unsafe states are intentionally refused.
 - Hakim does not rotate credentials or repair host security configuration.
 
 ## Evaluation
 
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
-- All four maintained current-native product paths have accepted `PASS` evidence in `conformance/native-host-acceptance.json`, including the Git-backed OpenCode bootstrap observed on OpenCode `1.17.13`.
-- OpenCode's accepted evidence is bounded to the immutable candidate and public-safe evidence reference recorded in the projection; it is not a universal compatibility claim.
-- Earlier guarded source-checkout OpenCode evidence remains bounded historical evidence and is not substituted for the accepted Git-backed transport evidence.
+- All four maintained current-native product paths have accepted `PASS` evidence in `conformance/native-host-acceptance.json`.
+- The manifest-backed OpenCode lifecycle was accepted on immutable candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5`, covering clean install/start/invocation plus accepted-old-to-managed upgrade and newer-CLI removal of the supported older installation.
+- OpenCode evidence from candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains bounded historical evidence for the earlier create-only lifecycle and is not reused for the changed managed lifecycle.
+- Earlier guarded source-checkout OpenCode evidence also remains bounded historical evidence.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
 - Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.
-- External evaluator recruitment is currently suspended for POST-BETA-R1 product remediation. The withdrawn campaign accepted no external reports, and native-host acceptance must not be converted into a claim of independent product usefulness or retention.
+- POST-BETA-R1 remediation is complete. External evaluator recruitment remains suspended, the withdrawn campaign accepted no external reports, and any future relaunch requires a separate explicit product decision. Native-host acceptance must not be converted into a claim of independent product usefulness or retention.
 - Any future external evaluation must identify an immutable Hakim source/tag/release reference so observations cannot silently refer to different revisions under the same prerelease version string.
 - Hakim makes no general claims about model quality, speed, token use, cost, adoption, safety improvement, or return on investment.
 
