@@ -40,7 +40,7 @@ Hakim maintains one canonical capability registry, but installed host plugins ar
 
 Repository-hosted native Git marketplaces are maintained for Codex, Claude Code, and GitHub Copilot. OpenCode uses a Git-backed bootstrap that creates the guarded project-local native plugin bundle; Hakim is not published to the npm registry and does not claim a global OpenCode installer, central plugin-directory listing, signing, notarization, or universal host compatibility.
 
-The Git-backed OpenCode bootstrap is structurally tested, but structural or CI evidence does not by itself establish that exact first-run transport as live-host accepted.
+The Git-backed OpenCode bootstrap has accepted real-host install/start/invocation evidence on OpenCode `1.17.13`. Structural or CI evidence alone would not establish a newly changed transport, host version, or journey; each materially changed product path still requires its own accepted observation before promotion.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 
