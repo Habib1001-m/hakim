@@ -1,13 +1,13 @@
 # Supported Hosts
 
-Hakim `1.0.0-beta.1` is public beta software. Support means the repository maintains a documented, gated product surface for the host; it does not imply universal compatibility or that every newly added transport/UX path already has separate live-host evidence.
+Hakim `1.0.0-beta.1` is public beta software. Support means the repository maintains a documented, gated product surface for the host; it does not imply universal compatibility or stable-release authorization.
 
 | Host | Maintained product surface | Native UX | Current boundary |
 |---|---|---|---|
 | Codex | Native Git marketplace plugin with six skills and SessionStart activation | `codex plugin marketplace add Habib1001-m/hakim` → `/plugins` → install `hakim@hakim` | Codex `0.131.0+` is the compatibility floor for this beta's default-on plugin-hook contract; central OpenAI Plugin Directory listing is separate and not claimed; Codex trust, approvals, sandboxing, and hook policy remain authoritative |
 | Claude Code | Native marketplace plugin with six user commands, hidden canonical skills, lifecycle hooks, and specialized plugin agents | `claude plugin marketplace add Habib1001-m/hakim` + `claude plugin install hakim@hakim` | Claude installation scope, managed policy, permissions, plugin cache, and trust remain authoritative |
 | GitHub Copilot | Native marketplace plugin with six skills and five custom agents; repository instructions retained as optional baseline | `copilot plugin marketplace add Habib1001-m/hakim` + `copilot plugin install hakim@hakim` | Copilot policy, enabled plugins, repository access, and agent tool permissions remain authoritative |
-| OpenCode | Guarded project-local native plugin bundle with create-only installation, canonical hash manifest, exact-match removal, quarantine-backed removal, and rollback | from target repo: `npx --yes --package=github:Habib1001-m/hakim hakim-opencode install` → normal OpenCode startup | No npm registry/global installer or cross-process lifecycle lock is claimed; the Git-backed bootstrap is structurally tested but requires fresh real-host evidence before that exact first-run transport is independently promoted; installer intentionally does not edit `opencode.json` |
+| OpenCode | Guarded project-local native plugin bundle with create-only installation, canonical hash manifest, exact-match removal, quarantine-backed removal, and rollback | from target repo: `npx --yes --package=github:Habib1001-m/hakim hakim-opencode install` → normal OpenCode startup | The Git-backed bootstrap has accepted real-host evidence on OpenCode `1.17.13`; no npm registry/global installer or cross-process lifecycle lock is claimed; installer intentionally does not edit `opencode.json` |
 
 ## Current native live-host acceptance
 
@@ -18,8 +18,9 @@ The public-safe, machine-readable projection is [`conformance/native-host-accept
 - `FAIL` and `BLOCKED` require an attempted journey plus a public-safe evidence reference.
 - Structural, packaging, smoke, projection, or CI success does not change a live-host status.
 - A transport-only first-run improvement that invokes the same runtime bundle still requires its own evidence before Hakim describes that exact transport as accepted.
-- Codex, Claude Code, and GitHub Copilot currently remain `PASS`; OpenCode is `NOT_RUN` for the Git-backed bootstrap until that exact journey is observed.
-- Earlier guarded project-local OpenCode `PASS` evidence remains bounded historical evidence and must not be silently reused as evidence that the new one-command transport itself was observed.
+- Codex, Claude Code, GitHub Copilot, and OpenCode currently have accepted `PASS` evidence for their maintained current product paths.
+- OpenCode's accepted Git-backed bootstrap evidence is bounded to candidate `b442820d2803955d0f7f33b405bd096f443d4d72`, OpenCode `1.17.13`, and the public-safe evidence reference recorded in the projection.
+- Earlier guarded source-checkout OpenCode evidence remains bounded historical evidence and is not substituted for the accepted Git-backed journey.
 - Private acceptance ledgers and release authorization are intentionally outside the public repository and are not reconstructed from this projection.
 
 ## Design rule
