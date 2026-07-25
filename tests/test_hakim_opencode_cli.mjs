@@ -61,7 +61,8 @@ const help = spawnSync(process.execPath, ['scripts/hakim_opencode_cli.mjs', '--h
 assert.equal(help.status, 0, help.stderr);
 assert.match(help.stdout, /hakim-opencode install/);
 assert.match(help.stdout, /current directory/);
-assert.match(help.stdout, /create-only mutation/);
+assert.match(help.stdout, /transactionally upgrades/);
+assert.match(help.stdout, /persistent lifecycle metadata|persistent\/accepted manifest/);
 assert.match(help.stdout, /No command edits opencode\.json/);
 
 const symlinkRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-opencode-bin-'));
@@ -105,6 +106,7 @@ for (const required of [
   'scripts/hakim_opencode_install.mjs',
   'scripts/hakim_opencode_remove.mjs',
   'scripts/lib/opencode_bundle.mjs',
+  'scripts/lib/opencode_transaction.mjs',
   'plugins/opencode/hakim.mjs',
   'core/loaders/hakim-loader.mjs',
   'core/hakim-skill/SKILL.md',
@@ -117,4 +119,4 @@ for (const forbiddenPrefix of ['tests/', 'docs/', '.github/', 'plugins/codex/', 
   assert.ok(![...packedPaths].some((entry) => entry.startsWith(forbiddenPrefix)), `bootstrap package contains unrelated ${forbiddenPrefix} content`);
 }
 
-console.log(`test_hakim_opencode_cli.mjs: one-command project-local lifecycle and npm-bin symlink execution ok; npm pack files=${packedPaths.size}`);
+console.log(`test_hakim_opencode_cli.mjs: managed project-local lifecycle and npm-bin symlink execution ok; npm pack files=${packedPaths.size}`);
