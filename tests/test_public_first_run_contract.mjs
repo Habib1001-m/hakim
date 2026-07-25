@@ -58,9 +58,9 @@ for (const host of expectedHosts) {
   assert.ok(nativeAcceptance.hosts[host].evidence_ref.length > 0);
 }
 assert.match(nativeAcceptance.hosts.opencode.product_path, /managed project-local install\/adopt\/upgrade/);
-assert.equal(nativeAcceptance.hosts.opencode.host_version, '1.18.5');
-assert.equal(nativeAcceptance.hosts.opencode.verified_at, '2026-07-25T19:10:17.917Z');
-assert.equal(nativeAcceptance.hosts.opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/18#issuecomment-5080155506');
+assert.equal(nativeAcceptance.hosts.opencode.host_version, '1.17.13');
+assert.equal(nativeAcceptance.hosts.opencode.verified_at, '2026-07-26');
+assert.equal(nativeAcceptance.hosts.opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/pull/21#issuecomment-5080940335');
 
 assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
