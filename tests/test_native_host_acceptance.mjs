@@ -14,20 +14,26 @@ const projection = JSON.parse(fs.readFileSync(path.join(root, 'conformance', 'na
 
 const current = validateProjection(projection, version);
 assert.equal(current.ok, true, current.errors.join('\n'));
-assert.equal(current.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
+assert.equal(current.overall_status, 'PASS');
 assert.deepEqual(Object.keys(projection.hosts).sort(), [...EXPECTED_HOSTS].sort());
 
-for (const host of ['codex', 'claude-code', 'github-copilot']) {
+for (const host of EXPECTED_HOSTS) {
   assert.equal(projection.hosts[host].status, 'PASS');
+  assert.equal(typeof projection.hosts[host].host_version, 'string');
+  assert.ok(projection.hosts[host].host_version.length > 0);
+  assert.equal(typeof projection.hosts[host].verified_at, 'string');
+  assert.ok(projection.hosts[host].verified_at.length > 0);
   assert.equal(typeof projection.hosts[host].evidence_ref, 'string');
   assert.ok(projection.hosts[host].evidence_ref.length > 0);
 }
 
-assert.equal(projection.hosts.opencode.status, 'NOT_RUN');
 assert.match(projection.hosts.opencode.product_path, /Git-backed npx project-local install/);
-assert.equal(projection.hosts.opencode.host_version, null);
-assert.equal(projection.hosts.opencode.verified_at, null);
-assert.equal(projection.hosts.opencode.evidence_ref, null);
+assert.equal(projection.hosts.opencode.host_version, '1.17.13');
+assert.equal(projection.hosts.opencode.verified_at, '2026-07-25T12:39:25.944Z');
+assert.equal(
+  projection.hosts.opencode.evidence_ref,
+  'https://github.com/Habib1001-m/hakim/issues/14#issuecomment-5078407875',
+);
 
 const blank = structuredClone(projection);
 for (const host of EXPECTED_HOSTS) {
