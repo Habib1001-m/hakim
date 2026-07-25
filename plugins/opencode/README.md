@@ -161,7 +161,7 @@ These checks prove their deterministic repository/package scope only. They do no
 
 - The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
 - The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` proves the earlier create-only path only.
-- This manifest-backed create/adopt/upgrade/removal and idempotent-runtime hardening materially changes the observed product path. It requires fresh real-host install/start/invocation evidence before the changed path is promoted as accepted.
+- This manifest-backed create/adopt/upgrade/removal and idempotent-runtime hardening materially changes the observed product path and therefore requires **separate real-host evidence** for this changed journey before it is promoted as accepted.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
