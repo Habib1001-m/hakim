@@ -6,6 +6,7 @@ All notable public changes to Hakim are recorded here.
 
 ### Changed
 
+- Closed the POST-BETA-R2 P1 truth-hardening findings: failed OpenCode upgrades now report the actually restored installed version after a complete rollback (and `null` when rollback is incomplete), `hakim doctor` reports bounded doctor health without claiming whole-repository health and derives native recovery guidance from the host state that actually failed, and `SECURITY.md` now describes the current manifest-backed create/adopt/transactional-upgrade/removal lifecycle.
 - Closed the inherited OpenCode lifecycle safety findings on the maintained project-local path: removal and rollback now use same-filesystem quarantine plus post-move verification/no-clobber recovery; a validated persistent install manifest enables bounded adoption, transactional supported-version upgrade, and newer-CLI removal of a supported older installation.
 - Made OpenCode prompt activation sentinel-backed and idempotent, expanded session-state regressions for simultaneous IDs/fallback/deletion/restart boundaries, and narrowed the shipped Node contract to `>=22` with Public CI coverage on Node 22, 24, and 26.
 - Documented the F-4 truth-gate policy: machine-readable/structural authorities govern product state; prose checks are explanatory projections or negative stale-language tripwires and cannot promote acceptance or release state.
