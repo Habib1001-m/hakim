@@ -64,6 +64,27 @@ assert.match(help.stdout, /current directory/);
 assert.match(help.stdout, /create-only mutation/);
 assert.match(help.stdout, /No command edits opencode\.json/);
 
+const symlinkRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-opencode-bin-'));
+try {
+  const symlinkTarget = path.join(symlinkRoot, 'target');
+  const symlinkBin = path.join(symlinkRoot, 'hakim-opencode');
+  fs.mkdirSync(symlinkTarget);
+  fs.symlinkSync(path.join(ROOT, 'scripts', 'hakim_opencode_cli.mjs'), symlinkBin);
+
+  const viaSymlink = spawnSync(process.execPath, [symlinkBin, 'status', '--json'], {
+    cwd: symlinkTarget,
+    encoding: 'utf8',
+  });
+  assert.equal(viaSymlink.status, 0, viaSymlink.stderr || viaSymlink.stdout);
+  const symlinkReport = JSON.parse(viaSymlink.stdout);
+  assert.equal(symlinkReport.status, 'PASS');
+  assert.equal(symlinkReport.state, 'ABSENT');
+  assert.equal(symlinkReport.target_root, symlinkTarget);
+  assert.equal(symlinkReport.filesystem_changed, false);
+} finally {
+  fs.rmSync(symlinkRoot, { recursive: true, force: true });
+}
+
 const packed = spawnSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], {
   cwd: ROOT,
   encoding: 'utf8',
@@ -96,4 +117,4 @@ for (const forbiddenPrefix of ['tests/', 'docs/', '.github/', 'plugins/codex/', 
   assert.ok(![...packedPaths].some((entry) => entry.startsWith(forbiddenPrefix)), `bootstrap package contains unrelated ${forbiddenPrefix} content`);
 }
 
-console.log(`test_hakim_opencode_cli.mjs: one-command project-local lifecycle ok; npm pack files=${packedPaths.size}`);
+console.log(`test_hakim_opencode_cli.mjs: one-command project-local lifecycle and npm-bin symlink execution ok; npm pack files=${packedPaths.size}`);
