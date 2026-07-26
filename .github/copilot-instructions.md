@@ -1,10 +1,11 @@
 # Hakim repository instructions
 
-<!-- hakim-canonical-sha256: bc3622f534593772ef1fee0d4c988747886ed1cef3763d48ad4392d9f4807939 -->
+<!-- hakim-canonical-sha256: 38bb26d6e430ebd17e00c8ebad16418e19876ab7e286ba507c3ae6e23ccdc13d -->
 
 When changing this repository:
 
 - make the smallest safe change;
+- before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; if none is safe/reasonable, record why no baseline was run and do not imply a pre-existing green state;
 - preserve unrelated behavior and user files;
 - keep claims bounded to inspectable evidence;
 - distinguish deterministic checks from correctness or security review;
