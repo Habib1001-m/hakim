@@ -50,6 +50,24 @@ Stop at the first rung that safely satisfies the request:
 Two rungs work: choose the higher rung. A bug fix targets the shared root cause,
 not only the reported symptom. Inspect sibling callers before editing.
 
+## Pre-mutation baseline
+
+Before the first mutation in an existing runnable repository, identify the
+smallest reasonably bounded validation command that can establish a useful
+pre-change signal and run that representative baseline when available.
+
+- Prefer a focused test, build, typecheck, lint, or other maintained repository
+  command that can distinguish a pre-existing failure from a regression caused
+  by the requested change.
+- Do not run an expensive full suite merely as ritual when a smaller
+  representative baseline is sufficient for the affected path and risk.
+- If execution is unsafe, unavailable, disproportionately expensive, or
+  explicitly disallowed, record why no baseline was run and carry that
+  uncertainty into the final report.
+- Never imply a pre-existing green state unless it was actually observed.
+
+A new or non-runnable repository does not need an artificial baseline.
+
 ## Intensity Levels
 
 | Level | Behavior |
