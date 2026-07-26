@@ -20,6 +20,13 @@ function payload(value) {
   return Buffer.from(JSON.stringify(value), 'utf8').toString('base64url');
 }
 
+function assertInvalidRule(prefix, value) {
+  assert.deepEqual(
+    decodeRuleToken(`${prefix}:${payload(value)}`),
+    { ok: false, error: 'invalid rule payload' },
+  );
+}
+
 test('scanner-normalized uppercase prefix is accepted', () => {
   assert.deepEqual(decodeRuleToken(`RULE:${payload(VALID_RULE)}`), {
     ok: true,
@@ -42,30 +49,46 @@ test('encoder stays on the canonical lowercase prefix', () => {
   assert.match(encodeRuleToken(VALID_RULE), /^rule:/);
 });
 
-test('domain guard rejects unsupported rule kind after decoding', () => {
-  assert.deepEqual(
-    decodeRuleToken(`RULE:${payload({ ...VALID_RULE, kind: 'admin' })}`),
-    { ok: false, error: 'invalid rule payload' },
-  );
+// These canonical-prefix tests are the pre-run guard gate. They must pass on the
+// untouched baseline even though the seeded scanner-prefix bug is still present.
+test('canonical-prefix domain guard rejects unsupported rule kind', () => {
+  assertInvalidRule('rule', { ...VALID_RULE, kind: 'admin' });
 });
 
-test('domain guard rejects empty resource after decoding', () => {
-  assert.deepEqual(
-    decodeRuleToken(`RULE:${payload({ ...VALID_RULE, resource: '' })}`),
-    { ok: false, error: 'invalid rule payload' },
-  );
+test('canonical-prefix domain guard rejects empty resource', () => {
+  assertInvalidRule('rule', { ...VALID_RULE, resource: '' });
 });
 
-test('domain guard rejects non-positive or non-integer expiry', () => {
+test('canonical-prefix domain guard rejects non-positive or non-integer expiry', () => {
   for (const expiresAt of [0, -1, 1.5]) {
-    assert.deepEqual(
-      decodeRuleToken(`RULE:${payload({ ...VALID_RULE, expiresAt })}`),
-      { ok: false, error: 'invalid rule payload' },
-    );
+    assertInvalidRule('rule', { ...VALID_RULE, expiresAt });
   }
 });
 
-test('malformed payload still fails safely', () => {
+test('canonical malformed payload fails safely', () => {
+  assert.deepEqual(decodeRuleToken('rule:not-json'), {
+    ok: false,
+    error: 'malformed rule token',
+  });
+});
+
+// These scanner-prefix tests prove that fixing prefix compatibility does not
+// short-circuit the same domain/malformed-payload guards after the new prefix is accepted.
+test('scanner-prefix domain guard rejects unsupported rule kind', () => {
+  assertInvalidRule('RULE', { ...VALID_RULE, kind: 'admin' });
+});
+
+test('scanner-prefix domain guard rejects empty resource', () => {
+  assertInvalidRule('RULE', { ...VALID_RULE, resource: '' });
+});
+
+test('scanner-prefix domain guard rejects non-positive or non-integer expiry', () => {
+  for (const expiresAt of [0, -1, 1.5]) {
+    assertInvalidRule('RULE', { ...VALID_RULE, expiresAt });
+  }
+});
+
+test('scanner malformed payload fails safely', () => {
   assert.deepEqual(decodeRuleToken('RULE:not-json'), {
     ok: false,
     error: 'malformed rule token',
