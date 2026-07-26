@@ -6,7 +6,7 @@ disable-model-invocation: false
 user-invocable: false
 ---
 
-<!-- hakim-canonical-sha256: bc3622f534593772ef1fee0d4c988747886ed1cef3763d48ad4392d9f4807939 -->
+<!-- hakim-canonical-sha256: 38bb26d6e430ebd17e00c8ebad16418e19876ab7e286ba507c3ae6e23ccdc13d -->
 
 # Hakim for Claude Code
 
@@ -27,6 +27,10 @@ Stop at the first rung that works:
 5. Can an already-installed dependency solve it?
 6. Can it be one line?
 7. Only then write the minimum code that works.
+
+## Pre-mutation baseline
+
+Before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available from maintained repository validation. A focused test, build, typecheck, lint, or equivalent is enough when a full suite is disproportionate. If execution is unsafe, unavailable, too expensive, or disallowed, record why no baseline was run and do not imply a pre-existing green state.
 
 ## Safety boundary
 
