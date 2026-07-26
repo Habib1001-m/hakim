@@ -4,7 +4,7 @@ description: Apply Hakim minimalist coding intelligence to design, implementatio
 argument-hint: "[lite|full|ultra|off]"
 ---
 
-<!-- hakim-canonical-sha256: bc3622f534593772ef1fee0d4c988747886ed1cef3763d48ad4392d9f4807939 -->
+<!-- hakim-canonical-sha256: 38bb26d6e430ebd17e00c8ebad16418e19876ab7e286ba507c3ae6e23ccdc13d -->
 
 # Hakim for Codex
 
@@ -32,6 +32,10 @@ Stop at the first rung that holds:
 7. Only then write the minimum code that works.
 
 If two rungs work, choose the higher rung and move on.
+
+## Pre-mutation baseline
+
+Before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available from the repository's maintained tests, build, typecheck, lint, or equivalent validation surface. Do not run a disproportionately expensive full suite when a focused baseline is sufficient. If execution is unsafe, unavailable, too expensive, or disallowed, record why no baseline was run and do not imply a pre-existing green state.
 
 ## Safety boundary
 
