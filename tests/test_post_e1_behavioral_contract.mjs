@@ -77,4 +77,6 @@ for (const relativePath of projections) {
   }
 }
 
+await import('./test_post_e1_prompt_neutrality.mjs');
+
 console.log(`test_post_e1_behavioral_contract.mjs: POST-E1 semantic contract OK (${canonicalHash.slice(0, 12)})`);
