@@ -4,7 +4,7 @@ description: Apply Hakim minimalist coding intelligence to design, implementatio
 argument-hint: "[lite|full|ultra|off]"
 ---
 
-<!-- hakim-canonical-sha256: f6032abce66fb0a5071ff2775e7f3b495722c8026eaf40bab433fa84ebd66eea -->
+<!-- hakim-canonical-sha256: 8f49bacb729e7adba401856fbb9e5c0bf5f47c7d0a96b726bed5112d095bc21b -->
 
 # Hakim for Codex
 
@@ -40,6 +40,10 @@ Before the first mutation in an existing runnable repository, run the smallest r
 ## Evidence sufficiency
 
 Once the affected implementation path, relevant local conventions and reuse candidates, material safety/domain guards, and proportional validation surface are known, stop inspecting. Any additional read or search must answer a concrete unresolved question whose answer could change implementation, scope, safety, or the confidence claim. Whole-repository exploration is not the default when the affected path is bounded; material correctness or safety uncertainty still requires investigation.
+
+## Domain-guard preservation
+
+Before simplifying or deleting validation/guard logic, identify the protected invariant. Domain-level validation that enforces a real requirement is part of the outcome. Simplification must not remove security, privacy, integrity, migration, rollback, accessibility, trust-boundary, or user-trust guards just to shrink the diff. Remove or weaken a guard only when evidence shows the requirement no longer applies or the same invariant is preserved elsewhere.
 
 ## Safety boundary
 
