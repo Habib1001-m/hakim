@@ -40,6 +40,26 @@ const BASELINE_PATTERNS = [
   /(?:^|\s)yarn\s+(?:run\s+)?(?:build|typecheck|lint)(?:\s|$)/i,
 ];
 
+// Bash remains available in the controlled runs because it is required for
+// repository validation. Treat high-confidence file-changing shell forms as
+// mutations too so a shell edit cannot precede validation and later appear as
+// a compliant baseline-before-mutation trace. Keep this deliberately bounded:
+// it is a trace-integrity guard, not a general shell parser.
+const BASH_MUTATION_PATTERNS = [
+  /\bsed\b[^\n;&|]*\s(?:-[A-Za-z]*i[A-Za-z]*|--in-place(?:=\S+)?)\b/i,
+  /\bperl\b[^\n;&|]*\s-[A-Za-z]*i[A-Za-z]*\b/i,
+  /\bgit\s+apply\b/i,
+  /\bapply_patch\b/i,
+  /(?:^|[;&|]\s*)patch\s/i,
+  /\b(?:rm|mv|cp|install|touch|truncate)\s+[^\n;&|]+/i,
+  /\b(?:writeFile|writeFileSync|appendFile|appendFileSync)\s*\(/i,
+  /\bwrite_(?:text|bytes)\s*\(/i,
+  /\bopen\s*\([^)]*,\s*['\"][wax][^'\"]*['\"]/i,
+  /(?:^|[^0-9])>>?\s*['\"]?(?:\.\/)?(?:src|tests?|docs?|lib|app|packages?)\//i,
+  /(?:^|[^0-9])>>?\s*['\"]?(?:\.\/)?(?:README(?:\.[A-Za-z0-9_-]+)?|package\.json)\b/i,
+  /\btee\s+(?:-[^\s]+\s+)*['\"]?(?:\.\/)?(?:src|tests?|docs?|lib|app|packages?)\//i,
+];
+
 function* walk(value) {
   if (Array.isArray(value)) {
     for (const item of value) yield* walk(item);
@@ -53,6 +73,16 @@ function* walk(value) {
 
 function isBaselineCommand(command) {
   return BASELINE_PATTERNS.some((pattern) => pattern.test(command));
+}
+
+function isMutatingBash(command) {
+  return BASH_MUTATION_PATTERNS.some((pattern) => pattern.test(command));
+}
+
+function isMutationEvent(event) {
+  if (MUTATION_TOOLS.has(event.name)) return true;
+  if (event.name !== 'Bash') return false;
+  return isMutatingBash(String(event.input?.command ?? ''));
 }
 
 function skillName(input) {
@@ -102,7 +132,7 @@ for (const event of toolUses) {
   toolCounts[event.name] = (toolCounts[event.name] ?? 0) + 1;
 }
 
-const firstMutation = toolUses.find((event) => MUTATION_TOOLS.has(event.name)) ?? null;
+const firstMutation = toolUses.find(isMutationEvent) ?? null;
 const mutationIndex = firstMutation?.index ?? Number.POSITIVE_INFINITY;
 
 const baselineEvents = toolUses.filter((event) => {
@@ -146,6 +176,7 @@ const report = {
   tool_counts: toolCounts,
   first_mutation_index: firstMutation?.index ?? null,
   first_mutation_tool: firstMutation?.name ?? null,
+  first_mutation_via_bash: firstMutation?.name === 'Bash' ? true : false,
   baseline_command_count: baselineEvents.length,
   successful_baseline_count: successfulBaselineEvents.length,
   baseline_before_first_mutation: firstMutation ? baselineBeforeFirstMutation : null,
