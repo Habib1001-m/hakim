@@ -51,6 +51,18 @@ for (const phrase of [
   assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T02 phrase: ${phrase}`);
 }
 
+// POST-E1 T03: simplification must preserve real product/domain guards rather
+// than treating validation and invariants as removable implementation weight.
+for (const phrase of [
+  'Domain-guard preservation',
+  'domain-level validation',
+  'protected invariant',
+  'simplification must not remove',
+  'preserved elsewhere',
+]) {
+  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T03 phrase: ${phrase}`);
+}
+
 const projections = [
   'plugins/codex/skills/hakim/SKILL.md',
   'plugins/claude-code/skills/hakim/SKILL.md',
@@ -64,6 +76,8 @@ for (const relativePath of projections) {
   assert.match(projection, /record why no baseline was run/i, `${relativePath} missing T01 no-baseline truth boundary`);
   assert.match(projection, /evidence sufficiency/i, `${relativePath} missing T02 stopping semantics`);
   assert.match(projection, /concrete unresolved question/i, `${relativePath} missing T02 decision-value gate`);
+  assert.match(projection, /domain-guard preservation/i, `${relativePath} missing T03 guard-preservation semantics`);
+  assert.match(projection, /simplification must not remove/i, `${relativePath} missing T03 simplification boundary`);
 }
 
-console.log('test_rule_copies.js: fixture, canonical integrity, and POST-E1 T01/T02 contracts ok');
+console.log('test_rule_copies.js: fixture, canonical integrity, and POST-E1 T01/T02/T03 contracts ok');
