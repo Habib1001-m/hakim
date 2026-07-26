@@ -27,8 +27,8 @@ This phase intentionally adds no new product surface unless evidence proves that
 - [x] **T02 — Evidence sufficiency / stop-inspecting discipline** ([#25](https://github.com/Habib1001-m/hakim/issues/25)) — prove-first CI failure captured, bounded stopping rule projected across maintained hosts, exact-head Public CI green.
 - [x] **T03 — Domain-guard preservation** ([#26](https://github.com/Habib1001-m/hakim/issues/26)) — prove-first regression captured; domain invariants now require evidence before guard removal; exact-head Public CI green.
 - [x] **T04 — Outcome-oriented restraint** ([#27](https://github.com/Habib1001-m/hakim/issues/27)) — smallest now means sufficient/coherent/safe rather than fewest LOC/files; exact-head Public CI green.
-- [ ] **T05 — Behavioral regression coverage** ([#28](https://github.com/Habib1001-m/hakim/issues/28)) — dedicated contract test added and wired into Public CI; exact-head CI pending.
-- [ ] **T06 — Repeated controlled experiments**.
+- [x] **T05 — Behavioral regression coverage** ([#28](https://github.com/Habib1001-m/hakim/issues/28)) — dedicated POST-E1 semantic contract is enforced in Public CI; exact-head gate green.
+- [ ] **T06 — Repeated controlled experiments** ([#29](https://github.com/Habib1001-m/hakim/issues/29)) — **ACTIVE**. E2/E3/E4 criteria, prompts, hidden evaluators, fixtures, and paired materializers are frozen and CI-green before agent execution.
 - [ ] **T07 — Efficiency reconciliation**.
 - [ ] **T08 — Product-value decision**.
 
@@ -97,7 +97,7 @@ Reconcile Hakim's canonical language so `smallest safe change` means the smalles
 
 ### T05 — Behavioral regression coverage
 
-Add deterministic repository checks where behavior can be represented structurally. At minimum, protect the canonical/projection contract for:
+Deterministic repository checks protect the canonical/projection contract for:
 
 - pre-mutation baseline guidance;
 - evidence-sufficiency stopping behavior;
@@ -107,17 +107,17 @@ Add deterministic repository checks where behavior can be represented structural
 
 ### T06 — Repeated controlled experiments
 
-Repeat sealed Control-vs-Hakim evaluation across materially different tasks instead of generalizing from E1. The experiment set should include different engineering modes such as feature work, bug repair, and bounded refactor/maintenance.
+The experiment contract is frozen in `experiments/post-e1/README.md` before any POST-E1 agent execution.
 
-Each pair must preserve:
+The pre-registered scenario set is:
 
-- identical starting repository state inside the pair;
-- identical host/runtime configuration inside the pair;
-- Hakim as the intended changed condition;
-- frozen task prompt;
-- objective functional validation;
-- forensic trace/output review;
-- blind UX evaluation when user-facing behavior is material.
+- **E2 — Bug repair / domain guard**: scanner-normalized rule-token prefix with hidden domain invariants.
+- **E3 — Bounded refactor / reuse**: remove duplicated duration formatting by reusing the maintained repository helper without broad restructuring.
+- **E4 — Feature work / coherent outcome**: add immutable preset removal while preserving the permanent default/active-preset invariants and public API documentation.
+
+For all three scenarios, frozen fixture tests and paired materializers are enforced in Public CI. Each materializer creates Control and Treatment from one immutable baseline commit, keeps task/evaluator outside the candidate workspace, and proves the intended seeded condition before execution.
+
+Phase-level T06 acceptance was frozen before E2 execution, including correctness non-regression, baseline/guard requirements, no unjustified surface, positive value in at least 2 of 3 scenarios, median elapsed overhead <=30%, and median tool-call overhead <=25%.
 
 ### T07 — Efficiency reconciliation
 
