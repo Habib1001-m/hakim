@@ -4,7 +4,7 @@ description: Apply Hakim minimalist coding intelligence to design, implementatio
 argument-hint: "[lite|full|ultra|off]"
 ---
 
-<!-- hakim-canonical-sha256: 38bb26d6e430ebd17e00c8ebad16418e19876ab7e286ba507c3ae6e23ccdc13d -->
+<!-- hakim-canonical-sha256: f6032abce66fb0a5071ff2775e7f3b495722c8026eaf40bab433fa84ebd66eea -->
 
 # Hakim for Codex
 
@@ -36,6 +36,10 @@ If two rungs work, choose the higher rung and move on.
 ## Pre-mutation baseline
 
 Before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available from the repository's maintained tests, build, typecheck, lint, or equivalent validation surface. Do not run a disproportionately expensive full suite when a focused baseline is sufficient. If execution is unsafe, unavailable, too expensive, or disallowed, record why no baseline was run and do not imply a pre-existing green state.
+
+## Evidence sufficiency
+
+Once the affected implementation path, relevant local conventions and reuse candidates, material safety/domain guards, and proportional validation surface are known, stop inspecting. Any additional read or search must answer a concrete unresolved question whose answer could change implementation, scope, safety, or the confidence claim. Whole-repository exploration is not the default when the affected path is bounded; material correctness or safety uncertainty still requires investigation.
 
 ## Safety boundary
 
