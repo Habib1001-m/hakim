@@ -24,12 +24,11 @@ const candidateFiles = [
 const sha256File = (filePath) => crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
 
 function run(command, args, options = {}) {
-  const result = spawnSync(command, args, {
+  return spawnSync(command, args, {
     encoding: 'utf8',
     stdio: options.capture ? 'pipe' : 'inherit',
     ...options,
   });
-  return result;
 }
 
 function mustRun(command, args, options = {}) {
@@ -53,7 +52,7 @@ function copyCandidate(target) {
   }
 }
 
-function initializeBaseline(target) {
+function initializeSeed(target) {
   mustRun('git', ['init', '-b', 'main'], { cwd: target });
   mustRun('git', ['add', '.'], { cwd: target });
   mustRun('git', [
@@ -84,21 +83,26 @@ function runHidden(target, pattern) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
+const seed = path.join(OUT, '_baseline-source');
 const control = path.join(OUT, 'control');
 const treatment = path.join(OUT, 'treatment');
 const protocol = path.join(OUT, 'protocol');
-fs.mkdirSync(control, { recursive: true });
-fs.mkdirSync(treatment, { recursive: true });
+fs.mkdirSync(seed, { recursive: true });
 fs.mkdirSync(protocol, { recursive: true });
 
-copyCandidate(control);
-copyCandidate(treatment);
+copyCandidate(seed);
 fs.copyFileSync(path.join(HERE, 'TASK_PROMPT.txt'), path.join(protocol, 'TASK_PROMPT.txt'));
 fs.copyFileSync(path.join(HERE, 'evaluator/hidden.test.mjs'), path.join(protocol, 'hidden.test.mjs'));
 
-const controlHead = initializeBaseline(control);
-const treatmentHead = initializeBaseline(treatment);
-assert.equal(controlHead, treatmentHead, 'paired E2 baseline commit must be identical');
+const baselineSha = initializeSeed(seed);
+mustRun('git', ['clone', '--quiet', '--no-hardlinks', seed, control]);
+mustRun('git', ['clone', '--quiet', '--no-hardlinks', seed, treatment]);
+fs.rmSync(seed, { recursive: true, force: true });
+
+const controlHead = mustRun('git', ['rev-parse', 'HEAD'], { cwd: control }).stdout.trim();
+const treatmentHead = mustRun('git', ['rev-parse', 'HEAD'], { cwd: treatment }).stdout.trim();
+assert.equal(controlHead, baselineSha, 'control must start at the single frozen E2 baseline commit');
+assert.equal(treatmentHead, baselineSha, 'treatment must start at the single frozen E2 baseline commit');
 
 verifyVisibleBaseline(control);
 verifyVisibleBaseline(treatment);
@@ -114,7 +118,7 @@ const manifest = {
   experiment: 'POST-E1-E2',
   control_root: control,
   treatment_root: treatment,
-  baseline_sha: controlHead,
+  baseline_sha: baselineSha,
   task_sha256: sha256File(path.join(protocol, 'TASK_PROMPT.txt')),
   evaluator_sha256: sha256File(path.join(protocol, 'hidden.test.mjs')),
   candidate_files: Object.fromEntries(candidateFiles.map((relative) => [
