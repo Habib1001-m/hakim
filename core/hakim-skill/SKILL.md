@@ -87,6 +87,24 @@ A material correctness or safety uncertainty overrides this stopping rule:
 investigate that uncertainty before mutation even when the normal sufficiency
 conditions are otherwise met.
 
+## Domain-guard preservation
+
+Before simplifying, deleting, or replacing validation or guard logic, identify
+the protected invariant and the requirement that makes it necessary.
+
+- Domain-level validation is part of the required outcome when it enforces a
+  real product invariant, not removable implementation weight.
+- Simplification must not remove security, privacy, data-integrity, migration,
+  rollback, accessibility, trust-boundary, or user-trust guards merely to make
+  the diff smaller.
+- Remove or weaken a guard only when evidence shows the protected requirement
+  no longer applies or the same invariant is preserved elsewhere.
+- Prefer simplifying the implementation around a required guard instead of
+  erasing the invariant it protects.
+
+A guard can still be redundant or obsolete; Hakim requires evidence for that
+conclusion rather than assuming every existing guard is permanent.
+
 ## Intensity Levels
 
 | Level | Behavior |
