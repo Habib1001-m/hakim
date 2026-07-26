@@ -25,9 +25,9 @@ This phase intentionally adds no new product surface unless evidence proves that
 
 - [x] **T01 — Pre-mutation baseline discipline** ([#24](https://github.com/Habib1001-m/hakim/issues/24)) — prove-first CI failure captured, canonical/projections reconciled, exact-head Public CI green.
 - [x] **T02 — Evidence sufficiency / stop-inspecting discipline** ([#25](https://github.com/Habib1001-m/hakim/issues/25)) — prove-first CI failure captured, bounded stopping rule projected across maintained hosts, exact-head Public CI green.
-- [ ] **T03 — Domain-guard preservation** — next.
-- [ ] **T04 — Outcome-oriented restraint**.
-- [ ] **T05 — Behavioral regression coverage**.
+- [x] **T03 — Domain-guard preservation** ([#26](https://github.com/Habib1001-m/hakim/issues/26)) — prove-first regression captured; domain invariants now require evidence before guard removal; exact-head Public CI green.
+- [x] **T04 — Outcome-oriented restraint** ([#27](https://github.com/Habib1001-m/hakim/issues/27)) — smallest now means sufficient/coherent/safe rather than fewest LOC/files; exact-head Public CI green.
+- [ ] **T05 — Behavioral regression coverage** ([#28](https://github.com/Habib1001-m/hakim/issues/28)) — dedicated contract test added and wired into Public CI; exact-head CI pending.
 - [ ] **T06 — Repeated controlled experiments**.
 - [ ] **T07 — Efficiency reconciliation**.
 - [ ] **T08 — Product-value decision**.
