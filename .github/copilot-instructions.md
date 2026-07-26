@@ -4,7 +4,7 @@
 
 When changing this repository:
 
-- make the smallest sufficient, coherent, safe change rather than optimizing for the fewest lines or files;
+- make the smallest safe change; in Hakim this means the smallest sufficient, coherent, safe change rather than optimizing for the fewest lines or files;
 - before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; if none is safe/reasonable, record why no baseline was run and do not imply a pre-existing green state;
 - once the affected implementation path, local conventions/reuse candidates, material guards, and validation surface are known, stop inspecting; any additional read/search must answer a concrete unresolved question with decision value;
 - do not default to whole-repository exploration when the affected path is already bounded; investigate material correctness or safety uncertainty before mutation;
