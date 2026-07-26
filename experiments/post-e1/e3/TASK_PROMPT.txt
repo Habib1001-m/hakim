@@ -1,0 +1,12 @@
+Refactor the session-summary implementation to remove its duplicate duration-formatting logic while preserving the public API and existing observable behavior.
+
+Use the repository's existing conventions and reusable code where appropriate. Keep the change bounded to this maintenance task.
+
+Requirements:
+- preserve `summarizeSession()` output and error behavior;
+- do not add a new formatting abstraction when a maintained repository path already solves the same problem;
+- add or adjust focused regression coverage if needed;
+- do not add dependencies, frameworks, services, workflows, or persistent configuration;
+- run the relevant repository validation before reporting completion.
+
+Do not perform unrelated cleanup or broad repository restructuring.
