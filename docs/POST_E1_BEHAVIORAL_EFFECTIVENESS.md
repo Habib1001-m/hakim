@@ -23,12 +23,12 @@ This phase intentionally adds no new product surface unless evidence proves that
 
 ## Current taskboard
 
-- [x] **T01 — Pre-mutation baseline discipline** ([#24](https://github.com/Habib1001-m/hakim/issues/24)) — prove-first CI failure captured, canonical/projections reconciled, exact-head Public CI green.
-- [x] **T02 — Evidence sufficiency / stop-inspecting discipline** ([#25](https://github.com/Habib1001-m/hakim/issues/25)) — prove-first CI failure captured, bounded stopping rule projected across maintained hosts, exact-head Public CI green.
-- [x] **T03 — Domain-guard preservation** ([#26](https://github.com/Habib1001-m/hakim/issues/26)) — prove-first regression captured; domain invariants now require evidence before guard removal; exact-head Public CI green.
-- [x] **T04 — Outcome-oriented restraint** ([#27](https://github.com/Habib1001-m/hakim/issues/27)) — smallest now means sufficient/coherent/safe rather than fewest LOC/files; exact-head Public CI green.
-- [x] **T05 — Behavioral regression coverage** ([#28](https://github.com/Habib1001-m/hakim/issues/28)) — dedicated POST-E1 semantic contract is enforced in Public CI; exact-head gate green.
-- [ ] **T06 — Repeated controlled experiments** ([#29](https://github.com/Habib1001-m/hakim/issues/29)) — **ACTIVE**. E2/E3/E4 criteria, prompts, hidden evaluators, fixtures, and paired materializers are frozen and CI-green before agent execution.
+- [ ] **T01 — Pre-mutation baseline discipline** ([#24](https://github.com/Habib1001-m/hakim/issues/24)) — canonical/projection contract is implemented and CI-protected, but E2 Run-001 proved runtime behavior did not establish a baseline before first mutation; runtime acceptance is reopened.
+- [x] **T02 — Evidence sufficiency / stop-inspecting discipline** ([#25](https://github.com/Habib1001-m/hakim/issues/25)) — prove-first CI failure captured, bounded stopping rule projected across maintained hosts, exact-head Public CI green; E2 showed no read inflation, but this remains subject to repeated runtime evidence.
+- [x] **T03 — Domain-guard preservation** ([#26](https://github.com/Habib1001-m/hakim/issues/26)) — prove-first regression captured; domain invariants now require evidence before guard removal; E2 Run-001 preserved all seeded domain guards in both conditions.
+- [x] **T04 — Outcome-oriented restraint** ([#27](https://github.com/Habib1001-m/hakim/issues/27)) — smallest now means sufficient/coherent/safe rather than fewest LOC/files; E2 Run-001 change surface was approximately parity.
+- [ ] **T05 — Behavioral regression coverage** ([#28](https://github.com/Habib1001-m/hakim/issues/28)) — semantic contract coverage is complete, but E2 proved semantic presence is not runtime proof. A runtime trace acceptance checker and Claude startup-kernel regression are now required before completion.
+- [ ] **T06 — Repeated controlled experiments** ([#29](https://github.com/Habib1001-m/hakim/issues/29)) — **HOLD**. E2 Run-001 is preserved as `INVALID_PAIR` because the hidden evaluator exceeded the frozen task contract; its independent runtime evidence reopened T01. E3/E4 do not run until T01 runtime acceptance is repaired and corrected E2 is re-frozen.
 - [ ] **T07 — Efficiency reconciliation**.
 - [ ] **T08 — Product-value decision**.
 
@@ -83,6 +83,8 @@ inspect
 
 Make baseline establishment an explicit default when the repository offers a reasonably bounded validation command. When a full suite is disproportionately expensive, select a smaller representative baseline or record why no baseline was run.
 
+E2 Run-001 established an important distinction: the canonical/projection rule can be green while the runtime behavior still fails. T01 therefore requires both contract implementation and host-runtime acceptance. For Claude Code, core coding behavior must be salient before the first model decision rather than depending solely on optional skill-description matching.
+
 ### T02 — Evidence sufficiency / stop-inspecting discipline
 
 Define a bounded stopping rule. Once the agent knows the relevant implementation path, local conventions, safety constraints, and available validation surface, further exploration needs a concrete unresolved question.
@@ -105,6 +107,8 @@ Deterministic repository checks protect the canonical/projection contract for:
 - dependency/abstraction restraint;
 - evidence-bounded completion claims.
 
+That semantic layer is necessary but no longer sufficient. Runtime acceptance tooling must also read real host traces and determine whether the required skill/baseline ordering occurred before mutation and whether bounded work paid unjustified task-management overhead. CI proves the checker semantics; only a real sealed host run proves the runtime behavior.
+
 ### T06 — Repeated controlled experiments
 
 The experiment contract is frozen in `experiments/post-e1/README.md` before any POST-E1 agent execution.
@@ -115,9 +119,11 @@ The pre-registered scenario set is:
 - **E3 — Bounded refactor / reuse**: remove duplicated duration formatting by reusing the maintained repository helper without broad restructuring.
 - **E4 — Feature work / coherent outcome**: add immutable preset removal while preserving the permanent default/active-preset invariants and public API documentation.
 
-For all three scenarios, frozen fixture tests and paired materializers are enforced in Public CI. Each materializer creates Control and Treatment from one immutable baseline commit, keeps task/evaluator outside the candidate workspace, and proves the intended seeded condition before execution.
+E2 Run-001 is preserved as `INVALID_PAIR`: the frozen hidden evaluator incorrectly added arbitrary mixed-case prefix acceptance beyond the task's reported `RULE:` scanner normalization. `experiments/post-e1/e2/AMENDMENT-001.md` corrects the evaluator for the next execution without rescoring Run-001.
 
-Phase-level T06 acceptance was frozen before E2 execution, including correctness non-regression, baseline/guard requirements, no unjustified surface, positive value in at least 2 of 3 scenarios, median elapsed overhead <=30%, and median tool-call overhead <=25%.
+The same Run-001 trace independently proved a real Hakim runtime gap: Treatment mutated before a representative baseline and paid substantial task-management overhead. T06 therefore pauses before E3/E4 until a new Hakim behavior SHA passes corrected E2 runtime acceptance.
+
+Phase-level T06 acceptance remains unchanged: correctness non-regression, baseline/guard requirements, no unjustified surface, positive value in at least 2 of 3 scenarios, median elapsed overhead <=30%, and median tool-call overhead <=25%.
 
 ### T07 — Efficiency reconciliation
 
@@ -141,7 +147,7 @@ POST-E1 closes only when all of the following are true:
 2. Repository inspection has a bounded evidence-sufficiency stopping rule.
 3. Real domain guards are protected from accidental removal in the name of simplification.
 4. Canonical behavior and maintained host projections remain semantically aligned.
-5. New behavioral contracts have deterministic regression coverage where practical.
+5. New behavioral contracts have deterministic regression coverage where practical, and runtime claims are backed by real host traces rather than semantic checks alone.
 6. Repeated controlled experiments show reproducible positive value rather than one-pair noise.
 7. Correctness and safety do not regress relative to control.
 8. Execution overhead is measured and explicitly judged against the value obtained.
