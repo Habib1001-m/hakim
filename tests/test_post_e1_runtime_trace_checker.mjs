@@ -107,5 +107,24 @@ const bookkeepingReport = JSON.parse(bookkeepingResult.stdout);
 assert.equal(bookkeepingReport.task_bookkeeping_total, 2);
 assert.match(bookkeepingReport.failures.join(' '), /task bookkeeping 2 exceeds maximum 0/i);
 
+// Bash is available during the real experiment because it is needed for validation.
+// A source mutation performed through Bash must still count as the first mutation;
+// otherwise a later test command could make baseline-before-mutation pass falsely.
+const bashMutationBeforeBaseline = writeTrace('bash-mutation-before-baseline', [
+  assistantTool('s1', 'Skill', { skill: 'hakim:hakim' }),
+  toolResult('s1'),
+  assistantTool('m1', 'Bash', { command: "sed -i 's/old/new/' src/a.js" }),
+  toolResult('m1'),
+  assistantTool('b1', 'Bash', { command: 'node --test tests/a.test.mjs' }),
+  toolResult('b1'),
+]);
+
+const bashMutationResult = run(bashMutationBeforeBaseline, ['--require-skill', 'hakim:hakim']);
+assert.notEqual(bashMutationResult.status, 0);
+const bashMutationReport = JSON.parse(bashMutationResult.stdout);
+assert.equal(bashMutationReport.first_mutation_tool, 'Bash');
+assert.equal(bashMutationReport.baseline_before_first_mutation, false);
+assert.match(bashMutationReport.failures.join(' '), /baseline did not complete before first mutation/i);
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log('test_post_e1_runtime_trace_checker.mjs: runtime trace acceptance semantics OK');
