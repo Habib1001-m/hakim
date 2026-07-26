@@ -70,7 +70,7 @@ for (const relativePath of projections) {
     /evidence sufficiency|stop inspecting/i,
     /protected invariant|domain-guard preservation/i,
     /smallest sufficient, coherent, safe change/i,
-    /dependency/i,
+    /dependenc(?:y|ies)/i,
     /evidence|inspectable/i,
   ]) {
     assert.match(text, pattern, `${relativePath} missing POST-E1 projection semantic ${pattern}`);
