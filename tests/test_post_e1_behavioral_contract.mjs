@@ -42,7 +42,7 @@ const canonicalGroups = {
   claims: [
     /## Evidence and Evaluation Boundaries/i,
     /Public CI proves only/i,
-    /without separate accepted evidence/i,
+    /without\s+separate\s+accepted\s+evidence/i,
     /runtime validation/i,
   ],
 };
