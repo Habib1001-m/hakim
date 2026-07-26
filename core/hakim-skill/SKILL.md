@@ -68,6 +68,25 @@ pre-change signal and run that representative baseline when available.
 
 A new or non-runnable repository does not need an artificial baseline.
 
+## Evidence sufficiency
+
+Repository inspection is sufficient once the agent can name:
+
+1. the affected implementation path and sibling behavior likely to share the change;
+2. relevant local conventions and reuse candidates;
+3. material safety, domain, privacy, integrity, accessibility, and trust guards; and
+4. the proportional validation surface that can detect a regression.
+
+After those are known, stop inspecting and move to the decision ladder. Any
+additional read or search must answer a concrete unresolved question whose
+answer could change the implementation, scope, safety boundary, or confidence
+claim. Whole-repository exploration is not a default when the affected path is
+already bounded.
+
+A material correctness or safety uncertainty overrides this stopping rule:
+investigate that uncertainty before mutation even when the normal sufficiency
+conditions are otherwise met.
+
 ## Intensity Levels
 
 | Level | Behavior |
