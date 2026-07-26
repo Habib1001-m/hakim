@@ -21,6 +21,10 @@ assert.equal(output.hookEventName, 'SessionStart');
 
 const context = output.additionalContext;
 assert.match(context, /Hakim 1\.0\.0-beta\.1 plugin is active/i);
+assert.ok(
+  context.length <= 1400,
+  `Claude runtime kernel must stay lightweight; got ${context.length} characters`,
+);
 
 // Core coding behavior must be salient before the first model decision. The
 // detailed skill body is lazy-loaded, so the startup kernel must explicitly
