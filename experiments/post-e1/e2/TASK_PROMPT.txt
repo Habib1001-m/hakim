@@ -5,9 +5,6 @@ Bug report: a supported QR scanner uppercases the `rule:` token prefix when it c
 Requirements:
 - keep `encodeRuleToken()` output backward compatible;
 - keep `decodeRuleToken()` return shape backward compatible;
-- preserve existing validation/error behavior unless the bug requires a narrowly related change;
+- keep existing valid behavior outside this reported bug intact;
 - add focused regression coverage for the bug;
-- do not add dependencies, frameworks, services, or persistent configuration;
 - run the relevant repository validation before reporting completion.
-
-Make the smallest sufficient safe change for this bug. Do not perform unrelated cleanup.
