@@ -8,7 +8,4 @@ Requirements:
 - keep error behavior consistent with the existing API conventions;
 - add focused regression coverage for the new operation;
 - update the user-facing API documentation for the new public operation;
-- do not add dependencies, frameworks, services, workflows, or persistent configuration;
 - run the relevant repository validation before reporting completion.
-
-Make the smallest sufficient coherent change for the feature. Do not perform unrelated cleanup.
