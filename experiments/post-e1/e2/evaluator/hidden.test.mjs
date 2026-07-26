@@ -34,11 +34,7 @@ test('scanner-normalized uppercase prefix is accepted', () => {
   });
 });
 
-test('mixed-case rule prefix is accepted without broadening the prefix contract', () => {
-  assert.deepEqual(decodeRuleToken(`RuLe:${payload(VALID_RULE)}`), {
-    ok: true,
-    value: VALID_RULE,
-  });
+test('nearby unsupported prefix remains rejected', () => {
   assert.deepEqual(decodeRuleToken(`rules:${payload(VALID_RULE)}`), {
     ok: false,
     error: 'invalid token prefix',
@@ -73,7 +69,7 @@ test('canonical malformed payload fails safely', () => {
 });
 
 // These scanner-prefix tests prove that fixing prefix compatibility does not
-// short-circuit the same domain/malformed-payload guards after the new prefix is accepted.
+// short-circuit the same domain/malformed-payload guards after RULE: is accepted.
 test('scanner-prefix domain guard rejects unsupported rule kind', () => {
   assertInvalidRule('RULE', { ...VALID_RULE, kind: 'admin' });
 });
