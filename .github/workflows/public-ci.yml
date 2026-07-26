@@ -58,6 +58,7 @@ jobs:
         run: |
           node tests/test_node_support_contract.mjs
           node tests/test_rule_copies.js
+          node tests/test_post_e1_behavioral_contract.mjs
           node tests/test_rule_missing_section.js
           node tests/test_upstream_relationship.js
           node tests/test_hakim_doctor.mjs
