@@ -107,7 +107,7 @@ assert.equal(treatmentHead, baselineSha, 'treatment must start at the single fro
 verifyVisibleBaseline(control);
 verifyVisibleBaseline(treatment);
 
-const hiddenGuards = runHidden(control, 'encoder stays|domain guard|malformed payload');
+const hiddenGuards = runHidden(control, 'encoder stays|canonical-prefix domain guard|canonical malformed payload');
 assert.equal(hiddenGuards.status, 0, `untouched E2 baseline must preserve seeded hidden guards:\n${hiddenGuards.stdout}\n${hiddenGuards.stderr}`);
 
 const hiddenBug = runHidden(control, 'scanner-normalized uppercase prefix|mixed-case rule prefix');
