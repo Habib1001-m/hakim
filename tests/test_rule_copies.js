@@ -63,6 +63,17 @@ for (const phrase of [
   assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T03 phrase: ${phrase}`);
 }
 
+// POST-E1 T04: smallest means sufficient/coherent/safe, not a line-count target.
+for (const phrase of [
+  'Outcome-oriented restraint',
+  'smallest sufficient, coherent, safe change',
+  'fewest lines or files',
+  'same bounded change',
+  'line count is not the objective',
+]) {
+  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T04 phrase: ${phrase}`);
+}
+
 const projections = [
   'plugins/codex/skills/hakim/SKILL.md',
   'plugins/claude-code/skills/hakim/SKILL.md',
@@ -78,6 +89,8 @@ for (const relativePath of projections) {
   assert.match(projection, /concrete unresolved question/i, `${relativePath} missing T02 decision-value gate`);
   assert.match(projection, /domain-guard preservation/i, `${relativePath} missing T03 guard-preservation semantics`);
   assert.match(projection, /simplification must not remove/i, `${relativePath} missing T03 simplification boundary`);
+  assert.match(projection, /outcome-oriented restraint/i, `${relativePath} missing T04 outcome semantics`);
+  assert.match(projection, /smallest sufficient, coherent, safe change/i, `${relativePath} missing T04 sufficient-change semantics`);
 }
 
-console.log('test_rule_copies.js: fixture, canonical integrity, and POST-E1 T01/T02/T03 contracts ok');
+console.log('test_rule_copies.js: fixture, canonical integrity, and POST-E1 T01-T04 contracts ok');
