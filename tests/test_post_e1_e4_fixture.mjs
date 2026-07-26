@@ -39,7 +39,7 @@ const moduleText = fs.readFileSync(path.join(root, 'src/presets.mjs'), 'utf8');
 assert.doesNotMatch(moduleText, /export function removePreset/);
 
 const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
-assert.match(readme, /default preset always exists/i);
+assert.match(readme, /default.{0,3}preset\s+always\s+exists/i);
 assert.match(readme, /state\.active.*preset.*exists/i);
 assert.doesNotMatch(readme, /removePreset\s*\(/);
 
