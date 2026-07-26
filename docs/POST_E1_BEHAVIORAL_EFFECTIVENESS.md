@@ -21,6 +21,19 @@ Promotion now requires evidence that Hakim improves the engineering process and/
 
 This phase intentionally adds no new product surface unless evidence proves that surface is required.
 
+## Current taskboard
+
+- [x] **T01 — Pre-mutation baseline discipline** ([#24](https://github.com/Habib1001-m/hakim/issues/24)) — prove-first CI failure captured, canonical/projections reconciled, exact-head Public CI green.
+- [x] **T02 — Evidence sufficiency / stop-inspecting discipline** ([#25](https://github.com/Habib1001-m/hakim/issues/25)) — prove-first CI failure captured, bounded stopping rule projected across maintained hosts, exact-head Public CI green.
+- [ ] **T03 — Domain-guard preservation** — next.
+- [ ] **T04 — Outcome-oriented restraint**.
+- [ ] **T05 — Behavioral regression coverage**.
+- [ ] **T06 — Repeated controlled experiments**.
+- [ ] **T07 — Efficiency reconciliation**.
+- [ ] **T08 — Product-value decision**.
+
+Completing an individual task does not change the phase-level release or evaluator HOLD.
+
 ## Designed outcome
 
 Hakim should cause a coding agent to make the **smallest sufficient, coherent, safe change** after obtaining enough repository evidence to understand the task, while preserving real domain guards and validating the result with evidence proportional to the risk.
