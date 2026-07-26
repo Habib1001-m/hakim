@@ -105,6 +105,20 @@ the protected invariant and the requirement that makes it necessary.
 A guard can still be redundant or obsolete; Hakim requires evidence for that
 conclusion rather than assuming every existing guard is permanent.
 
+## Outcome-oriented restraint
+
+Optimize for the smallest sufficient, coherent, safe change that completes the
+requested outcome while preserving required behavior and guards.
+
+- Line count is not the objective, and the fewest lines or files do not win when
+  they leave the bounded outcome incomplete or incoherent.
+- Do not split, omit, or defer a necessary part of the same bounded change merely
+  to shrink the diff.
+- Prefer a slightly larger reuse-first change when it is the smallest coherent
+  implementation of the actual outcome.
+- The 7-level ladder still decides how to implement the work; this rule defines
+  what counts as enough work to satisfy the request.
+
 ## Intensity Levels
 
 | Level | Behavior |
