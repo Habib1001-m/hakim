@@ -4,7 +4,7 @@ description: Apply Hakim minimalist coding intelligence to design, implementatio
 argument-hint: "[lite|full|ultra|off]"
 ---
 
-<!-- hakim-canonical-sha256: 8f49bacb729e7adba401856fbb9e5c0bf5f47c7d0a96b726bed5112d095bc21b -->
+<!-- hakim-canonical-sha256: 4821268ca7afcaae795de7661caa937732da98d81da10222dbb69898f8d16b36 -->
 
 # Hakim for Codex
 
@@ -44,6 +44,10 @@ Once the affected implementation path, relevant local conventions and reuse cand
 ## Domain-guard preservation
 
 Before simplifying or deleting validation/guard logic, identify the protected invariant. Domain-level validation that enforces a real requirement is part of the outcome. Simplification must not remove security, privacy, integrity, migration, rollback, accessibility, trust-boundary, or user-trust guards just to shrink the diff. Remove or weaken a guard only when evidence shows the requirement no longer applies or the same invariant is preserved elsewhere.
+
+## Outcome-oriented restraint
+
+Optimize for the smallest sufficient, coherent, safe change that completes the requested outcome. Line count is not the objective and the fewest lines or files do not win when the bounded result is incomplete. Do not split, omit, or defer a necessary part of the same bounded change merely to shrink the diff; the reuse/stdlib/native/dependency ladder still decides how to implement that sufficient outcome.
 
 ## Safety boundary
 
