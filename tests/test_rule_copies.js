@@ -37,6 +37,20 @@ for (const phrase of [
   assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T01 phrase: ${phrase}`);
 }
 
+// POST-E1 T02: repository inspection must terminate once the decision-relevant
+// evidence is sufficient; extra exploration needs an explicit unresolved question.
+for (const phrase of [
+  'Evidence sufficiency',
+  'affected implementation path',
+  'local conventions',
+  'material safety',
+  'validation surface',
+  'concrete unresolved question',
+  'whole-repository exploration',
+]) {
+  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T02 phrase: ${phrase}`);
+}
+
 const projections = [
   'plugins/codex/skills/hakim/SKILL.md',
   'plugins/claude-code/skills/hakim/SKILL.md',
@@ -48,6 +62,8 @@ for (const relativePath of projections) {
   assert.match(projection, /pre-mutation baseline/i, `${relativePath} missing T01 baseline semantics`);
   assert.match(projection, /before the first mutation/i, `${relativePath} missing T01 ordering semantics`);
   assert.match(projection, /record why no baseline was run/i, `${relativePath} missing T01 no-baseline truth boundary`);
+  assert.match(projection, /evidence sufficiency/i, `${relativePath} missing T02 stopping semantics`);
+  assert.match(projection, /concrete unresolved question/i, `${relativePath} missing T02 decision-value gate`);
 }
 
-console.log('test_rule_copies.js: fixture, canonical integrity, and T01 baseline contract ok');
+console.log('test_rule_copies.js: fixture, canonical integrity, and POST-E1 T01/T02 contracts ok');
