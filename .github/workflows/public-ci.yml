@@ -71,8 +71,11 @@ jobs:
       - name: Verify POST-E1 E2 materializer
         run: node tests/test_post_e1_e2_materializer.mjs
 
-      - name: Verify POST-E1 E3/E4 fixtures
-        run: node tests/test_post_e1_e3_e4_fixtures.mjs
+      - name: Verify POST-E1 E3 fixture
+        run: node tests/test_post_e1_e3_fixture.mjs
+
+      - name: Verify POST-E1 E4 fixture
+        run: node tests/test_post_e1_e4_fixture.mjs
 
       - name: Verify native plugin smoke
         run: node tests/test_plugin_smoke.js
