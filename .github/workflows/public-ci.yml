@@ -65,10 +65,11 @@ jobs:
           node tests/test_structured_metadata.js
           node tests/test_hakim_guarded_session.mjs
 
-      - name: Verify POST-E1 experiment fixtures
-        run: |
-          node tests/test_post_e1_e2_fixture.mjs
-          node tests/test_post_e1_e3_e4_fixtures.mjs
+      - name: Verify POST-E1 E2 fixture
+        run: node tests/test_post_e1_e2_fixture.mjs
+
+      - name: Verify POST-E1 E3/E4 fixtures
+        run: node tests/test_post_e1_e3_e4_fixtures.mjs
 
       - name: Verify native plugin smoke
         run: node tests/test_plugin_smoke.js
