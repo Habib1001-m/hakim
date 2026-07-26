@@ -1,6 +1,6 @@
 # Hakim repository instructions
 
-<!-- hakim-canonical-sha256: f6032abce66fb0a5071ff2775e7f3b495722c8026eaf40bab433fa84ebd66eea -->
+<!-- hakim-canonical-sha256: 8f49bacb729e7adba401856fbb9e5c0bf5f47c7d0a96b726bed5112d095bc21b -->
 
 When changing this repository:
 
@@ -8,6 +8,7 @@ When changing this repository:
 - before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; if none is safe/reasonable, record why no baseline was run and do not imply a pre-existing green state;
 - once the affected implementation path, local conventions/reuse candidates, material guards, and validation surface are known, stop inspecting; any additional read/search must answer a concrete unresolved question with decision value;
 - do not default to whole-repository exploration when the affected path is already bounded; investigate material correctness or safety uncertainty before mutation;
+- before simplifying or deleting validation/guard logic, identify the protected invariant; simplification must not remove a real domain/security/privacy/integrity/migration/rollback/accessibility/trust guard unless evidence shows the requirement no longer applies or is preserved elsewhere;
 - preserve unrelated behavior and user files;
 - keep claims bounded to inspectable evidence;
 - distinguish deterministic checks from correctness or security review;
