@@ -1,6 +1,6 @@
 # Install Hakim
 
-Hakim `1.0.0-beta.1` is distributed from public source and host-native Git marketplaces. No npm registry package or central marketplace/directory listing is currently claimed.
+Hakim `1.0.0-beta.2` is distributed from public source and host-native Git marketplaces. No npm registry package or central marketplace/directory listing is currently claimed. The beta.2 candidate currently requires fresh live-host acceptance before its maintained paths are promoted as accepted.
 
 ## Codex
 
@@ -14,7 +14,7 @@ codex plugin marketplace add Habib1001-m/hakim
 
 Open `/plugins`, select the **Hakim** marketplace, install `hakim`, review/trust the SessionStart hook from `/hooks`, then start a new thread. The installed identity is `hakim@hakim`.
 
-Use `$hakim:hakim`, `$hakim:hakim-review`, `$hakim:hakim-audit`, `$hakim:hakim-debt`, `$hakim:hakim-gain`, or `$hakim:hakim-help` when explicit skill invocation is useful.
+Use `$hakim:hakim`, `$hakim:hakim-review`, `$hakim:hakim-audit`, `$hakim:hakim-debt`, `$hakim:hakim-gain`, or `$hakim:hakim-help` when explicit skill invocation is useful. `hakim-gain` is the retained beta compatibility ID for evidence-status reporting and does not imply a quantified gain.
 
 The npm `launch:codex` command remains a development fallback for source-checkout validation only; it is not the product installation path.
 
@@ -123,7 +123,7 @@ The install/remove commands exercise the same managed project-local lifecycle im
 
 OpenCode mode state is process-local and session-scoped where a session ID is present. Reused prompt outputs contain at most one bounded Hakim activation block delimited by explicit start/end sentinels; repeated transforms do not duplicate the policy, mode changes replace only that owned range, `off` removes only that range, and unrelated system content around it is preserved. An unbounded legacy marker is left untouched rather than destructively guessing where Hakim ownership ends. Fresh plugin processes reset to the configured default rather than sharing state across projects or host restarts.
 
-Repository-side behavior is structurally and adversarially tested across the supported Node runtime contract. The current bounded-sentinel runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`, covering clean managed install/start/invocation and successful runtime use. Earlier candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as proof of the changed sentinel runtime. The earlier OpenCode `1.17.13` journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical evidence for the create-only lifecycle only.
+Repository-side behavior is structurally and adversarially tested across the supported Node runtime contract. The current beta.2 OpenCode path is `NOT_RUN` in `conformance/native-host-acceptance.json` until a fresh candidate-specific real-host journey is accepted. Accepted beta.1 OpenCode and other host evidence is preserved in `conformance/history/native-host-acceptance-1.0.0-beta.1.json`; historical evidence is not reused to promote beta.2.
 
 ## Inspect all maintained product surfaces
 
@@ -144,6 +144,6 @@ npm run doctor
 npm run package:skill
 ```
 
-Generated skill packages are local outputs. They do not prove npm registry publication, central directory approval, signing, notarization, third-party attestation, or universal host compatibility.
+`npm test` is the canonical repository gate used by Public CI and includes release-package, SBOM, and checksum verification. Generated artifacts do not prove npm registry publication, central directory approval, signing, notarization, third-party attestation, or universal host compatibility.
 
 Host-native installation, approval, trust, sandboxing, plugin enablement, managed policy, permissions, and removal controls remain authoritative.
