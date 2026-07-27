@@ -19,3 +19,12 @@ jobs:
           echo "CANONICAL_SHA256=$(sha256sum core/hakim-skill/SKILL.md | awk '{print $1}')"
           echo "=== BETA2 REFERENCES ==="
           git grep -n '1.0.0-beta.2' || true
+
+      - name: Materialize exact beta.2 managed OpenCode manifest
+        run: |
+          BETA2_SHA=126a228a4ff9c1afafb6075f81b4e0bbfdf702bf
+          git clone -q https://github.com/Habib1001-m/hakim.git beta2
+          git -C beta2 checkout -q --detach "$BETA2_SHA"
+          cd beta2
+          echo "=== BETA2 OPENCODE MANIFEST ==="
+          node --input-type=module -e "import { buildOpenCodeBundle, manifestFromBundle } from './scripts/lib/opencode_bundle.mjs'; console.log(JSON.stringify(manifestFromBundle(buildOpenCodeBundle(process.cwd())), null, 2));"
