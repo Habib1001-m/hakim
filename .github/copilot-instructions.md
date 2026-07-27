@@ -5,7 +5,7 @@
 When changing this repository:
 
 - make the smallest safe change; in Hakim this means the smallest sufficient, coherent, safe change rather than optimizing for the fewest lines or files;
-- before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; baseline discovery is read-only by default, and dependency/editable installs, lockfile or package-metadata generation, repository-local environment/bootstrap creation, code generation, formatter writes, and similar side effects count as mutations rather than harmless baseline preparation;
+- before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; baseline discovery is read-only by default, and dependency or editable installs, lockfile or package-metadata generation, repository-local environment/bootstrap creation, code generation, formatter writes, and similar side effects count as mutations rather than harmless baseline preparation;
 - inspect maintained documentation, configuration, scripts, and tool declarations first; do not mutate merely to discover or prepare a baseline when a maintained non-mutating path is available; if setup mutation is genuinely required, state why before doing it and distinguish setup mutation from product mutation;
 - once the affected implementation path, local conventions/reuse candidates, material guards, and validation surface are known, stop inspecting; any additional read/search must answer a concrete unresolved question with decision value;
 - do not create repository-local planning/analysis artifacts or repeat equivalent analysis merely to continue inspection when no decision-relevant question remains;
