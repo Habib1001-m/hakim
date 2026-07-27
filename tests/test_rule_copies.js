@@ -10,6 +10,11 @@ const fixture = fs.readFileSync(path.join(root, 'tests/fixtures/skill_with_bom_a
 const canonical = fs.readFileSync(path.join(root, 'core/hakim-skill/SKILL.md'), 'utf8');
 const frontmatter = rules.extractFrontmatter(fixture);
 
+function phrasePattern(phrase) {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(escaped.replace(/\s+/g, '\\s+'), 'i');
+}
+
 assert.ok(frontmatter, 'frontmatter should be found with BOM and leading blank lines');
 assert.equal(frontmatter.fields.name, 'hakim');
 assert.equal(frontmatter.fields['argument-hint'], '"[lite|full|ultra|off]"');
@@ -38,7 +43,7 @@ for (const phrase of [
   'record why no baseline was run',
   'pre-existing green state',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing baseline phrase: ${phrase}`);
+  assert.match(canonical, phrasePattern(phrase), `canonical Hakim contract missing baseline phrase: ${phrase}`);
 }
 
 // Permanent evidence-sufficiency contract: repository inspection terminates
@@ -55,7 +60,7 @@ for (const phrase of [
   'planning or analysis artifacts',
   'repeat equivalent analysis',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing evidence-sufficiency phrase: ${phrase}`);
+  assert.match(canonical, phrasePattern(phrase), `canonical Hakim contract missing evidence-sufficiency phrase: ${phrase}`);
 }
 
 // Permanent guard-preservation contract: simplification must preserve real
@@ -67,7 +72,7 @@ for (const phrase of [
   'simplification must not remove',
   'preserved elsewhere',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing guard-preservation phrase: ${phrase}`);
+  assert.match(canonical, phrasePattern(phrase), `canonical Hakim contract missing guard-preservation phrase: ${phrase}`);
 }
 
 // Permanent outcome-restraint contract: smallest means sufficient/coherent/safe,
@@ -79,7 +84,7 @@ for (const phrase of [
   'same bounded change',
   'line count is not the objective',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing outcome-restraint phrase: ${phrase}`);
+  assert.match(canonical, phrasePattern(phrase), `canonical Hakim contract missing outcome-restraint phrase: ${phrase}`);
 }
 
 // Permanent bounded-no-change contract: a no-change decision stays scoped to
@@ -90,7 +95,7 @@ for (const phrase of [
   'globally minimal',
   'remaining uncertainty',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing bounded no-change phrase: ${phrase}`);
+  assert.match(canonical, phrasePattern(phrase), `canonical Hakim contract missing bounded no-change phrase: ${phrase}`);
 }
 
 const projections = [
@@ -105,7 +110,7 @@ for (const relativePath of projections) {
   assert.match(projection, /before the first mutation/i, `${relativePath} missing baseline ordering semantics`);
   assert.match(projection, /baseline discovery is read-only/i, `${relativePath} missing baseline-purity semantics`);
   assert.match(projection, /editable\s+installs/i, `${relativePath} missing setup-mutation examples`);
-  assert.match(projection, /setup mutation/i, `${relativePath} missing setup-mutation truth boundary`);
+  assert.match(projection, /setup\s+mutation/i, `${relativePath} missing setup-mutation truth boundary`);
   assert.match(projection, /record why no baseline was run/i, `${relativePath} missing no-baseline truth boundary`);
   assert.match(projection, /evidence sufficiency/i, `${relativePath} missing stopping semantics`);
   assert.match(projection, /concrete unresolved question/i, `${relativePath} missing decision-value gate`);
