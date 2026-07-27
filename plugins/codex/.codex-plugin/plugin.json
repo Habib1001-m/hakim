@@ -1,6 +1,6 @@
 {
   "name": "hakim",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "Evidence-bound coding governance for Codex: smallest safe diff, reuse-first, native-first, and explicit evidence boundaries.",
   "author": {"name": "Habib1001-m"},
   "homepage": "https://github.com/Habib1001-m/hakim",
