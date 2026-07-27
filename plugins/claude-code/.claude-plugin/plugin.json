@@ -2,7 +2,7 @@
   "name": "hakim",
   "displayName": "Hakim",
   "description": "Evidence-bound coding governance for Claude Code: smallest safe diff, reuse-first, native-first, isolated review agents, and explicit evidence boundaries.",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "author": {
     "name": "Habib1001-m"
   },
