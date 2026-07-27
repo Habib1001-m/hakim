@@ -1,7 +1,7 @@
 {
   "name": "hakim",
   "description": "Evidence-bound coding governance for GitHub Copilot: smallest safe diff, reuse-first, native-first, and explicit evidence boundaries.",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "author": {
     "name": "Habib1001-m"
   },
