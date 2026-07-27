@@ -14,11 +14,11 @@ For example, when a repository already has a parser that safely handles the requ
 
 ## Status
 
-Hakim `1.0.0-beta.1` is public beta software distributed from public source and host-native Git marketplaces. It is not published to the npm registry and is not claiming a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
+Hakim `1.0.0-beta.2` is a public-beta candidate distributed from public source and host-native Git marketplaces. It is not published to the npm registry and does not claim a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
-All four maintained current-native product paths — Codex, Claude Code, GitHub Copilot CLI, and the Git-backed managed project-local OpenCode lifecycle — have accepted real-host evidence in [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). The current bounded-sentinel OpenCode runtime was accepted on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13` through clean managed install/start/invocation. Earlier candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` on OpenCode `1.18.5` remains bounded evidence for the unchanged manifest-backed upgrade/removal lifecycle; it is not reused as evidence for the changed bounded-sentinel runtime. That evidence does not imply universal compatibility, stable-release authorization, or central marketplace publication.
+The beta.2 candidate intentionally starts with current live-host acceptance at **`HOLD_FOR_LIVE_HOST_EVIDENCE`**. Structural tests and prior accepted journeys do not automatically promote a changed prerelease candidate. Accepted beta.1 host evidence is preserved under [`conformance/history/`](conformance/history/) rather than being relabeled as beta.2 evidence.
 
-POST-BETA-R1 remediation is complete and merged through [#15](https://github.com/Habib1001-m/hakim/pull/15). External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch. Private release authorization remains outside the public repository.
+External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch. Stable `1.0.0`, registry publication, and central marketplace promotion are not authorized by this candidate.
 
 ## Quick start
 
@@ -41,7 +41,7 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-Then start Claude Code normally. Use `/hakim:help`, `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, and `/hakim:gain`. Claude also receives Hakim plugin agents, including read-only specialists and an isolated worktree implementer.
+Then start Claude Code normally. Use `/hakim:help`, `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, and `/hakim:gain`. The `gain` command is the retained beta compatibility name for evidence-status reporting; it does not imply a quantified performance gain. Claude also receives Hakim plugin agents, including read-only specialists and an isolated worktree implementer.
 
 ### GitHub Copilot
 
@@ -83,7 +83,7 @@ For product use, install the supported host you intend to use. The OpenCode Git-
 
 Repository development and local validation additionally require:
 
-- Node.js 22 or newer. Public CI runs the full repository gate on Node.js 24 and exercises the shipped OpenCode package/runtime on Node.js 22 and 26 as compatibility edges.
+- Node.js 22 or newer. Public CI runs the canonical repository gate on Node.js 24 and exercises the shipped OpenCode package/runtime on Node.js 22 and 26 as compatibility edges.
 - Python 3.10 or newer. Maintained Python tooling uses Python 3.10+ syntax; Public CI currently validates Python 3.11.
 - Git.
 
@@ -91,10 +91,18 @@ For the full Codex product path in this beta, use Codex `0.131.0` or newer. Code
 
 ## Local validation
 
+`npm test` is the canonical repository gate used by the main Public CI job.
+
 ```bash
 npm test
 npm run doctor
 npm run plan:install -- --host all
+```
+
+Historical controlled-experiment fixture checks are intentionally separate from the permanent product gate:
+
+```bash
+npm run test:evidence:historical
 ```
 
 Build the canonical skill package:
@@ -118,15 +126,17 @@ Each host intentionally uses its strongest native extension model rather than a 
 
 ## Product readiness
 
-Current native runtime acceptance is not the same thing as full product readiness. POST-BETA-R1 closed the public-surface, documentation, release-reproducibility, provenance, and first-run UX remediation identified by the comprehensive post-acceptance review.
+Current native runtime acceptance is not the same thing as full product readiness. The beta.2 candidate deliberately resets current-path host acceptance until fresh real-host journeys are recorded for this candidate. Prior beta.1 evidence remains historical and inspectable.
 
-The post-merge hardening slice tracked in [#18](https://github.com/Habib1001-m/hakim/issues/18) closed the inherited OpenCode lifecycle safety, upgradeability, runtime-idempotence, session-state, Node-support, help-truth, and truth-gate findings identified by traceability review. POST-BETA-R2 PR #21 then bounded OpenCode prompt ownership with start/end sentinels so Hakim no longer treats foreign trailing system content as its own; the changed runtime has fresh real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62`. The withdrawn evaluator campaign (#12) accepted no external reports; evaluator recruitment remains suspended and any future relaunch requires a separate explicit product decision.
+The current product-readiness work is tracked in [#32](https://github.com/Habib1001-m/hakim/issues/32): version identity, canonical local/CI gates, public-repository pruning, in-product help simplification, evidence-status naming truth, permanent contract naming, cross-host behavioral confidence, production-like dogfood, and stable-release prerequisites.
+
+External evaluator recruitment remains suspended. A future evaluator campaign, stable release, registry publication, or broad marketplace promotion requires a separate explicit operator decision.
 
 ## Evidence boundaries
 
 A passing deterministic check means only that the enabled rule set found no matching violation. It is not a substitute for correctness, security, architecture, semantic review, or live host validation.
 
-The public native-host acceptance projection is current-product evidence. A new or materially changed lifecycle, first-run journey, or runtime behavior requires accepted real-host observation before that exact path is promoted by evidence. Structural or CI success alone does not create live-host acceptance.
+The public native-host acceptance projection is current-product evidence. A new or materially changed prerelease candidate, lifecycle, first-run journey, or runtime behavior requires accepted real-host observation before that exact path is promoted by evidence. Structural or CI success alone does not create live-host acceptance.
 
 Hakim does not claim model-quality improvement, universal compatibility, performance gains, token savings, return on investment, or complete protection from unrelated local processes.
 
