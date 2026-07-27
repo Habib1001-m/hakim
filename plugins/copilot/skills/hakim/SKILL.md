@@ -3,7 +3,7 @@ name: hakim
 description: Use Hakim for coding tasks that should prefer the smallest safe diff, reuse existing code first, prefer stdlib/native capabilities, avoid speculative architecture, and keep claims evidence-bound.
 ---
 
-<!-- hakim-canonical-sha256: 86d365798553babe6d9a91b9190d3b1c04ef0d45f82b46c09c043e269d7a899f -->
+<!-- hakim-canonical-sha256: 1abb00530a00ac6be2d0437db561d4ba7e5bba7a397ea7323de13fd0e10bb8a1 -->
 
 # Hakim for GitHub Copilot
 
