@@ -81,6 +81,55 @@ effects as mutations, not harmless preparation.
 
 A new or non-runnable repository does not need an artificial baseline.
 
+## Observable checkpoints
+
+For a runnable Git repository, make the evidence around mutation observable rather
+than implied.
+
+Before the first product edit, record this baseline checkpoint from observed
+repository state:
+
+```text
+BASELINE_COMMAND=<exact command or NOT_RUN>
+BASELINE_SOURCE=<repository evidence that justified the command or why none ran>
+SETUP_MUTATION=NO|YES:<reason stated before setup>
+PRE_EDIT_GIT_STATUS=<observed git status --porcelain or GIT_UNAVAILABLE:<reason>>
+```
+
+- Populate the checkpoint from observations, not plans. `SETUP_MUTATION=NO` is
+  the default.
+- A setup mutation cannot be used merely to discover the baseline. If setup is
+  genuinely required, justify it before execution and report its artifacts or
+  working-tree delta separately from product edits.
+- Do not begin the first product edit until the checkpoint is complete, unless
+  Git or validation execution is unavailable; record that limitation instead of
+  inventing a clean or green state.
+
+For boolean, control-flow, validator, permission, or guard transformations,
+existing-suite green is not sufficient by itself to claim semantic equivalence.
+Before calling such a change behavior-preserving, record:
+
+```text
+SEMANTIC_CHANGE_CHECK=<NOT_APPLICABLE|boundary-state comparison|targeted probe/test>
+```
+
+Enumerate decision-relevant boundary states or run a targeted regression/probe
+for the changed truth table or invariant. Include empty, absent, error, and
+boundary states when they can take a different branch. If that evidence is not
+available, narrow the claim or do not make the transformation.
+
+Before the completion report, observe final repository state and record:
+
+```text
+FINAL_GIT_STATUS=<observed git status --porcelain or GIT_UNAVAILABLE:<reason>>
+SETUP_ARTIFACTS=<NONE|observed paths/summary>
+UNRELATED_MUTATIONS=<NONE|observed summary>
+```
+
+Reconcile the final checkpoint with the report. Never claim `clean working
+tree`, `no artifacts`, `no setup mutations`, or equivalent when the observed
+state contradicts that claim.
+
 ## Evidence sufficiency
 
 Repository inspection is sufficient once the agent can name:
