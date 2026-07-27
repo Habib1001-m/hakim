@@ -46,6 +46,25 @@ for (const phrase of [
   assert.match(canonical, phrasePattern(phrase), `canonical Hakim contract missing baseline phrase: ${phrase}`);
 }
 
+// Observable checkpoints turn baseline, semantic-equivalence, and final-state
+// truth from implied reasoning into reviewable evidence.
+for (const phrase of [
+  'Observable checkpoints',
+  'BASELINE_COMMAND',
+  'BASELINE_SOURCE',
+  'SETUP_MUTATION',
+  'PRE_EDIT_GIT_STATUS',
+  'SEMANTIC_CHANGE_CHECK',
+  'existing-suite green is not sufficient',
+  'boundary states',
+  'FINAL_GIT_STATUS',
+  'SETUP_ARTIFACTS',
+  'UNRELATED_MUTATIONS',
+  'no artifacts',
+]) {
+  assert.match(canonical, phrasePattern(phrase), `canonical Hakim contract missing observable checkpoint phrase: ${phrase}`);
+}
+
 // Permanent evidence-sufficiency contract: repository inspection terminates
 // once decision-relevant evidence is sufficient; extra exploration or local
 // analysis artifacts need a concrete unresolved question.
@@ -112,6 +131,16 @@ for (const relativePath of projections) {
   assert.match(projection, /editable\s+installs/i, `${relativePath} missing setup-mutation examples`);
   assert.match(projection, /setup\s+mutation/i, `${relativePath} missing setup-mutation truth boundary`);
   assert.match(projection, /record why no baseline was run/i, `${relativePath} missing no-baseline truth boundary`);
+  assert.match(projection, /BASELINE_COMMAND/, `${relativePath} missing observable baseline command`);
+  assert.match(projection, /BASELINE_SOURCE/, `${relativePath} missing observable baseline source`);
+  assert.match(projection, /SETUP_MUTATION/, `${relativePath} missing observable setup-mutation checkpoint`);
+  assert.match(projection, /PRE_EDIT_GIT_STATUS/, `${relativePath} missing observable pre-edit status`);
+  assert.match(projection, /SEMANTIC_CHANGE_CHECK/, `${relativePath} missing semantic-change checkpoint`);
+  assert.match(projection, /existing-suite green/i, `${relativePath} missing existing-suite equivalence boundary`);
+  assert.match(projection, /boundary states/i, `${relativePath} missing boundary-state requirement`);
+  assert.match(projection, /FINAL_GIT_STATUS/, `${relativePath} missing final-status checkpoint`);
+  assert.match(projection, /SETUP_ARTIFACTS/, `${relativePath} missing setup-artifact checkpoint`);
+  assert.match(projection, /UNRELATED_MUTATIONS/, `${relativePath} missing unrelated-mutation checkpoint`);
   assert.match(projection, /evidence sufficiency/i, `${relativePath} missing stopping semantics`);
   assert.match(projection, /concrete unresolved question/i, `${relativePath} missing decision-value gate`);
   assert.match(projection, /planning[/-]?analysis artifacts|planning or analysis artifacts/i, `${relativePath} missing anti-ceremony semantics`);
