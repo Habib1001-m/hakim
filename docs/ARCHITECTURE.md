@@ -14,8 +14,10 @@ Use one source of truth per question:
 | Installation and lifecycle | `core/hakim-skill/INSTALL.md` plus the maintained host integration |
 | Supported hosts and compatibility boundaries | `SUPPORTED_HOSTS.md` |
 | Current native live-host evidence | `conformance/native-host-acceptance.json` |
+| Historical accepted host evidence | `conformance/history/` |
 | Public repository health | `scripts/hakim_doctor.mjs` and Public CI |
 | Release/version contract | `VERSIONING.md` |
+| Support and deprecation boundary | `SUPPORT.md` |
 
 Tests, examples, old issues, research notes, and generated artifacts are evidence for their checked scope; they are not higher authority than the sources above.
 
@@ -58,7 +60,7 @@ Hakim does not add MCP, LSP, A2A, a workflow engine, a telemetry service, or ano
 
 Host projections may add native metadata or UX, but they must preserve canonical semantics. Projection checks detect drift; they do not prove that the canonical policy itself is correct.
 
-`hakim-gain` is retained in the current beta for compatibility even though its maintained behavior is evidence/status reporting rather than a quantified performance-gain claim. A rename would be a separate capability migration, not a cosmetic edit in this remediation slice.
+`hakim-gain` is retained in the beta capability contract for compatibility. Its maintained user-facing meaning is **evidence status**, not quantified performance gain. A canonical replacement ID would be a separate capability migration and is therefore not introduced merely as a cleanup during product-readiness hardening.
 
 ## Host surfaces
 
@@ -82,7 +84,7 @@ The maintained lifecycle persists a bounded install manifest; supports create, e
 
 OpenCode prompt activation is bounded by explicit start/end sentinels and remains idempotent. Reconciliation removes only the Hakim-owned sentinel range, preserves unrelated system content before or after it, and leaves an unbounded legacy marker untouched rather than guessing its ownership boundary. Session-specific modes are isolated; deletion affects only that session; missing-session calls use process fallback; and a fresh plugin instance resets to the configured default rather than sharing state across processes or projects.
 
-The current bounded-sentinel runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`, covering clean managed install/start/invocation and successful Hakim runtime use. Earlier candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as proof of the changed sentinel runtime. Earlier evidence at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains historical for the create-only lifecycle only.
+The current beta.2 OpenCode path has not yet been accepted on a fresh real-host journey. Accepted beta.1 OpenCode evidence remains historical under `conformance/history/` and is not promoted to beta.2 merely because the architecture is similar.
 
 ## Runtime and filesystem boundaries
 
@@ -97,12 +99,12 @@ Child processes used by maintained repository tooling should use bounded time/ou
 Keep these claims separate:
 
 1. **Structural/CI conformance** — checked repository contracts passed.
-2. **Live-host acceptance** — a real current-native install/start/invocation journey was observed.
-3. **Product usefulness/UX** — requires separate real-user evidence.
+2. **Live-host acceptance** — a real current-native install/start/invocation journey was observed for the exact candidate.
+3. **Product usefulness/UX** — requires separate real-user or production-like evidence.
 4. **Release authorization** — explicit operator decision outside ordinary CI success.
 5. **Performance or quality improvement** — requires dedicated accepted evidence; it is not inferred from any item above.
 
-Current native runtime evidence for Codex, Claude Code, GitHub Copilot, and the managed OpenCode product path is recorded publicly. Each evidence record is bounded to the exact path and environment it observed. External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch; it must not be inferred from native-host acceptance status.
+The current beta.2 native-host projection is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE`. Prior beta.1 host acceptance remains inspectable as historical evidence. External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch; neither structural success nor native-host acceptance may reopen it automatically.
 
 ## Truth-gate policy
 
@@ -118,11 +120,13 @@ The canonical skill package uses an explicit allowlist rather than recursively s
 
 The root repository package is private and is not an npm registry release. Its `files` allowlist exists only to make the Git-backed OpenCode bootstrap bounded when npm/npx fetches Hakim directly from GitHub.
 
-The shipped Git-backed package declares Node `>=22`. Public CI keeps the full repository gate on Node 24 and separately exercises the shipped OpenCode runtime/package surface on Node 22 and Node 26. That matrix is evidence for the declared JavaScript runtime floor/range, not for universal OpenCode or operating-system compatibility.
+The shipped Git-backed package declares Node `>=22`. Public CI keeps the canonical repository gate on Node 24 and separately exercises the shipped OpenCode runtime/package surface on Node 22 and Node 26. That matrix is evidence for the declared JavaScript runtime floor/range, not for universal OpenCode or operating-system compatibility.
 
-Checksums prove artifact integrity against a recorded digest. Reproducibility is a separate claim and must be tested independently.
+`npm run package:release` builds the canonical skill ZIP, a deterministic CycloneDX JSON SBOM for the Git-tracked source/product inventory, and checksum/manifest metadata covering both artifacts. The SBOM does not claim to inventory host binaries, model providers, operating-system packages, or unrelated local tooling.
 
-Any future external evaluation must identify an immutable Hakim source/tag/release reference so reports cannot silently refer to different `main` revisions under the same prerelease version string.
+Checksums prove artifact integrity against recorded digests. Reproducibility, SBOM scope, signing, notarization, and third-party attestation remain separate claims.
+
+Any future external evaluation must identify an immutable Hakim source/tag/release reference so reports cannot silently refer to different revisions under the same prerelease identity.
 
 ## Design rules for new work
 
@@ -133,4 +137,4 @@ Before adding a component:
 3. Prefer standard-library and host-native capabilities.
 4. Add no cross-host abstraction solely for symmetry.
 5. Keep product claims narrower than the evidence.
-6. Delete retired executable/product surfaces instead of leaving dormant alternate architectures in the public tree.
+6. Delete retired executable/product or reference surfaces instead of leaving dormant material in the public product tree without an explicit maintained role.
