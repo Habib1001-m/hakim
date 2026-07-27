@@ -1,0 +1,21 @@
+name: R3 Version Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Audit exact R3 branch version truth
+        run: |
+          git clone -q --depth 1 --branch agent/r3-behavioral-remediation https://github.com/Habib1001-m/hakim.git repo
+          cd repo
+          echo "CANONICAL_SHA256=$(sha256sum core/hakim-skill/SKILL.md | awk '{print $1}')"
+          echo "=== BETA2 REFERENCES ==="
+          git grep -n '1.0.0-beta.2' || true
