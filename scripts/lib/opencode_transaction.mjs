@@ -10,6 +10,7 @@ import {
   moveVerifiedRecordToWorkRoot,
   sha256,
 } from './opencode_bundle.mjs';
+import { SUPPORTED_PERSISTED_PRIOR_MANIFESTS } from './opencode_prior_manifests.mjs';
 
 function verifyBytes(pathname, expectedSize, expectedHash) {
   const bytes = fs.readFileSync(pathname);
@@ -21,6 +22,7 @@ export function validateManagedInstallationAuthority(managed, bundle) {
   const supportedVersions = new Set([
     bundle.product_version,
     ...SUPPORTED_LEGACY_MANIFESTS.map((manifest) => manifest.product_version),
+    ...SUPPORTED_PERSISTED_PRIOR_MANIFESTS.map((manifest) => manifest.product_version),
   ]);
   if (!supportedVersions.has(managed.manifest.product_version)) {
     return { ok: false, state: 'MANIFEST_UNSUPPORTED', message: `unsupported installed Hakim version: ${managed.manifest.product_version}` };
@@ -34,9 +36,7 @@ export function validateManagedInstallationAuthority(managed, bundle) {
 
   // A manifest claiming the currently executing version must be exactly the
   // current canonical manifest. This blocks a forged same-version ownership
-  // record from redefining customized bytes as Hakim-owned. Older versions are
-  // accepted only inside the explicitly supported version/inventory boundary;
-  // their own persisted hashes remain the source for byte verification.
+  // record from redefining customized bytes as Hakim-owned.
   if (
     managed.manifest_source === 'INSTALLED_MANIFEST'
     && managed.manifest.product_version === bundle.product_version
@@ -45,6 +45,22 @@ export function validateManagedInstallationAuthority(managed, bundle) {
     return { ok: false, state: 'MANIFEST_UNSUPPORTED', message: 'same-version install manifest does not match the current canonical Hakim manifest' };
   }
 
+  // A persisted prior managed release is accepted only when its complete
+  // manifest matches the exact immutable manifest recorded for that release.
+  // This preserves beta.2 -> beta.3 upgrade/removal while preventing a forged
+  // older-version manifest from redefining arbitrary local bytes as Hakim-owned.
+  if (managed.manifest_source === 'INSTALLED_MANIFEST' && managed.manifest.product_version !== bundle.product_version) {
+    const prior = SUPPORTED_PERSISTED_PRIOR_MANIFESTS.find(
+      (manifest) => manifest.product_version === managed.manifest.product_version,
+    );
+    if (prior && !manifestsEquivalent(managed.manifest, prior)) {
+      return { ok: false, state: 'MANIFEST_UNSUPPORTED', message: `installed Hakim ${managed.manifest.product_version} manifest does not match the exact supported prior manifest` };
+    }
+  }
+
+  // beta.1 remains the bounded pre-manifest migration exception represented by
+  // SUPPORTED_LEGACY_MANIFESTS. Its persisted hashes are still verified before
+  // mutation; newer managed prior releases use exact-manifest authority above.
   return { ok: true };
 }
 
