@@ -1,6 +1,6 @@
 # Hakim for OpenCode
 
-**Status:** Hakim `1.0.0-beta.2` public-beta candidate; current OpenCode live-host acceptance is `NOT_RUN` pending fresh candidate-specific evidence  
+**Status:** Hakim `1.0.0-beta.3` public-beta remediation candidate; current OpenCode live-host acceptance is `NOT_RUN` pending fresh candidate-specific evidence  
 **Distribution:** Git-backed bootstrap into repository-local OpenCode files; no npm publication or global installer
 
 ## What this plugin does
@@ -17,11 +17,12 @@ It uses OpenCode configuration and prompt hooks to:
 - add the installed canonical Hakim skills directory to `config.skills.paths` without duplicate entries;
 - inject the canonical Hakim policy through the installed shared loader instead of embedding another rules copy;
 - keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
+- make `/hakim <mode>` a direct mode-selection turn that must not load auxiliary Hakim skills, inspect the repository, or run tools merely to set mode;
 - keep system-prompt activation idempotent with one bounded Hakim start/end sentinel range even when OpenCode reuses the same output object or the mode changes;
 - preserve unrelated system content before and after the Hakim-owned activation range;
 - remove session-local mode state when a session-deleted event is observed.
 
-Repository tests cover the documented hook shapes, Git-backed package surface, managed project-local lifecycle, adversarial verification-to-mutation races, foreign system-content coexistence, and multi-session state isolation. Live-host acceptance remains a separate evidence layer.
+Repository tests cover the documented hook shapes, Git-backed package surface, managed project-local lifecycle, adversarial verification-to-mutation races, foreign system-content coexistence, multi-session state isolation, and direct mode-activation contract. Live-host acceptance remains a separate evidence layer.
 
 ## Project-local installed layout
 
@@ -97,13 +98,15 @@ The first two commands are read-only/dry-run surfaces. The final command applies
 Examples after installation:
 
 ```text
-/hakim full Review the current change.
-/hakim ultra Find the smallest safe implementation.
-/hakim off Continue without Hakim guidance.
+/hakim full
+/hakim ultra
+/hakim off
 /hakim-review Review the current diff.
 /hakim-audit Inspect the explicitly requested repository scope.
 /hakim-help Explain the available Hakim capabilities.
 ```
+
+Use `/hakim <mode>` to set the session mode, then issue the coding/review request separately. The mode-selection turn itself is intentionally not a repository task.
 
 Mode state is process-local. Explicit session IDs are isolated from one another; deleting one session removes only that session's mode state. Commands without a session ID use the process fallback. A fresh plugin process resets to `HAKIM_DEFAULT_MODE` (or `full` when unset/invalid); state is not persisted across host restarts, projects, user profiles, or machines.
 
@@ -161,8 +164,8 @@ These checks prove their deterministic repository/package scope only. They do no
 ## Evidence boundaries
 
 - The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
-- The beta.2 OpenCode path is currently `NOT_RUN` in `conformance/native-host-acceptance.json`; fresh install/start/invocation evidence on the exact candidate is required before it can be promoted to `PASS`.
-- Accepted beta.1 OpenCode evidence — including the bounded-sentinel runtime and earlier manifest lifecycle journeys — is preserved under `conformance/history/native-host-acceptance-1.0.0-beta.1.json` and remains bounded to beta.1 rather than being reused as beta.2 proof.
+- The beta.3 OpenCode path is currently `NOT_RUN` in `conformance/native-host-acceptance.json`; fresh install/start/invocation evidence on the exact candidate is required before it can be promoted to `PASS`.
+- Accepted beta.1 and frozen beta.2 evidence remains bounded to those exact historical candidates and is not reused as beta.3 proof.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
