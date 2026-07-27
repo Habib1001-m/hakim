@@ -24,9 +24,9 @@ assert.deepEqual(canonicalAnalysis.missing_yaml_fields, []);
 assert.deepEqual(canonicalAnalysis.missing_sections, []);
 assert.ok(canonicalAnalysis.sections.capabilities);
 
-// POST-E1 T01: a runnable repository should establish a bounded baseline before
-// the first mutation when reasonably available. The contract must also preserve
-// proportionality and truthful reporting when no baseline can be run.
+// Permanent behavior contract: a runnable repository should establish a bounded
+// baseline before the first mutation when reasonably available. The contract
+// must preserve proportionality and truthful reporting when none can be run.
 for (const phrase of [
   'Pre-mutation baseline',
   'before the first mutation',
@@ -34,11 +34,12 @@ for (const phrase of [
   'record why no baseline was run',
   'pre-existing green state',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T01 phrase: ${phrase}`);
+  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing baseline phrase: ${phrase}`);
 }
 
-// POST-E1 T02: repository inspection must terminate once the decision-relevant
-// evidence is sufficient; extra exploration needs an explicit unresolved question.
+// Permanent evidence-sufficiency contract: repository inspection terminates
+// once decision-relevant evidence is sufficient; extra exploration needs a
+// concrete unresolved question.
 for (const phrase of [
   'Evidence sufficiency',
   'affected implementation path',
@@ -48,11 +49,11 @@ for (const phrase of [
   'concrete unresolved question',
   'whole-repository exploration',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T02 phrase: ${phrase}`);
+  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing evidence-sufficiency phrase: ${phrase}`);
 }
 
-// POST-E1 T03: simplification must preserve real product/domain guards rather
-// than treating validation and invariants as removable implementation weight.
+// Permanent guard-preservation contract: simplification must preserve real
+// product/domain invariants rather than treating validation as removable weight.
 for (const phrase of [
   'Domain-guard preservation',
   'domain-level validation',
@@ -60,10 +61,11 @@ for (const phrase of [
   'simplification must not remove',
   'preserved elsewhere',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T03 phrase: ${phrase}`);
+  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing guard-preservation phrase: ${phrase}`);
 }
 
-// POST-E1 T04: smallest means sufficient/coherent/safe, not a line-count target.
+// Permanent outcome-restraint contract: smallest means sufficient/coherent/safe,
+// not a line-count target.
 for (const phrase of [
   'Outcome-oriented restraint',
   'smallest sufficient, coherent, safe change',
@@ -71,7 +73,7 @@ for (const phrase of [
   'same bounded change',
   'line count is not the objective',
 ]) {
-  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing T04 phrase: ${phrase}`);
+  assert.match(canonical, new RegExp(phrase, 'i'), `canonical Hakim contract missing outcome-restraint phrase: ${phrase}`);
 }
 
 const projections = [
@@ -82,15 +84,15 @@ const projections = [
 
 for (const relativePath of projections) {
   const projection = fs.readFileSync(path.join(root, relativePath), 'utf8');
-  assert.match(projection, /pre-mutation baseline/i, `${relativePath} missing T01 baseline semantics`);
-  assert.match(projection, /before the first mutation/i, `${relativePath} missing T01 ordering semantics`);
-  assert.match(projection, /record why no baseline was run/i, `${relativePath} missing T01 no-baseline truth boundary`);
-  assert.match(projection, /evidence sufficiency/i, `${relativePath} missing T02 stopping semantics`);
-  assert.match(projection, /concrete unresolved question/i, `${relativePath} missing T02 decision-value gate`);
-  assert.match(projection, /domain-guard preservation/i, `${relativePath} missing T03 guard-preservation semantics`);
-  assert.match(projection, /simplification must not remove/i, `${relativePath} missing T03 simplification boundary`);
-  assert.match(projection, /outcome-oriented restraint/i, `${relativePath} missing T04 outcome semantics`);
-  assert.match(projection, /smallest sufficient, coherent, safe change/i, `${relativePath} missing T04 sufficient-change semantics`);
+  assert.match(projection, /pre-mutation baseline/i, `${relativePath} missing baseline semantics`);
+  assert.match(projection, /before the first mutation/i, `${relativePath} missing baseline ordering semantics`);
+  assert.match(projection, /record why no baseline was run/i, `${relativePath} missing no-baseline truth boundary`);
+  assert.match(projection, /evidence sufficiency/i, `${relativePath} missing stopping semantics`);
+  assert.match(projection, /concrete unresolved question/i, `${relativePath} missing decision-value gate`);
+  assert.match(projection, /domain-guard preservation/i, `${relativePath} missing guard-preservation semantics`);
+  assert.match(projection, /simplification must not remove/i, `${relativePath} missing simplification boundary`);
+  assert.match(projection, /outcome-oriented restraint/i, `${relativePath} missing outcome semantics`);
+  assert.match(projection, /smallest sufficient, coherent, safe change/i, `${relativePath} missing sufficient-change semantics`);
 }
 
-console.log('test_rule_copies.js: fixture, canonical integrity, and POST-E1 T01-T04 contracts ok');
+console.log('test_rule_copies.js: fixture, canonical integrity, and permanent behavior contracts ok');
