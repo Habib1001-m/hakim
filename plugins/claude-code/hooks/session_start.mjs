@@ -37,6 +37,7 @@ async function main() {
 
   const additionalContext = [
     `Hakim ${version} plugin is active for this Claude Code session.`,
+    `The active Hakim version for this session is exactly ${version}; if version identity is mentioned, use this value and never infer a different version from repository history, changelogs, prior evidence, or cached prose.`,
     'For any coding task that may mutate repository files, invoke the hidden plugin skill hakim:hakim before the first file mutation; do not rely on automatic description matching alone.',
     'Run the smallest safely and reasonably available representative baseline before the first file mutation; if no baseline can be run, state the boundary truthfully instead of implying a pre-existing green state.',
     'For bounded work, avoid TaskCreate and TaskUpdate unless there are multiple independent workstreams or task tracking would change a real implementation, safety, or coordination decision.',
