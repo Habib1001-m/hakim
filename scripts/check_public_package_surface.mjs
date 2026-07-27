@@ -36,19 +36,43 @@ if (!fs.existsSync(packagePath)) {
       if (!pkg.files.includes(relative)) errors.push(`Git-backed bootstrap package missing allowlisted path: ${relative}`);
     }
   }
-  if (pkg.scripts?.test !== 'npm run test:public') errors.push('test must route to test:public');
+
+  if (pkg.scripts?.test !== 'npm run test:repo') errors.push('test must route to the canonical test:repo gate');
+  const repoGate = pkg.scripts?.['test:repo'] || '';
+  if (!repoGate.includes('npm run test:public') || !repoGate.includes('npm run package:release')) {
+    errors.push('test:repo must cover permanent public tests and release artifact verification');
+  }
+
   for (const script of [
+    'test:repo',
     'test:public',
     'test:public:js',
     'test:public:py',
+    'test:node-compat',
     'doctor',
     'doctor:json',
     'doctor:fast',
     'package:skill',
+    'package:release',
+    'release:sbom',
+    'release:sbom:verify',
+    'release:checksums',
+    'release:checksums:verify',
     'install:opencode',
     'remove:opencode',
   ]) {
     if (!pkg.scripts?.[script]) errors.push(`missing package script: ${script}`);
+  }
+
+  const releaseGate = pkg.scripts?.['package:release'] || '';
+  for (const required of [
+    'npm run package:skill',
+    'npm run release:sbom',
+    'npm run release:checksums',
+    'npm run release:sbom:verify',
+    'npm run release:checksums:verify',
+  ]) {
+    if (!releaseGate.includes(required)) errors.push(`package:release missing ${required}`);
   }
 
   for (const internalScript of [
@@ -73,10 +97,14 @@ for (const relative of [
   'core/hakim-skill/VERSION',
   'core/hakim-skill/SKILL.md',
   'core/hakim-skill/AGENTS.md',
+  'SUPPORT.md',
+  'docs/PRODUCT_READINESS.md',
   'scripts/hakim_doctor.mjs',
   'scripts/hakim_opencode_cli.mjs',
   'scripts/lib/opencode_transaction.mjs',
+  'scripts/build_release_sbom.py',
   'scripts/verify_package.py',
+  'scripts/verify_downloaded_release_bundle.py',
 ]) {
   if (!fs.existsSync(path.join(root, relative))) errors.push(`missing required public file: ${relative}`);
 }
@@ -86,6 +114,7 @@ for (const relative of [
   '.github/ISSUE_TEMPLATE/public-beta-feedback.yml',
   'docs/agentic-ai-reference-SPEC.md',
   'docs/theoretical-reference',
+  'docs/The Hitchhiker’s Guide to Agentic AI.md',
   'plugins/hermes',
   'plugins/gemini-antigravity',
   'packaging/native-plugin',
@@ -97,6 +126,10 @@ for (const relative of [
   'tests/test_native_plugin_tarball.mjs',
   'tests/test_native_plugin_realpath_containment.mjs',
   'tests/test_native_plugin_transactional_lifecycle.mjs',
+  'scripts/check_post_e1_runtime_trace.mjs',
+  'tests/test_post_e1_runtime_trace_checker.mjs',
+  'tests/test_post_e1_behavioral_contract.mjs',
+  'tests/test_post_beta_r2_p1_truth.mjs',
 ]) {
   if (fs.existsSync(path.join(root, relative))) errors.push(`retired public product surface remains: ${relative}`);
 }
