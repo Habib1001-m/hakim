@@ -31,7 +31,7 @@ const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
 const opencodeBootstrap = 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install';
 assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
 
-assert.equal(version, '1.0.0-beta.2');
+assert.equal(version, '1.0.0-beta.3');
 assert.equal(packageJson.version, version);
 assert.equal(packageJson.private, true);
 assert.equal(packageJson.engines?.node, '>=22');
@@ -39,6 +39,7 @@ assert.equal(packageJson.bin['hakim-opencode'], 'scripts/hakim_opencode_cli.mjs'
 assert.ok(packageJson.files.includes('plugins/opencode/hakim.mjs'));
 assert.ok(packageJson.files.includes('core/hakim-skill/skills'));
 assert.ok(packageJson.files.includes('core/hakim-skill/VERSION'));
+assert.ok(packageJson.files.includes('scripts/lib/opencode_prior_manifests.mjs'));
 assert.equal(pyproject.project.version, version);
 assert.equal(pyproject['tool.hakim'].release_channel, 'public-beta');
 assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
@@ -157,6 +158,7 @@ const opencodeReadme = read('plugins/opencode/README.md');
 assert.ok(opencodeReadme.includes(opencodeBootstrap));
 assert.match(opencodeReadme, /Source-checkout fallback/);
 assert.match(opencodeReadme, /^## Evidence boundaries$/m);
+assert.match(opencodeReadme, /mode-selection turn itself is intentionally not a repository task/i);
 for (const text of [readme, install, opencodeReadme]) {
   assert.ok(!/npm run plan:install[^\n]*-- --target/.test(text), 'plan:install examples must not contain a second npm separator before --target');
 }
@@ -171,8 +173,11 @@ const productDocs = [
   'SECURITY.md',
   'KNOWN_LIMITATIONS.md',
   'VERSIONING.md',
+  'SUPPORT.md',
   'docs/ARCHITECTURE.md',
   'docs/LIVE_HOST_ACCEPTANCE.md',
+  'docs/PRODUCT_READINESS.md',
+  'core/hakim-skill/AGENTS.md',
   'core/hakim-skill/INSTALL.md',
   'core/hakim-skill/MIGRATION.md',
   'core/hakim-skill/skills/hakim-help/SKILL.md',
