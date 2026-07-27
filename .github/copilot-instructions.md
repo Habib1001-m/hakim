@@ -1,17 +1,19 @@
 # Hakim repository instructions
 
-<!-- hakim-canonical-sha256: d6366222e933d63d9acb358a6abfb18b031102e07876067f2777925751b459aa -->
+<!-- hakim-canonical-sha256: 86d365798553babe6d9a91b9190d3b1c04ef0d45f82b46c09c043e269d7a899f -->
 
 When changing this repository:
 
 - make the smallest safe change; in Hakim this means the smallest sufficient, coherent, safe change rather than optimizing for the fewest lines or files;
-- before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; if none is safe/reasonable, record why no baseline was run and do not imply a pre-existing green state;
+- before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; baseline discovery is read-only by default, and dependency/editable installs, lockfile or package-metadata generation, repository-local environment/bootstrap creation, code generation, formatter writes, and similar side effects count as mutations rather than harmless baseline preparation;
+- inspect maintained documentation, configuration, scripts, and tool declarations first; do not mutate merely to discover or prepare a baseline when a maintained non-mutating path is available; if setup mutation is genuinely required, state why before doing it and distinguish setup mutation from product mutation;
 - once the affected implementation path, local conventions/reuse candidates, material guards, and validation surface are known, stop inspecting; any additional read/search must answer a concrete unresolved question with decision value;
+- do not create repository-local planning/analysis artifacts or repeat equivalent analysis merely to continue inspection when no decision-relevant question remains;
 - do not default to whole-repository exploration when the affected path is already bounded; investigate material correctness or safety uncertainty before mutation;
 - before simplifying or deleting validation/guard logic, identify the protected invariant; simplification must not remove a real domain/security/privacy/integrity/migration/rollback/accessibility/trust guard unless evidence shows the requirement no longer applies or is preserved elsewhere;
 - do not split, omit, or defer a necessary part of the same bounded change merely to shrink the diff;
 - preserve unrelated behavior and user files;
-- keep claims bounded to inspectable evidence;
+- keep claims bounded to inspectable evidence; for `NO_CHANGE`, default to `No justified change found within the inspected scope` and do not claim global/minimum/irreducible complexity unless the inspected evidence establishes it;
 - distinguish deterministic checks from correctness or security review;
 - avoid speculative architecture and unnecessary dependencies;
 - add or update tests for changed behavior;
@@ -20,6 +22,7 @@ When changing this repository:
 
 ## Capability routing
 
+- If the user explicitly requests Hakim, `/hakim`, or the native `hakim` skill, invoke the installed native `hakim` capability before any repository-affecting tool or shell command. Do not reimplement the Hakim workflow first from generic instructions.
 - Use Hakim capability `hakim` for the full evidence-bound workflow.
 - Use Hakim capability `hakim-review` for bounded review.
 - Use Hakim capability `hakim-audit` for evidence-backed audit work.
