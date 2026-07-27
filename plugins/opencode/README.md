@@ -1,6 +1,6 @@
 # Hakim for OpenCode
 
-**Status:** Hakim `1.0.0-beta.3` public-beta remediation candidate; current OpenCode live-host acceptance is `NOT_RUN` pending fresh candidate-specific evidence  
+**Status:** Hakim `1.0.0-beta.4` public-beta observable-checkpoint candidate; current OpenCode live-host acceptance is `NOT_RUN` pending fresh candidate-specific evidence  
 **Distribution:** Git-backed bootstrap into repository-local OpenCode files; no npm publication or global installer
 
 ## What this plugin does
@@ -164,8 +164,8 @@ These checks prove their deterministic repository/package scope only. They do no
 ## Evidence boundaries
 
 - The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
-- The beta.3 OpenCode path is currently `NOT_RUN` in `conformance/native-host-acceptance.json`; fresh install/start/invocation evidence on the exact candidate is required before it can be promoted to `PASS`.
-- Accepted beta.1 and frozen beta.2 evidence remains bounded to those exact historical candidates and is not reused as beta.3 proof.
+- The beta.4 OpenCode path is currently `NOT_RUN` in `conformance/native-host-acceptance.json`; fresh install/start/invocation evidence on the exact candidate is required before it can be promoted to `PASS`.
+- Accepted beta.1 and frozen beta.2/beta.3 evidence remains bounded to those exact historical candidates and is not reused as beta.4 proof.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
