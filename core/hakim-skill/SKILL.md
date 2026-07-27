@@ -7,7 +7,7 @@ description: >
   Use on coding, review, refactoring, dependency, and technical-debt tasks.
 argument-hint: [lite|full|ultra|off]
 license: MIT
-version: 1.0.0-beta.1
+version: 1.0.0-beta.2
 author: Habib1001-m
 repository: https://github.com/Habib1001-m/hakim
 tags:
@@ -159,7 +159,7 @@ differs by host and is recorded in `capabilities.json` and the host integration.
 | `hakim-review` | Review the current unstaged and staged diff for removable complexity. |
 | `hakim-audit` | Audit active repository surfaces for evidence-backed simplification opportunities. |
 | `hakim-debt` | Separate live debt from synthetic examples and archived records. |
-| `hakim-gain` | Show accepted evidence status without unsupported metrics. |
+| `hakim-gain` | Show evidence status; `gain` is retained as the beta compatibility ID and does not claim a quantified gain. |
 | `hakim-help` | Show modes, capabilities, host syntax, validation, and evidence boundaries. |
 
 ## Optional Resources
@@ -178,7 +178,7 @@ claim that Hakim ships a workflow engine.
 
 ## Distribution Boundary
 
-Hakim `1.0.0-beta.1` is distributed from public source. Codex, Claude Code, and
+Hakim `1.0.0-beta.2` is distributed from public source. Codex, Claude Code, and
 GitHub Copilot have repository-hosted native plugin marketplaces; OpenCode uses
 a guarded project-local native plugin installer. No npm publication, central
 plugin-directory listing, signing, notarization, or universal global installer
