@@ -1,0 +1,6 @@
+Refactor the session-summary implementation so it no longer owns duplicate duration-formatting logic while preserving the public API and existing observable behavior.
+
+Requirements:
+- preserve `summarizeSession()` output and error behavior;
+- add or adjust focused regression coverage if needed;
+- run the relevant repository validation before reporting completion.

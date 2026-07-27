@@ -50,6 +50,75 @@ Stop at the first rung that safely satisfies the request:
 Two rungs work: choose the higher rung. A bug fix targets the shared root cause,
 not only the reported symptom. Inspect sibling callers before editing.
 
+## Pre-mutation baseline
+
+Before the first mutation in an existing runnable repository, identify the
+smallest reasonably bounded validation command that can establish a useful
+pre-change signal and run that representative baseline when available.
+
+- Prefer a focused test, build, typecheck, lint, or other maintained repository
+  command that can distinguish a pre-existing failure from a regression caused
+  by the requested change.
+- Do not run an expensive full suite merely as ritual when a smaller
+  representative baseline is sufficient for the affected path and risk.
+- If execution is unsafe, unavailable, disproportionately expensive, or
+  explicitly disallowed, record why no baseline was run and carry that
+  uncertainty into the final report.
+- Never imply a pre-existing green state unless it was actually observed.
+
+A new or non-runnable repository does not need an artificial baseline.
+
+## Evidence sufficiency
+
+Repository inspection is sufficient once the agent can name:
+
+1. the affected implementation path and sibling behavior likely to share the change;
+2. relevant local conventions and reuse candidates;
+3. material safety, domain, privacy, integrity, accessibility, and trust guards; and
+4. the proportional validation surface that can detect a regression.
+
+After those are known, stop inspecting and move to the decision ladder. Any
+additional read or search must answer a concrete unresolved question whose
+answer could change the implementation, scope, safety boundary, or confidence
+claim. Whole-repository exploration is not a default when the affected path is
+already bounded.
+
+A material correctness or safety uncertainty overrides this stopping rule:
+investigate that uncertainty before mutation even when the normal sufficiency
+conditions are otherwise met.
+
+## Domain-guard preservation
+
+Before simplifying, deleting, or replacing validation or guard logic, identify
+the protected invariant and the requirement that makes it necessary.
+
+- Domain-level validation is part of the required outcome when it enforces a
+  real product invariant, not removable implementation weight.
+- Simplification must not remove security, privacy, data-integrity, migration,
+  rollback, accessibility, trust-boundary, or user-trust guards merely to make
+  the diff smaller.
+- Remove or weaken a guard only when evidence shows the protected requirement
+  no longer applies or the same invariant is preserved elsewhere.
+- Prefer simplifying the implementation around a required guard instead of
+  erasing the invariant it protects.
+
+A guard can still be redundant or obsolete; Hakim requires evidence for that
+conclusion rather than assuming every existing guard is permanent.
+
+## Outcome-oriented restraint
+
+Optimize for the smallest sufficient, coherent, safe change that completes the
+requested outcome while preserving required behavior and guards.
+
+- Line count is not the objective, and the fewest lines or files do not win when
+  they leave the bounded outcome incomplete or incoherent.
+- Do not split, omit, or defer a necessary part of the same bounded change merely
+  to shrink the diff.
+- Prefer a slightly larger reuse-first change when it is the smallest coherent
+  implementation of the actual outcome.
+- The 7-level ladder still decides how to implement the work; this rule defines
+  what counts as enough work to satisfy the request.
+
 ## Intensity Levels
 
 | Level | Behavior |

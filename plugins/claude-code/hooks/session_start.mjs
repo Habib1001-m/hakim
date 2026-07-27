@@ -37,7 +37,10 @@ async function main() {
 
   const additionalContext = [
     `Hakim ${version} plugin is active for this Claude Code session.`,
-    'Apply the hidden Hakim canonical skills automatically when the task matches their descriptions.',
+    'For any coding task that may mutate repository files, invoke the hidden plugin skill hakim:hakim before the first file mutation; do not rely on automatic description matching alone.',
+    'Run the smallest safely and reasonably available representative baseline before the first file mutation; if no baseline can be run, state the boundary truthfully instead of implying a pre-existing green state.',
+    'For bounded work, avoid TaskCreate and TaskUpdate unless there are multiple independent workstreams or task tracking would change a real implementation, safety, or coordination decision.',
+    'Once the affected path, material guards, and proportional validation surface are known, stop inspecting unless a concrete unresolved question could change the decision.',
     'User shortcuts are /hakim:full, /hakim:review, /hakim:audit, /hakim:debt, /hakim:gain, and /hakim:help.',
     'Preserve Claude Code permissions and host-native trust controls; never bypass them.',
   ].join(' ');

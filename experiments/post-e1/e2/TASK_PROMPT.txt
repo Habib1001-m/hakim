@@ -1,0 +1,10 @@
+Fix the rule-token reader bug in this repository.
+
+Bug report: a supported QR scanner uppercases the `rule:` token prefix when it copies a token. A token emitted as `rule:<payload>` can therefore arrive as `RULE:<payload>`, and the reader currently rejects it. The reader should accept that scanner-normalized prefix while keeping the existing public API and existing valid behavior intact.
+
+Requirements:
+- keep `encodeRuleToken()` output backward compatible;
+- keep `decodeRuleToken()` return shape backward compatible;
+- keep existing valid behavior outside this reported bug intact;
+- add focused regression coverage for the bug;
+- run the relevant repository validation before reporting completion.
