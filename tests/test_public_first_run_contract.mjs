@@ -19,6 +19,7 @@ const limitations = read('KNOWN_LIMITATIONS.md');
 const liveAcceptance = read('docs/LIVE_HOST_ACCEPTANCE.md');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
 const nativeAcceptance = JSON.parse(read('conformance/native-host-acceptance.json'));
+const beta1Acceptance = JSON.parse(read('conformance/history/native-host-acceptance-1.0.0-beta.1.json'));
 const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
 const claudeManifest = JSON.parse(read('plugins/claude-code/.claude-plugin/plugin.json'));
 const copilotManifest = JSON.parse(read('plugins/copilot/plugin.json'));
@@ -30,7 +31,7 @@ const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
 const opencodeBootstrap = 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install';
 assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
 
-assert.equal(version, '1.0.0-beta.1');
+assert.equal(version, '1.0.0-beta.2');
 assert.equal(packageJson.version, version);
 assert.equal(packageJson.private, true);
 assert.equal(packageJson.engines?.node, '>=22');
@@ -44,23 +45,23 @@ assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
 assert.equal(pyproject['tool.hakim'].phase, undefined);
 assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
 
-// Current host-acceptance truth is structural. Do not infer it from prose.
+// Current host-acceptance truth is structural. A new prerelease candidate starts
+// from NOT_RUN rather than inheriting accepted evidence from a prior version.
 assert.equal(nativeAcceptance.product_version, version);
-assert.equal(nativeAcceptance.overall_status, 'PASS');
+assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
 for (const host of expectedHosts) {
-  assert.equal(nativeAcceptance.hosts[host].status, 'PASS');
-  assert.equal(typeof nativeAcceptance.hosts[host].host_version, 'string');
-  assert.ok(nativeAcceptance.hosts[host].host_version.length > 0);
-  assert.equal(typeof nativeAcceptance.hosts[host].verified_at, 'string');
-  assert.ok(nativeAcceptance.hosts[host].verified_at.length > 0);
-  assert.equal(typeof nativeAcceptance.hosts[host].evidence_ref, 'string');
-  assert.ok(nativeAcceptance.hosts[host].evidence_ref.length > 0);
+  assert.equal(nativeAcceptance.hosts[host].status, 'NOT_RUN');
+  assert.equal(nativeAcceptance.hosts[host].host_version, null);
+  assert.equal(nativeAcceptance.hosts[host].verified_at, null);
+  assert.equal(nativeAcceptance.hosts[host].evidence_ref, null);
 }
-assert.match(nativeAcceptance.hosts.opencode.product_path, /managed project-local install\/adopt\/upgrade/);
-assert.equal(nativeAcceptance.hosts.opencode.host_version, '1.17.13');
-assert.equal(nativeAcceptance.hosts.opencode.verified_at, '2026-07-26');
-assert.equal(nativeAcceptance.hosts.opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/pull/21#issuecomment-5080940335');
+assert.equal(beta1Acceptance.product_version, '1.0.0-beta.1');
+assert.equal(beta1Acceptance.overall_status, 'PASS');
+for (const host of expectedHosts) assert.equal(beta1Acceptance.hosts[host].status, 'PASS');
+assert.equal(beta1Acceptance.hosts.opencode.host_version, '1.17.13');
+assert.equal(beta1Acceptance.hosts.opencode.verified_at, '2026-07-26');
+assert.equal(beta1Acceptance.hosts.opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/pull/21#issuecomment-5080940335');
 
 assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
@@ -76,7 +77,8 @@ assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`
 assert.ok(readme.includes('Hakim `' + version + '` is public beta software'));
 assert.match(security, new RegExp(escapeRegExp(version)));
 assert.match(limitations, new RegExp(escapeRegExp(version)));
-assert.match(changelog, new RegExp(`^## ${escapeRegExp(version)}$`, 'm'));
+assert.match(changelog, /^## Unreleased$/m);
+assert.match(changelog, /^## 1\.0\.0-beta\.1$/m);
 assert.match(changelog, /Withdrew the premature External Public-Beta Evaluator Campaign/);
 assert.match(changelog, /private-prerelease/);
 assert.match(changelog, /accepted real-host evidence for the Git-backed OpenCode/i);
@@ -122,7 +124,6 @@ assert.match(liveAcceptance, /npm\/cli#6723/);
 assert.ok(!liveAcceptance.includes('npx --yes --package=npm@11 npm exec --yes'), 'acceptance docs must not use the nested npm exec wrapper');
 assert.match(liveAcceptance, /does not upgrade or replace the system npm/);
 assert.match(readme, /^## Product readiness$/m);
-assert.match(readme, /POST-BETA-R1/);
 assert.match(readme, /External evaluator recruitment remains suspended/i);
 
 const hostSurfaces = new Map([
@@ -203,10 +204,6 @@ const stalePublicTokens = [
   'OPEN FOR EXTERNAL EVALUATOR SUBMISSIONS',
   'five independent accepted evaluator reports',
   'SUSPENDED_FOR_PRODUCT_REMEDIATION',
-  'OpenCode is intentionally `NOT_RUN`',
-  'OpenCode lifecycle is intentionally `NOT_RUN`',
-  'remain `NOT_RUN` in the public projection',
-  'require fresh real-host evidence before this changed path is promoted as accepted',
 ];
 
 for (const relative of productDocs) {
@@ -222,4 +219,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts with accepted current-path evidence, ${documentedScripts.size} documented npm scripts, version ${version}`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, current acceptance ${nativeAcceptance.overall_status}, ${documentedScripts.size} documented npm scripts, version ${version}`);
