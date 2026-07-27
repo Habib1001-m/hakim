@@ -14,9 +14,9 @@ For example, when a repository already has a parser that safely handles the requ
 
 ## Status
 
-Hakim `1.0.0-beta.2` is public beta software; the current beta.2 candidate is distributed from public source and host-native Git marketplaces. It is not published to the npm registry and does not claim a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
+Hakim `1.0.0-beta.3` is public beta software; the current beta.3 remediation candidate is distributed from public source and host-native Git marketplaces. It is not published to the npm registry and does not claim a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
-The beta.2 candidate intentionally starts with current live-host acceptance at **`HOLD_FOR_LIVE_HOST_EVIDENCE`**. Structural tests and prior accepted journeys do not automatically promote a changed prerelease candidate. Accepted beta.1 host evidence is preserved under [`conformance/history/`](conformance/history/) rather than being relabeled as beta.2 evidence.
+The beta.3 candidate intentionally starts with current live-host acceptance at **`HOLD_FOR_LIVE_HOST_EVIDENCE`**. Structural tests and prior accepted journeys do not automatically promote a changed prerelease candidate. Accepted beta.1 and frozen beta.2 evidence remain bounded to those exact historical candidates rather than being relabeled as beta.3 evidence.
 
 External evaluator recruitment remains suspended and requires a separate explicit product decision before any relaunch. Stable `1.0.0`, registry publication, and central marketplace promotion are not authorized by this candidate.
 
@@ -126,7 +126,7 @@ Each host intentionally uses its strongest native extension model rather than a 
 
 ## Product readiness
 
-Current native runtime acceptance is not the same thing as full product readiness. The beta.2 candidate deliberately resets current-path host acceptance until fresh real-host journeys are recorded for this candidate. Prior beta.1 evidence remains historical and inspectable.
+Current native runtime acceptance is not the same thing as full product readiness. The beta.3 remediation candidate deliberately resets current-path host acceptance until fresh candidate-specific journeys are recorded. Prior beta.1/beta.2 evidence remains historical and inspectable for those exact candidates.
 
 The current product-readiness work is tracked in [#32](https://github.com/Habib1001-m/hakim/issues/32): version identity, canonical local/CI gates, public-repository pruning, in-product help simplification, evidence-status naming truth, permanent contract naming, cross-host behavioral confidence, production-like dogfood, and stable-release prerequisites.
 
