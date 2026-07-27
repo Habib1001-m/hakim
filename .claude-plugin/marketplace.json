@@ -9,7 +9,7 @@
       "name": "hakim",
       "source": "./plugins/claude-code",
       "description": "Evidence-bound coding governance for Claude Code with skills, agents, hooks, and native slash workflows.",
-      "version": "1.0.0-beta.1",
+      "version": "1.0.0-beta.2",
       "category": "development",
       "tags": [
         "coding",
