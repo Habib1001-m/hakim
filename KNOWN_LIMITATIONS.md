@@ -1,6 +1,6 @@
 # Known Limitations
 
-Hakim `1.0.0-beta.1` remains public beta software.
+Hakim `1.0.0-beta.2` remains public beta software. The current beta.2 candidate has not yet been promoted by fresh live-host acceptance.
 
 ## Distribution
 
@@ -8,11 +8,12 @@ Hakim `1.0.0-beta.1` remains public beta software.
 - No npm registry package/publication or central marketplace/directory listing is currently provided.
 - OpenCode's Git-backed bootstrap uses npm/npx only as transport/command execution for the public Git repository; it does not create a registry publication or global Hakim/OpenCode installation.
 - Local skill-package build outputs are not signed, notarized, or externally attested.
-- No SBOM or public support SLA is currently provided.
+- A public SBOM is not yet produced; stable-release readiness remains blocked on that prerequisite.
+- No public support SLA is currently provided.
 
 ## Compatibility
 
-- Supported-host evidence is bounded to documented environments.
+- Supported-host evidence is bounded to documented environments and exact product identities.
 - Codex `0.131.0+` is the compatibility floor for this beta's default-on bundled plugin-hook contract. In tag `rust-v0.130.0`, `plugin_hooks` was still under development and disabled by default; in `rust-v0.131.0`, it is stable and enabled by default.
 - The shipped Git-backed OpenCode package declares Node `>=22`; Public CI exercises its package/runtime surface on Node 22, 24, and 26. That is not a claim of universal OS or OpenCode-version compatibility.
 - Universal operating-system, editor-version, provider, and model compatibility is not established.
@@ -33,14 +34,11 @@ Hakim `1.0.0-beta.1` remains public beta software.
 
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
-- All four maintained current-native product paths have accepted `PASS` evidence in `conformance/native-host-acceptance.json`.
-- The current bounded-sentinel OpenCode runtime was accepted on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`, covering clean managed install/start/invocation and successful `/hakim-help` plus `/hakim full ...` runtime use.
-- OpenCode evidence from candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` on OpenCode `1.18.5` remains bounded to the unchanged manifest-backed accepted-old-to-managed upgrade and newer-CLI removal journey; it is not reused for the changed bounded-sentinel runtime.
-- OpenCode evidence from candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains bounded historical evidence for the earlier create-only lifecycle.
-- Earlier guarded source-checkout OpenCode evidence also remains bounded historical evidence.
+- `conformance/native-host-acceptance.json` is the current beta.2 projection and is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE`; all four current paths are `NOT_RUN` until fresh journeys are accepted for this candidate.
+- Accepted beta.1 Codex, Claude Code, GitHub Copilot, and OpenCode evidence is preserved under `conformance/history/native-host-acceptance-1.0.0-beta.1.json`; it is historical evidence and is not relabeled as beta.2 acceptance.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
 - Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.
-- POST-BETA-R1 remediation is complete. External evaluator recruitment remains suspended, the withdrawn campaign accepted no external reports, and any future relaunch requires a separate explicit product decision. Native-host acceptance must not be converted into a claim of independent product usefulness or retention.
+- External evaluator recruitment remains suspended, the withdrawn campaign accepted no external reports, and any future relaunch requires a separate explicit product decision. Native-host acceptance must not be converted into a claim of independent product usefulness or retention.
 - Any future external evaluation must identify an immutable Hakim source/tag/release reference so observations cannot silently refer to different revisions under the same prerelease version string.
 - Hakim makes no general claims about model quality, speed, token use, cost, adoption, safety improvement, or return on investment.
 
@@ -49,4 +47,4 @@ Hakim `1.0.0-beta.1` remains public beta software.
 - Hakim does not implement a product telemetry collection service.
 - Hakim does not enable raw prompt or source-code logging.
 - Repository evidence and outcome schemas are local validation artifacts, not product telemetry.
-- Security response and maintenance are best-effort.
+- Security response and maintenance are best-effort during public beta; see `SUPPORT.md` for the current support and deprecation boundary.
