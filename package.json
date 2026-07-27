@@ -1,6 +1,6 @@
 {
   "name": "@habib/hakim",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "private": true,
   "description": "Evidence-bound coding governance for smaller, safer AI-assisted changes.",
   "type": "commonjs",
