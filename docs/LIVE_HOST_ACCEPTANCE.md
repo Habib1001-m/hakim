@@ -1,6 +1,6 @@
 # Current-Native Live Host Acceptance
 
-This document defines the public-safe workflow for accepting Hakim `1.0.0-beta.3` on a real supported coding host. The current beta.3 projection is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are reviewed and accepted.
+This document defines the public-safe workflow for accepting Hakim `1.0.0-beta.4` on a real supported coding host. The current beta.4 projection is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are reviewed and accepted.
 
 ## Boundary
 
@@ -103,7 +103,7 @@ Then start OpenCode from that project and invoke `/hakim-help` or another Hakim 
 
 OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state. Prompt activation is bounded by explicit start/end sentinels so Hakim removes only its owned system range and preserves unrelated trailing content.
 
-The beta.3 OpenCode path is currently `NOT_RUN`. Accepted beta.1 and frozen beta.2 host evidence remains bounded to those exact historical candidates and is not reused to promote beta.3.
+The beta.4 OpenCode path is currently `NOT_RUN`. Accepted beta.1 and frozen beta.2/beta.3 host evidence remains bounded to those exact historical candidates and is not reused to promote beta.4.
 
 ## 3. Record a candidate evidence packet
 
