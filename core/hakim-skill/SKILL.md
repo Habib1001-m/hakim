@@ -7,7 +7,7 @@ description: >
   Use on coding, review, refactoring, dependency, and technical-debt tasks.
 argument-hint: [lite|full|ultra|off]
 license: MIT
-version: 1.0.0-beta.2
+version: 1.0.0-beta.3
 author: Habib1001-m
 repository: https://github.com/Habib1001-m/hakim
 tags:
@@ -204,7 +204,7 @@ claim that Hakim ships a workflow engine.
 
 ## Distribution Boundary
 
-Hakim `1.0.0-beta.2` is distributed from public source. Codex, Claude Code, and
+Hakim `1.0.0-beta.3` is distributed from public source. Codex, Claude Code, and
 GitHub Copilot have repository-hosted native plugin marketplaces; OpenCode uses
 a guarded project-local native plugin installer. No npm publication, central
 plugin-directory listing, signing, notarization, or universal global installer
