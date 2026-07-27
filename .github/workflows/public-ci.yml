@@ -34,6 +34,18 @@ jobs:
       - name: Run canonical repository gate
         run: npm test
 
+      - name: Diagnose JavaScript contracts on failure
+        if: failure()
+        run: npm run test:public:js
+
+      - name: Diagnose Python contracts on failure
+        if: failure()
+        run: npm run test:public:py
+
+      - name: Diagnose release artifacts on failure
+        if: failure()
+        run: npm run package:release
+
   node22-compatibility:
     runs-on: ubuntu-latest
     timeout-minutes: 30
