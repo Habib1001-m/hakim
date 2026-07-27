@@ -3,10 +3,13 @@
 ## Supported versions
 
 Security fixes are maintained on a best-effort basis for the latest public
-`main` branch and the current `1.0.0-beta.1` public beta line.
+`main` candidate and the current `1.0.0-beta.2` public-beta line. Historical
+beta evidence does not imply an active support guarantee for arbitrary old
+snapshots.
 
 Hakim does not currently provide a paid support plan, response-time guarantee,
-enterprise compliance certification, or long-term-support release.
+enterprise compliance certification, or long-term-support release. See
+[`SUPPORT.md`](SUPPORT.md) for the current beta support and deprecation boundary.
 
 ## Reporting a vulnerability
 
@@ -32,6 +35,18 @@ project-local OpenCode lifecycle does not claim a cross-process operation lock o
 immunity to malicious/concurrent filesystem replacement between every validation
 and mutation checkpoint. Local write access by unrelated processes remains part
 of the threat model.
+
+## Supply-chain artifacts
+
+The release pipeline builds a deterministic CycloneDX JSON SBOM from the
+Git-tracked source/product inventory and includes that SBOM in the release
+checksum manifest. This SBOM is deliberately bounded: it inventories Hakim's
+tracked repository files and does not claim to inventory host binaries, model
+providers, operating-system packages, or unrelated local tooling.
+
+Checksums, reproducibility, and the SBOM improve inspectability but do not amount
+to signing, notarization, provenance attestation, or proof that the software is
+vulnerability-free.
 
 ## Privacy
 
