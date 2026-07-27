@@ -13,7 +13,7 @@ When changing this repository:
 - before simplifying or deleting validation/guard logic, identify the protected invariant; simplification must not remove a real domain/security/privacy/integrity/migration/rollback/accessibility/trust guard unless evidence shows the requirement no longer applies or is preserved elsewhere;
 - do not split, omit, or defer a necessary part of the same bounded change merely to shrink the diff;
 - preserve unrelated behavior and user files;
-- keep claims bounded to inspectable evidence; for `NO_CHANGE`, default to `No justified change found within the inspected scope` and do not claim global/minimum/irreducible complexity unless the inspected evidence establishes it;
+- keep claims bounded to inspectable evidence; for `NO_CHANGE`, default to `No justified change found within the inspected scope` and do not claim the implementation is globally minimal, irreducible, optimal, or free of all simplification opportunities unless the inspected evidence establishes it;
 - distinguish deterministic checks from correctness or security review;
 - avoid speculative architecture and unnecessary dependencies;
 - add or update tests for changed behavior;
