@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "Hakim host-native coding governance plugins.",
-    "version": "1.0.0-beta.1"
+    "version": "1.0.0-beta.2"
   },
   "plugins": [
     {
       "name": "hakim",
       "description": "Evidence-bound coding governance with reusable skills and specialized Copilot agents.",
-      "version": "1.0.0-beta.1",
+      "version": "1.0.0-beta.2",
       "source": "./plugins/copilot"
     }
   ]
