@@ -18,6 +18,8 @@ const CURRENT_VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', '
 const PREVIOUS_SUPPORTED_VERSION = '1.0.0-beta.1';
 const FROZEN_BETA2_VERSION = '1.0.0-beta.2';
 const FROZEN_BETA2_SHA = '126a228a4ff9c1afafb6075f81b4e0bbfdf702bf';
+const FROZEN_BETA3_VERSION = '1.0.0-beta.3';
+const FROZEN_BETA3_SHA = 'a697b5e24d05e38b925d849fee4a02daa623c24b';
 
 function passingDoctorResults() {
   return CHECK_DEFINITIONS.map((definition) => ({
@@ -82,22 +84,29 @@ test('doctor derives native-host recovery guidance from the host that actually f
   assert.doesNotMatch(report.next_safe_action, /current OpenCode managed lifecycle/i);
 });
 
-test('beta.3 accepts only the exact frozen beta.2 persisted OpenCode manifest as prior managed authority', () => {
-  assert.equal(CURRENT_VERSION, '1.0.0-beta.3');
-  assert.equal(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.length, 1);
-  const prior = SUPPORTED_PERSISTED_PRIOR_MANIFESTS[0];
-  assert.equal(prior.product_version, FROZEN_BETA2_VERSION);
-  assert.equal(prior.source_commit, FROZEN_BETA2_SHA);
-  assert.equal(prior.files.length, 9);
+test('beta.4 accepts only exact frozen beta.2 and beta.3 persisted OpenCode manifests as prior managed authority', () => {
+  assert.equal(CURRENT_VERSION, '1.0.0-beta.4');
+  assert.equal(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.length, 2);
+  const byVersion = new Map(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.map((manifest) => [manifest.product_version, manifest]));
+  const beta2 = byVersion.get(FROZEN_BETA2_VERSION);
+  const beta3 = byVersion.get(FROZEN_BETA3_VERSION);
+  assert.ok(beta2);
+  assert.ok(beta3);
+  assert.equal(beta2.source_commit, FROZEN_BETA2_SHA);
+  assert.equal(beta3.source_commit, FROZEN_BETA3_SHA);
+  assert.equal(beta2.files.length, 9);
+  assert.equal(beta3.files.length, 9);
 
   const bundle = buildOpenCodeBundle(ROOT);
-  const exactManaged = {
-    manifest_source: 'INSTALLED_MANIFEST',
-    manifest: JSON.parse(JSON.stringify(prior)),
-  };
-  assert.deepEqual(validateManagedInstallationAuthority(exactManaged, bundle), { ok: true });
+  for (const prior of [beta2, beta3]) {
+    const exactManaged = {
+      manifest_source: 'INSTALLED_MANIFEST',
+      manifest: JSON.parse(JSON.stringify(prior)),
+    };
+    assert.deepEqual(validateManagedInstallationAuthority(exactManaged, bundle), { ok: true });
+  }
 
-  const forged = JSON.parse(JSON.stringify(prior));
+  const forged = JSON.parse(JSON.stringify(beta3));
   forged.files[0].sha256 = '0'.repeat(64);
   const refused = validateManagedInstallationAuthority({ manifest_source: 'INSTALLED_MANIFEST', manifest: forged }, bundle);
   assert.equal(refused.ok, false);
