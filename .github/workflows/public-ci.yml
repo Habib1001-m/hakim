@@ -34,9 +34,50 @@ jobs:
       - name: Run canonical repository gate
         run: npm test
 
-      - name: Diagnose JavaScript contracts on failure
+      # These steps are diagnostics only. package.json remains the authority for
+      # the canonical gate; diagnostics run only after a failure to localize it.
+      - name: Diagnose behavior/runtime contracts on failure
         if: failure()
-        run: npm run test:public:js
+        run: |
+          node tests/test_rule_copies.js
+          node tests/test_behavioral_contract.mjs
+          node tests/test_claude_runtime_kernel.mjs
+          node tests/test_runtime_trace_contract.mjs
+          node tests/test_rule_missing_section.js
+          node tests/test_plugin_smoke.js
+
+      - name: Diagnose host projection contracts on failure
+        if: failure()
+        run: |
+          node tests/test_claude_diagnostic_hook.js
+          node scripts/check_codex_skill_projection.mjs --json
+          node scripts/check_claude_skill_projection.mjs --json
+          node scripts/check_copilot_instructions_projection.mjs --json
+          node tests/test_cross_adapter_conformance.js
+
+      - name: Diagnose repository truth contracts on failure
+        if: failure()
+        run: |
+          node tests/test_upstream_relationship.js
+          node tests/test_hakim_pr_guardian.mjs
+          node tests/test_hakim_review_pr.mjs
+          node tests/test_hakim_doctor.mjs
+          node tests/test_native_host_acceptance.mjs
+          node tests/test_hakim_live_host_acceptance.mjs
+          node scripts/check_native_host_acceptance.mjs
+          node tests/test_hakim_install_plan.mjs
+          node tests/test_public_first_run_contract.mjs
+          node tests/test_hakim_host_preflight.mjs
+          node tests/test_hakim_codex_launch.mjs
+          node tests/test_hakim_claude_launch.mjs
+          node tests/test_hakim_copilot_install.mjs
+          node tests/test_hakim_copilot_remove.mjs
+          node tests/test_generate_conformance_packets_no_git.js
+          node tests/test_structured_metadata.js
+          node tests/test_hakim_guarded_session.mjs
+          npm run check:workflow-policy
+          node scripts/check_public_repository_boundary.mjs
+          node scripts/check_public_package_surface.mjs
 
       - name: Diagnose Python contracts on failure
         if: failure()
