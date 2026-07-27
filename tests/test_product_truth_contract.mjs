@@ -13,6 +13,7 @@ import { readInstalledManifest } from '../scripts/lib/opencode_bundle.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CURRENT_VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
+const PREVIOUS_SUPPORTED_VERSION = '1.0.0-beta.1';
 
 function passingDoctorResults() {
   return CHECK_DEFINITIONS.map((definition) => ({
@@ -77,17 +78,17 @@ test('doctor derives native-host recovery guidance from the host that actually f
   assert.doesNotMatch(report.next_safe_action, /current OpenCode managed lifecycle/i);
 });
 
-test('failed OpenCode upgrade reports the version actually restored after complete rollback', () => {
+test('failed supported beta.1 to current upgrade reports the version actually restored after complete rollback', () => {
   const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-product-truth-upgrade-'));
   const target = path.join(parent, 'repository');
   fs.mkdirSync(target);
 
   try {
-    const initial = installOpenCodeAdapter({ target, apply: true }, ROOT);
+    const olderSource = makeVariantSource(parent, PREVIOUS_SUPPORTED_VERSION, 'synthetic-persisted-beta1-product-truth');
+    const initial = installOpenCodeAdapter({ target, apply: true }, olderSource);
     assert.equal(initial.state, 'CREATED');
+    assert.equal(initial.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
 
-    const variantVersion = `${CURRENT_VERSION}-next-test`;
-    const variant = makeVariantSource(parent, variantVersion, 'product-truth-upgrade-fault');
     const originalCopy = fs.copyFileSync;
     let injected = false;
 
@@ -101,7 +102,7 @@ test('failed OpenCode upgrade reports the version actually restored after comple
 
     let report;
     try {
-      report = installOpenCodeAdapter({ target, apply: true }, variant);
+      report = installOpenCodeAdapter({ target, apply: true }, ROOT);
     } finally {
       fs.copyFileSync = originalCopy;
     }
@@ -111,17 +112,17 @@ test('failed OpenCode upgrade reports the version actually restored after comple
     assert.equal(report.state, 'UPGRADE_FAILED_ROLLED_BACK');
     assert.equal(report.rollback_attempted, true);
     assert.equal(report.rollback_complete, true);
-    assert.equal(report.previous_product_version, CURRENT_VERSION);
-    assert.equal(report.installed_product_version, CURRENT_VERSION);
+    assert.equal(report.previous_product_version, PREVIOUS_SUPPORTED_VERSION);
+    assert.equal(report.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
 
     const manifest = readInstalledManifest(target);
     assert.equal(manifest.state, 'VALID');
-    assert.equal(manifest.manifest.product_version, CURRENT_VERSION);
+    assert.equal(manifest.manifest.product_version, PREVIOUS_SUPPORTED_VERSION);
 
-    const status = inspectStatus(target, variant);
+    const status = inspectStatus(target, ROOT);
     assert.equal(status.status, 'PASS');
     assert.equal(status.state, 'UPGRADE_AVAILABLE');
-    assert.equal(status.installed_product_version, CURRENT_VERSION);
+    assert.equal(status.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
   } finally {
     fs.rmSync(parent, { recursive: true, force: true });
   }
