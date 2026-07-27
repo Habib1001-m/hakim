@@ -1,6 +1,6 @@
 # Install Hakim
 
-Hakim `1.0.0-beta.2` is distributed from public source and host-native Git marketplaces. No npm registry package or central marketplace/directory listing is currently claimed. The beta.2 candidate currently requires fresh live-host acceptance before its maintained paths are promoted as accepted.
+Hakim `1.0.0-beta.3` is distributed from public source and host-native Git marketplaces. No npm registry package or central marketplace/directory listing is currently claimed. The beta.3 remediation candidate currently requires fresh candidate-specific live-host evidence before its maintained paths are promoted as accepted.
 
 ## Codex
 
@@ -92,7 +92,7 @@ Install supports only bounded verified transitions:
 
 Partial, modified, unsafe, symlinked, malformed/unsupported-manifest, or unowned conflicting state is refused. Hakim never edits `opencode.json`.
 
-After installation, start OpenCode from that repository and use `/hakim-help` or `/hakim full ...`.
+After installation, start OpenCode from that repository and use `/hakim-help` or `/hakim full ...`. `/hakim <mode>` is a direct session-mode switch; it must not require auxiliary Hakim skills or repository inspection merely to set the mode.
 
 Removal remains project-local:
 
@@ -123,7 +123,7 @@ The install/remove commands exercise the same managed project-local lifecycle im
 
 OpenCode mode state is process-local and session-scoped where a session ID is present. Reused prompt outputs contain at most one bounded Hakim activation block delimited by explicit start/end sentinels; repeated transforms do not duplicate the policy, mode changes replace only that owned range, `off` removes only that range, and unrelated system content around it is preserved. An unbounded legacy marker is left untouched rather than destructively guessing where Hakim ownership ends. Fresh plugin processes reset to the configured default rather than sharing state across projects or host restarts.
 
-Repository-side behavior is structurally and adversarially tested across the supported Node runtime contract. The current beta.2 OpenCode path is `NOT_RUN` in `conformance/native-host-acceptance.json` until a fresh candidate-specific real-host journey is accepted. Accepted beta.1 OpenCode and other host evidence is preserved in `conformance/history/native-host-acceptance-1.0.0-beta.1.json`; historical evidence is not reused to promote beta.2.
+Repository-side behavior is structurally and adversarially tested across the supported Node runtime contract. The current beta.3 OpenCode path is `NOT_RUN` in `conformance/native-host-acceptance.json` until fresh candidate-specific evidence is accepted. Accepted beta.1 and frozen beta.2 evidence remains bounded to those exact candidates and is not reused to promote beta.3.
 
 ## Inspect all maintained product surfaces
 
