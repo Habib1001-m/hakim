@@ -9,11 +9,15 @@ import { fileURLToPath } from 'node:url';
 import { CHECK_DEFINITIONS, buildReport, formatText } from '../scripts/hakim_doctor.mjs';
 import { installOpenCodeAdapter } from '../scripts/hakim_opencode_install.mjs';
 import { inspectStatus } from '../scripts/hakim_opencode_cli.mjs';
-import { readInstalledManifest } from '../scripts/lib/opencode_bundle.mjs';
+import { buildOpenCodeBundle, readInstalledManifest } from '../scripts/lib/opencode_bundle.mjs';
+import { SUPPORTED_PERSISTED_PRIOR_MANIFESTS } from '../scripts/lib/opencode_prior_manifests.mjs';
+import { validateManagedInstallationAuthority } from '../scripts/lib/opencode_transaction.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CURRENT_VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
 const PREVIOUS_SUPPORTED_VERSION = '1.0.0-beta.1';
+const FROZEN_BETA2_VERSION = '1.0.0-beta.2';
+const FROZEN_BETA2_SHA = '126a228a4ff9c1afafb6075f81b4e0bbfdf702bf';
 
 function passingDoctorResults() {
   return CHECK_DEFINITIONS.map((definition) => ({
@@ -76,6 +80,29 @@ test('doctor derives native-host recovery guidance from the host that actually f
   assert.match(report.next_safe_action, /codex/i);
   assert.doesNotMatch(report.next_safe_action, /issue #18/i);
   assert.doesNotMatch(report.next_safe_action, /current OpenCode managed lifecycle/i);
+});
+
+test('beta.3 accepts only the exact frozen beta.2 persisted OpenCode manifest as prior managed authority', () => {
+  assert.equal(CURRENT_VERSION, '1.0.0-beta.3');
+  assert.equal(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.length, 1);
+  const prior = SUPPORTED_PERSISTED_PRIOR_MANIFESTS[0];
+  assert.equal(prior.product_version, FROZEN_BETA2_VERSION);
+  assert.equal(prior.source_commit, FROZEN_BETA2_SHA);
+  assert.equal(prior.files.length, 9);
+
+  const bundle = buildOpenCodeBundle(ROOT);
+  const exactManaged = {
+    manifest_source: 'INSTALLED_MANIFEST',
+    manifest: JSON.parse(JSON.stringify(prior)),
+  };
+  assert.deepEqual(validateManagedInstallationAuthority(exactManaged, bundle), { ok: true });
+
+  const forged = JSON.parse(JSON.stringify(prior));
+  forged.files[0].sha256 = '0'.repeat(64);
+  const refused = validateManagedInstallationAuthority({ manifest_source: 'INSTALLED_MANIFEST', manifest: forged }, bundle);
+  assert.equal(refused.ok, false);
+  assert.equal(refused.state, 'MANIFEST_UNSUPPORTED');
+  assert.match(refused.message, /exact supported prior manifest/i);
 });
 
 test('failed supported beta.1 to current upgrade reports the version actually restored after complete rollback', () => {
