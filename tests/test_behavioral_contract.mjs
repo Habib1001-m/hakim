@@ -23,6 +23,20 @@ const canonicalGroups = {
     /setup\s+mutation/i,
     /pre-existing green state/i,
   ],
+  checkpoints: [
+    /## Observable checkpoints/i,
+    /BASELINE_COMMAND/,
+    /BASELINE_SOURCE/,
+    /SETUP_MUTATION/,
+    /PRE_EDIT_GIT_STATUS/,
+    /SEMANTIC_CHANGE_CHECK/,
+    /existing-suite green is not sufficient/i,
+    /boundary states/i,
+    /FINAL_GIT_STATUS/,
+    /SETUP_ARTIFACTS/,
+    /UNRELATED_MUTATIONS/,
+    /no artifacts/i,
+  ],
   sufficiency: [
     /## Evidence sufficiency/i,
     /affected implementation path/i,
@@ -82,6 +96,16 @@ for (const relativePath of projections) {
     /baseline discovery is read-only/i,
     /editable\s+installs/i,
     /setup\s+mutation/i,
+    /BASELINE_COMMAND/,
+    /BASELINE_SOURCE/,
+    /SETUP_MUTATION/,
+    /PRE_EDIT_GIT_STATUS/,
+    /SEMANTIC_CHANGE_CHECK/,
+    /existing-suite green/i,
+    /boundary states/i,
+    /FINAL_GIT_STATUS/,
+    /SETUP_ARTIFACTS/,
+    /UNRELATED_MUTATIONS/,
     /evidence sufficiency|stop inspecting/i,
     /concrete unresolved question/i,
     /planning[/-]?analysis artifacts|planning or analysis artifacts/i,
@@ -102,12 +126,42 @@ assert.match(
   /explicitly requests Hakim[\s\S]{0,180}before any repository-affecting tool or shell command/i,
   'Copilot routing must activate native Hakim before repository-affecting tool use when explicitly requested',
 );
+assert.match(
+  copilotInstructions,
+  /BASELINE_COMMAND[\s\S]{0,240}PRE_EDIT_GIT_STATUS/i,
+  'Copilot repository instructions must retain the observable pre-edit checkpoint',
+);
+assert.match(
+  copilotInstructions,
+  /SEMANTIC_CHANGE_CHECK[\s\S]{0,260}boundary states/i,
+  'Copilot repository instructions must require semantic-change evidence beyond existing-suite green',
+);
+assert.match(
+  copilotInstructions,
+  /FINAL_GIT_STATUS[\s\S]{0,220}UNRELATED_MUTATIONS/i,
+  'Copilot repository instructions must retain final-state truth reconciliation',
+);
 
 const copilotSkill = read('plugins/copilot/skills/hakim/SKILL.md');
 assert.match(
   copilotSkill,
   /explicitly invokes Hakim[\s\S]{0,120}before repository-affecting tool use/i,
   'Copilot native skill must itself retain pre-tool activation discipline',
+);
+assert.match(
+  copilotSkill,
+  /BASELINE_COMMAND[\s\S]{0,320}PRE_EDIT_GIT_STATUS/i,
+  'Copilot native skill must require an observable baseline checkpoint before product edits',
+);
+assert.match(
+  copilotSkill,
+  /SEMANTIC_CHANGE_CHECK[\s\S]{0,360}existing-suite green/i,
+  'Copilot native skill must reject existing-suite green as sole semantic-equivalence evidence',
+);
+assert.match(
+  copilotSkill,
+  /FINAL_GIT_STATUS[\s\S]{0,300}UNRELATED_MUTATIONS/i,
+  'Copilot native skill must reconcile final repository state before clean/no-artifact claims',
 );
 
 const openCodePlugin = read('plugins/opencode/hakim.mjs');
