@@ -25,7 +25,7 @@ Tests, examples, archived evidence, and research notes are not higher authority 
 
 ## Current product boundary
 
-Hakim `1.0.0-beta.2` is a public-beta candidate with maintained surfaces for Codex, Claude Code, GitHub Copilot, and OpenCode. Current beta.2 live-host acceptance remains `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are accepted; beta.1 accepted evidence is historical and must not be relabeled as beta.2 evidence.
+Hakim `1.0.0-beta.3` is a public-beta remediation candidate with maintained surfaces for Codex, Claude Code, GitHub Copilot, and OpenCode. Current beta.3 live-host acceptance remains `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are accepted; accepted beta.1 and frozen beta.2 evidence is historical and must not be relabeled as beta.3 evidence.
 
 The maintained product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm registry publication, central marketplace/directory publication, signing, notarization, or universal host compatibility. The private root package metadata may be used as a bounded Git transport surface for OpenCode without becoming an npm registry release.
 
