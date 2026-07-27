@@ -20,7 +20,7 @@ const canonicalGroups = {
     /baseline discovery is read-only/i,
     /editable\s+installs/i,
     /lockfile|package-metadata/i,
-    /setup mutation/i,
+    /setup\s+mutation/i,
     /pre-existing green state/i,
   ],
   sufficiency: [
@@ -28,8 +28,8 @@ const canonicalGroups = {
     /affected implementation path/i,
     /concrete unresolved question/i,
     /whole-repository exploration/i,
-    /planning or analysis artifacts/i,
-    /repeat equivalent analysis/i,
+    /planning\s+or\s+analysis\s+artifacts/i,
+    /repeat\s+equivalent\s+analysis/i,
   ],
   guards: [
     /## Domain-guard preservation/i,
@@ -81,7 +81,7 @@ for (const relativePath of projections) {
     /pre-mutation baseline|before the first mutation/i,
     /baseline discovery is read-only/i,
     /editable\s+installs/i,
-    /setup mutation/i,
+    /setup\s+mutation/i,
     /evidence sufficiency|stop inspecting/i,
     /concrete unresolved question/i,
     /planning[/-]?analysis artifacts|planning or analysis artifacts/i,
