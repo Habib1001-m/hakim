@@ -13,6 +13,7 @@ import {
 } from '../scripts/hakim_doctor.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const currentVersion = fs.readFileSync(path.join(repoRoot, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
 
 assert.equal(CHECK_DEFINITIONS.length, 6);
 assert.equal(
@@ -62,10 +63,11 @@ const passingResults = CHECK_DEFINITIONS.map((definition) => ({
 }));
 
 const nativeAcceptance = readNativeAcceptance(repoRoot);
-assert.equal(nativeAcceptance.overall_status, 'PASS');
+assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 
-const report = buildReport(passingResults, '1.0.0-beta.1', 'FULL', nativeAcceptance);
+const report = buildReport(passingResults, currentVersion, 'FULL', nativeAcceptance);
 assert.equal(report.mode, 'READ_ONLY');
+assert.equal(report.hakim_version, currentVersion);
 assert.equal(report.doctor_health, 'PASS');
 assert.equal(report.repository_health, 'OUT_OF_SCOPE_DOCTOR');
 assert.deepEqual(report.check_summary, {
@@ -76,15 +78,16 @@ assert.deepEqual(report.check_summary, {
 assert.equal(report.runtime.acceptance_status, 'OUT_OF_SCOPE_PUBLIC_REPOSITORY');
 assert.equal(report.runtime.accepted_verdicts, null);
 assert.equal(report.public_release_readiness, 'OUT_OF_SCOPE_PUBLIC_REPOSITORY');
-assert.equal(report.native_host_acceptance.overall_status, 'PASS');
+assert.equal(report.native_host_acceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.deepEqual(report.native_host_acceptance.hosts, {
-  codex: 'PASS',
-  'claude-code': 'PASS',
-  'github-copilot': 'PASS',
-  opencode: 'PASS',
+  codex: 'NOT_RUN',
+  'claude-code': 'NOT_RUN',
+  'github-copilot': 'NOT_RUN',
+  opencode: 'NOT_RUN',
 });
 assert.equal(report.external_beta_promotion, 'SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION');
-assert.match(report.next_safe_action, /maintained doctor checks and native-host evidence are reconciled/i);
+assert.match(report.next_safe_action, /capture and accept fresh real-host evidence/i);
+assert.match(report.next_safe_action, /codex, claude-code, github-copilot, opencode/i);
 assert.match(report.next_safe_action, /separate explicit product decision/i);
 
 const text = formatText(report);
@@ -94,7 +97,7 @@ assert.match(text, /REPOSITORY_HEALTH=OUT_OF_SCOPE_DOCTOR/);
 assert.match(text, /CHECKS=6\/6 PASS/);
 assert.match(text, /RUNTIME_ACCEPTANCE=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
 assert.match(text, /PUBLIC_RELEASE_READINESS=OUT_OF_SCOPE_PUBLIC_REPOSITORY/);
-assert.match(text, /NATIVE_HOST_ACCEPTANCE=PASS/);
+assert.match(text, /NATIVE_HOST_ACCEPTANCE=HOLD_FOR_LIVE_HOST_EVIDENCE/);
 assert.match(text, /EXTERNAL_BETA_PROMOTION=SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION/);
 
 const help = spawnSync(
@@ -131,4 +134,4 @@ assert.equal(
   'node scripts/hakim_doctor.mjs --fast --json',
 );
 
-console.log('public Hakim doctor reports bounded doctor health separately from whole-repository, native-host, and evaluator decision state');
+console.log('public Hakim doctor keeps doctor health separate from whole-repository, current live-host, and evaluator decision state');
