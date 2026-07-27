@@ -1,0 +1,28 @@
+name: R3 Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  rule-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone exact R3 head and run rule-copy test
+        run: |
+          git clone -q --depth 1 --branch agent/r3-behavioral-remediation https://github.com/Habib1001-m/hakim.git repo
+          cd repo
+          node tests/test_rule_copies.js
+
+  behavioral:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone exact R3 head and run behavioral test
+        run: |
+          git clone -q --depth 1 --branch agent/r3-behavioral-remediation https://github.com/Habib1001-m/hakim.git repo
+          cd repo
+          node tests/test_behavioral_contract.mjs
