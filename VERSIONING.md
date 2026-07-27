@@ -29,7 +29,7 @@ channel is explicitly prerelease software:
 MAJOR.MINOR.PATCH[-PRERELEASE]
 ```
 
-The current public-beta candidate is `1.0.0-beta.2`. A stable `1.0.0` version is
+The current public-beta candidate is `1.0.0-beta.3`. A stable `1.0.0` version is
 a separate release decision; live-host acceptance or repository CI does not
 silently remove the prerelease label.
 
@@ -49,8 +49,8 @@ shipped product contract or invalidate accepted evidence.
 
 A new candidate starts with current-path live-host acceptance no stronger than
 the evidence collected for that exact identity. Prior accepted evidence may be
-preserved under `conformance/history/`, but it must not be relabeled as evidence
-for a newer candidate.
+preserved under `conformance/history/` or immutable public evidence refs, but it
+must not be relabeled as evidence for a newer candidate.
 
 ## Immutable evidence identity
 
@@ -171,12 +171,12 @@ are explicit operator actions.
 
 ## Compatibility and deprecation policy
 
-Hakim `1.0.0-beta.2` is public beta software. Its current native acceptance is
+Hakim `1.0.0-beta.3` is public beta software. Its current native acceptance is
 recorded in `conformance/native-host-acceptance.json` and currently remains
 `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are
-accepted. Historical beta.1 evidence is preserved separately and is not a
-universal operating-system, model, provider, editor, or organization-policy
-compatibility guarantee.
+accepted. Accepted beta.1 and frozen beta.2 evidence remains bounded to those
+exact historical candidates and is not a universal operating-system, model,
+provider, editor, or organization-policy compatibility guarantee.
 
 The current beta support and capability-deprecation rules are defined in
 [`SUPPORT.md`](SUPPORT.md). No paid SLA, enterprise certification, or LTS line is
