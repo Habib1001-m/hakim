@@ -1,33 +1,30 @@
 # Supported Hosts
 
-Hakim `1.0.0-beta.1` is public beta software. Support means the repository maintains a documented, gated product surface for the host; it does not imply universal compatibility or stable-release authorization.
+Hakim `1.0.0-beta.2` is public beta software. Support means the repository maintains a documented, gated product surface for the host; it does not imply universal compatibility, current live-host acceptance, or stable-release authorization.
 
 | Host | Maintained product surface | Native UX | Current boundary |
 |---|---|---|---|
-| Codex | Native Git marketplace plugin with six skills and SessionStart activation | `codex plugin marketplace add Habib1001-m/hakim` → `/plugins` → install `hakim@hakim` | Codex `0.131.0+` is the compatibility floor for this beta's default-on plugin-hook contract; central OpenAI Plugin Directory listing is separate and not claimed; Codex trust, approvals, sandboxing, and hook policy remain authoritative |
-| Claude Code | Native marketplace plugin with six user commands, hidden canonical skills, lifecycle hooks, and specialized plugin agents | `claude plugin marketplace add Habib1001-m/hakim` + `claude plugin install hakim@hakim` | Claude installation scope, managed policy, permissions, plugin cache, and trust remain authoritative |
-| GitHub Copilot | Native marketplace plugin with six skills and five custom agents; repository instructions retained as optional baseline | `copilot plugin marketplace add Habib1001-m/hakim` + `copilot plugin install hakim@hakim` | Copilot policy, enabled plugins, repository access, and agent tool permissions remain authoritative |
-| OpenCode | Guarded project-local native plugin with persistent lifecycle manifest, create/adopt/transactional-upgrade paths, supported older-version removal, bounded prompt-ownership sentinels, post-move quarantine verification, and no-clobber rollback | from target repo: `npx --yes --package=github:Habib1001-m/hakim hakim-opencode install` → normal OpenCode startup | Node `>=22` for the shipped Git bootstrap; the current bounded-sentinel runtime has accepted real-host evidence on OpenCode `1.17.13`; unchanged lifecycle upgrade/removal evidence remains separately bounded to its observed candidate; no npm registry/global installer or `opencode.json` mutation is claimed |
+| Codex | Native Git marketplace plugin with six skills and SessionStart activation | `codex plugin marketplace add Habib1001-m/hakim` → `/plugins` → install `hakim@hakim` | Codex `0.131.0+` is the compatibility floor for this beta's default-on plugin-hook contract; beta.2 live-host acceptance is currently `NOT_RUN`; central OpenAI Plugin Directory listing is separate and not claimed; Codex trust, approvals, sandboxing, and hook policy remain authoritative |
+| Claude Code | Native marketplace plugin with six user commands, hidden canonical skills, lifecycle hooks, and specialized plugin agents | `claude plugin marketplace add Habib1001-m/hakim` + `claude plugin install hakim@hakim` | beta.2 live-host acceptance is currently `NOT_RUN`; Claude installation scope, managed policy, permissions, plugin cache, and trust remain authoritative |
+| GitHub Copilot | Native marketplace plugin with six skills and five custom agents; repository instructions retained as optional baseline | `copilot plugin marketplace add Habib1001-m/hakim` + `copilot plugin install hakim@hakim` | beta.2 live-host acceptance is currently `NOT_RUN`; Copilot policy, enabled plugins, repository access, and agent tool permissions remain authoritative |
+| OpenCode | Guarded project-local native plugin with persistent lifecycle manifest, create/adopt/transactional-upgrade paths, supported older-version removal, bounded prompt-ownership sentinels, post-move quarantine verification, and no-clobber rollback | from target repo: `npx --yes --package=github:Habib1001-m/hakim hakim-opencode install` → normal OpenCode startup | Node `>=22` for the shipped Git bootstrap; beta.2 live-host acceptance is currently `NOT_RUN`; no npm registry/global installer or `opencode.json` mutation is claimed |
 
 ## Node runtime contract
 
-The Git-backed Hakim package declares Node `>=22`. Public CI keeps the full repository gate on Node 24 and separately exercises the shipped OpenCode package/runtime surface on Node 22, 24, and 26. This is a JavaScript runtime contract, not a claim of universal operating-system or OpenCode-version compatibility.
+The Git-backed Hakim package declares Node `>=22`. Public CI keeps the canonical repository gate on Node 24 and separately exercises the shipped OpenCode runtime/package surface on Node 22 and Node 26 through `npm run test:node-compat`. This is a JavaScript runtime contract, not a claim of universal operating-system or OpenCode-version compatibility.
 
 ## Current native live-host acceptance
 
 The public-safe, machine-readable projection is [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json). It records current-path acceptance separately for Codex, Claude Code, GitHub Copilot, and OpenCode.
 
-- `PASS` requires an observed real-host install/start/invocation journey plus a public-safe evidence reference for the journey being claimed.
-- `NOT_RUN` means no accepted live-host journey is recorded for the claimed path.
+- `PASS` requires an observed real-host install/start/invocation journey plus a public-safe evidence reference for the exact product identity being claimed.
+- `NOT_RUN` means no accepted live-host journey is recorded for the claimed current path.
 - `FAIL` and `BLOCKED` require an attempted journey plus a public-safe evidence reference.
 - Structural, packaging, smoke, projection, or CI success does not change a live-host status.
-- A transport or lifecycle change that materially changes the observed first-run/removal/runtime journey requires its own evidence before Hakim describes that changed path as accepted.
-- Codex, Claude Code, GitHub Copilot, and the current managed OpenCode path all have accepted `PASS` evidence for their maintained product paths.
-- OpenCode's current runtime evidence is bounded to immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62`, OpenCode `1.17.13`, and clean managed install/start/invocation of the bounded-sentinel runtime.
-- OpenCode evidence for candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` on OpenCode `1.18.5` remains bounded evidence for the unchanged manifest-backed accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as proof of the changed bounded-sentinel runtime.
-- OpenCode evidence for candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains bounded historical evidence for the earlier create-only lifecycle.
-- Earlier guarded source-checkout OpenCode evidence also remains bounded historical evidence.
-- Private acceptance ledgers and release authorization are intentionally outside the public repository and are not reconstructed from this projection.
+- A new prerelease identity or a transport/lifecycle/runtime change requires its own evidence before Hakim describes that path as accepted.
+- The beta.2 candidate currently records all four maintained paths as `NOT_RUN`, so overall current acceptance is `HOLD_FOR_LIVE_HOST_EVIDENCE`.
+- Accepted beta.1 host evidence remains available at [`conformance/history/native-host-acceptance-1.0.0-beta.1.json`](conformance/history/native-host-acceptance-1.0.0-beta.1.json) and must not be reused as beta.2 proof.
+- Private acceptance ledgers and release authorization are intentionally outside the public repository and are not reconstructed from these projections.
 
 ## Design rule
 
