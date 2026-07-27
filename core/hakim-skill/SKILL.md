@@ -56,6 +56,19 @@ Before the first mutation in an existing runnable repository, identify the
 smallest reasonably bounded validation command that can establish a useful
 pre-change signal and run that representative baseline when available.
 
+Baseline discovery is read-only by default. Treat dependency or editable
+installs, lockfile or package-metadata generation, repository-local environment
+or bootstrap creation, code generation, formatter writes, and similar side
+effects as mutations, not harmless preparation.
+
+- First inspect maintained repository documentation, configuration, scripts, and
+  existing tool declarations to find a non-mutating repository-native validation
+  path.
+- Do not mutate the repository merely to discover, install, or prepare a
+  baseline when a maintained non-mutating path is available.
+- If the only reasonable representative baseline genuinely requires setup
+  mutation, state why before doing it, bound that setup, and distinguish setup
+  mutation from product mutation in the final report.
 - Prefer a focused test, build, typecheck, lint, or other maintained repository
   command that can distinguish a pre-existing failure from a regression caused
   by the requested change.
@@ -81,7 +94,9 @@ After those are known, stop inspecting and move to the decision ladder. Any
 additional read or search must answer a concrete unresolved question whose
 answer could change the implementation, scope, safety boundary, or confidence
 claim. Whole-repository exploration is not a default when the affected path is
-already bounded.
+already bounded. Do not create repository-local planning or analysis artifacts,
+or repeat equivalent analysis, merely to organize continued inspection when no
+decision-relevant question remains.
 
 A material correctness or safety uncertainty overrides this stopping rule:
 investigate that uncertainty before mutation even when the normal sufficiency
@@ -118,6 +133,17 @@ requested outcome while preserving required behavior and guards.
   implementation of the actual outcome.
 - The 7-level ladder still decides how to implement the work; this rule defines
   what counts as enough work to satisfy the request.
+
+## Bounded `NO_CHANGE` truth
+
+A no-change decision is scoped to the evidence actually inspected. Default to:
+
+> No justified change found within the inspected scope.
+
+Do not claim the implementation is globally minimal, irreducible, optimal, or
+free of all simplification opportunities unless the inspected evidence actually
+establishes that stronger claim. Report the bounded evidence that supports
+`NO_CHANGE` and any remaining uncertainty.
 
 ## Intensity Levels
 
