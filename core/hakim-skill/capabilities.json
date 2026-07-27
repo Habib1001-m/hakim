@@ -50,7 +50,7 @@
     },
     {
       "id": "hakim-audit",
-      "purpose": "Manually audit an explicitly inspected repository scope for evidence-backed removable complexity and native or standard-library alternatives.",
+      "purpose": "Manually audit an explicitly inspected repository scope for evidence-backed simplification opportunities and native or standard-library alternatives.",
       "canonical_path": "core/hakim-skill/skills/hakim-audit/SKILL.md",
       "hosts": {
         "codex": {
@@ -96,7 +96,7 @@
     },
     {
       "id": "hakim-gain",
-      "purpose": "Show the accepted Hakim evidence-status card without unsupported performance or ROI numbers.",
+      "purpose": "Show Hakim evidence status without unsupported performance, savings, adoption, safety, or ROI claims; the `gain` ID is retained for beta compatibility and does not imply a quantified gain.",
       "canonical_path": "core/hakim-skill/skills/hakim-gain/SKILL.md",
       "hosts": {
         "codex": {
@@ -119,7 +119,7 @@
     },
     {
       "id": "hakim-help",
-      "purpose": "Show a host-aware quick reference for Hakim modes, capabilities, evidence boundaries, and validation commands.",
+      "purpose": "Show a host-aware quick reference for Hakim modes, capabilities, native invocation, and evidence boundaries.",
       "canonical_path": "core/hakim-skill/skills/hakim-help/SKILL.md",
       "hosts": {
         "codex": {
