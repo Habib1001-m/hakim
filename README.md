@@ -14,7 +14,7 @@ For example, when a repository already has a parser that safely handles the requ
 
 ## Status
 
-Hakim `1.0.0-beta.2` is a public-beta candidate distributed from public source and host-native Git marketplaces. It is not published to the npm registry and does not claim a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
+Hakim `1.0.0-beta.2` is public beta software; the current beta.2 candidate is distributed from public source and host-native Git marketplaces. It is not published to the npm registry and does not claim a central marketplace/directory listing. `package.json` remains private to prevent accidental registry publication.
 
 The beta.2 candidate intentionally starts with current live-host acceptance at **`HOLD_FOR_LIVE_HOST_EVIDENCE`**. Structural tests and prior accepted journeys do not automatically promote a changed prerelease candidate. Accepted beta.1 host evidence is preserved under [`conformance/history/`](conformance/history/) rather than being relabeled as beta.2 evidence.
 
@@ -75,7 +75,7 @@ See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific life
 - Deterministic PR Guardian checks for dependency and evidence-boundary drift.
 - Bounded review, audit, doctor, host-preflight, and install-planning commands.
 - OpenCode persistent lifecycle manifests, create/adopt/transactional-upgrade support, supported older-version removal, same-filesystem quarantine with post-move verification, and no-clobber rollback safeguards.
-- Byte-reproducible canonical skill packaging and local checksum/manifest verification without a runtime service.
+- Byte-reproducible canonical skill packaging, a deterministic CycloneDX source/product-inventory SBOM, and local checksum/manifest verification without a runtime service.
 
 ## Requirements
 
@@ -111,7 +111,7 @@ Build the canonical skill package:
 npm run package:skill
 ```
 
-The skill ZIP normalizes archive ordering, timestamps, and file modes so equivalent maintained source content can produce byte-identical output. Generated packages and checksums are still local build evidence; they are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
+The skill ZIP normalizes archive ordering, timestamps, and file modes so equivalent maintained source content can produce byte-identical output. `npm test` also builds and verifies the release SBOM, checksums, and release manifest. Generated artifacts are still local build evidence; they are not evidence of registry publication, signing, notarization, third-party attestation, or universal host compatibility.
 
 ## Supported hosts
 
