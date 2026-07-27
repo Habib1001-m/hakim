@@ -4,13 +4,14 @@ This document defines the maintained product-readiness gate for Hakim. It is not
 
 ## Current candidate
 
-- Product identity: `1.0.0-beta.2`
+- Product identity: `1.0.0-beta.3`
 - Repository gate: `npm test`
 - Current native live-host acceptance: `HOLD_FOR_LIVE_HOST_EVIDENCE`
+- Current behavioral confidence: `HOLD_FOR_REMEDIATION_VALIDATION`
 - External evaluator recruitment: `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION`
 - Stable `1.0.0`: `NOT_AUTHORIZED`
 
-The current candidate deliberately does not inherit beta.1 live-host `PASS` state. Historical accepted evidence remains under `conformance/history/`.
+The beta.3 remediation candidate does not inherit live-host or behavioral `PASS` from beta.1/beta.2. Older accepted evidence remains bounded to those exact immutable candidates.
 
 ## Readiness dimensions
 
@@ -34,14 +35,15 @@ For each host claimed as behaviorally validated:
 
 1. Pin the exact Hakim candidate commit and host version.
 2. Use the same frozen task intent and repository fixture where host capabilities allow a fair comparison.
-3. Establish the repository's smallest representative pre-mutation baseline.
-4. Record whether Hakim activation occurred before the first mutation.
+3. Establish the repository's smallest representative pre-mutation baseline. Baseline discovery must remain read-only unless setup mutation is explicitly necessary and justified.
+4. Record whether Hakim activation occurred before task mutation according to that host's native activation contract.
 5. Record material read/search, task-bookkeeping, mutation, and validation events using the strongest structured trace the host exposes without collecting private prompts or customer source.
 6. Require visible and hidden correctness gates appropriate to the fixture.
 7. Check the permanent runtime invariants with `scripts/check_runtime_trace.mjs` when the trace format can be normalized safely.
-8. Report host-specific results separately. Do not pool them into a universal effectiveness claim merely because all hosts install successfully.
+8. Keep `NO_CHANGE` claims bounded to the inspected scope; lack of a discovered change is not global proof of minimum complexity.
+9. Report host-specific results separately. Do not pool them into a universal effectiveness claim merely because all hosts install successfully.
 
-A host may remain installation-accepted while behavioral confidence for that host is `NOT_ESTABLISHED`.
+A host may remain installation-accepted while behavioral confidence for that host is `NOT_ESTABLISHED` or `HOLD_FOR_REMEDIATION`.
 
 ## Production-like dogfood protocol
 
@@ -53,7 +55,8 @@ For each dogfood task, record:
 - host/version and repository/fixture identity;
 - task intent and affected surface;
 - pre-mutation baseline used or the explicit reason no baseline was safe/reasonable;
-- first mutation and validation sequence;
+- any setup mutation separately from product mutation;
+- first task mutation and validation sequence;
 - whether a real domain/security/privacy/integrity/accessibility/trust guard was preserved;
 - whether inspection stopped once the decision-relevant evidence was sufficient;
 - final visible/hidden correctness result where available;
@@ -63,23 +66,34 @@ For each dogfood task, record:
 The dogfood result must answer three product questions without overclaiming:
 
 1. Did Hakim preserve or improve the bounded engineering outcome without accepted correctness regression?
-2. Did it avoid pathological over-inspection or unnecessary task ceremony on a naturally messy codebase?
+2. Did it avoid pathological over-inspection, baseline pollution, or unnecessary task ceremony on a naturally messy codebase?
 3. Was the additional process friction proportionate to the engineering benefit on that task?
 
 Internal dogfood does not establish independent developer preference, adoption, retention, or ROI.
 
-## Promotion gates for beta.2
+## Beta.3 remediation validation gates
 
-Before beta.2 current-path acceptance or release recommendation is promoted:
+Before beta.3 is considered technically coherent for the next bounded evidence step:
 
-- [ ] Canonical repository gate passes on the exact final candidate head.
+- [ ] Canonical repository gate passes on the exact final beta.3 candidate head.
 - [ ] Release ZIP, SBOM, checksums, and manifest verify on that same head.
-- [ ] Codex current-path live-host evidence is accepted for beta.2.
-- [ ] Claude Code current-path live-host evidence is accepted for beta.2.
-- [ ] GitHub Copilot current-path live-host evidence is accepted for beta.2.
-- [ ] OpenCode current-path live-host evidence is accepted for beta.2.
+- [ ] Active version/documentation truth matches beta.3 and older evidence remains historically bounded.
+- [ ] A new immutable beta.3 evidence ref is frozen without moving beta.2 refs.
+- [ ] GitHub Copilot reruns the exact frozen D01 task/base with Hakim active before repository-affecting tool use and without unrelated baseline pollution.
+- [ ] OpenCode reruns the exact frozen D01 task/base with direct mode activation and without unrelated baseline pollution.
+- [ ] `NO_CHANGE` results, if any, stay bounded to inspected evidence.
+- [ ] Focused and full correctness gates remain green for the affected dogfood fixture.
+- [ ] Any material host-specific failure is reconciled before D02 or external evidence expansion.
+
+Codex remains quota-deferred until operator quota is available. Claude rerun is required only if the final remediation materially changes its effective runtime/projection contract enough that beta.2 behavioral evidence cannot remain historical-only context for the remediation decision.
+
+## Promotion gates beyond remediation
+
+Before a later public-beta acceptance or release recommendation is promoted:
+
+- [ ] Current-path live-host evidence is accepted for every host the recommendation claims as accepted.
 - [ ] Bounded cross-host behavioral checks required by the intended claim are complete.
-- [ ] Production-like internal dogfood is complete with no unresolved P0/P1 finding.
+- [ ] Production-like internal dogfood is complete with no unresolved material product finding.
 - [ ] Active documentation matches the structured authorities.
 - [ ] Stable-release prerequisites in `SUPPORT.md` and `VERSIONING.md` are satisfied before any stable recommendation.
 
