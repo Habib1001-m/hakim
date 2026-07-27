@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Hakim is active as a native Claude Code plugin.
 
+Version truth is host/runtime metadata. Do not infer or restate a Hakim version from repository history, changelogs, prior evidence, or cached prose. If version identity is relevant, use the exact SessionStart activation value or ask the user to inspect `/plugin` / `claude plugin details hakim@hakim`.
+
 ## User commands
 
 - `/hakim:full <task>` — apply the canonical smallest-safe-diff workflow in the current conversation.
