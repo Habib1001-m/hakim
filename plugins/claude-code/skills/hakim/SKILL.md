@@ -6,7 +6,7 @@ disable-model-invocation: false
 user-invocable: false
 ---
 
-<!-- hakim-canonical-sha256: 80147e0248232c6836c62941f7a8957c3a3a131fb90b1c75f41d8ef84832db0b -->
+<!-- hakim-canonical-sha256: 9eabe421c203d0e4cb6730525b7bc706998719ce7f675c6a1bee4a9c682611d3 -->
 
 # Hakim for Claude Code
 
