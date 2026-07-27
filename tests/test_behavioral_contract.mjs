@@ -103,6 +103,13 @@ assert.match(
   'Copilot routing must activate native Hakim before repository-affecting tool use when explicitly requested',
 );
 
+const copilotSkill = read('plugins/copilot/skills/hakim/SKILL.md');
+assert.match(
+  copilotSkill,
+  /explicitly invokes Hakim[\s\S]{0,120}before repository-affecting tool use/i,
+  'Copilot native skill must itself retain pre-tool activation discipline',
+);
+
 const openCodePlugin = read('plugins/opencode/hakim.mjs');
 assert.match(
   openCodePlugin,
