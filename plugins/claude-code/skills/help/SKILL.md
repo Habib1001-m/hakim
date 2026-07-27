@@ -14,7 +14,7 @@ Hakim is active as a native Claude Code plugin.
 - `/hakim:review [scope]` — read-only complexity review in an isolated reviewer context.
 - `/hakim:audit [scope]` — deep read-only repository audit in an isolated auditor context.
 - `/hakim:debt [scope]` — inspect live Hakim debt markers and provenance.
-- `/hakim:gain [scope]` — verify what the available evidence actually proves.
+- `/hakim:gain [scope]` — show evidence status; `gain` is the retained beta compatibility name and does not imply a quantified gain.
 - `/hakim:help` — show this reference.
 
 ## Native agents
