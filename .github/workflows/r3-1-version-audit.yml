@@ -12,21 +12,18 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - name: Print compact R3.1 version inventory
+      - name: Print remaining beta.3 OpenCode manifest records
         run: |
-          git clone -q --depth 1 --branch agent/r3-1-observable-checkpoints https://github.com/Habib1001-m/hakim.git /tmp/r31
-          cd /tmp/r31
-          echo "CANONICAL_SHA256=$(sha256sum core/hakim-skill/SKILL.md | awk '{print $1}')"
-          echo "BETA3_REFS_BEGIN"
-          git grep -n '1.0.0-beta.3' || true
-          echo "BETA3_REFS_END"
-          cd /tmp
-          git clone -q https://github.com/Habib1001-m/hakim.git beta3
-          git -C beta3 checkout -q --detach a697b5e24d05e38b925d849fee4a02daa623c24b
-          cd beta3
-          echo -n "BETA3_MANIFEST="
-          node --input-type=module -e "import { buildOpenCodeBundle, manifestFromBundle } from './scripts/lib/opencode_bundle.mjs'; process.stdout.write(JSON.stringify(manifestFromBundle(buildOpenCodeBundle(process.cwd()))));"
-          echo
+          git clone -q https://github.com/Habib1001-m/hakim.git /tmp/beta3
+          git -C /tmp/beta3 checkout -q --detach a697b5e24d05e38b925d849fee4a02daa623c24b
+          cd /tmp/beta3
+          node --input-type=module - <<'NODE'
+          import { buildOpenCodeBundle, manifestFromBundle } from './scripts/lib/opencode_bundle.mjs';
+          const manifest = manifestFromBundle(buildOpenCodeBundle(process.cwd()));
+          for (const record of manifest.files.filter((item) => item.target_relative.includes('/loaders/') || item.target_relative === '.opencode/plugins/hakim.js')) {
+            console.log(JSON.stringify(record));
+          }
+          NODE
 
       - name: Pinned action reference for workflow policy
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
