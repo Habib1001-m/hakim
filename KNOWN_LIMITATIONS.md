@@ -1,6 +1,6 @@
 # Known Limitations
 
-Hakim `1.0.0-beta.2` remains public beta software. The current beta.2 candidate has not yet been promoted by fresh live-host acceptance.
+Hakim `1.0.0-beta.3` remains public beta software. The current beta.3 remediation candidate has not yet been promoted by fresh affected-host acceptance/behavioral evidence.
 
 ## Distribution
 
@@ -8,7 +8,7 @@ Hakim `1.0.0-beta.2` remains public beta software. The current beta.2 candidate 
 - No npm registry package/publication or central marketplace/directory listing is currently provided.
 - OpenCode's Git-backed bootstrap uses npm/npx only as transport/command execution for the public Git repository; it does not create a registry publication or global Hakim/OpenCode installation.
 - Local skill-package build outputs are not signed, notarized, or externally attested.
-- A public SBOM is not yet produced; stable-release readiness remains blocked on that prerequisite.
+- The repository release gate produces and verifies a deterministic CycloneDX SBOM, but no external SBOM attestation/signing is claimed.
 - No public support SLA is currently provided.
 
 ## Compatibility
@@ -34,8 +34,8 @@ Hakim `1.0.0-beta.2` remains public beta software. The current beta.2 candidate 
 
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
-- `conformance/native-host-acceptance.json` is the current beta.2 projection and is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE`; all four current paths are `NOT_RUN` until fresh journeys are accepted for this candidate.
-- Accepted beta.1 Codex, Claude Code, GitHub Copilot, and OpenCode evidence is preserved under `conformance/history/native-host-acceptance-1.0.0-beta.1.json`; it is historical evidence and is not relabeled as beta.2 acceptance.
+- `conformance/native-host-acceptance.json` is the current beta.3 projection and is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE`; all four current paths are `NOT_RUN` until fresh candidate-specific journeys are accepted.
+- Accepted beta.1 and frozen beta.2 evidence remains bounded to those exact historical candidates; it must not be relabeled as beta.3 acceptance.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
 - Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.
 - External evaluator recruitment remains suspended, the withdrawn campaign accepted no external reports, and any future relaunch requires a separate explicit product decision. Native-host acceptance must not be converted into a claim of independent product usefulness or retention.
