@@ -27,6 +27,7 @@ if (!fs.existsSync(packagePath)) {
     'scripts/hakim_opencode_install.mjs',
     'scripts/hakim_opencode_remove.mjs',
     'scripts/lib/opencode_bundle.mjs',
+    'scripts/lib/opencode_prior_manifests.mjs',
     'scripts/lib/opencode_transaction.mjs',
   ];
   if (!Array.isArray(pkg.files) || pkg.files.length !== expectedBootstrapFiles.length) {
@@ -101,6 +102,7 @@ for (const relative of [
   'docs/PRODUCT_READINESS.md',
   'scripts/hakim_doctor.mjs',
   'scripts/hakim_opencode_cli.mjs',
+  'scripts/lib/opencode_prior_manifests.mjs',
   'scripts/lib/opencode_transaction.mjs',
   'scripts/build_release_sbom.py',
   'scripts/verify_package.py',
