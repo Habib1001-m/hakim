@@ -1,6 +1,6 @@
 # Hakim for OpenCode
 
-**Status:** public beta project-local native plugin  
+**Status:** Hakim `1.0.0-beta.2` public-beta candidate; current OpenCode live-host acceptance is `NOT_RUN` pending fresh candidate-specific evidence  
 **Distribution:** Git-backed bootstrap into repository-local OpenCode files; no npm publication or global installer
 
 ## What this plugin does
@@ -141,7 +141,7 @@ The maintained lifecycle still does not claim a cross-process lock or immunity f
 
 ## Node runtime contract
 
-The shipped Git-backed package declares Node `>=22`. Public CI keeps the full repository gate on Node 24 and separately exercises the shipped OpenCode plugin, lifecycle, adversarial transaction tests, CLI/symlink path, npm package inventory, and package boundary on Node 22 and Node 26. This is a JavaScript runtime contract, not universal OpenCode/OS compatibility.
+The shipped Git-backed package declares Node `>=22`. Public CI runs the canonical repository gate on Node 24 and separately exercises the shipped OpenCode plugin, lifecycle, adversarial transaction tests, CLI/symlink path, npm package inventory, and package boundary on Node 22 and Node 26 through the shared `test:node-compat` gate. This is a JavaScript runtime contract, not universal OpenCode/OS compatibility.
 
 ## Validate repository-side behavior
 
@@ -161,9 +161,8 @@ These checks prove their deterministic repository/package scope only. They do no
 ## Evidence boundaries
 
 - The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
-- The current bounded-sentinel runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`; the observation covered clean managed install/start/invocation plus successful Hakim help/full-mode use.
-- Candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as proof of the changed bounded-sentinel runtime.
-- The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains historical evidence for the earlier create-only path only.
+- The beta.2 OpenCode path is currently `NOT_RUN` in `conformance/native-host-acceptance.json`; fresh install/start/invocation evidence on the exact candidate is required before it can be promoted to `PASS`.
+- Accepted beta.1 OpenCode evidence — including the bounded-sentinel runtime and earlier manifest lifecycle journeys — is preserved under `conformance/history/native-host-acceptance-1.0.0-beta.1.json` and remains bounded to beta.1 rather than being reused as beta.2 proof.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.
