@@ -17,6 +17,10 @@ const canonicalGroups = {
     /## Pre-mutation baseline/i,
     /before the first mutation/i,
     /representative baseline/i,
+    /baseline discovery is read-only/i,
+    /editable\s+installs/i,
+    /lockfile|package-metadata/i,
+    /setup mutation/i,
     /pre-existing green state/i,
   ],
   sufficiency: [
@@ -24,6 +28,8 @@ const canonicalGroups = {
     /affected implementation path/i,
     /concrete unresolved question/i,
     /whole-repository exploration/i,
+    /planning or analysis artifacts/i,
+    /repeat equivalent analysis/i,
   ],
   guards: [
     /## Domain-guard preservation/i,
@@ -38,6 +44,12 @@ const canonicalGroups = {
     /fewest lines or files/i,
     /installed dependency/i,
     /speculative architecture/i,
+  ],
+  noChangeTruth: [
+    /## Bounded `NO_CHANGE` truth/i,
+    /No justified change found within the inspected scope/i,
+    /globally minimal/i,
+    /remaining uncertainty/i,
   ],
   claims: [
     /## Evidence and Evaluation Boundaries/i,
@@ -67,9 +79,16 @@ for (const relativePath of projections) {
 
   for (const pattern of [
     /pre-mutation baseline|before the first mutation/i,
+    /baseline discovery is read-only/i,
+    /editable\s+installs/i,
+    /setup mutation/i,
     /evidence sufficiency|stop inspecting/i,
+    /concrete unresolved question/i,
+    /planning[/-]?analysis artifacts|planning or analysis artifacts/i,
     /protected invariant|domain-guard preservation/i,
     /smallest sufficient, coherent, safe change/i,
+    /No justified change found within the inspected scope/i,
+    /globally minimal/i,
     /dependenc(?:y|ies)/i,
     /evidence|inspectable/i,
   ]) {
