@@ -3,7 +3,7 @@
 ## Supported versions
 
 Security fixes are maintained on a best-effort basis for the latest public
-`main` candidate and the current `1.0.0-beta.3` public-beta line. Historical
+`main` candidate and the current `1.0.0-beta.4` public-beta line. Historical
 beta evidence does not imply an active support guarantee for arbitrary old
 snapshots.
 
