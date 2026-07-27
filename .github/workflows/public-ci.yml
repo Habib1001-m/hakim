@@ -34,17 +34,31 @@ jobs:
       - name: Run canonical repository gate
         run: npm test
 
-      # Diagnostics below are non-authoritative and run only after the canonical
-      # gate fails. package.json remains the single gate inventory.
-      - name: Diagnose behavior/runtime contracts on failure
+      # Temporary R3 diagnostic split: non-authoritative and failure-only. Revert
+      # after identifying the exact behavior/runtime contract failure.
+      - name: Diagnose rule-copy contract on failure
         if: failure()
-        run: |
-          node tests/test_rule_copies.js
-          node tests/test_behavioral_contract.mjs
-          node tests/test_claude_runtime_kernel.mjs
-          node tests/test_runtime_trace_contract.mjs
-          node tests/test_rule_missing_section.js
-          node tests/test_plugin_smoke.js
+        run: node tests/test_rule_copies.js
+
+      - name: Diagnose behavioral contract on failure
+        if: failure()
+        run: node tests/test_behavioral_contract.mjs
+
+      - name: Diagnose Claude runtime kernel on failure
+        if: failure()
+        run: node tests/test_claude_runtime_kernel.mjs
+
+      - name: Diagnose runtime trace contract on failure
+        if: failure()
+        run: node tests/test_runtime_trace_contract.mjs
+
+      - name: Diagnose missing-section contract on failure
+        if: failure()
+        run: node tests/test_rule_missing_section.js
+
+      - name: Diagnose plugin smoke on failure
+        if: failure()
+        run: node tests/test_plugin_smoke.js
 
       - name: Diagnose Claude diagnostic hook on failure
         if: failure()
