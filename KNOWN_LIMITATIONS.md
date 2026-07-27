@@ -1,6 +1,6 @@
 # Known Limitations
 
-Hakim `1.0.0-beta.3` remains public beta software. The current beta.3 remediation candidate has not yet been promoted by fresh affected-host acceptance/behavioral evidence.
+Hakim `1.0.0-beta.4` remains public beta software. The current beta.4 observable-checkpoint candidate has not yet been promoted by fresh affected-host acceptance/behavioral evidence.
 
 ## Distribution
 
@@ -34,8 +34,8 @@ Hakim `1.0.0-beta.3` remains public beta software. The current beta.3 remediatio
 
 - Deterministic checks cover only their enabled rules.
 - Zero findings do not equal correctness or security approval.
-- `conformance/native-host-acceptance.json` is the current beta.3 projection and is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE`; all four current paths are `NOT_RUN` until fresh candidate-specific journeys are accepted.
-- Accepted beta.1 and frozen beta.2 evidence remains bounded to those exact historical candidates; it must not be relabeled as beta.3 acceptance.
+- `conformance/native-host-acceptance.json` is the current beta.4 projection and is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE`; all four current paths are `NOT_RUN` until fresh candidate-specific journeys are accepted.
+- Accepted beta.1 and frozen beta.2/beta.3 evidence remains bounded to those exact historical candidates; it must not be relabeled as beta.4 acceptance.
 - Public CI validates repository contracts and cannot create or promote live-host evidence by itself.
 - Private release authorization remains intentionally outside the public product repository; repository health or live-host `PASS` does not imply stable-release authorization.
 - External evaluator recruitment remains suspended, the withdrawn campaign accepted no external reports, and any future relaunch requires a separate explicit product decision. Native-host acceptance must not be converted into a claim of independent product usefulness or retention.
