@@ -12,13 +12,50 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - name: Audit exact R3 branch version truth
+      - name: Clone exact R3 branch
+        run: git clone -q --depth 1 --branch agent/r3-behavioral-remediation https://github.com/Habib1001-m/hakim.git repo
+
+      - name: Audit version truth
         run: |
-          git clone -q --depth 1 --branch agent/r3-behavioral-remediation https://github.com/Habib1001-m/hakim.git repo
           cd repo
           echo "CANONICAL_SHA256=$(sha256sum core/hakim-skill/SKILL.md | awk '{print $1}')"
           echo "=== BETA2 REFERENCES ==="
           git grep -n '1.0.0-beta.2' || true
+
+      - name: Diagnose public first-run contract
+        run: |
+          cd repo
+          node tests/test_public_first_run_contract.mjs
+
+      - name: Diagnose conformance packet contract
+        run: |
+          cd repo
+          node tests/test_generate_conformance_packets_no_git.js
+
+      - name: Diagnose structured metadata contract
+        run: |
+          cd repo
+          node tests/test_structured_metadata.js
+
+      - name: Diagnose guarded-session contract
+        run: |
+          cd repo
+          node tests/test_hakim_guarded_session.mjs
+
+      - name: Diagnose workflow policy
+        run: |
+          cd repo
+          npm run check:workflow-policy
+
+      - name: Diagnose public repository boundary
+        run: |
+          cd repo
+          node scripts/check_public_repository_boundary.mjs
+
+      - name: Diagnose public package surface
+        run: |
+          cd repo
+          node scripts/check_public_package_surface.mjs
 
       - name: Materialize exact beta.2 managed OpenCode manifest
         run: |
