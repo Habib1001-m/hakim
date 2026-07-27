@@ -7,6 +7,8 @@ const { spawnSync } = require('node:child_process');
 
 (async () => {
   const root = path.resolve(__dirname, '..');
+  const version = fs.readFileSync(path.join(root, 'core/hakim-skill/VERSION'), 'utf8').trim();
+  const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const loader = await import(path.join(root, 'core/loaders/hakim-loader.mjs'));
 
   assert.equal(loader.normalizeMode('bad-mode'), 'full');
@@ -42,7 +44,7 @@ const { spawnSync } = require('node:child_process');
     env: { ...process.env, PLUGIN_ROOT: path.join(root, 'plugins/codex'), HAKIM_DEFAULT_MODE: 'full' },
   });
   assert.equal(codexHook.status, 0, codexHook.stderr + codexHook.stdout);
-  assert.match(codexHook.stdout, /Hakim 1\.0\.0-beta\.1 is active in full mode/);
+  assert.match(codexHook.stdout, new RegExp(`Hakim ${escapedVersion} is active in full mode`));
   assert.match(codexHook.stdout, /progressively/);
   assert.doesNotMatch(codexHook.stdout, /Technical debt format/);
 
@@ -54,7 +56,7 @@ const { spawnSync } = require('node:child_process');
   assert.equal(claudeHook.status, 0, claudeHook.stderr + claudeHook.stdout);
   const claudeOutput = JSON.parse(claudeHook.stdout);
   assert.equal(claudeOutput.hookSpecificOutput.hookEventName, 'SessionStart');
-  assert.match(claudeOutput.hookSpecificOutput.additionalContext, /Hakim 1\.0\.0-beta\.1 plugin is active/);
+  assert.match(claudeOutput.hookSpecificOutput.additionalContext, new RegExp(`Hakim ${escapedVersion} plugin is active`));
 
-  console.log('test_plugin_smoke.js: maintained native host surfaces ok');
+  console.log(`test_plugin_smoke.js: maintained native host surfaces ok for ${version}`);
 })();
