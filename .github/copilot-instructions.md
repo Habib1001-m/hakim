@@ -1,6 +1,6 @@
 # Hakim repository instructions
 
-<!-- hakim-canonical-sha256: 4821268ca7afcaae795de7661caa937732da98d81da10222dbb69898f8d16b36 -->
+<!-- hakim-canonical-sha256: d6366222e933d63d9acb358a6abfb18b031102e07876067f2777925751b459aa -->
 
 When changing this repository:
 
@@ -24,7 +24,7 @@ When changing this repository:
 - Use Hakim capability `hakim-review` for bounded review.
 - Use Hakim capability `hakim-audit` for evidence-backed audit work.
 - Use Hakim capability `hakim-debt` for focused technical-debt analysis.
-- Use Hakim capability `hakim-gain` for evidence-status summaries.
+- Use Hakim capability `hakim-gain` for evidence-status summaries; the `gain` ID is retained for beta compatibility and does not imply a quantified gain.
 - Use Hakim capability `hakim-help` for host-aware usage guidance.
 
 When the native `hakim` Copilot plugin is installed, prefer its matching skill or specialized custom agent over re-implementing the workflow from these baseline instructions.
