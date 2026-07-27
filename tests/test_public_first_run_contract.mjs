@@ -31,7 +31,7 @@ const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
 const opencodeBootstrap = 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install';
 assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
 
-assert.equal(version, '1.0.0-beta.3');
+assert.equal(version, '1.0.0-beta.4');
 assert.equal(packageJson.version, version);
 assert.equal(packageJson.private, true);
 assert.equal(packageJson.engines?.node, '>=22');
