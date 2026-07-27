@@ -12,22 +12,23 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout R3.1 branch
+      - name: Print compact R3.1 version inventory
+        run: |
+          git clone -q --depth 1 --branch agent/r3-1-observable-checkpoints https://github.com/Habib1001-m/hakim.git /tmp/r31
+          cd /tmp/r31
+          echo "CANONICAL_SHA256=$(sha256sum core/hakim-skill/SKILL.md | awk '{print $1}')"
+          echo "BETA3_REFS_BEGIN"
+          git grep -n '1.0.0-beta.3' || true
+          echo "BETA3_REFS_END"
+          cd /tmp
+          git clone -q https://github.com/Habib1001-m/hakim.git beta3
+          git -C beta3 checkout -q --detach a697b5e24d05e38b925d849fee4a02daa623c24b
+          cd beta3
+          echo -n "BETA3_MANIFEST="
+          node --input-type=module -e "import { buildOpenCodeBundle, manifestFromBundle } from './scripts/lib/opencode_bundle.mjs'; process.stdout.write(JSON.stringify(manifestFromBundle(buildOpenCodeBundle(process.cwd()))));"
+          echo
+
+      - name: Pinned action reference for workflow policy
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
           ref: agent/r3-1-observable-checkpoints
-
-      - name: Audit beta.3 references and canonical hash
-        run: |
-          echo "CANONICAL_SHA256=$(sha256sum core/hakim-skill/SKILL.md | awk '{print $1}')"
-          echo "=== BETA3 REFERENCES ==="
-          git grep -n '1.0.0-beta.3' || true
-
-      - name: Materialize exact beta.3 managed OpenCode manifest
-        run: |
-          BETA3_SHA=a697b5e24d05e38b925d849fee4a02daa623c24b
-          git clone -q https://github.com/Habib1001-m/hakim.git /tmp/beta3
-          git -C /tmp/beta3 checkout -q --detach "$BETA3_SHA"
-          cd /tmp/beta3
-          echo "=== BETA3 OPENCODE MANIFEST ==="
-          node --input-type=module -e "import { buildOpenCodeBundle, manifestFromBundle } from './scripts/lib/opencode_bundle.mjs'; console.log(JSON.stringify(manifestFromBundle(buildOpenCodeBundle(process.cwd())), null, 2));"
