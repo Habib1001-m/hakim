@@ -6,6 +6,15 @@ All notable public changes to Hakim are recorded here.
 
 ### Changed
 
+- Advanced the active remediation candidate to `1.0.0-beta.3` instead of changing distributed behavioral policy under the frozen beta.2 identity. Current beta.3 native-host acceptance is reset to `HOLD_FOR_LIVE_HOST_EVIDENCE`; accepted beta.1 and frozen beta.2 evidence remains bounded to those exact historical candidates.
+- Hardened the canonical pre-mutation baseline contract: baseline discovery is read-only by default, while dependency/editable installs, lockfile or package-metadata generation, repository-local environment/bootstrap creation, code generation, formatter writes, and similar side effects count as mutations that require explicit justification before use.
+- Added bounded `NO_CHANGE` truth: the default claim is now `No justified change found within the inspected scope`, and stronger global/minimum-complexity claims require evidence that actually establishes them.
+- Reinforced evidence sufficiency so repository-local planning/analysis artifacts and repeated equivalent analysis are not justified merely to continue inspection after decision-relevant evidence is sufficient.
+- Strengthened GitHub Copilot routing so an explicit Hakim request must activate the native Hakim capability before repository-affecting tool use.
+- Made OpenCode `/hakim <mode>` a direct mode-selection turn instead of a repository task, preventing unnecessary auxiliary-skill traversal merely to set mode.
+- Added permanent regression coverage for baseline purity, bounded `NO_CHANGE` claims, Copilot pre-tool activation, and direct OpenCode mode activation.
+- Added exact frozen beta.2 OpenCode managed-manifest authority so beta.3 can recognize the shipped beta.2 installation for bounded upgrade/removal without accepting arbitrary forged beta.2 ownership metadata; the prior-manifest authority ships in the Git-backed package and is covered by package/product-truth checks.
+- Tightened active documentation and first-run truth around the beta.3 candidate, fresh-evidence boundary, deterministic CycloneDX SBOM, and suspended external evaluator campaign.
 - Advanced the current public-beta candidate identity to `1.0.0-beta.2` so materially changed distributed bytes no longer continue indefinitely under the original beta.1 identity. Current beta.2 native-host acceptance was reset to `HOLD_FOR_LIVE_HOST_EVIDENCE`; accepted beta.1 evidence is preserved under `conformance/history/` instead of being relabeled as beta.2 evidence.
 - Made `npm test` the canonical repository gate used by the main Public CI job and consolidated Node 22/26 compatibility checks under `npm run test:node-compat`, eliminating separate local-vs-CI permanent contract inventories.
 - Promoted permanent behavior, runtime-trace, and product-truth regressions out of phase-history names while retaining POST-E1 experiment fixtures under the explicit `test:evidence:historical` evidence suite.
