@@ -63,7 +63,7 @@ examples and archived records must not be promoted to live debt.
 
 ## Current host scope
 
-Hakim `1.0.0-beta.3` maintains product surfaces for:
+Hakim `1.0.0-beta.4` maintains product surfaces for:
 
 - Codex;
 - Claude Code;
@@ -71,10 +71,10 @@ Hakim `1.0.0-beta.3` maintains product surfaces for:
 - OpenCode.
 
 The authoritative current-native acceptance state is
-`conformance/native-host-acceptance.json`. The beta.3 candidate currently records
+`conformance/native-host-acceptance.json`. The beta.4 candidate currently records
 all four maintained paths as `NOT_RUN`, so current acceptance is
-`HOLD_FOR_LIVE_HOST_EVIDENCE`. Accepted beta.1 and frozen beta.2 evidence remains
-bounded to those exact historical candidates and does not establish beta.3
+`HOLD_FOR_LIVE_HOST_EVIDENCE`. Accepted beta.1 and frozen beta.2/beta.3 evidence
+remains bounded to those exact historical candidates and does not establish beta.4
 acceptance or universal compatibility with every operating system, model, provider,
 editor version, organization policy, or Ponytail-supported host.
 
