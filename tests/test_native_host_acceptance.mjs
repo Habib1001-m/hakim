@@ -24,7 +24,10 @@ for (const host of EXPECTED_HOSTS) {
   assert.equal(projection.hosts[host].verified_at, null);
   assert.equal(projection.hosts[host].evidence_ref, null);
 }
-assert.match(projection.source_policy, /beta\.1 evidence is preserved under conformance\/history/i);
+assert.match(projection.source_policy, /beta\.1/i);
+assert.match(projection.source_policy, /beta\.2/i);
+assert.match(projection.source_policy, /historical/i);
+assert.match(projection.source_policy, /fresh real-host evidence/i);
 
 const historical = validateProjection(beta1History, '1.0.0-beta.1');
 assert.equal(historical.ok, true, historical.errors.join('\n'));
