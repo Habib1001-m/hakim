@@ -29,7 +29,7 @@ channel is explicitly prerelease software:
 MAJOR.MINOR.PATCH[-PRERELEASE]
 ```
 
-The current public-beta candidate is `1.0.0-beta.3`. A stable `1.0.0` version is
+The current public-beta candidate is `1.0.0-beta.4`. A stable `1.0.0` version is
 a separate release decision; live-host acceptance or repository CI does not
 silently remove the prerelease label.
 
@@ -171,11 +171,11 @@ are explicit operator actions.
 
 ## Compatibility and deprecation policy
 
-Hakim `1.0.0-beta.3` is public beta software. Its current native acceptance is
+Hakim `1.0.0-beta.4` is public beta software. Its current native acceptance is
 recorded in `conformance/native-host-acceptance.json` and currently remains
 `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are
-accepted. Accepted beta.1 and frozen beta.2 evidence remains bounded to those
-exact historical candidates and is not a universal operating-system, model,
+accepted. Accepted beta.1 and frozen beta.2/beta.3 evidence remains bounded to
+those exact historical candidates and is not a universal operating-system, model,
 provider, editor, or organization-policy compatibility guarantee.
 
 The current beta support and capability-deprecation rules are defined in
