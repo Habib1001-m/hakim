@@ -19,6 +19,8 @@ import {
 } from '../scripts/lib/opencode_bundle.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const CURRENT_VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
+const PREVIOUS_SUPPORTED_VERSION = '1.0.0-beta.1';
 
 function withRepository(fn) {
   const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-opencode-lifecycle-'));
@@ -54,7 +56,7 @@ function findQuarantinedFile(report, targetRelative) {
 test('accepted legacy beta.1 manifest is immutable, bounded, and structurally valid', () => {
   assert.equal(SUPPORTED_LEGACY_MANIFESTS.length, 1);
   const legacy = SUPPORTED_LEGACY_MANIFESTS[0];
-  assert.equal(legacy.product_version, '1.0.0-beta.1');
+  assert.equal(legacy.product_version, PREVIOUS_SUPPORTED_VERSION);
   assert.equal(legacy.source_commit, 'b442820d2803955d0f7f33b405bd096f443d4d72');
   assert.equal(legacy.files.length, 9);
   assert.equal(validateInstallManifest(legacy).ok, true);
@@ -69,6 +71,7 @@ test('argument parser requires target and preserves dry-run default', () => {
 
 test('installer dry-run is non-mutating, apply creates exact managed bundle, and repeat is idempotent', async () => withRepository(({ target }) => {
   const bundle = buildOpenCodeBundle(ROOT);
+  assert.equal(bundle.product_version, CURRENT_VERSION);
   assert.equal(bundle.files.find((file) => file.source_relative === 'plugins/opencode/hakim.mjs')?.target_relative, '.opencode/plugins/hakim.js');
 
   const dryRun = installOpenCodeAdapter({ target, apply: false }, ROOT);
@@ -85,6 +88,7 @@ test('installer dry-run is non-mutating, apply creates exact managed bundle, and
   assert.equal(applied.created_files.length, bundle.files.length);
   assert.equal(inspectInstalledBundle(target, bundle).aggregate_state, 'EXACT_MATCH');
   assert.equal(readInstalledManifest(target).state, 'VALID');
+  assert.equal(readInstalledManifest(target).manifest.product_version, CURRENT_VERSION);
   assert.equal(fs.existsSync(path.join(target, INSTALL_MANIFEST_RELATIVE_PATH)), true);
   assert.equal(fs.existsSync(path.join(target, 'opencode.json')), false, 'installer must not create or edit opencode.json');
   assert.equal(inspectStatus(target, ROOT).state, 'EXACT_MATCH');
@@ -256,36 +260,39 @@ test('removal detects a change between final verification and quarantine move wi
   }
 }));
 
-test('persisted manifest supports N to N+1 transactional upgrade and exact status', async () => withRepository(({ parent, target }) => {
-  assert.equal(installOpenCodeAdapter({ target, apply: true }, ROOT).state, 'CREATED');
-  const variant = makeVariantSource(parent, '1.0.0-beta.2', 'future-version-change');
+test('current CLI transactionally upgrades a complete persisted supported beta.1 installation', async () => withRepository(({ parent, target }) => {
+  const olderSource = makeVariantSource(parent, PREVIOUS_SUPPORTED_VERSION, 'synthetic-persisted-beta1');
+  const installed = installOpenCodeAdapter({ target, apply: true }, olderSource);
+  assert.equal(installed.state, 'CREATED');
+  assert.equal(installed.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
 
-  const statusBefore = inspectStatus(target, variant);
+  const statusBefore = inspectStatus(target, ROOT);
   assert.equal(statusBefore.status, 'PASS');
   assert.equal(statusBefore.state, 'UPGRADE_AVAILABLE');
-  assert.equal(statusBefore.installed_product_version, '1.0.0-beta.1');
+  assert.equal(statusBefore.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
 
-  const dryRun = installOpenCodeAdapter({ target, apply: false }, variant);
+  const dryRun = installOpenCodeAdapter({ target, apply: false }, ROOT);
   assert.equal(dryRun.status, 'PASS');
   assert.equal(dryRun.state, 'READY_TO_UPGRADE');
   assert.equal(dryRun.filesystem_changed, false);
 
-  const upgraded = installOpenCodeAdapter({ target, apply: true }, variant);
+  const upgraded = installOpenCodeAdapter({ target, apply: true }, ROOT);
   assert.equal(upgraded.status, 'PASS');
   assert.equal(upgraded.state, 'UPGRADED');
-  assert.equal(upgraded.previous_product_version, '1.0.0-beta.1');
-  assert.equal(upgraded.installed_product_version, '1.0.0-beta.2');
-  assert.equal(readInstalledManifest(target).manifest.product_version, '1.0.0-beta.2');
-  assert.equal(inspectStatus(target, variant).state, 'EXACT_MATCH');
+  assert.equal(upgraded.previous_product_version, PREVIOUS_SUPPORTED_VERSION);
+  assert.equal(upgraded.installed_product_version, CURRENT_VERSION);
+  assert.equal(readInstalledManifest(target).manifest.product_version, CURRENT_VERSION);
+  assert.equal(inspectStatus(target, ROOT).state, 'EXACT_MATCH');
 }));
 
-test('newer CLI can remove an older supported installed manifest without requiring new payload equality', async () => withRepository(({ parent, target }) => {
-  assert.equal(installOpenCodeAdapter({ target, apply: true }, ROOT).state, 'CREATED');
-  const variant = makeVariantSource(parent, '1.0.0-beta.2', 'future-remove-change');
-  const report = removeOpenCodeAdapter({ target, apply: true }, variant);
+test('current CLI can remove a complete persisted supported beta.1 installation', async () => withRepository(({ parent, target }) => {
+  const olderSource = makeVariantSource(parent, PREVIOUS_SUPPORTED_VERSION, 'synthetic-persisted-beta1-remove');
+  assert.equal(installOpenCodeAdapter({ target, apply: true }, olderSource).state, 'CREATED');
+
+  const report = removeOpenCodeAdapter({ target, apply: true }, ROOT);
   assert.equal(report.status, 'PASS');
   assert.equal(report.state, 'REMOVED');
-  assert.equal(report.installed_product_version, '1.0.0-beta.1');
+  assert.equal(report.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
   assert.equal(fs.existsSync(path.join(target, '.opencode', 'plugins', 'hakim.js')), false);
   assert.equal(fs.existsSync(path.join(target, INSTALL_MANIFEST_RELATIVE_PATH)), false);
 }));
