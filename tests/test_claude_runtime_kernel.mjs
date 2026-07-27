@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const hook = path.join(ROOT, 'plugins/claude-code/hooks/session_start.mjs');
+const version = fs.readFileSync(path.join(ROOT, 'core/hakim-skill/VERSION'), 'utf8').trim();
 
 const result = spawnSync(process.execPath, [hook], {
   cwd: ROOT,
@@ -20,7 +22,7 @@ const output = parsed.hookSpecificOutput;
 assert.equal(output.hookEventName, 'SessionStart');
 
 const context = output.additionalContext;
-assert.match(context, /Hakim 1\.0\.0-beta\.1 plugin is active/i);
+assert.match(context, new RegExp(`Hakim ${version.replaceAll('.', '\\.')} plugin is active`, 'i'));
 assert.ok(
   context.length <= 1400,
   `Claude runtime kernel must stay lightweight; got ${context.length} characters`,
@@ -36,9 +38,8 @@ assert.match(
   'Claude runtime kernel must require hakim:hakim before the first mutation on coding tasks',
 );
 
-// E2 showed that a two-file bug fix paid nine task-management calls without
-// decision value. Bounded work should not create orchestration bookkeeping by
-// default.
+// Bounded work should not create orchestration bookkeeping by default when it
+// would not change a real implementation, safety, or coordination decision.
 assert.match(
   context,
   /bounded[\s\S]{0,240}(?:do not|avoid)[\s\S]{0,120}TaskCreate[\s\S]{0,80}TaskUpdate/i,
@@ -51,4 +52,4 @@ assert.match(
   'Claude runtime kernel must keep the baseline rule visible before skill loading',
 );
 
-console.log('test_claude_runtime_kernel.mjs: Claude startup kernel makes core Hakim coding behavior salient');
+console.log(`test_claude_runtime_kernel.mjs: Claude startup kernel makes core Hakim ${version} coding behavior salient`);
