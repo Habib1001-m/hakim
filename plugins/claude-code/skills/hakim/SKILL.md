@@ -6,7 +6,7 @@ disable-model-invocation: false
 user-invocable: false
 ---
 
-<!-- hakim-canonical-sha256: 1abb00530a00ac6be2d0437db561d4ba7e5bba7a397ea7323de13fd0e10bb8a1 -->
+<!-- hakim-canonical-sha256: 80147e0248232c6836c62941f7a8957c3a3a131fb90b1c75f41d8ef84832db0b -->
 
 # Hakim for Claude Code
 
@@ -31,6 +31,14 @@ Stop at the first rung that works:
 ## Pre-mutation baseline
 
 Before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available from maintained repository validation. Baseline discovery is read-only by default: inspect maintained documentation, configuration, scripts, and tool declarations first. Treat dependency or editable installs, lockfile/package-metadata generation, repository-local environment/bootstrap creation, code generation, formatter writes, and similar side effects as mutations. Do not perform them merely to discover or prepare a baseline when a maintained non-mutating path is available. If setup mutation is genuinely required, state why before doing it and distinguish setup mutation from product mutation. A focused test, build, typecheck, lint, or equivalent is enough when a full suite is disproportionate. If execution is unsafe, unavailable, too expensive, or disallowed, record why no baseline was run and do not imply a pre-existing green state.
+
+## Observable checkpoints
+
+Before the first product edit in a runnable Git repository, record observed values for `BASELINE_COMMAND`, `BASELINE_SOURCE`, `SETUP_MUTATION`, and `PRE_EDIT_GIT_STATUS`. `SETUP_MUTATION=NO` is the default; setup mutation must be justified before execution and cannot be used merely to discover the baseline.
+
+For boolean, control-flow, validator, permission, or guard transformations, record `SEMANTIC_CHANGE_CHECK`. Existing-suite green alone is not sufficient to claim semantic equivalence: enumerate decision-relevant boundary states or run a targeted regression/probe for the changed truth table or invariant, including empty/absent/error/boundary states when they can branch differently.
+
+Before completion, observe final repository state and record `FINAL_GIT_STATUS`, `SETUP_ARTIFACTS`, and `UNRELATED_MUTATIONS`. Never claim a clean tree, no artifacts, or no setup mutations when the observed state contradicts that claim.
 
 ## Evidence sufficiency
 
