@@ -96,4 +96,18 @@ for (const relativePath of projections) {
   }
 }
 
+const copilotInstructions = read('.github/copilot-instructions.md');
+assert.match(
+  copilotInstructions,
+  /explicitly requests Hakim[\s\S]{0,180}before any repository-affecting tool or shell command/i,
+  'Copilot routing must activate native Hakim before repository-affecting tool use when explicitly requested',
+);
+
+const openCodePlugin = read('plugins/opencode/hakim.mjs');
+assert.match(
+  openCodePlugin,
+  /Mode selection only: do not load auxiliary Hakim skills, inspect the repository, or run tools for this command/i,
+  'OpenCode mode command must stay a direct mode switch instead of becoming an auxiliary-skill/repository task',
+);
+
 console.log(`test_behavioral_contract.mjs: semantic behavior contract OK (${canonicalHash.slice(0, 12)})`);
