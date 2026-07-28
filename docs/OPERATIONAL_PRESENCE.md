@@ -158,6 +158,8 @@ userPromptTransformed
 
 The mode-control hook is not an enforcement engine. It exists because real Copilot CLI evidence showed that a native skill invocation could load successfully while its mode argument was lost in the host-expanded model-facing payload. `userPromptTransformed` is the host boundary designed to observe the raw submitted prompt together with the transformed prompt just before model delivery.
 
+Plugin-data authority is bound at the hook edge rather than assumed inside a child process. `hooks.json` expands the host-owned `${COPILOT_PLUGIN_DATA}` location into `HAKIM_PLUGIN_DATA`; Hakim runtime code prefers that explicit binding and keeps direct `COPILOT_PLUGIN_DATA` only as a compatibility fallback.
+
 The accepted hook topology remains two hooks:
 
 - `sessionStart`
@@ -208,7 +210,17 @@ argument-hint: "[lite|full|ultra|off]"
 
 The next live probe proved the loader fix: `hakim` appeared as a Plugin skill and `/hakim off` was recognized. It exposed a second host-boundary defect: the model-facing expanded skill payload reported `full` and no mode state was written. The submitted mode argument therefore was not reliably carried through the pre-transform control design.
 
-Current remediation replaces the old `userPromptSubmitted` tracker with `userPromptTransformed` mode control. Exact supported command shapes are bounded to:
+F03c then moved mode control to `userPromptTransformed` and froze `evidence/r32-f03c-mode-control-67ea974` after Public CI #587 PASS. Its live probe improved current-turn behavior: Copilot loaded `sessionStart + userPromptTransformed`, `/hakim off` produced `Hakim mode: off`, and the target repository stayed clean. However a complete search under `COPILOT_HOME` found no `mode.json`, so cross-session persistence was **not** established. F03c is therefore not accepted end-to-end.
+
+The current F03d remediation keeps the same two-hook topology and same control semantics, but removes an implicit child-process environment assumption. Hook configuration now binds:
+
+```text
+HAKIM_PLUGIN_DATA=${COPILOT_PLUGIN_DATA}
+```
+
+using the host's documented hook `env` variable expansion. Runtime code consumes `HAKIM_PLUGIN_DATA` first and retains `COPILOT_PLUGIN_DATA` only as fallback. Regression coverage explicitly removes `COPILOT_PLUGIN_DATA` from the spawned hook process and proves that mode persistence still succeeds through the explicit binding.
+
+Exact supported command shapes remain bounded to:
 
 - `/hakim`
 - `/hakim lite|full|ultra|off`
