@@ -1,7 +1,7 @@
 ---
 name: hakim
 description: Use Hakim for coding tasks that should prefer the smallest safe diff, reuse existing code first, prefer stdlib/native capabilities, avoid speculative architecture, and keep claims evidence-bound.
-argument-hint: [lite|full|ultra|off]
+argument-hint: "[lite|full|ultra|off]"
 ---
 
 <!-- hakim-canonical-sha256: 9eabe421c203d0e4cb6730525b7bc706998719ce7f675c6a1bee4a9c682611d3 -->
