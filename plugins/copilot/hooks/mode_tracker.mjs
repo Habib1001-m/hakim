@@ -4,6 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 import { writeModeState } from './mode_state.mjs';
 
+// Copilot may relay a plugin skill invocation as a qualified token with the
+// argument bracketed (for example `hakim:hakim [off]`). Accept only bounded
+// Hakim mode-control shapes; ordinary prompts must never become mode state.
 const MODE_COMMAND = /^(?:\/hakim|\/hakim[\/:]hakim|hakim:hakim)(?:\s+\[?(lite|full|ultra|off)\]?)?\s*$/i;
 
 export function parseModeCommand(prompt) {
