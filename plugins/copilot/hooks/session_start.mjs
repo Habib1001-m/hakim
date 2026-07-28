@@ -49,8 +49,12 @@ export function buildSessionStartOutput(skillText, mode = 'full') {
   return { additionalContext: buildOperationalContext(skillText, mode) };
 }
 
+export function resolvePluginDataDir(options = {}) {
+  return options.pluginDataDir ?? process.env.HAKIM_PLUGIN_DATA ?? process.env.COPILOT_PLUGIN_DATA;
+}
+
 export function runSessionStart(options = {}) {
-  const pluginDataDir = options.pluginDataDir ?? process.env.COPILOT_PLUGIN_DATA;
+  const pluginDataDir = resolvePluginDataDir(options);
   const modeState = readModeState(pluginDataDir);
   if (modeState.mode === 'off') return {};
 
