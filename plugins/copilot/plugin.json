@@ -6,5 +6,6 @@
   "license": "MIT",
   "keywords": ["coding", "review", "governance", "minimalism", "yagni", "technical-debt"],
   "agents": "agents/",
-  "skills": ["skills/"]
+  "skills": ["skills/"],
+  "hooks": "hooks/hooks.json"
 }
