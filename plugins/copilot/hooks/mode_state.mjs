@@ -4,11 +4,16 @@ import path from 'node:path';
 
 export const DEFAULT_MODE = 'full';
 export const MODE_SCHEMA_VERSION = 1;
-// F02 deliberately proves only default-full vs explicit-off persistence.
-// Lite/ultra are deferred until F03 gives them real runtime semantics.
-export const VALID_MODES = Object.freeze(['full', 'off']);
+export const VALID_MODES = Object.freeze(['lite', 'full', 'ultra', 'off']);
 const VALID_MODE_SET = new Set(VALID_MODES);
 const STATE_FILE = 'mode.json';
+
+const MODE_DIRECTIVES = Object.freeze({
+  lite: 'Build what is asked, then name the lazier alternative in one line.',
+  full: 'Enforce the Hakim ladder. Prefer reuse, stdlib, native platform features, and shortest safe diffs.',
+  ultra: 'YAGNI extremist mode: delete before adding, challenge abstractions, and ship the minimum safe change.',
+  off: 'Hakim guidance disabled for this session.',
+});
 
 function statePath(pluginDataDir) {
   if (!pluginDataDir || !String(pluginDataDir).trim()) return null;
@@ -22,6 +27,11 @@ function exactState(value) {
   if (value.schema_version !== MODE_SCHEMA_VERSION) return null;
   if (!VALID_MODE_SET.has(value.mode)) return null;
   return { schema_version: MODE_SCHEMA_VERSION, mode: value.mode };
+}
+
+export function getModeDirective(mode = DEFAULT_MODE) {
+  const normalized = VALID_MODE_SET.has(mode) ? mode : DEFAULT_MODE;
+  return MODE_DIRECTIVES[normalized];
 }
 
 export function readModeState(pluginDataDir) {
