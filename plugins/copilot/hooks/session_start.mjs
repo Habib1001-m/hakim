@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { readModeState } from './mode_state.mjs';
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_PATH = path.resolve(HERE, '..', 'skills', 'hakim', 'SKILL.md');
 const MAX_CONTEXT_BYTES = 9_000;
@@ -41,23 +43,26 @@ export function buildOperationalContext(markdown) {
   return context;
 }
 
-export function buildSessionStartOutput(skillText) {
+export function buildSessionStartOutput(skillText, mode = 'full') {
+  if (mode === 'off') return {};
   return { additionalContext: buildOperationalContext(skillText) };
 }
 
-export function runSessionStart() {
-  const skillText = fs.readFileSync(SKILL_PATH, 'utf8');
-  return buildSessionStartOutput(skillText);
+export function runSessionStart(options = {}) {
+  const pluginDataDir = options.pluginDataDir ?? process.env.COPILOT_PLUGIN_DATA;
+  const modeState = readModeState(pluginDataDir);
+  if (modeState.mode === 'off') return {};
+
+  const skillText = options.skillText ?? fs.readFileSync(SKILL_PATH, 'utf8');
+  return buildSessionStartOutput(skillText, modeState.mode);
 }
 
-// F01 is intentionally stateless: mode persistence and COPILOT_PLUGIN_DATA are
-// separate feasibility questions and must not be smuggled into the presence proof.
 function main() {
   try {
     process.stdout.write(`${JSON.stringify(runSessionStart())}\n`);
   } catch {
-    // Operational presence is best-effort in F01. A broken hook must not break an
-    // otherwise usable Copilot session or mutate the target repository.
+    // Presence remains fail-soft. Invalid or missing state falls back to full;
+    // unexpected hook/runtime failures must not break an otherwise usable session.
     process.stdout.write('{}\n');
   }
 }
