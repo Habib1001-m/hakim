@@ -37,7 +37,8 @@ async function main() {
   }
 
   // Copilot CLI does not process userPromptSubmitted hook output. Emit an empty
-  // object only to keep the command-hook contract explicit and quiet.
+  // object only to keep the command-hook contract explicit and quiet. F03 stays
+  // experimental until exact-head CI and a real native-command journey both pass.
   process.stdout.write('{}\n');
 }
 
