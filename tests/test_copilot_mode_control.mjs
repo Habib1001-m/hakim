@@ -6,7 +6,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { applyModeControl, buildModeControlPrompt, parseModeCommand } from '../plugins/copilot/hooks/mode_control.mjs';
+import { applyModeControl, buildModeControlPrompt, parseModeCommand, resolvePluginDataDir } from '../plugins/copilot/hooks/mode_control.mjs';
 import { getModeStatePath, readModeState } from '../plugins/copilot/hooks/mode_state.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,6 +29,8 @@ try {
   assert.equal(parseModeCommand('please use hakim off'), null);
   assert.equal(parseModeCommand('/hakim off and inspect'), null);
   assert.equal(parseModeCommand('/hakim turbo'), null);
+
+  assert.equal(resolvePluginDataDir({ pluginDataDir: '/explicit' }), '/explicit');
 
   const ordinary = applyModeControl({
     prompt: 'ordinary coding prompt',
@@ -73,11 +75,17 @@ try {
   assert.deepEqual(readModeState(pluginData), { mode: 'full', source: 'DEFAULT' });
   assert.deepEqual(fs.readdirSync(repo).sort(), repoBefore);
 
+  // Reproduce the live-host boundary: the hook config expands the host-owned
+  // ${COPILOT_PLUGIN_DATA} placeholder into HAKIM_PLUGIN_DATA. The runtime must
+  // not depend on COPILOT_PLUGIN_DATA also being inherited as a process env var.
   const cliData = path.join(root, 'cli-plugin-data');
+  const cliEnv = { ...process.env, HAKIM_PLUGIN_DATA: cliData };
+  delete cliEnv.COPILOT_PLUGIN_DATA;
+
   const cli = spawnSync(process.execPath, [script], {
     cwd: repo,
     encoding: 'utf8',
-    env: { ...process.env, COPILOT_PLUGIN_DATA: cliData },
+    env: cliEnv,
     input: JSON.stringify({
       sessionId: 'synthetic-session',
       timestamp: 0,
@@ -102,4 +110,4 @@ try {
   fs.rmSync(root, { recursive: true, force: true });
 }
 
-console.log('test_copilot_mode_control.mjs: transformed-prompt mode control stays bounded and quiet');
+console.log('test_copilot_mode_control.mjs: transformed mode control + explicit plugin-data binding stay bounded and quiet');
