@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 import { getModeDirective, writeModeState } from './mode_state.mjs';
 
+// Route only the raw submitted control command exposed by userPromptTransformed.
+// Never infer mode from the host-expanded transformed prompt or ordinary prose.
 const MODE_COMMAND = /^\/(?:hakim[:/])?hakim(?:\s+(lite|full|ultra|off))?\s*$/i;
 
 export function parseModeCommand(prompt) {
