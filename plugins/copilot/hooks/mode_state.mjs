@@ -17,7 +17,12 @@ const MODE_DIRECTIVES = Object.freeze({
 
 function statePath(pluginDataDir) {
   if (!pluginDataDir || !String(pluginDataDir).trim()) return null;
-  return path.join(path.resolve(String(pluginDataDir)), STATE_FILE);
+  const raw = String(pluginDataDir).trim();
+  // The host-owned plugin-data location must be fully expanded before Hakim
+  // writes. A relative path or unresolved placeholder must fail soft rather
+  // than becoming repository-local state.
+  if (!path.isAbsolute(raw) || raw.includes('${')) return null;
+  return path.join(raw, STATE_FILE);
 }
 
 function exactState(value) {
@@ -54,7 +59,7 @@ export function writeModeState(pluginDataDir, mode) {
   if (!VALID_MODE_SET.has(mode)) throw new Error(`unsupported Hakim mode: ${mode}`);
 
   const file = statePath(pluginDataDir);
-  if (!file) throw new Error('COPILOT_PLUGIN_DATA is unavailable');
+  if (!file) throw new Error('expanded Copilot plugin-data path is unavailable');
 
   if (mode === DEFAULT_MODE) {
     try { fs.unlinkSync(file); }
