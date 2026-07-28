@@ -8,10 +8,10 @@
         "timeoutSec": 5
       }
     ],
-    "userPromptSubmitted": [
+    "userPromptTransformed": [
       {
         "type": "command",
-        "command": "node \"${PLUGIN_ROOT}/hooks/mode_tracker.mjs\"",
+        "command": "node \"${PLUGIN_ROOT}/hooks/mode_control.mjs\"",
         "timeoutSec": 2
       }
     ]
