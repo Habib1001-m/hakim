@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { buildOperationalContext } from '../plugins/copilot/hooks/session_start.mjs';
+import { applyModeCommand, parseModeCommand } from '../plugins/copilot/hooks/mode_tracker.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), 'utf8');
@@ -34,6 +35,37 @@ assert.equal(modeTracker.timeoutSec, 2);
 
 for (const forbidden of ['preToolUse', 'postToolUse', 'agentStop', 'subagentStart', 'subagentStop']) {
   assert.equal(hookConfig.hooks[forbidden], undefined, `operational presence must not add enforcement hook ${forbidden}`);
+}
+
+for (const [input, expected] of [
+  ['/hakim', 'full'],
+  ['/hakim off', 'off'],
+  ['/hakim/hakim ultra', 'ultra'],
+  ['/hakim:hakim lite', 'lite'],
+  ['hakim:hakim [off]', 'off'],
+  ['hakim:hakim [full]', 'full'],
+]) {
+  assert.equal(parseModeCommand(input), expected, `mode parser mismatch for ${input}`);
+}
+for (const input of [
+  'please use hakim off for this task',
+  '/hakim-review',
+  'hakim:hakim-review [off]',
+  'ordinary coding prompt',
+]) {
+  assert.equal(parseModeCommand(input), null, `ordinary/non-mode prompt must stay outside mode parser: ${input}`);
+}
+
+const modeTemp = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-copilot-mode-'));
+try {
+  const result = applyModeCommand({ prompt: 'hakim:hakim [off]' }, { pluginDataDir: modeTemp });
+  assert.deepEqual(result, { handled: true, mode: 'off', persisted: true });
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(modeTemp, 'mode.json'), 'utf8')), {
+    schema_version: 1,
+    mode: 'off',
+  });
+} finally {
+  fs.rmSync(modeTemp, { recursive: true, force: true });
 }
 
 for (const mode of ['lite', 'full', 'ultra']) {
@@ -86,4 +118,4 @@ try {
   fs.rmSync(temp, { recursive: true, force: true });
 }
 
-console.log('test_copilot_operational_presence.mjs: silent presence + mode-tracker topology OK');
+console.log('test_copilot_operational_presence.mjs: silent presence + normalized mode-control contract OK');
