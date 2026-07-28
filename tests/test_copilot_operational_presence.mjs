@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { buildOperationalContext } from '../plugins/copilot/hooks/session_start.mjs';
-import { applyModeCommand, parseModeCommand } from '../plugins/copilot/hooks/mode_tracker.mjs';
+import { applyModeControl, parseModeCommand } from '../plugins/copilot/hooks/mode_control.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), 'utf8');
@@ -19,22 +19,22 @@ const sessionScript = path.join(ROOT, 'plugins', 'copilot', 'hooks', 'session_st
 
 assert.equal(manifest.hooks, 'hooks/hooks.json');
 assert.equal(hookConfig.version, 1);
-assert.deepEqual(Object.keys(hookConfig.hooks).sort(), ['sessionStart', 'userPromptSubmitted']);
+assert.deepEqual(Object.keys(hookConfig.hooks).sort(), ['sessionStart', 'userPromptTransformed']);
 assert.equal(hookConfig.hooks.sessionStart.length, 1);
-assert.equal(hookConfig.hooks.userPromptSubmitted.length, 1);
+assert.equal(hookConfig.hooks.userPromptTransformed.length, 1);
 
 const sessionStart = hookConfig.hooks.sessionStart[0];
 assert.equal(sessionStart.type, 'command');
 assert.match(sessionStart.command, /\$\{PLUGIN_ROOT\}\/hooks\/session_start\.mjs/);
 assert.equal(sessionStart.timeoutSec, 5);
 
-const modeTracker = hookConfig.hooks.userPromptSubmitted[0];
-assert.equal(modeTracker.type, 'command');
-assert.match(modeTracker.command, /\$\{PLUGIN_ROOT\}\/hooks\/mode_tracker\.mjs/);
-assert.equal(modeTracker.timeoutSec, 2);
+const modeControl = hookConfig.hooks.userPromptTransformed[0];
+assert.equal(modeControl.type, 'command');
+assert.match(modeControl.command, /\$\{PLUGIN_ROOT\}\/hooks\/mode_control\.mjs/);
+assert.equal(modeControl.timeoutSec, 2);
 
-for (const forbidden of ['preToolUse', 'postToolUse', 'agentStop', 'subagentStart', 'subagentStop']) {
-  assert.equal(hookConfig.hooks[forbidden], undefined, `operational presence must not add enforcement hook ${forbidden}`);
+for (const forbidden of ['userPromptSubmitted', 'preToolUse', 'postToolUse', 'agentStop', 'subagentStart', 'subagentStop']) {
+  assert.equal(hookConfig.hooks[forbidden], undefined, `operational presence must not add hook ${forbidden}`);
 }
 
 for (const [input, expected] of [
@@ -42,15 +42,13 @@ for (const [input, expected] of [
   ['/hakim off', 'off'],
   ['/hakim/hakim ultra', 'ultra'],
   ['/hakim:hakim lite', 'lite'],
-  ['hakim:hakim [off]', 'off'],
-  ['hakim:hakim [full]', 'full'],
 ]) {
   assert.equal(parseModeCommand(input), expected, `mode parser mismatch for ${input}`);
 }
 for (const input of [
   'please use hakim off for this task',
   '/hakim-review',
-  'hakim:hakim-review [off]',
+  '/hakim:hakim-review off',
   'ordinary coding prompt',
 ]) {
   assert.equal(parseModeCommand(input), null, `ordinary/non-mode prompt must stay outside mode parser: ${input}`);
@@ -58,8 +56,14 @@ for (const input of [
 
 const modeTemp = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-copilot-mode-'));
 try {
-  const result = applyModeCommand({ prompt: 'hakim:hakim [off]' }, { pluginDataDir: modeTemp });
-  assert.deepEqual(result, { handled: true, mode: 'off', persisted: true });
+  const result = applyModeControl({
+    prompt: '/hakim:hakim off',
+    transformedPrompt: 'host-expanded skill body',
+  }, { pluginDataDir: modeTemp });
+  assert.equal(result.handled, true);
+  assert.equal(result.mode, 'off');
+  assert.equal(result.persisted, true);
+  assert.match(result.output.modifiedTransformedPrompt, /selected mode: off/);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(modeTemp, 'mode.json'), 'utf8')), {
     schema_version: 1,
     mode: 'off',
@@ -118,4 +122,4 @@ try {
   fs.rmSync(temp, { recursive: true, force: true });
 }
 
-console.log('test_copilot_operational_presence.mjs: silent presence + normalized mode-control contract OK');
+console.log('test_copilot_operational_presence.mjs: silent presence + transformed mode-control topology OK');
