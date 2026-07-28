@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const rules = require('../core/hakim-skill/scripts/check_rule_copies.js');
 
 (async () => {
   const root = path.resolve(__dirname, '..');
@@ -33,6 +34,16 @@ const { spawnSync } = require('node:child_process');
       assert.ok(fs.existsSync(skillPath), `${host} ${capabilityId} skill missing`);
     }
   }
+
+  const copilotSkillText = fs.readFileSync(path.join(root, 'plugins/copilot/skills/hakim/SKILL.md'), 'utf8');
+  const copilotFrontmatter = rules.extractFrontmatter(copilotSkillText);
+  assert.ok(copilotFrontmatter, 'Copilot hakim skill frontmatter missing');
+  assert.equal(copilotFrontmatter.fields.name, 'hakim');
+  assert.equal(
+    copilotFrontmatter.fields['argument-hint'],
+    '"[lite|full|ultra|off]"',
+    'Copilot argument-hint must remain a YAML string so the host can load the skill',
+  );
 
   assert.ok(fs.existsSync(path.join(root, '.agents/plugins/marketplace.json')), 'Codex marketplace missing');
   assert.ok(fs.existsSync(path.join(root, '.claude-plugin/marketplace.json')), 'Claude marketplace missing');
