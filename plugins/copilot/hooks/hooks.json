@@ -5,6 +5,9 @@
       {
         "type": "command",
         "command": "node \"${PLUGIN_ROOT}/hooks/session_start.mjs\"",
+        "env": {
+          "HAKIM_PLUGIN_DATA": "${COPILOT_PLUGIN_DATA}"
+        },
         "timeoutSec": 5
       }
     ],
@@ -12,6 +15,9 @@
       {
         "type": "command",
         "command": "node \"${PLUGIN_ROOT}/hooks/mode_control.mjs\"",
+        "env": {
+          "HAKIM_PLUGIN_DATA": "${COPILOT_PLUGIN_DATA}"
+        },
         "timeoutSec": 2
       }
     ]
