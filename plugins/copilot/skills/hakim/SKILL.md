@@ -1,13 +1,25 @@
 ---
 name: hakim
 description: Use Hakim for coding tasks that should prefer the smallest safe diff, reuse existing code first, prefer stdlib/native capabilities, avoid speculative architecture, and keep claims evidence-bound.
+argument-hint: [lite|full|ultra|off]
 ---
 
 <!-- hakim-canonical-sha256: 9eabe421c203d0e4cb6730525b7bc706998719ce7f675c6a1bee4a9c682611d3 -->
 
 # Hakim for GitHub Copilot
 
-Default to full mode unless the user asks for lite, ultra, or off. When the user explicitly invokes Hakim, apply this native skill before repository-affecting tool use.
+Hakim is present automatically after plugin installation. Default to full mode unless the user deliberately selects lite, ultra, or off.
+
+## Mode control
+
+When this skill is invoked with a mode, treat the invocation as a mode change, not as a repository task. Do not inspect files, run tools, or load auxiliary Hakim skills merely to switch mode.
+
+- `lite`: build what is asked, then name the lazier alternative in one line.
+- `full`: enforce the complete smallest-safe-diff ladder.
+- `ultra`: challenge additions, prefer deletion before new code, and ship the minimum safe change.
+- `off`: stop applying Hakim guidance until the user turns it on again.
+
+A bare `/hakim` selects `full`. The host-native mode tracker persists only the selected mode metadata outside the target repository so a later session starts consistently.
 
 ## Decision ladder
 
