@@ -125,7 +125,7 @@ The preferred intervention model is **verify consequences, not police thought**.
 
 R3.2 must not create a second pseudo-agent inside lifecycle hooks.
 
-In particular, the first operational-presence slice must not:
+In particular, the operational-presence layer must not:
 
 - maintain a broad shell-command denylist;
 - reject `pip`, `npm`, `uv`, or other tools merely by name;
@@ -166,7 +166,7 @@ Operational adapters must derive their context from maintained Hakim authority r
 
 ### O5 — State is tiny and non-sensitive
 
-Permitted session/runtime state should be limited to control metadata such as active mode and bounded loop/continuation markers when genuinely needed.
+Permitted runtime state is limited to control metadata. Copilot R3.2 uses at most one plugin-data file containing exactly a schema version and selected non-default mode; default `full` remains stateless.
 
 Do not persist:
 
@@ -207,83 +207,96 @@ Example:
 
 Hard pre-action blocking remains appropriate for narrow objective hazards such as destructive mutation of unowned/protected state when the host exposes a reliable check.
 
-## Copilot R3.2 target shape
-
-Current Copilot beta.4 relies on skills/custom agents and explicit skill routing. R3.2 should first test a smaller operational-presence shape before adding any policy enforcement:
+## Copilot R3.2 accepted operating shape so far
 
 ```text
 native plugin install
        |
        v
 sessionStart
-  -> load compact Hakim operational context
-  -> default full mode
-  -> write only minimal control state to COPILOT_PLUGIN_DATA
+  -> read bounded plugin-data mode (default full when absent)
+  -> inject compact maintained Hakim operational context unless mode=off
        |
        v
-normal user coding prompt
-       |
-       +---- model reasons freely
-       |
-userPromptSubmitted
-  -> only explicit mode/off tracking if needed
-  -> no raw-prompt persistence
+normal coding prompt
+  -> model reasons freely
        |
        v
-normal tool/model loop
+optional /hakim <mode>
+  -> native Hakim skill tells the model the selected mode for the current conversation
+  -> userPromptSubmitted hook persists only that selected mode for later sessions
+  -> no tool/repository work merely to change mode
 ```
 
-Only after this is proven should `agentStop`, `postToolUse`, `preToolUse`, or other events be considered for objective truth verification. The existence of a hook API is not evidence that Hakim should use every hook.
+The mode-tracking hook is not an enforcement hook. Copilot CLI does not process output from `userPromptSubmitted`; the user-visible skill invocation itself carries the current-session intent, while the hook only preserves minimal control state for future sessions.
 
 ## R3.2 feasibility sequence
 
-### F01 — Silent auto-presence proof
+### F01 — Silent auto-presence proof — PASS
 
-Build the smallest experimental Copilot plugin change that contributes a `sessionStart` hook and injects a compact Hakim context automatically.
+Accepted evidence:
 
-Acceptance:
+- exact experimental ref `evidence/r32-f01-copilot-3825b7c`;
+- Public CI #580 PASS on the clean exact head;
+- real Copilot CLI 1.0.75 loaded `sessionStart: 1 hook (sources: hakim@hakim)`;
+- no repository Copilot instructions or custom instructions were loaded;
+- session-state contained the Hakim operational-presence marker;
+- activation produced no target-repository mutation;
+- an ordinary prompt that did not mention Hakim produced a bounded no-change decision with remaining uncertainty.
 
-- one normal plugin install;
-- new Copilot session;
-- ordinary coding prompt with no `Use Hakim` phrase;
-- activation context reaches the model;
-- no target-repository file is created or modified by activation;
-- no raw prompt/source persistence;
-- no mandatory visible activation turn.
+### F02 — Plugin-data mode state proof — PASS
 
-### F02 — Plugin-data state proof
+Accepted evidence:
 
-Store only mode/control metadata under Copilot's plugin-data directory and prove:
+- exact experimental ref `evidence/r32-f02-mode-5c558d4`;
+- Public CI #581 PASS;
+- `off` persisted only bounded plugin-data metadata and suppressed the Hakim session context in a fresh real Copilot session;
+- target repository remained unchanged;
+- restoring `full` removed the override file;
+- a fresh full session restored the Hakim context;
+- plugin-data contained no residual file after returning to default full.
 
-- target repository remains unchanged;
-- state is bounded;
-- uninstall/update behavior is understandable;
-- malformed/absent state fails safely.
+The live A/B result showed a behavioral distinction as well: the off session gave a generic bounded read-only answer, while the full session explicitly used bounded `NO_CHANGE`, the Decision Ladder, and remaining uncertainty without being told to invoke Hakim.
 
-### F03 — Mode-control proof
+### F03 — Native mode-control UX — IN PROGRESS
 
-Make explicit mode changes optional controls over an already-active product.
+Use Copilot's native skill invocation surface rather than inventing a separate command language:
 
-Acceptance:
+- `/hakim` means `full`;
+- `/hakim lite`;
+- `/hakim full`;
+- `/hakim ultra`;
+- `/hakim off`;
+- plugin-qualified `/hakim/hakim <mode>` is accepted when skill-name precedence requires it.
 
-- default mode is active without configuration;
-- `off` actually disables injected context for subsequent work;
-- mode switching does not become a repository task;
-- ordinary prompts do not require parsing/persisting their full content.
+The `userPromptSubmitted` hook may parse only these exact Hakim control invocations. Ordinary prompts remain untouched and unpersisted. The hook stores only `{schema_version, mode}` and emits no reasoning context.
 
-### F04 — Subagent/persistence fit
+Current-session behavior comes from the native skill invocation itself; plugin-data persistence controls later session starts. This avoids trying to remove already-injected `sessionStart` context mid-session through unsupported hook behavior.
 
-Use a subagent lifecycle hook only if Copilot exposes a stable plugin path and the main-session proof shows a real propagation gap. Do not add it for symmetry.
+### F04 — Subagent continuity fit
+
+Use a subagent lifecycle hook only if a real Copilot probe demonstrates that main-session context does not propagate sufficiently. Do not add it for symmetry.
 
 ### F05 — Objective completion-truth spike
 
 Separately test whether a completion-boundary hook can compare objective repository state with consequential claims without acting as a prose linter or forcing repeated correction loops.
 
-This is **not** part of the first auto-presence slice.
+This is not part of the operational-presence/mode-control layer.
 
-### F06 — D01 behavioral rerun
+### F06 — Deterministic operational regressions
 
-Only after F01-F05 produce a coherent minimal design:
+Before release-candidate promotion, prove:
+
+- normal install starts with silent default full presence;
+- exact mode commands update only bounded plugin data;
+- ordinary prompts create no mode state;
+- malformed hook input/state fails safely;
+- no enforcement hook is introduced without an accepted product need;
+- architecture remains smaller and less visible than the failure it fixes.
+
+### F07 — Production-like D01 rerun
+
+Only after the preceding slices produce a coherent minimal design:
 
 - advance the prerelease identity;
 - freeze the exact candidate;
