@@ -11,6 +11,8 @@ const BASELINE = path.join(ROOT, '.github/copilot-instructions.md');
 const MARKETPLACE = path.join(ROOT, '.github/plugin/marketplace.json');
 const PLUGIN_ROOT = path.join(ROOT, 'plugins/copilot');
 const MANIFEST = path.join(PLUGIN_ROOT, 'plugin.json');
+const HOOK_CONFIG = path.join(PLUGIN_ROOT, 'hooks', 'hooks.json');
+const SESSION_HOOK = path.join(PLUGIN_ROOT, 'hooks', 'session_start.mjs');
 
 const SKILLS = ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'];
 const READ_ONLY_AGENTS = ['hakim-reviewer', 'hakim-auditor', 'hakim-debt-analyst', 'hakim-evidence-verifier'];
@@ -54,6 +56,8 @@ function main() {
   requireFile(BASELINE, 'Copilot baseline instructions', errors);
   requireFile(MARKETPLACE, 'Copilot marketplace', errors);
   requireFile(MANIFEST, 'Copilot plugin manifest', errors);
+  requireFile(HOOK_CONFIG, 'Copilot operational-presence hook config', errors);
+  requireFile(SESSION_HOOK, 'Copilot session-start hook', errors);
 
   const baseline = fs.existsSync(BASELINE) ? read(BASELINE) : '';
   if (marker(baseline) !== canonicalHash) errors.push('Copilot baseline canonical hash drift');
@@ -74,6 +78,25 @@ function main() {
   if (manifest?.version !== expectedVersion) errors.push(`Copilot plugin manifest version must be ${expectedVersion}`);
   if (manifest?.agents !== 'agents/') errors.push('Copilot plugin agents path must be agents/');
   if (!Array.isArray(manifest?.skills) || !manifest.skills.includes('skills/')) errors.push('Copilot plugin skills path must include skills/');
+  if (manifest?.hooks !== 'hooks/hooks.json') errors.push('Copilot plugin hooks path must be hooks/hooks.json during R3.2 F01');
+
+  const hookConfig = fs.existsSync(HOOK_CONFIG) ? parseJson(HOOK_CONFIG, errors) : null;
+  if (hookConfig?.version !== 1) errors.push('Copilot hook configuration version must be 1');
+  const hookNames = Object.keys(hookConfig?.hooks || {}).sort();
+  if (JSON.stringify(hookNames) !== JSON.stringify(['sessionStart'])) {
+    errors.push(`R3.2 F01 Copilot hooks must contain only sessionStart; found: ${hookNames.join(', ') || 'none'}`);
+  }
+  const sessionHooks = hookConfig?.hooks?.sessionStart;
+  if (!Array.isArray(sessionHooks) || sessionHooks.length !== 1) {
+    errors.push('R3.2 F01 must expose exactly one Copilot sessionStart hook');
+  } else {
+    const hook = sessionHooks[0];
+    if (hook?.type !== 'command') errors.push('Copilot sessionStart hook must use the command hook type');
+    if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/session_start.mjs"') {
+      errors.push('Copilot sessionStart hook must execute the plugin-local session_start.mjs');
+    }
+    if (hook?.timeoutSec !== 5) errors.push('Copilot sessionStart hook timeoutSec must remain 5 during F01');
+  }
 
   for (const skill of SKILLS) {
     const skillPath = path.join(PLUGIN_ROOT, 'skills', skill, 'SKILL.md');
@@ -114,12 +137,16 @@ function main() {
     baseline: path.relative(ROOT, BASELINE),
     marketplace: path.relative(ROOT, MARKETPLACE),
     plugin_manifest: path.relative(ROOT, MANIFEST),
+    hook_config: path.relative(ROOT, HOOK_CONFIG),
+    session_hook: path.relative(ROOT, SESSION_HOOK),
     canonical_hash: canonicalHash,
     expected_version: expectedVersion,
     native_install: 'copilot plugin marketplace add Habib1001-m/hakim && copilot plugin install hakim@hakim',
     skills: SKILLS,
     agents: ALL_AGENTS,
     baseline_role: 'FALLBACK_ONLY',
+    operational_presence: 'SESSION_START_EXPERIMENTAL',
+    enforcement_hooks: [],
     ok: errors.length === 0,
     errors,
   };
