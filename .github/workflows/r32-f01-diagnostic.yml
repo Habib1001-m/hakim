@@ -1,0 +1,45 @@
+name: R3.2 F01 Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+
+      - name: Copilot operational presence
+        run: node tests/test_copilot_operational_presence.mjs
+
+      - name: Copilot projection
+        run: node scripts/check_copilot_instructions_projection.mjs --json
+
+      - name: Plugin smoke
+        run: node tests/test_plugin_smoke.js
+
+      - name: First-run truth
+        run: node tests/test_public_first_run_contract.mjs
+
+      - name: Public repository boundary
+        run: node scripts/check_public_repository_boundary.mjs
+
+      - name: Public package surface
+        run: node scripts/check_public_package_surface.mjs
+
+      - name: Structured metadata
+        run: node tests/test_structured_metadata.js
+
+      - name: Workflow policy
+        run: node tests/test_workflow_supply_chain_policy.mjs
