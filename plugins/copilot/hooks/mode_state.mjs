@@ -4,7 +4,7 @@ import path from 'node:path';
 
 export const DEFAULT_MODE = 'full';
 export const MODE_SCHEMA_VERSION = 1;
-export const VALID_MODES = Object.freeze(['lite', 'full', 'ultra', 'off']);
+export const VALID_MODES = Object.freeze(['full', 'off']);
 const VALID_MODE_SET = new Set(VALID_MODES);
 const STATE_FILE = 'mode.json';
 
