@@ -4,6 +4,8 @@ import path from 'node:path';
 
 export const DEFAULT_MODE = 'full';
 export const MODE_SCHEMA_VERSION = 1;
+// F02 deliberately proves only default-full vs explicit-off persistence.
+// Lite/ultra are deferred until F03 gives them real runtime semantics.
 export const VALID_MODES = Object.freeze(['full', 'off']);
 const VALID_MODE_SET = new Set(VALID_MODES);
 const STATE_FILE = 'mode.json';
