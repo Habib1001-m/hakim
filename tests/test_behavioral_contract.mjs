@@ -124,7 +124,7 @@ const copilotInstructions = read('.github/copilot-instructions.md');
 assert.match(
   copilotInstructions,
   /explicitly requests Hakim[\s\S]{0,180}before any repository-affecting tool or shell command/i,
-  'Copilot routing must activate native Hakim before repository-affecting tool use when explicitly requested',
+  'Copilot repository fallback instructions must retain explicit-routing discipline when they are the active surface',
 );
 assert.match(
   copilotInstructions,
@@ -145,13 +145,18 @@ assert.match(
 const copilotSkill = read('plugins/copilot/skills/hakim/SKILL.md');
 assert.match(
   copilotSkill,
-  /explicitly invokes Hakim[\s\S]{0,120}before repository-affecting tool use/i,
-  'Copilot native skill must itself retain pre-tool activation discipline',
+  /Hakim is present automatically after plugin installation/i,
+  'Copilot native plugin must not depend on explicit Hakim invocation for operational presence',
+);
+assert.match(
+  copilotSkill,
+  /mode change, not as a repository task[\s\S]{0,180}Do not inspect files, run tools, or load auxiliary Hakim skills/i,
+  'Copilot native mode control must remain zero-ceremony and must not turn a mode switch into repository work',
 );
 assert.match(
   copilotSkill,
   /BASELINE_COMMAND[\s\S]{0,320}PRE_EDIT_GIT_STATUS/i,
-  'Copilot native skill must require an observable baseline checkpoint before product edits',
+  'Copilot native skill must require an observable baseline checkpoint before product edits when explicitly loaded',
 );
 assert.match(
   copilotSkill,
