@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { writeModeState } from './mode_state.mjs';
 
 const MODE_COMMAND = /^\/(?:hakim\/)?hakim(?:\s+(lite|full|ultra|off))?\s*$/i;
@@ -38,6 +41,6 @@ async function main() {
   process.stdout.write('{}\n');
 }
 
-if (process.argv[1] && new URL(`file://${process.argv[1]}`).pathname === new URL(import.meta.url).pathname) {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main();
 }
