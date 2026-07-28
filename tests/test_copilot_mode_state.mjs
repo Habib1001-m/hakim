@@ -25,6 +25,14 @@ try {
   const stateFile = getModeStatePath(pluginData);
   assert.equal(path.dirname(stateFile), path.resolve(pluginData));
 
+  // Never turn an unresolved host placeholder or relative path into repo-local state.
+  assert.equal(getModeStatePath('${COPILOT_PLUGIN_DATA}'), null);
+  assert.equal(getModeStatePath('relative/plugin-data'), null);
+  assert.deepEqual(readModeState('${COPILOT_PLUGIN_DATA}'), { mode: 'full', source: 'DEFAULT' });
+  assert.throws(() => writeModeState('${COPILOT_PLUGIN_DATA}', 'off'), /expanded Copilot plugin-data path is unavailable/);
+  assert.throws(() => writeModeState('relative/plugin-data', 'off'), /expanded Copilot plugin-data path is unavailable/);
+  assert.deepEqual(fs.readdirSync(repo).sort(), repoBefore);
+
   for (const mode of ['lite', 'ultra', 'off']) {
     assert.deepEqual(writeModeState(pluginData, mode), { mode, persisted: true });
     assert.deepEqual(JSON.parse(fs.readFileSync(stateFile, 'utf8')), { schema_version: 1, mode });
@@ -55,4 +63,4 @@ try {
   fs.rmSync(root, { recursive: true, force: true });
 }
 
-console.log('test_copilot_mode_state.mjs: bounded plugin-data lite/full/ultra/off state OK');
+console.log('test_copilot_mode_state.mjs: bounded absolute plugin-data state + fail-soft unresolved paths OK');
