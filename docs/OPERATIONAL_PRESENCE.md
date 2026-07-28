@@ -258,7 +258,7 @@ Accepted evidence:
 
 The live A/B result showed a behavioral distinction as well: the off session gave a generic bounded read-only answer, while the full session explicitly used bounded `NO_CHANGE`, the Decision Ladder, and remaining uncertainty without being told to invoke Hakim.
 
-### F03 — Native mode-control UX — IN PROGRESS
+### F03 — Native mode-control UX — LIVE FIX IN PROGRESS
 
 Use Copilot's native skill invocation surface rather than inventing a separate command language:
 
@@ -272,6 +272,8 @@ Use Copilot's native skill invocation surface rather than inventing a separate c
 The `userPromptSubmitted` hook may parse only these exact Hakim control invocations. Ordinary prompts remain untouched and unpersisted. The hook stores only `{schema_version, mode}` and emits no reasoning context.
 
 Current-session behavior comes from the native skill invocation itself; plugin-data persistence controls later session starts. This avoids trying to remove already-injected `sessionStart` context mid-session through unsupported hook behavior.
+
+Repository-side F03 originally passed Public CI #583 at `8d8acbb3abe8693d0924b40af8ba8d5a46317098`, but the first real Copilot CLI 1.0.75 mode-command probe exposed a host-loader defect before any state mutation: the native Hakim skill failed to load and `/hakim` was therefore unknown. Root cause was an invalid frontmatter type for Copilot: `argument-hint` was written as a YAML flow sequence instead of the required string. The frozen F03 ref remains immutable evidence of this live failure. The branch fix quotes the argument hint as `"[lite|full|ultra|off]"` and adds a regression that enforces the Copilot-compatible string representation before any F03 live rerun.
 
 ### F04 — Subagent continuity fit
 
