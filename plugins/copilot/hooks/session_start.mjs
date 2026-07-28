@@ -50,6 +50,8 @@ export function runSessionStart() {
   return buildSessionStartOutput(skillText);
 }
 
+// F01 is intentionally stateless: mode persistence and COPILOT_PLUGIN_DATA are
+// separate feasibility questions and must not be smuggled into the presence proof.
 function main() {
   try {
     process.stdout.write(`${JSON.stringify(runSessionStart())}\n`);
