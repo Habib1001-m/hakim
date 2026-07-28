@@ -26,11 +26,13 @@ assert.equal(hookConfig.hooks.userPromptTransformed.length, 1);
 const sessionStart = hookConfig.hooks.sessionStart[0];
 assert.equal(sessionStart.type, 'command');
 assert.match(sessionStart.command, /\$\{PLUGIN_ROOT\}\/hooks\/session_start\.mjs/);
+assert.deepEqual(sessionStart.env, { HAKIM_PLUGIN_DATA: '${COPILOT_PLUGIN_DATA}' });
 assert.equal(sessionStart.timeoutSec, 5);
 
 const modeControl = hookConfig.hooks.userPromptTransformed[0];
 assert.equal(modeControl.type, 'command');
 assert.match(modeControl.command, /\$\{PLUGIN_ROOT\}\/hooks\/mode_control\.mjs/);
+assert.deepEqual(modeControl.env, { HAKIM_PLUGIN_DATA: '${COPILOT_PLUGIN_DATA}' });
 assert.equal(modeControl.timeoutSec, 2);
 
 for (const forbidden of ['userPromptSubmitted', 'preToolUse', 'postToolUse', 'agentStop', 'subagentStart', 'subagentStop']) {
@@ -122,4 +124,4 @@ try {
   fs.rmSync(temp, { recursive: true, force: true });
 }
 
-console.log('test_copilot_operational_presence.mjs: silent presence + transformed mode-control topology OK');
+console.log('test_copilot_operational_presence.mjs: silent presence + explicit plugin-data binding + transformed mode control OK');
