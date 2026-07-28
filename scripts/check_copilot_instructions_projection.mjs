@@ -123,7 +123,9 @@ function main() {
 
   if (fs.existsSync(MODE_TRACKER)) {
     const text = read(MODE_TRACKER);
-    if (!text.includes('(?:hakim\\/)?hakim')) errors.push('Copilot mode tracker must accept bare and plugin-qualified hakim skill invocation');
+    if (!text.includes('/hakim') || !text.includes('hakim:hakim') || !text.includes('lite|full|ultra|off')) {
+      errors.push('Copilot mode tracker must accept bounded bare and host-normalized plugin-qualified Hakim mode invocations');
+    }
     if (!text.includes('applyModeCommand')) errors.push('Copilot mode tracker missing bounded mode application');
     if (/writeFileSync\([^\n]*prompt/i.test(text)) errors.push('Copilot mode tracker must not persist raw prompts');
   }
