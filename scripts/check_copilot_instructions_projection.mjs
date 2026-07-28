@@ -61,7 +61,7 @@ function main() {
   requireFile(HOOK_CONFIG, 'Copilot operational-presence hook config', errors);
   requireFile(SESSION_HOOK, 'Copilot session-start hook', errors);
   requireFile(MODE_STATE, 'Copilot bounded mode-state helper', errors);
-  requireFile(MODE_CONTROL, 'Copilot transformed-prompt mode-control hook', errors);
+  requireFile(MODE_CONTROL, 'Copilot transformed mode-control hook', errors);
 
   const baseline = fs.existsSync(BASELINE) ? read(BASELINE) : '';
   if (marker(baseline) !== canonicalHash) errors.push('Copilot baseline canonical hash drift');
@@ -91,6 +91,8 @@ function main() {
     errors.push(`R3.2 F03 hooks must be only sessionStart + userPromptTransformed; found: ${hookNames.join(', ') || 'none'}`);
   }
 
+  const expectedPluginDataEnv = { HAKIM_PLUGIN_DATA: '${COPILOT_PLUGIN_DATA}' };
+
   const sessionHooks = hookConfig?.hooks?.sessionStart;
   if (!Array.isArray(sessionHooks) || sessionHooks.length !== 1) {
     errors.push('R3.2 must expose exactly one Copilot sessionStart hook');
@@ -98,6 +100,7 @@ function main() {
     const hook = sessionHooks[0];
     if (hook?.type !== 'command') errors.push('Copilot sessionStart hook must use the command hook type');
     if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/session_start.mjs"') errors.push('Copilot sessionStart hook must execute the plugin-local session_start.mjs');
+    if (JSON.stringify(hook?.env || {}) !== JSON.stringify(expectedPluginDataEnv)) errors.push('Copilot sessionStart hook must bind HAKIM_PLUGIN_DATA from ${COPILOT_PLUGIN_DATA}');
     if (hook?.timeoutSec !== 5) errors.push('Copilot sessionStart hook timeoutSec must remain 5');
   }
 
@@ -108,6 +111,7 @@ function main() {
     const hook = transformedHooks[0];
     if (hook?.type !== 'command') errors.push('Copilot mode control must use the command hook type');
     if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/mode_control.mjs"') errors.push('Copilot mode control must execute plugin-local mode_control.mjs');
+    if (JSON.stringify(hook?.env || {}) !== JSON.stringify(expectedPluginDataEnv)) errors.push('Copilot mode-control hook must bind HAKIM_PLUGIN_DATA from ${COPILOT_PLUGIN_DATA}');
     if (hook?.timeoutSec !== 2) errors.push('Copilot mode control timeoutSec must remain 2');
   }
 
@@ -123,13 +127,11 @@ function main() {
 
   if (fs.existsSync(MODE_CONTROL)) {
     const text = read(MODE_CONTROL);
-    // Exact invocation shapes are executable behavior and are covered by
-    // tests/test_copilot_mode_control.mjs; this projection gate checks the
-    // maintained control surface without coupling to regex source spelling.
     if (!text.includes('parseModeCommand')) errors.push('Copilot mode control missing bounded command parser');
     if (!text.includes('applyModeControl')) errors.push('Copilot mode control missing bounded mode application');
     if (!text.includes('modifiedTransformedPrompt')) errors.push('Copilot mode control must explicitly rewrite only the transformed control prompt');
     if (!text.includes('lite|full|ultra|off')) errors.push('Copilot mode control must retain the four canonical mode tokens');
+    if (!text.includes('HAKIM_PLUGIN_DATA')) errors.push('Copilot mode control must consume the explicit plugin-data binding');
     if (/writeFileSync\([^\n]*prompt/i.test(text)) errors.push('Copilot mode control must not persist raw prompts');
   }
 
@@ -185,6 +187,7 @@ function main() {
     operational_presence: 'SESSION_START_PLUS_TRANSFORMED_MODE_CONTROL_EXPERIMENTAL',
     persistent_modes: ['lite', 'ultra', 'off'],
     default_mode_state: 'STATELESS_FULL',
+    plugin_data_binding: 'EXPLICIT_HAKIM_PLUGIN_DATA_FROM_COPILOT_PLUGIN_DATA',
     enforcement_hooks: [],
     ok: errors.length === 0,
     errors,
