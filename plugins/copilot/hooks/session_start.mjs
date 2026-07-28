@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { readModeState } from './mode_state.mjs';
+import { getModeDirective, readModeState } from './mode_state.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_PATH = path.resolve(HERE, '..', 'skills', 'hakim', 'SKILL.md');
@@ -27,10 +27,11 @@ function extractSection(markdown, heading) {
   return markdown.slice(start, next < 0 ? markdown.length : next).trim();
 }
 
-export function buildOperationalContext(markdown) {
+export function buildOperationalContext(markdown, mode = 'full') {
   const body = OPERATIONAL_SECTIONS.map((heading) => extractSection(markdown, heading)).join('\n\n');
   const context = [
-    'HAKIM OPERATIONAL PRESENCE — full mode.',
+    `HAKIM OPERATIONAL PRESENCE — ${mode} mode.`,
+    getModeDirective(mode),
     'Hakim is already available for this Copilot session. Apply the maintained decision policy automatically to coding work without requiring an explicit Hakim invocation.',
     'Preserve model reasoning freedom: these rules govern engineering decisions, evidence, and consequential claims; they are not a fixed reasoning recipe or tool sequence.',
     '',
@@ -45,7 +46,7 @@ export function buildOperationalContext(markdown) {
 
 export function buildSessionStartOutput(skillText, mode = 'full') {
   if (mode === 'off') return {};
-  return { additionalContext: buildOperationalContext(skillText) };
+  return { additionalContext: buildOperationalContext(skillText, mode) };
 }
 
 export function runSessionStart(options = {}) {
