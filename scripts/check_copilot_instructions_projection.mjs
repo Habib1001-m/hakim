@@ -14,7 +14,7 @@ const MANIFEST = path.join(PLUGIN_ROOT, 'plugin.json');
 const HOOK_CONFIG = path.join(PLUGIN_ROOT, 'hooks', 'hooks.json');
 const SESSION_HOOK = path.join(PLUGIN_ROOT, 'hooks', 'session_start.mjs');
 const MODE_STATE = path.join(PLUGIN_ROOT, 'hooks', 'mode_state.mjs');
-const MODE_TRACKER = path.join(PLUGIN_ROOT, 'hooks', 'mode_tracker.mjs');
+const MODE_CONTROL = path.join(PLUGIN_ROOT, 'hooks', 'mode_control.mjs');
 
 const SKILLS = ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'];
 const READ_ONLY_AGENTS = ['hakim-reviewer', 'hakim-auditor', 'hakim-debt-analyst', 'hakim-evidence-verifier'];
@@ -61,7 +61,7 @@ function main() {
   requireFile(HOOK_CONFIG, 'Copilot operational-presence hook config', errors);
   requireFile(SESSION_HOOK, 'Copilot session-start hook', errors);
   requireFile(MODE_STATE, 'Copilot bounded mode-state helper', errors);
-  requireFile(MODE_TRACKER, 'Copilot native mode-tracker hook', errors);
+  requireFile(MODE_CONTROL, 'Copilot transformed-prompt mode-control hook', errors);
 
   const baseline = fs.existsSync(BASELINE) ? read(BASELINE) : '';
   if (marker(baseline) !== canonicalHash) errors.push('Copilot baseline canonical hash drift');
@@ -87,8 +87,8 @@ function main() {
   const hookConfig = fs.existsSync(HOOK_CONFIG) ? parseJson(HOOK_CONFIG, errors) : null;
   if (hookConfig?.version !== 1) errors.push('Copilot hook configuration version must be 1');
   const hookNames = Object.keys(hookConfig?.hooks || {}).sort();
-  if (JSON.stringify(hookNames) !== JSON.stringify(['sessionStart', 'userPromptSubmitted'])) {
-    errors.push(`R3.2 F03 hooks must be only sessionStart + userPromptSubmitted; found: ${hookNames.join(', ') || 'none'}`);
+  if (JSON.stringify(hookNames) !== JSON.stringify(['sessionStart', 'userPromptTransformed'])) {
+    errors.push(`R3.2 F03 hooks must be only sessionStart + userPromptTransformed; found: ${hookNames.join(', ') || 'none'}`);
   }
 
   const sessionHooks = hookConfig?.hooks?.sessionStart;
@@ -101,14 +101,14 @@ function main() {
     if (hook?.timeoutSec !== 5) errors.push('Copilot sessionStart hook timeoutSec must remain 5');
   }
 
-  const promptHooks = hookConfig?.hooks?.userPromptSubmitted;
-  if (!Array.isArray(promptHooks) || promptHooks.length !== 1) {
-    errors.push('R3.2 F03 must expose exactly one Copilot userPromptSubmitted hook');
+  const transformedHooks = hookConfig?.hooks?.userPromptTransformed;
+  if (!Array.isArray(transformedHooks) || transformedHooks.length !== 1) {
+    errors.push('R3.2 F03 must expose exactly one Copilot userPromptTransformed hook');
   } else {
-    const hook = promptHooks[0];
-    if (hook?.type !== 'command') errors.push('Copilot mode tracker must use the command hook type');
-    if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/mode_tracker.mjs"') errors.push('Copilot mode tracker must execute plugin-local mode_tracker.mjs');
-    if (hook?.timeoutSec !== 2) errors.push('Copilot mode tracker timeoutSec must remain 2');
+    const hook = transformedHooks[0];
+    if (hook?.type !== 'command') errors.push('Copilot mode control must use the command hook type');
+    if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/mode_control.mjs"') errors.push('Copilot mode control must execute plugin-local mode_control.mjs');
+    if (hook?.timeoutSec !== 2) errors.push('Copilot mode control timeoutSec must remain 2');
   }
 
   if (fs.existsSync(MODE_STATE)) {
@@ -121,13 +121,14 @@ function main() {
     }
   }
 
-  if (fs.existsSync(MODE_TRACKER)) {
-    const text = read(MODE_TRACKER);
-    if (!text.includes('/hakim') || !text.includes('hakim:hakim') || !text.includes('lite|full|ultra|off')) {
-      errors.push('Copilot mode tracker must accept bounded bare and host-normalized plugin-qualified Hakim mode invocations');
+  if (fs.existsSync(MODE_CONTROL)) {
+    const text = read(MODE_CONTROL);
+    for (const invocation of ['/hakim', 'hakim[:/]', 'lite|full|ultra|off']) {
+      if (!text.includes(invocation)) errors.push(`Copilot mode control missing bounded invocation support: ${invocation}`);
     }
-    if (!text.includes('applyModeCommand')) errors.push('Copilot mode tracker missing bounded mode application');
-    if (/writeFileSync\([^\n]*prompt/i.test(text)) errors.push('Copilot mode tracker must not persist raw prompts');
+    if (!text.includes('modifiedTransformedPrompt')) errors.push('Copilot mode control must explicitly rewrite only the transformed control prompt');
+    if (!text.includes('applyModeControl')) errors.push('Copilot mode control missing bounded mode application');
+    if (/writeFileSync\([^\n]*prompt/i.test(text)) errors.push('Copilot mode control must not persist raw prompts');
   }
 
   for (const skill of SKILLS) {
@@ -151,7 +152,9 @@ function main() {
     const agentPath = path.join(PLUGIN_ROOT, 'agents', `${agent}.agent.md`);
     if (!fs.existsSync(agentPath)) continue;
     const tools = frontmatterArray(read(agentPath), 'tools');
-    if (JSON.stringify(tools) !== JSON.stringify(['read', 'search'])) errors.push(`Copilot read-only agent ${agent} must expose only read/search tools`);
+    if (JSON.stringify(tools) !== JSON.stringify(['read', 'search'])) {
+      errors.push(`Copilot read-only agent ${agent} must expose only read/search tools`);
+    }
   }
 
   const implementer = path.join(PLUGIN_ROOT, 'agents', 'hakim-implementer.agent.md');
@@ -170,14 +173,14 @@ function main() {
     hook_config: path.relative(ROOT, HOOK_CONFIG),
     session_hook: path.relative(ROOT, SESSION_HOOK),
     mode_state: path.relative(ROOT, MODE_STATE),
-    mode_tracker: path.relative(ROOT, MODE_TRACKER),
+    mode_control: path.relative(ROOT, MODE_CONTROL),
     canonical_hash: canonicalHash,
     expected_version: expectedVersion,
     native_install: 'copilot plugin marketplace add Habib1001-m/hakim && copilot plugin install hakim@hakim',
     skills: SKILLS,
     agents: ALL_AGENTS,
     baseline_role: 'FALLBACK_ONLY',
-    operational_presence: 'SESSION_START_PLUS_NATIVE_MODE_TRACKING_EXPERIMENTAL',
+    operational_presence: 'SESSION_START_PLUS_TRANSFORMED_MODE_CONTROL_EXPERIMENTAL',
     persistent_modes: ['lite', 'ultra', 'off'],
     default_mode_state: 'STATELESS_FULL',
     enforcement_hooks: [],
