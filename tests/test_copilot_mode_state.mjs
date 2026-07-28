@@ -29,8 +29,8 @@ try {
   assert.equal(getModeStatePath('${COPILOT_PLUGIN_DATA}'), null);
   assert.equal(getModeStatePath('relative/plugin-data'), null);
   assert.deepEqual(readModeState('${COPILOT_PLUGIN_DATA}'), { mode: 'full', source: 'DEFAULT' });
-  assert.throws(() => writeModeState('${COPILOT_PLUGIN_DATA}', 'off'), /expanded Copilot plugin-data path is unavailable/);
-  assert.throws(() => writeModeState('relative/plugin-data', 'off'), /expanded Copilot plugin-data path is unavailable/);
+  assert.throws(() => writeModeState('${COPILOT_PLUGIN_DATA}', 'off'), /expanded absolute Copilot plugin-data path is unavailable/);
+  assert.throws(() => writeModeState('relative/plugin-data', 'off'), /expanded absolute Copilot plugin-data path is unavailable/);
   assert.deepEqual(fs.readdirSync(repo).sort(), repoBefore);
 
   for (const mode of ['lite', 'ultra', 'off']) {
