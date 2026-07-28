@@ -24,11 +24,15 @@ export function buildModeControlPrompt(mode) {
   ].join('\n');
 }
 
+export function resolvePluginDataDir(options = {}) {
+  return options.pluginDataDir ?? process.env.HAKIM_PLUGIN_DATA ?? process.env.COPILOT_PLUGIN_DATA;
+}
+
 export function applyModeControl(input, options = {}) {
   const mode = parseModeCommand(input?.prompt);
   if (!mode) return { handled: false, output: {} };
 
-  const pluginDataDir = options.pluginDataDir ?? process.env.COPILOT_PLUGIN_DATA;
+  const pluginDataDir = resolvePluginDataDir(options);
   const result = writeModeState(pluginDataDir, mode);
   return {
     handled: true,
