@@ -22,17 +22,22 @@ try {
   assert.match(fullOutput.additionalContext, /^HAKIM OPERATIONAL PRESENCE — full mode\./);
   assert.deepEqual(fs.readdirSync(repo).sort(), repoBefore);
 
-  assert.deepEqual(writeModeState(pluginData, 'off'), { mode: 'off', persisted: true });
   const stateFile = getModeStatePath(pluginData);
   assert.equal(path.dirname(stateFile), path.resolve(pluginData));
-  assert.deepEqual(JSON.parse(fs.readFileSync(stateFile, 'utf8')), { schema_version: 1, mode: 'off' });
-  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(stateFile, 'utf8'))).sort(), ['mode', 'schema_version']);
-  assert.deepEqual(readModeState(pluginData), { mode: 'off', source: 'PLUGIN_DATA' });
-  assert.deepEqual(runSessionStart({ pluginDataDir: pluginData }), {});
-  assert.deepEqual(fs.readdirSync(repo).sort(), repoBefore, 'mode state must not touch target repository');
 
-  assert.throws(() => writeModeState(pluginData, 'lite'), /unsupported Hakim mode/);
-  assert.throws(() => writeModeState(pluginData, 'ultra'), /unsupported Hakim mode/);
+  for (const mode of ['lite', 'ultra', 'off']) {
+    assert.deepEqual(writeModeState(pluginData, mode), { mode, persisted: true });
+    assert.deepEqual(JSON.parse(fs.readFileSync(stateFile, 'utf8')), { schema_version: 1, mode });
+    assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(stateFile, 'utf8'))).sort(), ['mode', 'schema_version']);
+    assert.deepEqual(readModeState(pluginData), { mode, source: 'PLUGIN_DATA' });
+
+    const output = runSessionStart({ pluginDataDir: pluginData });
+    if (mode === 'off') assert.deepEqual(output, {});
+    else assert.match(output.additionalContext, new RegExp(`^HAKIM OPERATIONAL PRESENCE — ${mode} mode\\.`));
+
+    assert.deepEqual(fs.readdirSync(repo).sort(), repoBefore, 'mode state must not touch target repository');
+  }
+
   assert.throws(() => writeModeState(pluginData, 'invalid'), /unsupported Hakim mode/);
 
   fs.writeFileSync(stateFile, '{not-json\n');
@@ -50,4 +55,4 @@ try {
   fs.rmSync(root, { recursive: true, force: true });
 }
 
-console.log('test_copilot_mode_state.mjs: bounded plugin-data full/off state OK');
+console.log('test_copilot_mode_state.mjs: bounded plugin-data lite/full/ultra/off state OK');
