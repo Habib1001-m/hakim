@@ -123,11 +123,13 @@ function main() {
 
   if (fs.existsSync(MODE_CONTROL)) {
     const text = read(MODE_CONTROL);
-    for (const invocation of ['/hakim', 'hakim[:/]', 'lite|full|ultra|off']) {
-      if (!text.includes(invocation)) errors.push(`Copilot mode control missing bounded invocation support: ${invocation}`);
-    }
-    if (!text.includes('modifiedTransformedPrompt')) errors.push('Copilot mode control must explicitly rewrite only the transformed control prompt');
+    // Exact invocation shapes are executable behavior and are covered by
+    // tests/test_copilot_mode_control.mjs; this projection gate checks the
+    // maintained control surface without coupling to regex source spelling.
+    if (!text.includes('parseModeCommand')) errors.push('Copilot mode control missing bounded command parser');
     if (!text.includes('applyModeControl')) errors.push('Copilot mode control missing bounded mode application');
+    if (!text.includes('modifiedTransformedPrompt')) errors.push('Copilot mode control must explicitly rewrite only the transformed control prompt');
+    if (!text.includes('lite|full|ultra|off')) errors.push('Copilot mode control must retain the four canonical mode tokens');
     if (/writeFileSync\([^\n]*prompt/i.test(text)) errors.push('Copilot mode control must not persist raw prompts');
   }
 
