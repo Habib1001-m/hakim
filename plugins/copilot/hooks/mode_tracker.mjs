@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+import { writeModeState } from './mode_state.mjs';
+
+const MODE_COMMAND = /^\/(?:hakim\/)?hakim(?:\s+(lite|full|ultra|off))?\s*$/i;
+
+export function parseModeCommand(prompt) {
+  const match = String(prompt ?? '').trim().match(MODE_COMMAND);
+  if (!match) return null;
+  return (match[1] || 'full').toLowerCase();
+}
+
+export function applyModeCommand(input, options = {}) {
+  const mode = parseModeCommand(input?.prompt);
+  if (!mode) return { handled: false };
+
+  const pluginDataDir = options.pluginDataDir ?? process.env.COPILOT_PLUGIN_DATA;
+  const result = writeModeState(pluginDataDir, mode);
+  return { handled: true, mode, persisted: result.persisted };
+}
+
+async function readStdin() {
+  let input = '';
+  for await (const chunk of process.stdin) input += chunk;
+  return input;
+}
+
+async function main() {
+  try {
+    const raw = await readStdin();
+    const payload = raw.trim() ? JSON.parse(raw.replace(/^\uFEFF/u, '')) : {};
+    applyModeCommand(payload);
+  } catch {
+    // Mode tracking is best-effort and must never break or delay a user prompt.
+  }
+
+  // Copilot CLI does not process userPromptSubmitted hook output. Emit an empty
+  // object only to keep the command-hook contract explicit and quiet.
+  process.stdout.write('{}\n');
+}
+
+if (process.argv[1] && new URL(`file://${process.argv[1]}`).pathname === new URL(import.meta.url).pathname) {
+  main();
+}
