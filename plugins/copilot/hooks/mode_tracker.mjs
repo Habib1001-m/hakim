@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { writeModeState } from './mode_state.mjs';
 
-const MODE_COMMAND = /^\/(?:hakim\/)?hakim(?:\s+(lite|full|ultra|off))?\s*$/i;
+const MODE_COMMAND = /^(?:\/hakim|\/hakim[\/:]hakim|hakim:hakim)(?:\s+\[?(lite|full|ultra|off)\]?)?\s*$/i;
 
 export function parseModeCommand(prompt) {
   const match = String(prompt ?? '').trim().match(MODE_COMMAND);
