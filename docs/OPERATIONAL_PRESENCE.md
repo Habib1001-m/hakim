@@ -40,7 +40,7 @@ Useful upstream references:
 - `DietrichGebert/ponytail:hooks/copilot-hooks.json`
 - `DietrichGebert/ponytail:hooks/claude-codex-hooks.json`
 - `DietrichGebert/ponytail:hooks/ponytail-activate.js`
-- `DietrichGebert/ponytail:hooks/ponytail-mode-tracker.js`
+- the current Ponytail mode-tracking hook
 - `DietrichGebert/ponytail:hooks/ponytail-subagent.js`
 - `DietrichGebert/ponytail:hooks/ponytail-runtime.js`
 - `DietrichGebert/ponytail:hooks/ponytail-instructions.js`
