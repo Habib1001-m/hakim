@@ -59,7 +59,7 @@ export function writeModeState(pluginDataDir, mode) {
   if (!VALID_MODE_SET.has(mode)) throw new Error(`unsupported Hakim mode: ${mode}`);
 
   const file = statePath(pluginDataDir);
-  if (!file) throw new Error('expanded Copilot plugin-data path is unavailable');
+  if (!file) throw new Error('expanded absolute Copilot plugin-data path is unavailable');
 
   if (mode === DEFAULT_MODE) {
     try { fs.unlinkSync(file); }
