@@ -8,6 +8,13 @@
         "timeoutSec": 5
       }
     ],
+    "subagentStart": [
+      {
+        "type": "command",
+        "command": "node \"${PLUGIN_ROOT}/hooks/session_start.mjs\"",
+        "timeoutSec": 5
+      }
+    ],
     "userPromptSubmitted": [
       {
         "type": "command",
