@@ -22,8 +22,14 @@ class TruthGatePolicyTests(unittest.TestCase):
         self.assertIn("Structured facts have structured authorities", architecture)
         self.assertRegex(architecture, re.compile(r"negative tripwires", re.I))
         self.assertRegex(architecture, re.compile(r"not semantic proof", re.I))
-        self.assertRegex(architecture, re.compile(r"cannot promote acceptance or release state", re.I))
-        self.assertRegex(architecture, re.compile(r"prefer adding or reusing a structured authority", re.I))
+        self.assertRegex(
+            architecture,
+            re.compile(r"structured authority.*projection check", re.I | re.S),
+        )
+        self.assertRegex(
+            architecture,
+            re.compile(r"prior evidence remains historical|evidence.*exact.*identity", re.I | re.S),
+        )
 
         self.assertEqual(package["version"], version)
         self.assertEqual(acceptance["product_version"], version)
@@ -42,6 +48,14 @@ class TruthGatePolicyTests(unittest.TestCase):
         self.assertIsNone(
             re.search(r"README[^\n]{0,120}[a-f0-9]{40}", first_run, re.I),
             "first-run gate must not require a hardcoded commit SHA inside README prose",
+        )
+
+        # The public-doc gate may require structured markers or stale-language
+        # tripwires, but it must not pin the README to one exact marketing/status
+        # sentence merely to prove product truth.
+        self.assertIsNone(
+            re.search(r"readme\.includes\(['\"]Hakim `['\"]\s*\+\s*version", first_run),
+            "first-run gate must not copy-lock README status prose",
         )
 
 
