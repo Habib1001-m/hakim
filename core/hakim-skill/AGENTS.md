@@ -5,31 +5,37 @@
 
 ## Purpose
 
-Use this file when changing Hakim itself. Do not treat it as a user-facing capability specification and do not promote historical research, examples, or local development artifacts into product claims.
+Use this file when changing Hakim itself. Do not treat it as a user-facing capability specification and do not promote historical research, experiments, issue text, or local artifacts into current product claims.
 
 ## Authority map
 
-Use one authoritative source per question:
+Use one maintained authority per question:
 
-- Hakim decision behavior: `SKILL.md`.
+- Decision behavior: `SKILL.md`.
 - Capability identifiers and host mappings: `capabilities.json`.
 - Repository modification rules: this file.
 - Product installation: `INSTALL.md` plus the maintained host integration.
-- Supported-host status and boundaries: repository `SUPPORTED_HOSTS.md`.
-- Package membership and layout: the current package builder and package verification checks.
+- Supported-host boundaries: repository `SUPPORTED_HOSTS.md`.
+- Current product-readiness state: repository `docs/PRODUCT_READINESS.md`.
+- Operational-presence architecture: repository `docs/OPERATIONAL_PRESENCE.md`.
+- Frozen-candidate live-host projection: repository `conformance/native-host-acceptance.json`.
+- Historical accepted host evidence: repository `conformance/history/`.
+- Release/version contract: repository `VERSIONING.md` and version/manifests.
+- Support/deprecation boundary: repository `SUPPORT.md`.
+- Package membership/layout: current package builder and verification checks.
 - Deterministic Python audit-helper behavior: `scripts/audit_complexity.py`.
-- Live public release metadata: repository `VERSION`, manifests, changelog, and public release checks.
-- Support and deprecation boundary: repository `SUPPORT.md`.
 
-Tests, examples, archived evidence, and research notes are not higher authority than these sources.
+Tests and documentation may verify or project these authorities; they are not a second product-state database.
 
 ## Current product boundary
 
-Hakim `1.0.0-beta.4` is a public-beta observable-checkpoint candidate with maintained surfaces for Codex, Claude Code, GitHub Copilot, and OpenCode. Current beta.4 live-host acceptance remains `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are accepted; accepted beta.1 and frozen beta.2/beta.3 evidence is historical and must not be relabeled as beta.4 evidence.
+The latest frozen prerelease is `1.0.0-beta.4`. Current `main` contains unreleased R3.2 development accepted through F04. Those identities are deliberately separate: R3.2 evidence must not be relabeled as beta.4 release-candidate acceptance, and no beta.5 candidate exists until one is explicitly cut and frozen.
 
-The maintained product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm registry publication, central marketplace/directory publication, signing, notarization, or universal host compatibility. The private root package metadata may be used as a bounded Git transport surface for OpenCode without becoming an npm registry release.
+Maintained product surfaces exist for Codex, Claude Code, GitHub Copilot, and OpenCode. Frozen beta.4 native-host acceptance remains `HOLD_FOR_LIVE_HOST_EVIDENCE` until exact-candidate journeys are accepted.
 
-Do not reintroduce a historical implementation or document as a current product surface merely because it remains in source history.
+The product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm registry publication, central marketplace/directory publication, signing, notarization, or universal host compatibility. The private root package may act as bounded Git transport for OpenCode without becoming an npm registry release.
+
+Do not reintroduce a historical implementation or document as a current product surface merely because it remains in Git history.
 
 ## Core repository rules
 
@@ -40,115 +46,121 @@ Before adding code, files, dependencies, configuration, or documentation:
 1. Ask whether the change is needed.
 2. Reuse an existing implementation or source of truth when possible.
 3. Prefer standard-library and host-native behavior over custom infrastructure.
-4. Keep the smallest safe diff that preserves security, privacy, accessibility, data integrity, rollback safety, and user trust.
+4. Make the smallest sufficient, coherent, safe change that preserves security, privacy, accessibility, data integrity, rollback safety, and user trust.
 
 ### 2. Inspect before editing
 
-Read the affected source, callers or consumers, tests, manifests, and active documentation before changing behavior. Do not infer current truth from filenames, old issue text, archived documents, or historical comments alone.
+Read the affected source, direct consumers/callers, tests, manifests, and active documentation before changing behavior. Do not infer current truth from filenames, old issue text, archived evidence, or historical comments alone.
 
 ### 3. Keep product claims evidence-bound
 
-A passing unit test, package build, structural projection check, or local smoke test proves only the scope it actually checks.
+A passing unit test, package build, projection check, local smoke test, or host-specific probe proves only its checked scope.
 
-Do not convert those results into claims of:
+Do not turn those results into claims of universal compatibility, correctness/security approval, benchmark superiority, performance/token/cost/ROI improvement, adoption, marketplace publication, or third-party approval.
 
-- universal compatibility;
-- correctness or security approval;
-- benchmark superiority;
-- performance, token, cost, adoption, or ROI improvement;
-- marketplace publication or third-party approval.
-
-Use `NOT_ESTABLISHED` when the repository does not contain accepted evidence.
+Use `NOT_ESTABLISHED` when the repository does not contain accepted evidence for a requested claim.
 
 ### 4. Preserve host-native differences
 
 Capability parity is semantic. Invocation syntax, lifecycle behavior, permissions, trust, sandboxing, and plugin policy may differ by host.
 
-Do not force Codex, Claude Code, GitHub Copilot, and OpenCode into a lowest-common-denominator adapter or copy a host-specific command into canonical documentation as if it were universal.
+Do not force Codex, Claude Code, GitHub Copilot, and OpenCode into a lowest-common-denominator adapter or copy one host-specific command into canonical documentation as though it were universal.
 
-### 5. Keep distribution-relative documentation portable
+### 5. Preserve capable-model freedom
+
+Hakim targets capable coding agents. Do not add fixed reasoning order, mandatory tool sequences, broad denylist enforcement, or checkpoint ceremony merely because a hook can support it.
+
+Prefer objective verification of consequential state over constraining reasoning paths. New lifecycle hooks require a concrete observed host gap, not symmetry.
+
+### 6. Keep distribution-relative documentation portable
 
 Canonical capability text may be projected into multiple installed distributions. Therefore:
 
-- do not require a source-repository path such as `core/hakim-skill/...` from an installed capability;
-- do not reference a file unless that capability can operate without it or the active distribution actually ships it;
-- describe optional helpers and example assets as optional;
-- keep repository-development commands in repository documentation, not in host-neutral runtime instructions.
+- do not require source-repository-only paths from an installed capability;
+- do not reference a file unless the active distribution ships it or the capability can operate without it;
+- keep optional helpers explicitly optional;
+- keep repository-development commands in repository documentation, not host-neutral runtime instructions.
 
-### 6. Keep public and internal governance separate
+### 7. Keep public and private governance separate
 
-The public repository contains public product code, documentation, tests, manifests, and CI only. Do not add private taskboards, internal worklogs, evaluator archives, operator transcripts, credentials, private evidence packets, or local control-plane artifacts.
+The public repository contains public product code, documentation, tests, manifests, and CI only. Do not add private taskboards, internal worklogs, evaluator archives, operator transcripts, credentials, private source, private prompts, provider/backend secrets, or unsanitized evidence packets.
 
-Use public issues and pull-request descriptions only for public product work that belongs in the repository history.
+Public issues and PRs should contain only public-safe product work that belongs in repository history.
 
 ## Canonical skill changes
 
 When changing `SKILL.md` or canonical capability skills:
 
 - preserve the seven-rung decision ladder unless an explicitly approved product change replaces it;
-- preserve the four modes `lite`, `full`, `ultra`, and `off` unless an approved product change replaces them;
+- preserve `lite`, `full`, `ultra`, and `off` unless an approved product change replaces them;
 - update `capabilities.json` when capability identity or host mapping changes;
-- update host projections when canonical behavior changes;
-- keep examples host-neutral unless they are explicitly labeled for one host;
-- remove stale or unavailable resource references instead of copying them across projections.
+- update maintained host projections when canonical behavior changes;
+- keep examples host-neutral unless explicitly host-scoped;
+- remove stale/unavailable resource references instead of copying them across projections.
 
-Projection equality is not sufficient evidence of correctness. A projection that faithfully copies a broken canonical reference is still broken.
+Projection equality is not proof of correctness. A projection that faithfully copies a broken canonical statement is still broken.
 
 ## Scripts and dependencies
 
-Prefer existing repository scripts and standard-library capabilities. Add a dependency only when the current product requirement cannot be met safely with existing code, the standard library, or the host platform.
+Prefer existing repository scripts, the standard library, and host-native capabilities. Add a dependency only when the current requirement cannot be met safely with existing code or platform behavior.
 
 When changing a script:
 
-- preserve documented CLI behavior unless the change explicitly updates that contract;
-- keep exit codes and error behavior documented where users or CI depend on them;
-- update tests and documentation in the same change when behavior changes;
-- never document an example command that has not been checked against the actual parser or implementation.
+- preserve documented CLI behavior unless the change explicitly updates the contract;
+- keep exit/error behavior documented where users or CI depend on it;
+- update focused tests and relevant documentation in the same change;
+- never document a command that has not been checked against the real parser/implementation.
 
-## Documentation rules
+## Documentation truth
 
-Active documentation must describe the current product, not a previous architecture.
+Active documentation describes the current product, not a previous phase.
 
-For every command, flag, path, version, package member, host capability, and quantitative statement:
+For commands, flags, paths, versions, package members, host capabilities, readiness states, and quantitative statements:
 
-1. identify the authoritative implementation or upstream contract;
+1. identify the maintained authority;
 2. verify the claim against it;
 3. keep the claim no broader than the evidence;
-4. prefer linking to changing host behavior rather than duplicating large upstream manuals;
-5. remove obsolete claims instead of preserving them for historical interest inside active product docs.
+4. prefer linking to changing host behavior rather than duplicating upstream manuals;
+5. remove obsolete claims from active docs instead of preserving them for historical interest.
 
-Research or prototype material that is retained must be clearly non-authoritative and must not be included in the shipped runtime package unless the maintained product actually depends on it.
+Prefer one current authority plus concise links over phase-specific status pages in the primary documentation surface.
 
 ## Validation
 
-Run the smallest relevant existing checks for the change. Before proposing public release readiness, the final head must pass the repository's current public CI and package checks on that same head.
+Run the smallest relevant existing checks for the change. Before merge, the final proposed head must pass the repository's current Public CI/package gates on that same content.
 
-The canonical repository gate is:
+Canonical repository gate:
 
 ```bash
 npm test
 ```
 
-That gate includes the permanent JS/Python product contracts plus reproducible release-package, SBOM, checksum, and manifest verification. Historical controlled-experiment fixtures remain separately runnable through `npm run test:evidence:historical`; they are evidence history, not permanent product invariants.
+Useful bounded diagnostics:
 
-Use `npm run doctor` for bounded repository diagnostics and `npm run plan:install -- --host all` to inspect maintained host paths without mutation. Use more focused checks when changing a host integration or lifecycle path. Do not invent legacy gate names or score thresholds that the current CI does not implement.
+```bash
+npm run doctor
+npm run plan:install -- --host all
+```
 
-A generated package or SBOM is a local build artifact. Creation does not establish registry publication, signing, third-party attestation, runtime compatibility, or stable-release authorization.
+Historical controlled-experiment fixtures remain separately runnable through `npm run test:evidence:historical`; they are evidence history, not permanent product invariants.
+
+Generated packages/SBOMs do not establish publication, signing, third-party attestation, runtime compatibility, or stable-release authorization.
 
 ## Security and vulnerability handling
 
-Do not weaken permission checks, trust boundaries, path-safety checks, rollback behavior, or refusal states to reduce code.
+Do not weaken permission checks, trust boundaries, path-safety checks, rollback behavior, or refusal states merely to reduce code.
 
-Do not put exploit details, credentials, private source, sensitive paths, or unsanitized runtime evidence in a public issue. Follow the repository security policy for vulnerability reporting.
+Do not put exploit details, credentials, private source, sensitive paths, or unsanitized runtime evidence in a public issue. Follow `SECURITY.md`.
 
 ## Change completion
 
-Before describing a task as complete:
+Before describing work as complete:
 
 - verify the final diff and affected projections;
 - run the relevant checks;
 - confirm active documentation matches the implementation;
 - confirm packaged documentation does not reference absent resources;
-- state any remaining compatibility or runtime uncertainty explicitly.
+- state remaining compatibility/runtime uncertainty explicitly;
+- distinguish frozen prerelease truth from unreleased `main` development.
 
-Do not mark a pull request Ready or merge it solely because documentation is internally consistent. Final acceptance requires evidence on the exact final head and explicit operator approval.
+Do not mark a PR Ready or merge solely because documentation is internally consistent. Final acceptance requires evidence on the exact final head and explicit operator approval.
