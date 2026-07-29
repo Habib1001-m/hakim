@@ -34,4 +34,12 @@ Verdict:
 
 The minimal F04 remediation candidate adds exactly one `subagentStart` hook that reuses the existing `hooks/session_start.mjs` presence authority. It adds no second policy copy, no new state schema, no prompt persistence, no repository bookkeeping, and no enforcement/tool-interception hook.
 
-F04 remains experimental until exact-head CI and a real Explore rerun return `MODE=ultra` while the target repository remains clean.
+F04 acceptance gate:
+
+1. exact-head Public CI PASS;
+2. `/env` shows `subagentStart` from `hakim@hakim` alongside the accepted F03 hooks;
+3. a fresh parent session in persisted `ultra` mode delegates the same bounded diagnostic to built-in Explore;
+4. the literal subagent answer is `MODE=ultra`;
+5. target-repository Git state remains unchanged.
+
+Until all five pass, `F04 = REMEDIATION_CANDIDATE` and PR #42 remains Draft.
