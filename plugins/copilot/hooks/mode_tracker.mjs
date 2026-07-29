@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { writeModeState } from './mode_state.mjs';
 
 // Copilot 1.0.75 live evidence established persistence for the plugin-qualified
-// skill invocation. Keep the parser bounded; ordinary prose is never state.
+// /hakim/hakim <mode> route. Bare /hakim forms remain compatibility syntax until
+// live persistence is proven for them. Keep the parser bounded; ordinary prose
+// is never state.
 const MODE_COMMAND = /^\/(?:hakim\/)?hakim(?:\s+(lite|full|ultra|off))?\s*$/i;
 
 export function parseModeCommand(prompt) {
