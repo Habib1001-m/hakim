@@ -1,6 +1,6 @@
 # R3.2 F03 — Native Mode-Control UX PASS Evidence
 
-**Status:** PASS end-to-end for the qualified Copilot OFF journey.
+**Status:** PASS end-to-end for the qualified Copilot mode-control journey.
 
 Exact implementation:
 
@@ -27,18 +27,18 @@ No `preToolUse`, `postToolUse`, `agentStop`, or other enforcement hook is part o
 
 ## Live Copilot CLI 1.0.75 proof
 
-The clean live journey established all required properties together:
+The accepted live journey established:
 
 1. `/env` loaded exactly one Hakim hook for each of `sessionStart`, `userPromptSubmitted`, and `userPromptTransformed`.
-2. A clean `/hakim/hakim off` invocation returned exactly `Hakim mode: off` without clarification, repository inspection, shell commands, or other tool work.
-3. Copilot plugin data contained exactly:
+2. `/hakim/hakim off` returned exactly `Hakim mode: off`, persisted `{"schema_version":1,"mode":"off"}`, and left the frozen target fixture clean.
+3. `/hakim/hakim ultra` returned exactly `Hakim mode: ultra` and persisted `{"schema_version":1,"mode":"ultra"}`.
+4. `/hakim/hakim full` returned exactly `Hakim mode: full` and removed `mode.json`, restoring stateless default full.
+5. The frozen target fixture remained clean under `git status --porcelain=v1 -uall` throughout the lifecycle matrix.
 
-```json
-{"schema_version":1,"mode":"off"}
-```
+Verdicts:
 
-at `~/.copilot/plugin-data/hakim/hakim/mode.json`.
-4. The frozen target fixture remained clean under `git status --porcelain=v1 -uall`.
+- `F03 = PASS_END_TO_END`
+- `MODE_LIFECYCLE = PASS`
 
 ## Historical failures preserved
 
@@ -50,23 +50,26 @@ F03 PASS does not erase the probes that isolated the final architecture:
 - F03d/F03e explicit plugin-data rebinding experiments, including F03e live failure despite repository-side CI;
 - loader-fixed `userPromptSubmitted` control probe proving persistence while current-turn semantics still asked for clarification.
 
-F03f is accepted because it composes only the two host boundaries already proven independently and then passed one clean end-to-end journey.
+F03f is accepted because it composes only the two host boundaries already proven independently and then passed one clean end-to-end journey plus the bounded `off -> ultra -> full` lifecycle matrix.
 
-## Next gate
+## Next gate — F04 subagent continuity
 
-Run a bounded lifecycle matrix on the same F03f implementation:
+A fresh persisted-`ultra` parent session delegated a bounded diagnostic to the built-in Explore subagent without telling it the parent mode and without allowing tool/file/plugin-state inspection. The literal subagent result was:
 
 ```text
-off -> ultra -> full
+MODE=NONE
 ```
 
-This is a lifecycle regression gate, not a reopening of F03 architecture.
+Therefore:
 
-F04 subagent propagation remains evidence-gated and must not be added unless a real propagation gap appears.
+- `SUBAGENT_CONTEXT_CONTINUITY = GAP_CONFIRMED`
+- adding a minimal `subagentStart` presence hook is evidence-justified.
+
+The F04 remediation candidate reuses the existing `hooks/session_start.mjs` presence authority for `subagentStart`; it adds no second policy copy, state schema, repository bookkeeping, or enforcement/tool-interception hook. F04 remains pending exact-head Public CI and one clean live Explore rerun proving `MODE=ultra` with a clean target repository.
 
 ## Boundaries
 
-This PASS does not authorize:
+This evidence does not authorize:
 
 - beta.5;
 - merging or marking PR #42 Ready;
