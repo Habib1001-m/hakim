@@ -22,10 +22,12 @@ assert.equal(manifest.hooks, 'hooks/hooks.json');
 assert.equal(hookConfig.version, 1);
 assert.deepEqual(Object.keys(hookConfig.hooks).sort(), [
   'sessionStart',
+  'subagentStart',
   'userPromptSubmitted',
   'userPromptTransformed',
 ]);
 assert.equal(hookConfig.hooks.sessionStart.length, 1);
+assert.equal(hookConfig.hooks.subagentStart.length, 1);
 assert.equal(hookConfig.hooks.userPromptSubmitted.length, 1);
 assert.equal(hookConfig.hooks.userPromptTransformed.length, 1);
 
@@ -34,6 +36,12 @@ assert.equal(sessionStart.type, 'command');
 assert.match(sessionStart.command, /\$\{PLUGIN_ROOT\}\/hooks\/session_start\.mjs/);
 assert.equal(sessionStart.env, undefined);
 assert.equal(sessionStart.timeoutSec, 5);
+
+const subagentStart = hookConfig.hooks.subagentStart[0];
+assert.equal(subagentStart.type, 'command');
+assert.match(subagentStart.command, /\$\{PLUGIN_ROOT\}\/hooks\/session_start\.mjs/);
+assert.equal(subagentStart.env, undefined);
+assert.equal(subagentStart.timeoutSec, 5);
 
 const modeTracker = hookConfig.hooks.userPromptSubmitted[0];
 assert.equal(modeTracker.type, 'command');
@@ -47,7 +55,7 @@ assert.match(modeControl.command, /\$\{PLUGIN_ROOT\}\/hooks\/mode_control\.mjs/)
 assert.equal(modeControl.env, undefined);
 assert.equal(modeControl.timeoutSec, 2);
 
-for (const forbidden of ['preToolUse', 'postToolUse', 'agentStop', 'subagentStart', 'subagentStop']) {
+for (const forbidden of ['preToolUse', 'postToolUse', 'agentStop', 'subagentStop']) {
   assert.equal(hookConfig.hooks[forbidden], undefined, `operational presence must not add hook ${forbidden}`);
 }
 
@@ -135,4 +143,33 @@ try {
   fs.rmSync(temp, { recursive: true, force: true });
 }
 
-console.log('test_copilot_operational_presence.mjs: silent presence + submitted persistence + transformed control topology OK');
+const subagentTemp = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-copilot-subagent-'));
+const subagentData = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-copilot-subagent-data-'));
+try {
+  fs.writeFileSync(path.join(subagentData, 'mode.json'), '{"schema_version":1,"mode":"ultra"}\n');
+  const result = spawnSync(process.execPath, [sessionScript], {
+    cwd: subagentTemp,
+    encoding: 'utf8',
+    env: { ...process.env, COPILOT_PLUGIN_DATA: subagentData },
+    input: JSON.stringify({
+      sessionId: 'synthetic-session',
+      timestamp: 0,
+      cwd: subagentTemp,
+      transcriptPath: '/tmp/synthetic-transcript.jsonl',
+      agentName: 'explore',
+      agentDisplayName: 'Explore',
+      agentDescription: 'Read-only exploration agent',
+    }),
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(result.stderr, '');
+  const output = JSON.parse(result.stdout);
+  assert.equal(output.additionalContext, buildOperationalContext(skill, 'ultra'));
+  assert.deepEqual(fs.readdirSync(subagentTemp), [], 'subagent presence must not create target-repository state');
+} finally {
+  fs.rmSync(subagentTemp, { recursive: true, force: true });
+  fs.rmSync(subagentData, { recursive: true, force: true });
+}
+
+console.log('test_copilot_operational_presence.mjs: silent presence + submitted persistence + transformed control + subagent continuity OK');
