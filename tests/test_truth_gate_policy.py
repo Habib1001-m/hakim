@@ -17,6 +17,7 @@ class TruthGatePolicyTests(unittest.TestCase):
             (ROOT / "core" / "hakim-skill" / "capabilities.json").read_text(encoding="utf-8")
         )
         version = (ROOT / "core" / "hakim-skill" / "VERSION").read_text(encoding="utf-8").strip()
+        history_dir = ROOT / "conformance" / "history"
 
         self.assertIn("## Truth-gate policy", architecture)
         self.assertIn("Structured facts have structured authorities", architecture)
@@ -26,17 +27,24 @@ class TruthGatePolicyTests(unittest.TestCase):
             architecture,
             re.compile(r"structured authority.*projection check", re.I | re.S),
         )
-        self.assertRegex(
-            architecture,
-            re.compile(r"prior evidence remains historical|evidence.*exact.*identity", re.I | re.S),
-        )
 
+        # Product identity and current acceptance are structural authorities.
         self.assertEqual(package["version"], version)
         self.assertEqual(acceptance["product_version"], version)
         self.assertEqual(acceptance["schema_version"], 1)
         self.assertIn(acceptance["overall_status"], {"PASS", "HOLD_FOR_LIVE_HOST_EVIDENCE"})
         self.assertEqual(capabilities["schema_version"], 1)
         self.assertTrue(capabilities["capabilities"])
+
+        # Historical evidence has its own retained structural surface rather than
+        # being inferred from a sentence in current documentation.
+        self.assertTrue(history_dir.is_dir())
+        history_files = sorted(history_dir.glob("native-host-acceptance-*.json"))
+        self.assertTrue(history_files, "historical acceptance authority must remain populated")
+        for path in history_files:
+            historical = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(historical["schema_version"], 1)
+            self.assertNotEqual(historical["product_version"], "")
 
         for retired in (
             "scripts/check_metadata_truth_consistency.mjs",
@@ -50,9 +58,8 @@ class TruthGatePolicyTests(unittest.TestCase):
             "first-run gate must not require a hardcoded commit SHA inside README prose",
         )
 
-        # The public-doc gate may require structured markers or stale-language
-        # tripwires, but it must not pin the README to one exact marketing/status
-        # sentence merely to prove product truth.
+        # The public-doc gate may require structural markers and negative stale-
+        # language tripwires, but it must not pin README to one exact status sentence.
         self.assertIsNone(
             re.search(r"readme\.includes\(['\"]Hakim `['\"]\s*\+\s*version", first_run),
             "first-run gate must not copy-lock README status prose",
