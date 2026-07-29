@@ -14,9 +14,11 @@ from typing import Any
 
 EXPECTED_FILES = {
     "hakim-skill.zip",
+    "hakim-sbom.cdx.json",
     "SHA256SUMS",
     "release-manifest.json",
 }
+ARTIFACT_FILES = {"hakim-skill.zip", "hakim-sbom.cdx.json"}
 REQUIRED_MEMBERS = {
     "hakim-skill/VERSION",
     "hakim-skill/SKILL.md",
@@ -30,7 +32,7 @@ REQUIRED_MEMBERS = {
     "hakim-skill/conformance/runtime-evidence.schema.json",
     "hakim-skill/conformance/outcome-telemetry.schema.json",
 }
-SHA256_LINE = re.compile(r"^([0-9a-f]{64})  (hakim-skill\.zip)$")
+SHA256_LINE = re.compile(r"^([0-9a-f]{64})  (hakim-(?:skill\.zip|sbom\.cdx\.json))$")
 VERSION = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$")
 MAX_MEMBERS = 10_000
 MAX_UNCOMPRESSED_BYTES = 256 * 1024 * 1024
@@ -89,13 +91,26 @@ def parse_checksums(path: Path) -> dict[str, str]:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError as error:
         raise VerificationError(f"SHA256SUMS is not valid UTF-8: {error}") from error
+
     lines = text.splitlines()
-    if len(lines) != 1:
-        raise VerificationError("SHA256SUMS must contain exactly one checksum line")
-    match = SHA256_LINE.fullmatch(lines[0])
-    if not match:
-        raise VerificationError("SHA256SUMS has an invalid or non-canonical line")
-    return {match.group(2): match.group(1)}
+    if len(lines) != len(ARTIFACT_FILES):
+        raise VerificationError(
+            f"SHA256SUMS must contain exactly {len(ARTIFACT_FILES)} checksum lines"
+        )
+
+    result: dict[str, str] = {}
+    for line in lines:
+        match = SHA256_LINE.fullmatch(line)
+        if not match:
+            raise VerificationError("SHA256SUMS has an invalid or non-canonical line")
+        filename = match.group(2)
+        if filename in result:
+            raise VerificationError(f"SHA256SUMS contains a duplicate artifact: {filename}")
+        result[filename] = match.group(1)
+
+    if set(result) != ARTIFACT_FILES:
+        raise VerificationError("SHA256SUMS artifact inventory does not match the release contract")
+    return result
 
 
 def parse_manifest(path: Path) -> dict[str, Any]:
@@ -119,22 +134,33 @@ def parse_manifest(path: Path) -> dict[str, Any]:
         raise VerificationError("release manifest schema_version must be 1")
     if manifest["algorithm"] != "sha256":
         raise VerificationError("release manifest algorithm must be sha256")
-    if manifest["artifact_count"] != 1:
-        raise VerificationError("release manifest artifact_count must be 1")
+    if manifest["artifact_count"] != len(ARTIFACT_FILES):
+        raise VerificationError(
+            f"release manifest artifact_count must be {len(ARTIFACT_FILES)}"
+        )
     if not VERSION.fullmatch(str(manifest["hakim_version"])):
         raise VerificationError("release manifest hakim_version is invalid")
+
     artifacts = manifest["artifacts"]
-    if not isinstance(artifacts, list) or len(artifacts) != 1:
-        raise VerificationError("release manifest must contain one artifact record")
-    record = artifacts[0]
-    if not isinstance(record, dict) or set(record) != {"filename", "sha256", "size_bytes"}:
-        raise VerificationError("release manifest artifact record is invalid")
-    if record["filename"] != "hakim-skill.zip":
-        raise VerificationError("release manifest filename must be hakim-skill.zip")
-    if not re.fullmatch(r"[0-9a-f]{64}", str(record["sha256"])):
-        raise VerificationError("release manifest artifact sha256 is invalid")
-    if not isinstance(record["size_bytes"], int) or record["size_bytes"] <= 0:
-        raise VerificationError("release manifest artifact size_bytes must be positive")
+    if not isinstance(artifacts, list) or len(artifacts) != len(ARTIFACT_FILES):
+        raise VerificationError("release manifest artifact list has an invalid size")
+
+    by_name: dict[str, dict[str, Any]] = {}
+    for record in artifacts:
+        if not isinstance(record, dict) or set(record) != {"filename", "sha256", "size_bytes"}:
+            raise VerificationError("release manifest artifact record is invalid")
+        filename = record["filename"]
+        if filename not in ARTIFACT_FILES or filename in by_name:
+            raise VerificationError("release manifest artifact inventory is invalid")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(record["sha256"])):
+            raise VerificationError(f"release manifest artifact sha256 is invalid: {filename}")
+        if not isinstance(record["size_bytes"], int) or record["size_bytes"] <= 0:
+            raise VerificationError(f"release manifest artifact size_bytes is invalid: {filename}")
+        by_name[filename] = record
+
+    if set(by_name) != ARTIFACT_FILES:
+        raise VerificationError("release manifest artifact inventory does not match the release contract")
+    manifest["artifacts_by_name"] = by_name
     return manifest
 
 
@@ -198,28 +224,83 @@ def verify_zip(path: Path, expected_version: str) -> dict[str, Any]:
         raise VerificationError(f"packaged VERSION is not valid UTF-8: {error}") from error
 
 
+def verify_sbom(path: Path, expected_version: str) -> dict[str, Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except UnicodeDecodeError as error:
+        raise VerificationError(f"SBOM is not valid UTF-8: {error}") from error
+    except json.JSONDecodeError as error:
+        raise VerificationError(f"SBOM is invalid JSON: {error}") from error
+
+    if payload.get("bomFormat") != "CycloneDX" or payload.get("specVersion") != "1.5":
+        raise VerificationError("SBOM is not the expected CycloneDX 1.5 document")
+    if not re.fullmatch(r"urn:uuid:[0-9a-fA-F-]{36}", str(payload.get("serialNumber", ""))):
+        raise VerificationError("SBOM serialNumber is invalid")
+
+    root_component = payload.get("metadata", {}).get("component", {})
+    if root_component.get("name") != "hakim" or root_component.get("version") != expected_version:
+        raise VerificationError("SBOM root component identity does not match the release version")
+
+    components = payload.get("components")
+    if not isinstance(components, list) or not components:
+        raise VerificationError("SBOM file component inventory is empty")
+
+    names: set[str] = set()
+    for component in components:
+        if not isinstance(component, dict) or component.get("type") != "file":
+            raise VerificationError("SBOM contains a non-file inventory component")
+        name = component.get("name")
+        if not isinstance(name, str) or not name or name in names:
+            raise VerificationError("SBOM contains an invalid or duplicate file component")
+        names.add(name)
+        hashes = component.get("hashes")
+        if not isinstance(hashes, list) or len(hashes) != 1:
+            raise VerificationError(f"SBOM file hash inventory is invalid: {name}")
+        record = hashes[0]
+        if record.get("alg") != "SHA-256" or not re.fullmatch(r"[0-9a-f]{64}", str(record.get("content", ""))):
+            raise VerificationError(f"SBOM SHA-256 record is invalid: {name}")
+
+    return {"component_count": len(components), "hakim_version": expected_version}
+
+
+def verify_artifact(
+    filename: str,
+    path: Path,
+    checksums: dict[str, str],
+    records: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    observed_sha256 = sha256_file(path)
+    observed_size = path.stat().st_size
+    if observed_sha256 != checksums[filename]:
+        raise VerificationError(f"downloaded {filename} does not match SHA256SUMS")
+    record = records[filename]
+    if observed_sha256 != record["sha256"]:
+        raise VerificationError(f"downloaded {filename} does not match release-manifest.json sha256")
+    if observed_size != record["size_bytes"]:
+        raise VerificationError(f"downloaded {filename} size does not match release-manifest.json")
+    return {"filename": filename, "sha256": observed_sha256, "size_bytes": observed_size}
+
+
 def verify_downloaded_bundle(bundle_dir: Path, expected_version: str | None = None) -> dict[str, Any]:
     files = prepare_bundle(bundle_dir)
-    zip_path = files["hakim-skill.zip"]
     checksums = parse_checksums(files["SHA256SUMS"])
     manifest = parse_manifest(files["release-manifest.json"])
-    record = manifest["artifacts"][0]
+    records = manifest.pop("artifacts_by_name")
 
-    observed_sha256 = sha256_file(zip_path)
-    observed_size = zip_path.stat().st_size
-    declared_checksum = checksums["hakim-skill.zip"]
-    if observed_sha256 != declared_checksum:
-        raise VerificationError("downloaded ZIP does not match SHA256SUMS")
-    if observed_sha256 != record["sha256"]:
-        raise VerificationError("downloaded ZIP does not match release-manifest.json sha256")
-    if observed_size != record["size_bytes"]:
-        raise VerificationError("downloaded ZIP size does not match release-manifest.json")
     if expected_version is not None and manifest["hakim_version"] != expected_version:
         raise VerificationError(
             f"manifest version {manifest['hakim_version']!r} does not match expected {expected_version!r}"
         )
 
-    zip_result = verify_zip(zip_path, manifest["hakim_version"])
+    zip_artifact = verify_artifact(
+        "hakim-skill.zip", files["hakim-skill.zip"], checksums, records
+    )
+    sbom_artifact = verify_artifact(
+        "hakim-sbom.cdx.json", files["hakim-sbom.cdx.json"], checksums, records
+    )
+    zip_result = verify_zip(files["hakim-skill.zip"], manifest["hakim_version"])
+    sbom_result = verify_sbom(files["hakim-sbom.cdx.json"], manifest["hakim_version"])
+
     return {
         "schema_version": 1,
         "status": "PASS",
@@ -227,21 +308,18 @@ def verify_downloaded_bundle(bundle_dir: Path, expected_version: str | None = No
         "mutation_performed": False,
         "bundle_files": sorted(EXPECTED_FILES),
         "hakim_version": manifest["hakim_version"],
-        "artifact": {
-            "filename": "hakim-skill.zip",
-            "sha256": observed_sha256,
-            "size_bytes": observed_size,
-            **zip_result,
-        },
+        "artifact": {**zip_artifact, **zip_result},
+        "sbom": {**sbom_artifact, **sbom_result},
         "checks": {
             "regular_files": "PASS",
             "exact_bundle_inventory": "PASS",
-            "checksum": "PASS",
+            "checksums": "PASS",
             "manifest": "PASS",
             "zip_integrity": "PASS",
             "zip_paths": "PASS",
             "zip_symlinks": "PASS",
             "packaged_version": "PASS",
+            "sbom_integrity": "PASS",
         },
     }
 
@@ -271,10 +349,11 @@ def main() -> int:
         print(json.dumps(result, indent=2, sort_keys=True))
     else:
         artifact = result["artifact"]
+        sbom = result["sbom"]
         print(
             "downloaded release bundle verified: "
-            f"Hakim {result['hakim_version']}, {artifact['size_bytes']} bytes, "
-            f"sha256:{artifact['sha256']}"
+            f"Hakim {result['hakim_version']}, skill sha256:{artifact['sha256']}, "
+            f"SBOM {sbom['component_count']} file component(s)"
         )
     return 0
 

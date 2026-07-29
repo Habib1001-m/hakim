@@ -19,12 +19,13 @@ Use one authoritative source per question:
 - Package membership and layout: the current package builder and package verification checks.
 - Deterministic Python audit-helper behavior: `scripts/audit_complexity.py`.
 - Live public release metadata: repository `VERSION`, manifests, changelog, and public release checks.
+- Support and deprecation boundary: repository `SUPPORT.md`.
 
 Tests, examples, archived evidence, and research notes are not higher authority than these sources.
 
 ## Current product boundary
 
-Hakim `1.0.0-beta.1` is a public beta coding-governance product with maintained surfaces for Codex, Claude Code, GitHub Copilot, and OpenCode.
+Hakim `1.0.0-beta.4` is a public-beta observable-checkpoint candidate with maintained surfaces for Codex, Claude Code, GitHub Copilot, and OpenCode. Current beta.4 live-host acceptance remains `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are accepted; accepted beta.1 and frozen beta.2/beta.3 evidence is historical and must not be relabeled as beta.4 evidence.
 
 The maintained product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm registry publication, central marketplace/directory publication, signing, notarization, or universal host compatibility. The private root package metadata may be used as a bounded Git transport surface for OpenCode without becoming an npm registry release.
 
@@ -122,17 +123,17 @@ Research or prototype material that is retained must be clearly non-authoritativ
 
 Run the smallest relevant existing checks for the change. Before proposing public release readiness, the final head must pass the repository's current public CI and package checks on that same head.
 
-Common repository-level checks include:
+The canonical repository gate is:
 
 ```bash
 npm test
-npm run doctor
-npm run package:skill
 ```
 
-Use more focused checks when changing a host integration or lifecycle path. Do not invent legacy gate names or score thresholds that the current CI does not implement.
+That gate includes the permanent JS/Python product contracts plus reproducible release-package, SBOM, checksum, and manifest verification. Historical controlled-experiment fixtures remain separately runnable through `npm run test:evidence:historical`; they are evidence history, not permanent product invariants.
 
-A generated package is a local build artifact. Package creation does not establish registry publication, signing, third-party attestation, or runtime compatibility.
+Use `npm run doctor` for bounded repository diagnostics and `npm run plan:install -- --host all` to inspect maintained host paths without mutation. Use more focused checks when changing a host integration or lifecycle path. Do not invent legacy gate names or score thresholds that the current CI does not implement.
+
+A generated package or SBOM is a local build artifact. Creation does not establish registry publication, signing, third-party attestation, runtime compatibility, or stable-release authorization.
 
 ## Security and vulnerability handling
 

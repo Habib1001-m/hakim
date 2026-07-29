@@ -7,7 +7,7 @@ description: >
   Use on coding, review, refactoring, dependency, and technical-debt tasks.
 argument-hint: [lite|full|ultra|off]
 license: MIT
-version: 1.0.0-beta.1
+version: 1.0.0-beta.4
 author: Habib1001-m
 repository: https://github.com/Habib1001-m/hakim
 tags:
@@ -56,6 +56,19 @@ Before the first mutation in an existing runnable repository, identify the
 smallest reasonably bounded validation command that can establish a useful
 pre-change signal and run that representative baseline when available.
 
+Baseline discovery is read-only by default. Treat dependency or editable
+installs, lockfile or package-metadata generation, repository-local environment
+or bootstrap creation, code generation, formatter writes, and similar side
+effects as mutations, not harmless preparation.
+
+- First inspect maintained repository documentation, configuration, scripts, and
+  existing tool declarations to find a non-mutating repository-native validation
+  path.
+- Do not mutate the repository merely to discover, install, or prepare a
+  baseline when a maintained non-mutating path is available.
+- If the only reasonable representative baseline genuinely requires setup
+  mutation, state why before doing it, bound that setup, and distinguish setup
+  mutation from product mutation in the final report.
 - Prefer a focused test, build, typecheck, lint, or other maintained repository
   command that can distinguish a pre-existing failure from a regression caused
   by the requested change.
@@ -67,6 +80,55 @@ pre-change signal and run that representative baseline when available.
 - Never imply a pre-existing green state unless it was actually observed.
 
 A new or non-runnable repository does not need an artificial baseline.
+
+## Observable checkpoints
+
+For a runnable Git repository, make the evidence around mutation observable rather
+than implied.
+
+Before the first product edit, record this baseline checkpoint from observed
+repository state:
+
+```text
+BASELINE_COMMAND=<exact command or NOT_RUN>
+BASELINE_SOURCE=<repository evidence that justified the command or why none ran>
+SETUP_MUTATION=NO|YES:<reason stated before setup>
+PRE_EDIT_GIT_STATUS=<observed git status --porcelain or GIT_UNAVAILABLE:<reason>>
+```
+
+- Populate the checkpoint from observations, not plans. `SETUP_MUTATION=NO` is
+  the default.
+- A setup mutation cannot be used merely to discover the baseline. If setup is
+  genuinely required, justify it before execution and report its artifacts or
+  working-tree delta separately from product edits.
+- Do not begin the first product edit until the checkpoint is complete, unless
+  Git or validation execution is unavailable; record that limitation instead of
+  inventing a clean or green state.
+
+For boolean, control-flow, validator, permission, or guard transformations,
+existing-suite green is not sufficient by itself to claim semantic equivalence.
+Before calling such a change behavior-preserving, record:
+
+```text
+SEMANTIC_CHANGE_CHECK=<NOT_APPLICABLE|boundary-state comparison|targeted probe/test>
+```
+
+Enumerate decision-relevant boundary states or run a targeted regression/probe
+for the changed truth table or invariant. Include empty, absent, error, and
+boundary states when they can take a different branch. If that evidence is not
+available, narrow the claim or do not make the transformation.
+
+Before the completion report, observe final repository state and record:
+
+```text
+FINAL_GIT_STATUS=<observed git status --porcelain or GIT_UNAVAILABLE:<reason>>
+SETUP_ARTIFACTS=<NONE|observed paths/summary>
+UNRELATED_MUTATIONS=<NONE|observed summary>
+```
+
+Reconcile the final checkpoint with the report. Never claim `clean working
+tree`, `no artifacts`, `no setup mutations`, or equivalent when the observed
+state contradicts that claim.
 
 ## Evidence sufficiency
 
@@ -81,7 +143,9 @@ After those are known, stop inspecting and move to the decision ladder. Any
 additional read or search must answer a concrete unresolved question whose
 answer could change the implementation, scope, safety boundary, or confidence
 claim. Whole-repository exploration is not a default when the affected path is
-already bounded.
+already bounded. Do not create repository-local planning or analysis artifacts,
+or repeat equivalent analysis, merely to organize continued inspection when no
+decision-relevant question remains.
 
 A material correctness or safety uncertainty overrides this stopping rule:
 investigate that uncertainty before mutation even when the normal sufficiency
@@ -118,6 +182,17 @@ requested outcome while preserving required behavior and guards.
   implementation of the actual outcome.
 - The 7-level ladder still decides how to implement the work; this rule defines
   what counts as enough work to satisfy the request.
+
+## Bounded `NO_CHANGE` truth
+
+A no-change decision is scoped to the evidence actually inspected. Default to:
+
+> No justified change found within the inspected scope.
+
+Do not claim the implementation is globally minimal, irreducible, optimal, or
+free of all simplification opportunities unless the inspected evidence actually
+establishes that stronger claim. Report the bounded evidence that supports
+`NO_CHANGE` and any remaining uncertainty.
 
 ## Intensity Levels
 
@@ -159,7 +234,7 @@ differs by host and is recorded in `capabilities.json` and the host integration.
 | `hakim-review` | Review the current unstaged and staged diff for removable complexity. |
 | `hakim-audit` | Audit active repository surfaces for evidence-backed simplification opportunities. |
 | `hakim-debt` | Separate live debt from synthetic examples and archived records. |
-| `hakim-gain` | Show accepted evidence status without unsupported metrics. |
+| `hakim-gain` | Show evidence status; `gain` is retained as the beta compatibility ID and does not claim a quantified gain. |
 | `hakim-help` | Show modes, capabilities, host syntax, validation, and evidence boundaries. |
 
 ## Optional Resources
@@ -178,7 +253,7 @@ claim that Hakim ships a workflow engine.
 
 ## Distribution Boundary
 
-Hakim `1.0.0-beta.1` is distributed from public source. Codex, Claude Code, and
+Hakim `1.0.0-beta.4` is distributed from public source. Codex, Claude Code, and
 GitHub Copilot have repository-hosted native plugin marketplaces; OpenCode uses
 a guarded project-local native plugin installer. No npm publication, central
 plugin-directory listing, signing, notarization, or universal global installer

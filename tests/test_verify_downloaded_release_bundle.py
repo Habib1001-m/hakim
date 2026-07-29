@@ -41,23 +41,61 @@ def create_zip(path: Path, *, unsafe: bool = False, symlink: bool = False) -> No
             archive.writestr(info, "target")
 
 
+def create_sbom(path: Path) -> None:
+    file_hash = hashlib.sha256(b"fixture-package\n").hexdigest()
+    payload = {
+        "bomFormat": "CycloneDX",
+        "specVersion": "1.5",
+        "serialNumber": "urn:uuid:11111111-2222-3333-4444-555555555555",
+        "version": 1,
+        "metadata": {
+            "component": {
+                "type": "application",
+                "bom-ref": f"pkg:github/Habib1001-m/hakim@{VERSION}",
+                "name": "hakim",
+                "version": VERSION,
+            }
+        },
+        "components": [
+            {
+                "type": "file",
+                "bom-ref": "file:package.json",
+                "name": "package.json",
+                "hashes": [{"alg": "SHA-256", "content": file_hash}],
+            }
+        ],
+        "dependencies": [
+            {
+                "ref": f"pkg:github/Habib1001-m/hakim@{VERSION}",
+                "dependsOn": [],
+            }
+        ],
+    }
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def write_metadata(bundle: Path) -> None:
-    zip_path = bundle / "hakim-skill.zip"
-    sha256 = digest(zip_path)
-    size = zip_path.stat().st_size
-    (bundle / "SHA256SUMS").write_text(f"{sha256}  hakim-skill.zip\n", encoding="utf-8")
+    records = []
+    for filename in sorted(MODULE.ARTIFACT_FILES):
+        artifact = bundle / filename
+        records.append(
+            {
+                "filename": filename,
+                "sha256": digest(artifact),
+                "size_bytes": artifact.stat().st_size,
+            }
+        )
+
+    (bundle / "SHA256SUMS").write_text(
+        "".join(f"{record['sha256']}  {record['filename']}\n" for record in records),
+        encoding="utf-8",
+    )
     (bundle / "release-manifest.json").write_text(
         json.dumps(
             {
                 "algorithm": "sha256",
-                "artifact_count": 1,
-                "artifacts": [
-                    {
-                        "filename": "hakim-skill.zip",
-                        "sha256": sha256,
-                        "size_bytes": size,
-                    }
-                ],
+                "artifact_count": len(records),
+                "artifacts": records,
                 "hakim_version": VERSION,
                 "schema_version": 1,
             },
@@ -73,6 +111,7 @@ def create_bundle(root: Path, *, unsafe: bool = False, symlink: bool = False) ->
     bundle = root / "bundle"
     bundle.mkdir()
     create_zip(bundle / "hakim-skill.zip", unsafe=unsafe, symlink=symlink)
+    create_sbom(bundle / "hakim-sbom.cdx.json")
     write_metadata(bundle)
     return bundle
 
@@ -97,12 +136,22 @@ class DownloadedReleaseBundleTests(unittest.TestCase):
             self.assertEqual(result["hakim_version"], VERSION)
             self.assertEqual(result["artifact"]["sha256"], digest(bundle / "hakim-skill.zip"))
             self.assertEqual(result["artifact"]["packaged_version"], VERSION)
+            self.assertEqual(result["sbom"]["sha256"], digest(bundle / "hakim-sbom.cdx.json"))
+            self.assertEqual(result["sbom"]["component_count"], 1)
             self.assertEqual(before, snapshot(bundle))
 
     def test_tampered_zip_is_refused(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             bundle = create_bundle(Path(temp))
             with (bundle / "hakim-skill.zip").open("ab") as handle:
+                handle.write(b"tamper")
+            with self.assertRaisesRegex(MODULE.VerificationError, "SHA256SUMS"):
+                MODULE.verify_downloaded_bundle(bundle, VERSION)
+
+    def test_tampered_sbom_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            bundle = create_bundle(Path(temp))
+            with (bundle / "hakim-sbom.cdx.json").open("ab") as handle:
                 handle.write(b"tamper")
             with self.assertRaisesRegex(MODULE.VerificationError, "SHA256SUMS"):
                 MODULE.verify_downloaded_bundle(bundle, VERSION)
@@ -129,6 +178,17 @@ class DownloadedReleaseBundleTests(unittest.TestCase):
             with self.assertRaisesRegex(MODULE.VerificationError, "symlink"):
                 MODULE.verify_downloaded_bundle(bundle, VERSION)
 
+    def test_invalid_sbom_structure_is_refused_with_matching_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            bundle = create_bundle(Path(temp))
+            sbom = bundle / "hakim-sbom.cdx.json"
+            payload = json.loads(sbom.read_text(encoding="utf-8"))
+            payload["components"] = []
+            sbom.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+            write_metadata(bundle)
+            with self.assertRaisesRegex(MODULE.VerificationError, "component inventory is empty"):
+                MODULE.verify_downloaded_bundle(bundle, VERSION)
+
     def test_unexpected_bundle_file_is_refused(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             bundle = create_bundle(Path(temp))
@@ -148,12 +208,12 @@ class DownloadedReleaseBundleTests(unittest.TestCase):
             with self.assertRaisesRegex(MODULE.ContractError, "must not be a symlink"):
                 MODULE.verify_downloaded_bundle(link, VERSION)
 
-    def test_checksum_requires_canonical_single_line(self) -> None:
+    def test_checksum_requires_canonical_two_line_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             bundle = create_bundle(Path(temp))
             checksum = bundle / "SHA256SUMS"
             checksum.write_text(checksum.read_text(encoding="utf-8") + "\n", encoding="utf-8")
-            with self.assertRaisesRegex(MODULE.VerificationError, "exactly one"):
+            with self.assertRaisesRegex(MODULE.VerificationError, "exactly 2"):
                 MODULE.verify_downloaded_bundle(bundle, VERSION)
 
     def test_copied_bundle_verifies_in_separate_directory(self) -> None:
@@ -163,8 +223,9 @@ class DownloadedReleaseBundleTests(unittest.TestCase):
             downloaded = root / "downloaded-artifact"
             shutil.copytree(source, downloaded)
             result = MODULE.verify_downloaded_bundle(downloaded, VERSION)
-            self.assertEqual(result["checks"]["checksum"], "PASS")
+            self.assertEqual(result["checks"]["checksums"], "PASS")
             self.assertEqual(result["checks"]["zip_paths"], "PASS")
+            self.assertEqual(result["checks"]["sbom_integrity"], "PASS")
 
 
 if __name__ == "__main__":

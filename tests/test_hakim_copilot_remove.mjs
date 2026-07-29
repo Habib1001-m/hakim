@@ -125,7 +125,8 @@ try {
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 assert.equal(packageJson.scripts['remove:copilot'], 'node scripts/hakim_copilot_remove.mjs');
 assert.equal(packageJson.scripts['remove:copilot:json'], 'node scripts/hakim_copilot_remove.mjs --json');
-assert.match(packageJson.scripts['test:integration:js'], /tests\/test_hakim_copilot_remove\.mjs/);
+assert.equal(packageJson.scripts['test:integration:js'], 'npm run test:public:js');
+assert.match(packageJson.scripts['test:public:js'], /tests\/test_hakim_copilot_remove\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_copilot_remove\.mjs/);
 
 console.log('guarded Copilot removal deletes only an exact canonical match with rollback-safe quarantine');

@@ -33,6 +33,7 @@ for (const required of [
   'scripts/hakim_opencode_install.mjs',
   'scripts/hakim_opencode_remove.mjs',
   'scripts/lib/opencode_bundle.mjs',
+  'scripts/lib/opencode_prior_manifests.mjs',
   'scripts/lib/opencode_transaction.mjs',
   'plugins/opencode/hakim.mjs',
   'core/loaders/hakim-loader.mjs',

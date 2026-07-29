@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const hook = path.join(ROOT, 'plugins/claude-code/hooks/session_start.mjs');
+const help = fs.readFileSync(path.join(ROOT, 'plugins/claude-code/skills/help/SKILL.md'), 'utf8');
+const version = fs.readFileSync(path.join(ROOT, 'core/hakim-skill/VERSION'), 'utf8').trim();
 
 const result = spawnSync(process.execPath, [hook], {
   cwd: ROOT,
@@ -20,10 +23,21 @@ const output = parsed.hookSpecificOutput;
 assert.equal(output.hookEventName, 'SessionStart');
 
 const context = output.additionalContext;
-assert.match(context, /Hakim 1\.0\.0-beta\.1 plugin is active/i);
+assert.match(context, new RegExp(`Hakim ${version.replaceAll('.', '\\.')} plugin is active`, 'i'));
+assert.match(
+  context,
+  new RegExp(`active Hakim version[\\s\\S]{0,120}exactly ${version.replaceAll('.', '\\.')}[\\s\\S]{0,240}never infer`, 'i'),
+  'Claude runtime kernel must make the manifest-derived active version authoritative over repository history',
+);
 assert.ok(
-  context.length <= 1400,
+  context.length <= 1650,
   `Claude runtime kernel must stay lightweight; got ${context.length} characters`,
+);
+
+assert.match(
+  help,
+  /Version truth is host\/runtime metadata[\s\S]{0,300}Do not infer or restate a Hakim version[\s\S]{0,300}SessionStart activation value/i,
+  'Claude help must not infer version identity from repository history or cached prose',
 );
 
 // Core coding behavior must be salient before the first model decision. The
@@ -36,9 +50,8 @@ assert.match(
   'Claude runtime kernel must require hakim:hakim before the first mutation on coding tasks',
 );
 
-// E2 showed that a two-file bug fix paid nine task-management calls without
-// decision value. Bounded work should not create orchestration bookkeeping by
-// default.
+// Bounded work should not create orchestration bookkeeping by default when it
+// would not change a real implementation, safety, or coordination decision.
 assert.match(
   context,
   /bounded[\s\S]{0,240}(?:do not|avoid)[\s\S]{0,120}TaskCreate[\s\S]{0,80}TaskUpdate/i,
@@ -51,4 +64,4 @@ assert.match(
   'Claude runtime kernel must keep the baseline rule visible before skill loading',
 );
 
-console.log('test_claude_runtime_kernel.mjs: Claude startup kernel makes core Hakim coding behavior salient');
+console.log(`test_claude_runtime_kernel.mjs: Claude startup kernel makes core Hakim ${version} coding behavior and version truth salient`);

@@ -112,7 +112,8 @@ try {
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 assert.equal(packageJson.scripts['launch:codex'], 'node scripts/hakim_codex_launch.mjs');
 assert.equal(packageJson.scripts['launch:codex:json'], 'node scripts/hakim_codex_launch.mjs --json');
-assert.match(packageJson.scripts['test:integration:js'], /tests\/test_hakim_codex_launch\.mjs/);
+assert.equal(packageJson.scripts['test:integration:js'], 'npm run test:public:js');
+assert.match(packageJson.scripts['test:public:js'], /tests\/test_hakim_codex_launch\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_codex_launch\.mjs/);
 
 console.log('guarded Codex development launcher validates the native Hakim marketplace contract before shell-free execution');

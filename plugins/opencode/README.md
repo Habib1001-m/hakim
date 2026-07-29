@@ -1,6 +1,6 @@
 # Hakim for OpenCode
 
-**Status:** public beta project-local native plugin  
+**Status:** Hakim `1.0.0-beta.4` public-beta observable-checkpoint candidate; current OpenCode live-host acceptance is `NOT_RUN` pending fresh candidate-specific evidence  
 **Distribution:** Git-backed bootstrap into repository-local OpenCode files; no npm publication or global installer
 
 ## What this plugin does
@@ -17,11 +17,12 @@ It uses OpenCode configuration and prompt hooks to:
 - add the installed canonical Hakim skills directory to `config.skills.paths` without duplicate entries;
 - inject the canonical Hakim policy through the installed shared loader instead of embedding another rules copy;
 - keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
+- make `/hakim <mode>` a direct mode-selection turn that must not load auxiliary Hakim skills, inspect the repository, or run tools merely to set mode;
 - keep system-prompt activation idempotent with one bounded Hakim start/end sentinel range even when OpenCode reuses the same output object or the mode changes;
 - preserve unrelated system content before and after the Hakim-owned activation range;
 - remove session-local mode state when a session-deleted event is observed.
 
-Repository tests cover the documented hook shapes, Git-backed package surface, managed project-local lifecycle, adversarial verification-to-mutation races, foreign system-content coexistence, and multi-session state isolation. Live-host acceptance remains a separate evidence layer.
+Repository tests cover the documented hook shapes, Git-backed package surface, managed project-local lifecycle, adversarial verification-to-mutation races, foreign system-content coexistence, multi-session state isolation, and direct mode-activation contract. Live-host acceptance remains a separate evidence layer.
 
 ## Project-local installed layout
 
@@ -97,13 +98,15 @@ The first two commands are read-only/dry-run surfaces. The final command applies
 Examples after installation:
 
 ```text
-/hakim full Review the current change.
-/hakim ultra Find the smallest safe implementation.
-/hakim off Continue without Hakim guidance.
+/hakim full
+/hakim ultra
+/hakim off
 /hakim-review Review the current diff.
 /hakim-audit Inspect the explicitly requested repository scope.
 /hakim-help Explain the available Hakim capabilities.
 ```
+
+Use `/hakim <mode>` to set the session mode, then issue the coding/review request separately. The mode-selection turn itself is intentionally not a repository task.
 
 Mode state is process-local. Explicit session IDs are isolated from one another; deleting one session removes only that session's mode state. Commands without a session ID use the process fallback. A fresh plugin process resets to `HAKIM_DEFAULT_MODE` (or `full` when unset/invalid); state is not persisted across host restarts, projects, user profiles, or machines.
 
@@ -141,7 +144,7 @@ The maintained lifecycle still does not claim a cross-process lock or immunity f
 
 ## Node runtime contract
 
-The shipped Git-backed package declares Node `>=22`. Public CI keeps the full repository gate on Node 24 and separately exercises the shipped OpenCode plugin, lifecycle, adversarial transaction tests, CLI/symlink path, npm package inventory, and package boundary on Node 22 and Node 26. This is a JavaScript runtime contract, not universal OpenCode/OS compatibility.
+The shipped Git-backed package declares Node `>=22`. Public CI runs the canonical repository gate on Node 24 and separately exercises the shipped OpenCode plugin, lifecycle, adversarial transaction tests, CLI/symlink path, npm package inventory, and package boundary on Node 22 and Node 26 through the shared `test:node-compat` gate. This is a JavaScript runtime contract, not universal OpenCode/OS compatibility.
 
 ## Validate repository-side behavior
 
@@ -161,9 +164,8 @@ These checks prove their deterministic repository/package scope only. They do no
 ## Evidence boundaries
 
 - The Git-backed bootstrap is a transport layer over the project-local managed lifecycle; it does not introduce global Hakim state.
-- The current bounded-sentinel runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`; the observation covered clean managed install/start/invocation plus successful Hakim help/full-mode use.
-- Candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as proof of the changed bounded-sentinel runtime.
-- The earlier accepted OpenCode journey at candidate `b442820d2803955d0f7f33b405bd096f443d4d72` on OpenCode `1.17.13` remains historical evidence for the earlier create-only path only.
+- The beta.4 OpenCode path is currently `NOT_RUN` in `conformance/native-host-acceptance.json`; fresh install/start/invocation evidence on the exact candidate is required before it can be promoted to `PASS`.
+- Accepted beta.1 and frozen beta.2/beta.3 evidence remains bounded to those exact historical candidates and is not reused as beta.4 proof.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
 - Runtime or compatibility claims remain bounded to the specific evidence collected for the tested environment.

@@ -30,7 +30,7 @@ Hakim-specific product work:
 
 Ponytail benchmark values, release claims, package status, and adapter support are
 not inherited as Hakim evidence. Hakim performance claims remain unsupported until
-an independent, reproducible benchmark is implemented and accepted.
+independent, accepted evidence establishes them.
 
 Hakim does provide maintained installation paths for its supported hosts. That is
 not the same as an automated migration from an existing Ponytail installation.
@@ -50,7 +50,8 @@ listing, MCP distribution, A2A runtime, or persistent cross-machine migration.
 5. Confirm the host-native plugin or project-local bundle is active before relying
    on Hakim behavior.
 6. Use `conformance/native-host-acceptance.json` only as bounded public evidence for
-   the recorded product/version path; do not treat it as universal compatibility.
+   the recorded current product/version path; historical evidence remains bounded
+   to its older immutable identity.
 7. Remove or replace an older installation only after the selected Hakim path is
    working for the intended repository and host.
 
@@ -62,7 +63,7 @@ examples and archived records must not be promoted to live debt.
 
 ## Current host scope
 
-Hakim `1.0.0-beta.1` maintains product surfaces for:
+Hakim `1.0.0-beta.4` maintains product surfaces for:
 
 - Codex;
 - Claude Code;
@@ -70,10 +71,12 @@ Hakim `1.0.0-beta.1` maintains product surfaces for:
 - OpenCode.
 
 The authoritative current-native acceptance state is
-`conformance/native-host-acceptance.json`. For this beta, all four maintained
-product paths have accepted real-host install/start/invocation evidence. That does
-not establish compatibility with every operating system, model, provider, editor
-version, organization policy, or Ponytail-supported host.
+`conformance/native-host-acceptance.json`. The beta.4 candidate currently records
+all four maintained paths as `NOT_RUN`, so current acceptance is
+`HOLD_FOR_LIVE_HOST_EVIDENCE`. Accepted beta.1 and frozen beta.2/beta.3 evidence
+remains bounded to those exact historical candidates and does not establish beta.4
+acceptance or universal compatibility with every operating system, model, provider,
+editor version, organization policy, or Ponytail-supported host.
 
 ## Archive note
 

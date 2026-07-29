@@ -29,23 +29,41 @@ channel is explicitly prerelease software:
 MAJOR.MINOR.PATCH[-PRERELEASE]
 ```
 
-The current public-beta version is `1.0.0-beta.1`. A stable `1.0.0` version is a
-separate release decision; live-host acceptance or repository CI does not silently
-remove the prerelease label.
+The current public-beta candidate is `1.0.0-beta.4`. A stable `1.0.0` version is
+a separate release decision; live-host acceptance or repository CI does not
+silently remove the prerelease label.
 
 Build metadata is not currently used for shipped Hakim product identity.
+
+## Candidate identity rule
+
+A prerelease version is a product identity, not a label for arbitrary moving
+distributed bytes. When a change materially changes a maintained plugin,
+first-run transport, lifecycle, runtime behavior, or shipped canonical policy,
+Hakim must advance the prerelease identity before that changed surface is
+promoted as the current candidate.
+
+Repository-only documentation corrections or test-only changes do not require a
+new identity merely because `main` advanced, provided they do not change the
+shipped product contract or invalidate accepted evidence.
+
+A new candidate starts with current-path live-host acceptance no stronger than
+the evidence collected for that exact identity. Prior accepted evidence may be
+preserved under `conformance/history/` or immutable public evidence refs, but it
+must not be relabeled as evidence for a newer candidate.
 
 ## Immutable evidence identity
 
 A version string identifies the product line, not a moving source checkout. Any
-future external evaluator campaign, benchmark, third-party validation, or release
-candidate evidence must also record an immutable Hakim identity such as:
+external evaluator campaign, benchmark, third-party validation, live-host
+acceptance, or release-candidate evidence must also record an immutable Hakim
+identity such as:
 
 - an exact 40-character source commit;
 - an immutable Git tag that resolves to that commit; or
 - a published release artifact whose manifest/checksum records the source identity.
 
-Two observations against different `main` revisions must not be pooled merely
+Two observations against different source revisions must not be pooled merely
 because both revisions report the same prerelease version. External evaluator
 recruitment is currently suspended; this rule governs any future relaunch.
 
@@ -103,36 +121,40 @@ Each claim requires its own evidence. Conversely, accepted live-host evidence do
 not require an immediate version change when the shipped product contract has not
 changed.
 
-## Reproducible package identity
+## Reproducible release identity
 
 The maintained skill ZIP is intended to be byte-reproducible for equivalent
 maintained source content. The package writer therefore normalizes archive member
 ordering, timestamps, and file modes instead of inheriting checkout filesystem
 metadata.
 
-`SHA256SUMS` and the release manifest prove integrity against a particular artifact;
-they are not themselves proof of reproducibility. Reproducibility is separately
-covered by a regression that rebuilds after source mtime changes and requires
-byte-identical output.
+The release pipeline also builds a deterministic CycloneDX JSON SBOM from the
+Git-tracked source/product inventory. `SHA256SUMS` and the release manifest cover
+both the skill ZIP and that SBOM.
 
-Signing, notarization, an SBOM, and third-party attestation remain separate claims
-and are not implied by reproducibility or checksums.
+Checksums prove integrity against particular artifacts. Reproducibility is a
+separate claim and must be tested independently. The source-inventory SBOM is
+also a separate claim from signing, notarization, third-party provenance
+attestation, or inventory of host/provider dependencies.
 
 ## Public-beta release review
 
 Before a new version tag or GitHub release is recommended for operator approval:
 
-1. `npm test` passes on the intended release commit.
-2. `npm run doctor` reports repository health separately from private authorization.
+1. `npm test` passes on the intended immutable release commit.
+2. `npm run doctor` reports bounded doctor health separately from release authorization.
 3. `npm run check:workflow-policy` passes.
 4. `npm run check:public-boundary`, `npm run check:public-package`, and
-   `npm run check:native-acceptance` pass.
+   `npm run check:native-acceptance` pass for their defined structural contracts.
 5. `npm run package:release` builds and verifies the reproducible skill ZIP,
-   `SHA256SUMS`, and JSON release manifest.
-6. Release notes state supported hosts, the bounded live-host evidence, known
+   deterministic CycloneDX SBOM, `SHA256SUMS`, and JSON release manifest.
+6. Current-path live-host evidence matches the exact candidate for every host the
+   release claims as accepted.
+7. Release notes state supported hosts, bounded live-host evidence, known
    limitations, and unsupported distribution channels.
-7. Security and documentation truth remain consistent with the release candidate.
-8. Any external or third-party evidence cited by the release identifies the exact
+8. Security, support/deprecation, installation, and documentation truth remain
+   consistent with the release candidate.
+9. Any external or third-party evidence cited by the release identifies the exact
    immutable Hakim commit/tag/artifact it evaluated.
 
 A successful public-beta review does not automatically authorize publication,
@@ -147,13 +169,16 @@ are explicit operator actions.
 - Withdrawn or corrected claims remain discoverable with their replacement and
   reason; they are not silently rewritten as if they never existed.
 
-## Compatibility policy
+## Compatibility and deprecation policy
 
-Hakim `1.0.0-beta.1` is public beta software with bounded current-native acceptance
-recorded in `conformance/native-host-acceptance.json`. That evidence is not a
-universal operating-system, model, provider, editor, or organization-policy
-compatibility guarantee.
+Hakim `1.0.0-beta.4` is public beta software. Its current native acceptance is
+recorded in `conformance/native-host-acceptance.json` and currently remains
+`HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are
+accepted. Accepted beta.1 and frozen beta.2/beta.3 evidence remains bounded to
+those exact historical candidates and is not a universal operating-system, model,
+provider, editor, or organization-policy compatibility guarantee.
 
-No long-term support line, formal support window, or general backward-compatibility
-guarantee is currently claimed. A stable-release support and deprecation policy
-must be defined before Hakim claims such guarantees.
+The current beta support and capability-deprecation rules are defined in
+[`SUPPORT.md`](SUPPORT.md). No paid SLA, enterprise certification, or LTS line is
+claimed by that policy. Stable release requires an explicit operator decision in
+addition to satisfying the documented technical gates.

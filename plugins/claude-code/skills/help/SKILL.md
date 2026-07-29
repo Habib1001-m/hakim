@@ -8,13 +8,15 @@ disable-model-invocation: true
 
 Hakim is active as a native Claude Code plugin.
 
+Version truth is host/runtime metadata. Do not infer or restate a Hakim version from repository history, changelogs, prior evidence, or cached prose. If version identity is relevant, use the exact SessionStart activation value or ask the user to inspect `/plugin` / `claude plugin details hakim@hakim`.
+
 ## User commands
 
 - `/hakim:full <task>` — apply the canonical smallest-safe-diff workflow in the current conversation.
 - `/hakim:review [scope]` — read-only complexity review in an isolated reviewer context.
 - `/hakim:audit [scope]` — deep read-only repository audit in an isolated auditor context.
 - `/hakim:debt [scope]` — inspect live Hakim debt markers and provenance.
-- `/hakim:gain [scope]` — verify what the available evidence actually proves.
+- `/hakim:gain [scope]` — show evidence status; `gain` is the retained beta compatibility name and does not imply a quantified gain.
 - `/hakim:help` — show this reference.
 
 ## Native agents

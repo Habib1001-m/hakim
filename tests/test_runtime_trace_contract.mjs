@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const CHECKER = path.join(ROOT, 'scripts/check_post_e1_runtime_trace.mjs');
+const CHECKER = path.join(ROOT, 'scripts/check_runtime_trace.mjs');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-runtime-trace-'));
 
 function writeTrace(name, events) {
@@ -107,9 +107,6 @@ const bookkeepingReport = JSON.parse(bookkeepingResult.stdout);
 assert.equal(bookkeepingReport.task_bookkeeping_total, 2);
 assert.match(bookkeepingReport.failures.join(' '), /task bookkeeping 2 exceeds maximum 0/i);
 
-// Bash is available during the real experiment because it is needed for validation.
-// A source mutation performed through Bash must still count as the first mutation;
-// otherwise a later test command could make baseline-before-mutation pass falsely.
 const bashMutationBeforeBaseline = writeTrace('bash-mutation-before-baseline', [
   assistantTool('s1', 'Skill', { skill: 'hakim:hakim' }),
   toolResult('s1'),
@@ -127,4 +124,4 @@ assert.equal(bashMutationReport.baseline_before_first_mutation, false);
 assert.match(bashMutationReport.failures.join(' '), /baseline did not complete before first mutation/i);
 
 fs.rmSync(TMP, { recursive: true, force: true });
-console.log('test_post_e1_runtime_trace_checker.mjs: runtime trace acceptance semantics OK');
+console.log('test_runtime_trace_contract.mjs: runtime trace contract OK');

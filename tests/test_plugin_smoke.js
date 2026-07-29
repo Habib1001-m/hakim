@@ -4,9 +4,12 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const rules = require('../core/hakim-skill/scripts/check_rule_copies.js');
 
 (async () => {
   const root = path.resolve(__dirname, '..');
+  const version = fs.readFileSync(path.join(root, 'core/hakim-skill/VERSION'), 'utf8').trim();
+  const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const loader = await import(path.join(root, 'core/loaders/hakim-loader.mjs'));
 
   assert.equal(loader.normalizeMode('bad-mode'), 'full');
@@ -32,6 +35,16 @@ const { spawnSync } = require('node:child_process');
     }
   }
 
+  const copilotSkillText = fs.readFileSync(path.join(root, 'plugins/copilot/skills/hakim/SKILL.md'), 'utf8');
+  const copilotFrontmatter = rules.extractFrontmatter(copilotSkillText);
+  assert.ok(copilotFrontmatter, 'Copilot hakim skill frontmatter missing');
+  assert.equal(copilotFrontmatter.fields.name, 'hakim');
+  assert.equal(
+    copilotFrontmatter.fields['argument-hint'],
+    '"[lite|full|ultra|off]"',
+    'Copilot argument-hint must remain a YAML string so the host can load the skill',
+  );
+
   assert.ok(fs.existsSync(path.join(root, '.agents/plugins/marketplace.json')), 'Codex marketplace missing');
   assert.ok(fs.existsSync(path.join(root, '.claude-plugin/marketplace.json')), 'Claude marketplace missing');
   assert.ok(fs.existsSync(path.join(root, '.github/plugin/marketplace.json')), 'Copilot marketplace missing');
@@ -42,7 +55,7 @@ const { spawnSync } = require('node:child_process');
     env: { ...process.env, PLUGIN_ROOT: path.join(root, 'plugins/codex'), HAKIM_DEFAULT_MODE: 'full' },
   });
   assert.equal(codexHook.status, 0, codexHook.stderr + codexHook.stdout);
-  assert.match(codexHook.stdout, /Hakim 1\.0\.0-beta\.1 is active in full mode/);
+  assert.match(codexHook.stdout, new RegExp(`Hakim ${escapedVersion} is active in full mode`));
   assert.match(codexHook.stdout, /progressively/);
   assert.doesNotMatch(codexHook.stdout, /Technical debt format/);
 
@@ -54,7 +67,7 @@ const { spawnSync } = require('node:child_process');
   assert.equal(claudeHook.status, 0, claudeHook.stderr + claudeHook.stdout);
   const claudeOutput = JSON.parse(claudeHook.stdout);
   assert.equal(claudeOutput.hookSpecificOutput.hookEventName, 'SessionStart');
-  assert.match(claudeOutput.hookSpecificOutput.additionalContext, /Hakim 1\.0\.0-beta\.1 plugin is active/);
+  assert.match(claudeOutput.hookSpecificOutput.additionalContext, new RegExp(`Hakim ${escapedVersion} plugin is active`));
 
-  console.log('test_plugin_smoke.js: maintained native host surfaces ok');
+  console.log(`test_plugin_smoke.js: maintained native host surfaces ok for ${version}`);
 })();

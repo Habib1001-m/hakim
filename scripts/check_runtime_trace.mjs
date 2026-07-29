@@ -16,7 +16,7 @@ const requiredSkill = take('--require-skill');
 const maxTaskBookkeepingRaw = take('--max-task-bookkeeping');
 
 if (!streamPath) {
-  throw new Error('usage: node scripts/check_post_e1_runtime_trace.mjs --stream <stream.jsonl> [--require-skill hakim:hakim] [--max-task-bookkeeping N]');
+  throw new Error('usage: node scripts/check_runtime_trace.mjs --stream <stream.jsonl> [--require-skill hakim:hakim] [--max-task-bookkeeping N]');
 }
 
 const maxTaskBookkeeping = maxTaskBookkeepingRaw === null
@@ -40,11 +40,10 @@ const BASELINE_PATTERNS = [
   /(?:^|\s)yarn\s+(?:run\s+)?(?:build|typecheck|lint)(?:\s|$)/i,
 ];
 
-// Bash remains available in the controlled runs because it is required for
-// repository validation. Treat high-confidence file-changing shell forms as
-// mutations too so a shell edit cannot precede validation and later appear as
-// a compliant baseline-before-mutation trace. Keep this deliberately bounded:
-// it is a trace-integrity guard, not a general shell parser.
+// Bash can be required for repository validation. Treat high-confidence
+// file-changing shell forms as mutations too so a shell edit cannot precede
+// validation and later appear as a compliant baseline-before-mutation trace.
+// Keep this deliberately bounded: it is a trace-integrity guard, not a shell parser.
 const BASH_MUTATION_PATTERNS = [
   /\bsed\b[^\n;&|]*\s(?:-[A-Za-z]*i[A-Za-z]*|--in-place(?:=\S+)?)\b/i,
   /\bperl\b[^\n;&|]*\s-[A-Za-z]*i[A-Za-z]*\b/i,

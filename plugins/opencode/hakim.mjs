@@ -83,7 +83,7 @@ function commandDefinition(capability) {
   if (capability.id === 'hakim') {
     return {
       description: 'Set Hakim mode for this OpenCode session: lite, full, ultra, or off.',
-      template: 'Apply Hakim mode $1 to this request. Valid modes: lite, full, ultra, off. Request: $ARGUMENTS',
+      template: 'Set Hakim mode to $1 for this OpenCode session. Mode selection only: do not load auxiliary Hakim skills, inspect the repository, or run tools for this command. Valid modes: lite, full, ultra, off. Additional arguments: $ARGUMENTS',
     };
   }
   if (capability.id === 'hakim-help') {

@@ -31,106 +31,83 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Verify first-run contract
-        run: npm run check:first-run
+      - name: Run canonical repository gate
+        run: npm test
 
-      - name: Verify maintained script syntax
-        run: npm run check:evidence-script
-
-      - name: Verify host-native plugin contracts
+      # Diagnostics below are non-authoritative and run only after the canonical
+      # gate fails. package.json remains the single gate inventory.
+      - name: Diagnose behavior/runtime contracts on failure
+        if: failure()
         run: |
-          npm run check:codex-projection
-          npm run check:claude-projection
-          npm run check:copilot-projection
+          node tests/test_rule_copies.js
+          node tests/test_behavioral_contract.mjs
+          node tests/test_claude_runtime_kernel.mjs
+          node tests/test_runtime_trace_contract.mjs
+          node tests/test_rule_missing_section.js
+          node tests/test_plugin_smoke.js
 
-      - name: Verify capability parity
-        run: npm run check:capability-parity
+      - name: Diagnose Claude diagnostic hook on failure
+        if: failure()
+        run: node tests/test_claude_diagnostic_hook.js
 
-      - name: Verify cross-host conformance
-        run: npm run check:conformance
+      - name: Diagnose Codex projection on failure
+        if: failure()
+        run: node scripts/check_codex_skill_projection.mjs --json
 
-      - name: Verify native host acceptance contracts
+      - name: Diagnose Claude projection on failure
+        if: failure()
+        run: node scripts/check_claude_skill_projection.mjs --json
+
+      - name: Diagnose Copilot projection on failure
+        if: failure()
+        run: node scripts/check_copilot_instructions_projection.mjs --json
+
+      - name: Diagnose cross-adapter conformance on failure
+        if: failure()
+        run: node tests/test_cross_adapter_conformance.js
+
+      - name: Diagnose governance tooling on failure
+        if: failure()
+        run: |
+          node tests/test_upstream_relationship.js
+          node tests/test_hakim_pr_guardian.mjs
+          node tests/test_hakim_review_pr.mjs
+          node tests/test_hakim_doctor.mjs
+
+      - name: Diagnose acceptance and first-run truth on failure
+        if: failure()
+        run: |
+          node tests/test_native_host_acceptance.mjs
+          node tests/test_hakim_live_host_acceptance.mjs
+          node scripts/check_native_host_acceptance.mjs
+          node tests/test_hakim_install_plan.mjs
+          node tests/test_public_first_run_contract.mjs
+
+      - name: Diagnose host fallback surfaces on failure
+        if: failure()
         run: |
           node tests/test_hakim_host_preflight.mjs
-          node tests/test_hakim_live_host_acceptance.mjs
-
-      - name: Verify core governance contracts
-        run: |
-          node tests/test_node_support_contract.mjs
-          node tests/test_rule_copies.js
-          node tests/test_post_e1_behavioral_contract.mjs
-          node tests/test_claude_runtime_kernel.mjs
-          node tests/test_post_e1_runtime_trace_checker.mjs
-          node tests/test_rule_missing_section.js
-          node tests/test_upstream_relationship.js
-          node tests/test_hakim_doctor.mjs
-          node tests/test_structured_metadata.js
-          node tests/test_hakim_guarded_session.mjs
-
-      - name: Verify POST-E1 E2 fixture
-        run: node tests/test_post_e1_e2_fixture.mjs
-
-      - name: Verify POST-E1 E2 materializer
-        run: node tests/test_post_e1_e2_materializer.mjs
-
-      - name: Verify POST-E1 E3 fixture
-        run: node tests/test_post_e1_e3_fixture.mjs
-
-      - name: Verify POST-E1 E3 materializer
-        run: node tests/test_post_e1_e3_materializer.mjs
-
-      - name: Verify POST-E1 E4 fixture
-        run: node tests/test_post_e1_e4_fixture.mjs
-
-      - name: Verify POST-E1 E4 materializer
-        run: node tests/test_post_e1_e4_materializer.mjs
-
-      - name: Verify native plugin smoke
-        run: node tests/test_plugin_smoke.js
-
-      - name: Verify OpenCode runtime plugin
-        run: node tests/test_opencode_plugin.mjs
-
-      - name: Verify OpenCode project-local lifecycle
-        run: |
-          node tests/test_hakim_opencode_lifecycle.mjs
-          node tests/test_post_beta_r2_p1_truth.mjs
-          node tests/test_hakim_opencode_adversarial_transactions.mjs
-
-      - name: Verify OpenCode Git bootstrap CLI and package
-        run: |
-          node tests/test_hakim_opencode_cli.mjs
-          node tests/test_hakim_opencode_package_surface.mjs
-
-      - name: Verify host fallback and lifecycle contracts
-        run: |
-          node tests/test_claude_diagnostic_hook.js
-          node tests/test_hakim_install_plan.mjs
           node tests/test_hakim_codex_launch.mjs
           node tests/test_hakim_claude_launch.mjs
           node tests/test_hakim_copilot_install.mjs
           node tests/test_hakim_copilot_remove.mjs
 
-      - name: Verify review and PR guardian contracts
+      - name: Diagnose metadata and boundary contracts on failure
+        if: failure()
         run: |
-          node tests/test_hakim_pr_guardian.mjs
-          node tests/test_hakim_review_pr.mjs
-
-      - name: Verify conformance fixture generation
-        run: |
-          node tests/test_cross_adapter_conformance.js
           node tests/test_generate_conformance_packets_no_git.js
-
-      - name: Verify public repository and package boundaries
-        run: |
+          node tests/test_structured_metadata.js
+          node tests/test_hakim_guarded_session.mjs
           npm run check:workflow-policy
-          npm run check:public-boundary
-          npm run check:public-package
+          node scripts/check_public_repository_boundary.mjs
+          node scripts/check_public_package_surface.mjs
 
-      - name: Run public Python tests
+      - name: Diagnose Python contracts on failure
+        if: failure()
         run: npm run test:public:py
 
-      - name: Build and verify release bundle
+      - name: Diagnose release artifacts on failure
+        if: failure()
         run: npm run package:release
 
   node22-compatibility:
@@ -144,22 +121,8 @@ jobs:
         with:
           node-version: "22"
           package-manager-cache: false
-      - name: Node 22 support contract
-        run: node tests/test_node_support_contract.mjs
-      - name: Node 22 OpenCode plugin runtime
-        run: node tests/test_opencode_plugin.mjs
-      - name: Node 22 OpenCode lifecycle
-        run: |
-          node tests/test_hakim_opencode_lifecycle.mjs
-          node tests/test_post_beta_r2_p1_truth.mjs
-      - name: Node 22 adversarial transactions
-        run: node tests/test_hakim_opencode_adversarial_transactions.mjs
-      - name: Node 22 Git bootstrap CLI
-        run: node tests/test_hakim_opencode_cli.mjs
-      - name: Node 22 npm package inventory
-        run: node tests/test_hakim_opencode_package_surface.mjs
-      - name: Node 22 public package boundary
-        run: node scripts/check_public_package_surface.mjs
+      - name: Run Node 22 compatibility gate
+        run: npm run test:node-compat
 
   node26-compatibility:
     runs-on: ubuntu-latest
@@ -172,19 +135,5 @@ jobs:
         with:
           node-version: "26"
           package-manager-cache: false
-      - name: Node 26 support contract
-        run: node tests/test_node_support_contract.mjs
-      - name: Node 26 OpenCode plugin runtime
-        run: node tests/test_opencode_plugin.mjs
-      - name: Node 26 OpenCode lifecycle
-        run: |
-          node tests/test_hakim_opencode_lifecycle.mjs
-          node tests/test_post_beta_r2_p1_truth.mjs
-      - name: Node 26 adversarial transactions
-        run: node tests/test_hakim_opencode_adversarial_transactions.mjs
-      - name: Node 26 Git bootstrap CLI
-        run: node tests/test_hakim_opencode_cli.mjs
-      - name: Node 26 npm package inventory
-        run: node tests/test_hakim_opencode_package_surface.mjs
-      - name: Node 26 public package boundary
-        run: node scripts/check_public_package_surface.mjs
+      - name: Run Node 26 compatibility gate
+        run: npm run test:node-compat

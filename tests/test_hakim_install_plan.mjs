@@ -142,7 +142,8 @@ assert.equal(cliPlan.plans.find((item) => item.host === 'opencode').distribution
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 assert.equal(packageJson.scripts['plan:install'], 'node scripts/hakim_install_plan.mjs');
 assert.equal(packageJson.scripts['plan:install:json'], 'node scripts/hakim_install_plan.mjs --json');
-assert.match(packageJson.scripts['test:integration:js'], /tests\/test_hakim_install_plan\.mjs/);
+assert.equal(packageJson.scripts['test:integration:js'], 'npm run test:public:js');
+assert.match(packageJson.scripts['test:public:js'], /tests\/test_hakim_install_plan\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_install_plan\.mjs/);
 
 console.log('read-only Hakim installation planning covers native Codex, Claude, Copilot marketplaces and the Git-backed OpenCode project-local bootstrap');

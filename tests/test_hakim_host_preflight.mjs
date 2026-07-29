@@ -76,7 +76,8 @@ try {
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 assert.equal(packageJson.scripts['preflight:host'], 'node scripts/hakim_host_preflight.mjs');
 assert.equal(packageJson.scripts['preflight:host:json'], 'node scripts/hakim_host_preflight.mjs --json');
-assert.match(packageJson.scripts['test:integration:js'], /tests\/test_hakim_host_preflight\.mjs/);
+assert.equal(packageJson.scripts['test:integration:js'], 'npm run test:public:js');
+assert.match(packageJson.scripts['test:public:js'], /tests\/test_hakim_host_preflight\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_host_preflight\.mjs/);
 
 console.log('native host preflight combines doctor, install plan, and read-only host-surface validation');

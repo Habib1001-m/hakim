@@ -9,9 +9,17 @@ import { fileURLToPath } from 'node:url';
 import { CHECK_DEFINITIONS, buildReport, formatText } from '../scripts/hakim_doctor.mjs';
 import { installOpenCodeAdapter } from '../scripts/hakim_opencode_install.mjs';
 import { inspectStatus } from '../scripts/hakim_opencode_cli.mjs';
-import { readInstalledManifest } from '../scripts/lib/opencode_bundle.mjs';
+import { buildOpenCodeBundle, readInstalledManifest } from '../scripts/lib/opencode_bundle.mjs';
+import { SUPPORTED_PERSISTED_PRIOR_MANIFESTS } from '../scripts/lib/opencode_prior_manifests.mjs';
+import { validateManagedInstallationAuthority } from '../scripts/lib/opencode_transaction.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const CURRENT_VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
+const PREVIOUS_SUPPORTED_VERSION = '1.0.0-beta.1';
+const FROZEN_BETA2_VERSION = '1.0.0-beta.2';
+const FROZEN_BETA2_SHA = '126a228a4ff9c1afafb6075f81b4e0bbfdf702bf';
+const FROZEN_BETA3_VERSION = '1.0.0-beta.3';
+const FROZEN_BETA3_SHA = 'a697b5e24d05e38b925d849fee4a02daa623c24b';
 
 function passingDoctorResults() {
   return CHECK_DEFINITIONS.map((definition) => ({
@@ -37,7 +45,7 @@ function makeVariantSource(parent, version, marker = '') {
   return root;
 }
 
-test('doctor reports its bounded check health without claiming whole-repository health', () => {
+test('doctor reports bounded check health without claiming whole-repository health', () => {
   const nativeAcceptance = {
     scope: 'current-native-product-paths',
     overall_status: 'PASS',
@@ -49,7 +57,7 @@ test('doctor reports its bounded check health without claiming whole-repository 
     },
   };
 
-  const report = buildReport(passingDoctorResults(), '1.0.0-beta.1', 'FULL', nativeAcceptance);
+  const report = buildReport(passingDoctorResults(), CURRENT_VERSION, 'FULL', nativeAcceptance);
   assert.equal(report.doctor_health, 'PASS');
   assert.equal(report.repository_health, 'OUT_OF_SCOPE_DOCTOR');
 
@@ -70,36 +78,67 @@ test('doctor derives native-host recovery guidance from the host that actually f
     },
   };
 
-  const report = buildReport(passingDoctorResults(), '1.0.0-beta.1', 'FULL', nativeAcceptance);
+  const report = buildReport(passingDoctorResults(), CURRENT_VERSION, 'FULL', nativeAcceptance);
   assert.match(report.next_safe_action, /codex/i);
   assert.doesNotMatch(report.next_safe_action, /issue #18/i);
   assert.doesNotMatch(report.next_safe_action, /current OpenCode managed lifecycle/i);
 });
 
-test('failed OpenCode upgrade reports the version actually restored after complete rollback', () => {
-  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-post-beta-r2-upgrade-'));
+test('beta.4 accepts only exact frozen beta.2 and beta.3 persisted OpenCode manifests as prior managed authority', () => {
+  assert.equal(CURRENT_VERSION, '1.0.0-beta.4');
+  assert.equal(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.length, 2);
+  const byVersion = new Map(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.map((manifest) => [manifest.product_version, manifest]));
+  const beta2 = byVersion.get(FROZEN_BETA2_VERSION);
+  const beta3 = byVersion.get(FROZEN_BETA3_VERSION);
+  assert.ok(beta2);
+  assert.ok(beta3);
+  assert.equal(beta2.source_commit, FROZEN_BETA2_SHA);
+  assert.equal(beta3.source_commit, FROZEN_BETA3_SHA);
+  assert.equal(beta2.files.length, 9);
+  assert.equal(beta3.files.length, 9);
+
+  const bundle = buildOpenCodeBundle(ROOT);
+  for (const prior of [beta2, beta3]) {
+    const exactManaged = {
+      manifest_source: 'INSTALLED_MANIFEST',
+      manifest: JSON.parse(JSON.stringify(prior)),
+    };
+    assert.deepEqual(validateManagedInstallationAuthority(exactManaged, bundle), { ok: true });
+  }
+
+  const forged = JSON.parse(JSON.stringify(beta3));
+  forged.files[0].sha256 = '0'.repeat(64);
+  const refused = validateManagedInstallationAuthority({ manifest_source: 'INSTALLED_MANIFEST', manifest: forged }, bundle);
+  assert.equal(refused.ok, false);
+  assert.equal(refused.state, 'MANIFEST_UNSUPPORTED');
+  assert.match(refused.message, /exact supported prior manifest/i);
+});
+
+test('failed supported beta.1 to current upgrade reports the version actually restored after complete rollback', () => {
+  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-product-truth-upgrade-'));
   const target = path.join(parent, 'repository');
   fs.mkdirSync(target);
 
   try {
-    const initial = installOpenCodeAdapter({ target, apply: true }, ROOT);
+    const olderSource = makeVariantSource(parent, PREVIOUS_SUPPORTED_VERSION, 'synthetic-persisted-beta1-product-truth');
+    const initial = installOpenCodeAdapter({ target, apply: true }, olderSource);
     assert.equal(initial.state, 'CREATED');
+    assert.equal(initial.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
 
-    const variant = makeVariantSource(parent, '1.0.0-beta.2', 'post-beta-r2-upgrade-fault');
     const originalCopy = fs.copyFileSync;
     let injected = false;
 
     fs.copyFileSync = function patchedCopy(from, to, mode) {
       if (!injected && String(to).startsWith(path.join(target, '.opencode'))) {
         injected = true;
-        throw new Error('POST-BETA-R2 fault injection after old installation quarantine');
+        throw new Error('fault injection after old installation quarantine');
       }
       return originalCopy.call(this, from, to, mode);
     };
 
     let report;
     try {
-      report = installOpenCodeAdapter({ target, apply: true }, variant);
+      report = installOpenCodeAdapter({ target, apply: true }, ROOT);
     } finally {
       fs.copyFileSync = originalCopy;
     }
@@ -109,20 +148,20 @@ test('failed OpenCode upgrade reports the version actually restored after comple
     assert.equal(report.state, 'UPGRADE_FAILED_ROLLED_BACK');
     assert.equal(report.rollback_attempted, true);
     assert.equal(report.rollback_complete, true);
-    assert.equal(report.previous_product_version, '1.0.0-beta.1');
-    assert.equal(report.installed_product_version, '1.0.0-beta.1');
+    assert.equal(report.previous_product_version, PREVIOUS_SUPPORTED_VERSION);
+    assert.equal(report.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
 
     const manifest = readInstalledManifest(target);
     assert.equal(manifest.state, 'VALID');
-    assert.equal(manifest.manifest.product_version, '1.0.0-beta.1');
+    assert.equal(manifest.manifest.product_version, PREVIOUS_SUPPORTED_VERSION);
 
-    const status = inspectStatus(target, variant);
+    const status = inspectStatus(target, ROOT);
     assert.equal(status.status, 'PASS');
     assert.equal(status.state, 'UPGRADE_AVAILABLE');
-    assert.equal(status.installed_product_version, '1.0.0-beta.1');
+    assert.equal(status.installed_product_version, PREVIOUS_SUPPORTED_VERSION);
   } finally {
     fs.rmSync(parent, { recursive: true, force: true });
   }
 });
 
-console.log('test_post_beta_r2_p1_truth.mjs: ok');
+console.log('test_product_truth_contract.mjs: ok');

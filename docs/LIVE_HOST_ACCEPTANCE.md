@@ -1,14 +1,16 @@
 # Current-Native Live Host Acceptance
 
-This document defines the public-safe workflow for accepting Hakim `1.0.0-beta.1` on a real supported coding host.
+This document defines the public-safe workflow for accepting Hakim `1.0.0-beta.4` on a real supported coding host. The current beta.4 projection is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are reviewed and accepted.
 
 ## Boundary
 
 A green repository CI run is not live-host acceptance.
 
-A host or materially changed first-run, lifecycle, or runtime path can be promoted by public evidence only after the exact end-to-end journey has been observed on the real host and a public-safe evidence reference has been reviewed.
+A host or materially changed candidate, first-run, lifecycle, or runtime path can be promoted by public evidence only after the exact end-to-end journey has been observed on the real host and a public-safe evidence reference has been reviewed.
 
 Hakim never asks for credentials, private prompts, customer source code, authentication tokens, or private governance records as live-host evidence.
+
+Accepted evidence from an older candidate remains historical evidence for that older identity. It is not relabeled as current acceptance merely because a later candidate preserves some implementation details.
 
 ## 1. Inspect before running the host journey
 
@@ -35,7 +37,7 @@ The command is read-only. It:
 
 ### Codex
 
-Hakim's direct-repository beta path currently asks the operator to try:
+Hakim's direct-repository beta path asks the operator to try:
 
 ```bash
 codex plugin marketplace add Habib1001-m/hakim
@@ -43,7 +45,7 @@ codex plugin marketplace add Habib1001-m/hakim
 
 Then use the Codex plugin UI to select the Hakim marketplace, install `hakim`, review/trust the bundled SessionStart hook, start a new thread, and invoke an installed Hakim skill.
 
-Codex public plugin discovery changed materially in July 2026 and is now centered on the Plugin Directory. Therefore the repository-marketplace command above is itself part of the live acceptance question. Do not mark Codex `PASS` unless that exact beta product path is observed to work on the tested Codex version, or the product path is deliberately changed and re-reviewed.
+The repository-marketplace command is itself part of the live acceptance question. Do not mark Codex `PASS` unless that exact candidate path is observed to work on the tested Codex version, or the product path is deliberately changed and re-reviewed.
 
 ### Claude Code
 
@@ -99,9 +101,9 @@ This is acceptance-only tooling for immutable commit evidence. It does not upgra
 
 Then start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
 
-OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The current managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state. Prompt activation is bounded by explicit start/end sentinels so Hakim removes only its owned system range and preserves unrelated trailing content.
+OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state. Prompt activation is bounded by explicit start/end sentinels so Hakim removes only its owned system range and preserves unrelated trailing content.
 
-The current bounded-sentinel runtime has accepted real-host evidence on immutable candidate `8b9c0e7011d825f5aaf60763ed874d88c0c05b62` with OpenCode `1.17.13`. The observation covered clean managed install/start/invocation plus successful `/hakim-help` and `/hakim full ...` runtime use. Earlier candidate `fbfd9354f16d58ec72da1458356a1fbc0b9a37f3` with OpenCode `1.18.5` remains bounded evidence for the unchanged accepted-old-to-managed upgrade and supported older-version removal journey; it is not reused as evidence for the changed sentinel runtime. Earlier candidate `b442820d2803955d0f7f33b405bd096f443d4d72` remains accepted historical evidence for the earlier create-only lifecycle only.
+The beta.4 OpenCode path is currently `NOT_RUN`. Accepted beta.1 and frozen beta.2/beta.3 host evidence remains bounded to those exact historical candidates and is not reused to promote beta.4.
 
 ## 3. Record a candidate evidence packet
 
@@ -115,7 +117,7 @@ npm run accept:host -- --host claude-code \
   --installation PASS \
   --activation PASS \
   --invocation PASS \
-  --evidence-ref 'issue:8#claude-live' \
+  --evidence-ref 'issue:<number>#comment-containing-exact-candidate-identity' \
   --output dist/live-host-acceptance/claude-code.json \
   --json
 ```
@@ -140,17 +142,17 @@ The candidate becomes `PASS` only when:
 - the host binary is resolved;
 - the host version is detected from the real binary;
 - a non-empty public-safe evidence reference is supplied;
-- for an unreleased Git-backed OpenCode candidate, the public-safe evidence identifies the immutable candidate commit actually tested.
+- the public-safe evidence identifies the immutable candidate actually tested when the product is unreleased.
 
 `--output` is create-only. The harness refuses to overwrite an existing evidence packet; use a new path for every run so earlier evidence remains inspectable.
 
-A candidate packet is evidence for review, not authorization to change the public acceptance projection. A public-safe issue/PR comment that directly records the observed checkpoints, resolved host/version, immutable candidate identity, and evidence boundary may also serve as the projection's `evidence_ref`; do not fabricate a packet that was not actually produced by the harness.
+A candidate evidence packet is evidence for review, not authorization to change the public acceptance projection. A public-safe issue/PR comment that directly records the observed checkpoints, resolved host/version, immutable candidate identity, and evidence boundary may also serve as the projection's `evidence_ref`; do not fabricate a packet that was not actually produced by the harness.
 
 ## 4. Promote only after review
 
 Review the candidate packet and/or public-safe evidence reference. Then, and only then, update the corresponding host/product-path evidence when the reviewed observation actually covers the claimed journey.
 
-Do not broaden old evidence to a new transport, lifecycle, runtime behavior, version, or journey merely because part of the payload is similar. Evidence for unchanged subpaths may remain bounded to the candidate on which those subpaths were actually observed, while changed runtime behavior requires its own fresh evidence.
+Do not broaden old evidence to a new candidate, transport, lifecycle, runtime behavior, version, or journey merely because part of the payload is similar. Evidence for older identities remains bounded to the identity on which it was observed.
 
 External evaluator recruitment is currently `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
 

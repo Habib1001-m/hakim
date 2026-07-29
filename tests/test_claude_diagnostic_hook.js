@@ -6,6 +6,8 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
+const version = fs.readFileSync(path.join(root, 'core/hakim-skill/VERSION'), 'utf8').trim();
+const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const hooksPath = path.join(root, 'plugins/claude-code/hooks/hooks.json');
 const sessionHandlerPath = path.join(root, 'plugins/claude-code/hooks/session_start.mjs');
 const diagnosticHandlerPath = path.join(root, 'plugins/claude-code/hooks/post_tool_use_diagnostic.mjs');
@@ -37,7 +39,7 @@ const session = spawnSync(process.execPath, [sessionHandlerPath], {
 assert.equal(session.status, 0, session.stderr);
 const sessionOutput = JSON.parse(session.stdout);
 assert.equal(sessionOutput.hookSpecificOutput.hookEventName, 'SessionStart');
-assert.match(sessionOutput.hookSpecificOutput.additionalContext, /Hakim 1\.0\.0-beta\.1 plugin is active/i);
+assert.match(sessionOutput.hookSpecificOutput.additionalContext, new RegExp(`Hakim ${escapedVersion} plugin is active`, 'i'));
 assert.match(sessionOutput.hookSpecificOutput.additionalContext, /\/hakim:full/);
 assert.match(sessionOutput.hookSpecificOutput.additionalContext, /permissions/i);
 assert.ok(!Object.prototype.hasOwnProperty.call(sessionOutput, 'decision'));
@@ -129,4 +131,4 @@ const ignored = spawnSync(process.execPath, [diagnosticHandlerPath], {
 assert.equal(ignored.status, 0, ignored.stderr);
 assert.equal(ignored.stdout, '');
 
-console.log('test_claude_diagnostic_hook.js: native Claude lifecycle hooks ok');
+console.log(`test_claude_diagnostic_hook.js: native Claude ${version} lifecycle hooks ok`);

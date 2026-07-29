@@ -1,10 +1,12 @@
 ---
 name: hakim-gain
-description: Summarize what Hakim can and cannot claim from the evidence available in the current repository or task. Use for Hakim impact, gain, evidence status, or validated results.
+description: Show what Hakim can and cannot claim from the evidence available in the current repository or task. The `hakim-gain` ID is retained for beta compatibility; this capability reports evidence status and does not imply a quantified gain.
 user-invocable: false
 ---
 
-# Hakim Gain
+# Hakim Evidence Status
+
+`hakim-gain` is the retained beta compatibility ID for this capability. Its maintained behavior is evidence/status reporting, not a claim that Hakim produced a quantified gain.
 
 Provide a compact evidence-status summary without inventing performance,
 adoption, safety, token, cost, speed, or return-on-investment numbers.

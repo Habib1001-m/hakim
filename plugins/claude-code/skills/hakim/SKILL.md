@@ -6,7 +6,7 @@ disable-model-invocation: false
 user-invocable: false
 ---
 
-<!-- hakim-canonical-sha256: 4821268ca7afcaae795de7661caa937732da98d81da10222dbb69898f8d16b36 -->
+<!-- hakim-canonical-sha256: 9eabe421c203d0e4cb6730525b7bc706998719ce7f675c6a1bee4a9c682611d3 -->
 
 # Hakim for Claude Code
 
@@ -30,11 +30,19 @@ Stop at the first rung that works:
 
 ## Pre-mutation baseline
 
-Before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available from maintained repository validation. A focused test, build, typecheck, lint, or equivalent is enough when a full suite is disproportionate. If execution is unsafe, unavailable, too expensive, or disallowed, record why no baseline was run and do not imply a pre-existing green state.
+Before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available from maintained repository validation. Baseline discovery is read-only by default: inspect maintained documentation, configuration, scripts, and tool declarations first. Treat dependency or editable installs, lockfile/package-metadata generation, repository-local environment/bootstrap creation, code generation, formatter writes, and similar side effects as mutations. Do not perform them merely to discover or prepare a baseline when a maintained non-mutating path is available. If setup mutation is genuinely required, state why before doing it and distinguish setup mutation from product mutation. A focused test, build, typecheck, lint, or equivalent is enough when a full suite is disproportionate. If execution is unsafe, unavailable, too expensive, or disallowed, record why no baseline was run and do not imply a pre-existing green state.
+
+## Observable checkpoints
+
+Before the first product edit in a runnable Git repository, record observed values for `BASELINE_COMMAND`, `BASELINE_SOURCE`, `SETUP_MUTATION`, and `PRE_EDIT_GIT_STATUS`. `SETUP_MUTATION=NO` is the default; setup mutation must be justified before execution and cannot be used merely to discover the baseline.
+
+For boolean, control-flow, validator, permission, or guard transformations, record `SEMANTIC_CHANGE_CHECK`. Existing-suite green alone is not sufficient to claim semantic equivalence: enumerate decision-relevant boundary states or run a targeted regression/probe for the changed truth table or invariant, including empty/absent/error/boundary states when they can branch differently.
+
+Before completion, observe final repository state and record `FINAL_GIT_STATUS`, `SETUP_ARTIFACTS`, and `UNRELATED_MUTATIONS`. Never claim a clean tree, no artifacts, or no setup mutations when the observed state contradicts that claim.
 
 ## Evidence sufficiency
 
-Once the affected implementation path, relevant local conventions and reuse candidates, material safety/domain guards, and proportional validation surface are known, stop inspecting. Any additional read or search must answer a concrete unresolved question whose answer could change implementation, scope, safety, or the confidence claim. Whole-repository exploration is not the default when the affected path is bounded; material correctness or safety uncertainty still requires investigation.
+Once the affected implementation path, relevant local conventions and reuse candidates, material safety/domain guards, and proportional validation surface are known, stop inspecting. Any additional read or search must answer a concrete unresolved question whose answer could change implementation, scope, safety, or the confidence claim. Whole-repository exploration is not the default when the affected path is bounded; material correctness or safety uncertainty still requires investigation. Do not create repository-local planning/analysis artifacts or repeat equivalent analysis merely to continue inspection when no decision-relevant question remains.
 
 ## Domain-guard preservation
 
@@ -43,6 +51,10 @@ Before simplifying or deleting validation/guard logic, identify the protected in
 ## Outcome-oriented restraint
 
 Optimize for the smallest sufficient, coherent, safe change that completes the requested outcome. Line count is not the objective and the fewest lines or files do not win when the bounded result is incomplete. Do not split, omit, or defer a necessary part of the same bounded change merely to shrink the diff; the reuse/stdlib/native/dependency ladder still decides how to implement that sufficient outcome.
+
+## Bounded `NO_CHANGE` truth
+
+A no-change decision is scoped to inspected evidence. Default to: `No justified change found within the inspected scope.` Do not claim the implementation is globally minimal, irreducible, optimal, or free of all simplification opportunities unless the inspected evidence establishes that stronger claim. Report the bounded evidence supporting `NO_CHANGE` and any remaining uncertainty.
 
 ## Safety boundary
 
@@ -61,7 +73,7 @@ upgrade path: what changes when the ceiling is reached
 ## Output discipline
 
 - Prefer the smallest safe diff.
-- Say when the best change is no change.
+- Say when the best change is no change, but keep that claim bounded to the inspected evidence.
 - Avoid new dependencies unless the repo already depends on them and they clearly solve the task.
 - Avoid speculative architecture and future-proofing.
 - Do not claim release readiness, runtime validation, marketplace readiness, adapter functionality, benchmark results, performance improvements, or ROI without accepted evidence.
