@@ -42,4 +42,6 @@ F04 acceptance gate:
 4. the literal subagent answer is `MODE=ultra`;
 5. target-repository Git state remains unchanged.
 
-Until all five pass, `F04 = REMEDIATION_CANDIDATE` and PR #42 remains Draft. This document does not authorize beta.5, Ready, merge, D01, external evaluation, stable release, or registry publication.
+Until all five pass, `F04 = REMEDIATION_CANDIDATE` and PR #42 remains Draft.
+
+No beta.5, Ready/merge transition, D01 rerun, external evaluation, stable release, or registry publication is authorized by this evidence.
