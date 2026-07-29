@@ -129,7 +129,7 @@ Prefer objective correction after consequences are observable over speculative b
 
 ## Copilot operating shape
 
-Current F03f experimental shape:
+Current R3.2 experimental shape:
 
 ```text
 native plugin install
@@ -140,9 +140,13 @@ sessionStart
   -> default full when absent
   -> inject compact maintained Hakim context unless off
        |
-       v
-normal coding
-  -> model reasons freely
+       +--------------------------+
+       |                          |
+       v                          v
+normal parent coding          subagentStart
+  -> model reasons freely       -> reuse session_start.mjs
+                                -> read the same bounded mode
+                                -> inject the same maintained context unless off
        |
        v
 optional exact mode control
@@ -162,17 +166,20 @@ userPromptTransformed
   -> no state access and no repository work
 ```
 
-This three-event topology is intentionally split by responsibility rather than treated as an enforcement chain:
+The topology is split by responsibility rather than treated as an enforcement chain:
 
-- `sessionStart` owns silent presence;
+- `sessionStart` owns silent parent-session presence;
+- `subagentStart` owns continuity only when Copilot creates a subagent;
 - `userPromptSubmitted` owns persistent control metadata;
 - `userPromptTransformed` owns current-turn mode semantics only.
 
+`subagentStart` does not introduce a second behavioral authority. It executes the same `session_start.mjs` used by the parent session, so parent and subagent presence derive from the same installed Hakim skill and the same persisted mode state.
+
 GitHub's hook contract specifies that `userPromptTransformed.prompt` is the prompt after `userPromptSubmitted` hooks have run. F03f relies on that documented order, not on timing assumptions.
 
-The transformed hook is deliberately stateless. It does not read or write plugin data. The submitted hook uses the host-owned `COPILOT_PLUGIN_DATA` directly; real Copilot CLI 1.0.75 evidence proved that location by creating `~/.copilot/plugin-data/hakim/hakim/mode.json` from the submitted-prompt hook.
+The transformed hook is deliberately stateless. It does not read or write plugin data. The submitted and presence hooks use the host-owned `COPILOT_PLUGIN_DATA` directly; real Copilot CLI 1.0.75 evidence proved that location by creating `~/.copilot/plugin-data/hakim/hakim/mode.json` from the submitted-prompt hook.
 
-No `preToolUse`, `postToolUse`, or `agentStop` hook is authorized by the operational-presence work.
+No `preToolUse`, `postToolUse`, `agentStop`, or `subagentStop` hook is authorized by the operational-presence work.
 
 ## Feasibility evidence
 
@@ -200,7 +207,7 @@ Evidence:
 - a new full session restored Hakim context;
 - plugin-data was empty again at default full.
 
-### F03 — Native mode-control UX — REMEDIATION IN PROGRESS
+### F03 — Native mode-control UX — PASS END-TO-END
 
 The F03 history is intentionally preserved because each live failure isolated a different host boundary.
 
@@ -208,16 +215,28 @@ The F03 history is intentionally preserved because each live failure isolated a 
 2. Quoting `argument-hint` fixed the loader. A bare `/hakim off` was recognized, but the host-expanded skill payload still reported `full`, and no persistent state appeared.
 3. `evidence/r32-f03c-mode-control-67ea974` moved current-turn control to `userPromptTransformed` and passed Public CI #587. Live Copilot then produced `Hakim mode: off` and kept the target repository clean, proving the transformed boundary for current-turn semantics. A complete `COPILOT_HOME` search found no `mode.json`, so persistence still failed.
 4. `evidence/r32-f03d-plugin-data-a0994ae` and `evidence/r32-f03e-safe-plugin-data-9f616e3` explored explicit hook-env rebinding of `${COPILOT_PLUGIN_DATA}`. F03e passed Public CI #590 but its live probe regressed to `Hakim mode set to: full` and still produced no state. Its safety guard did prevent repository-local pollution. The explicit rebinding approach is therefore not part of F03f.
-5. A control experiment returned to the loader-fixed `userPromptSubmitted` design and used the plugin-qualified `/hakim/hakim off` route. Copilot CLI 1.0.75 wrote exactly `{"schema_version":1,"mode":"off"}` to `/home/habib1001/.copilot/plugin-data/hakim/hakim/mode.json`, while `git status --porcelain=v1 -uall` remained empty. This proves submitted-hook persistence and direct `COPILOT_PLUGIN_DATA` availability. The same turn still asked the user to disambiguate the requested action, so current-turn mode semantics remained a separate failure.
-6. F03f composes only the two behaviors already proven live: submitted-hook persistence from step 5 and transformed-hook current-turn correction from step 3. It is not accepted until exact-head CI and one clean end-to-end Copilot journey both pass.
+5. A control experiment returned to the loader-fixed `userPromptSubmitted` design and used the plugin-qualified `/hakim/hakim off` route. Copilot CLI 1.0.75 wrote exactly `{"schema_version":1,"mode":"off"}` to `/home/habib1001/.copilot/plugin-data/hakim/hakim/mode.json`, while `git status --porcelain=v1 -uall` remained empty. This proved submitted-hook persistence and direct `COPILOT_PLUGIN_DATA` availability. The same turn still asked the user to disambiguate the requested action, so current-turn mode semantics remained a separate failure.
+6. `evidence/r32-f03f-split-lifecycle-6022a09` composed only the two behaviors already proven live: submitted-hook persistence from step 5 and transformed-hook current-turn correction from step 3. Public CI #591 passed on runtime SHA `6022a099518dd958d1d5d4f8f75b53b3159b34c3`. A clean Copilot CLI 1.0.75 run then loaded `sessionStart + userPromptSubmitted + userPromptTransformed`, returned `Hakim mode: off`, persisted exact `off` state, and kept the frozen fixture clean.
+7. The same runtime passed the bounded lifecycle matrix: `off` persisted, `ultra` persisted, and `full` removed `mode.json` to restore stateless default full.
 
-Current parser scope intentionally excludes colon qualification because Copilot CLI 1.0.75 rejected `/hakim:hakim`. The implementation recognizes bare `/hakim` forms for compatibility, but current persistent live evidence exists only for slash-qualified `/hakim/hakim <mode>`.
+Current parser scope intentionally excludes colon qualification because Copilot CLI 1.0.75 rejected `/hakim:hakim`. The implementation recognizes bare `/hakim` forms for compatibility, but accepted persistent live evidence uses slash-qualified `/hakim/hakim <mode>`.
 
 Ordinary prompts are neither modified nor persisted.
 
-### F04 — Subagent continuity fit
+### F04 — Subagent continuity fit — GAP CONFIRMED / REMEDIATION CANDIDATE
 
-Add subagent lifecycle handling only if a real probe proves a propagation gap. Do not add it for symmetry.
+A real Copilot CLI 1.0.75 probe established the product need before any new hook was authorized:
+
+- the parent mode was explicitly set to `ultra`;
+- the installed Hakim plugin exposed only the accepted F03 hooks (`sessionStart`, `userPromptSubmitted`, `userPromptTransformed`);
+- a built-in Explore subagent was asked, without file reads, plugin-state inspection, shell commands, or mode disclosure from the parent, to report its own `HAKIM OPERATIONAL PRESENCE` marker;
+- the Explore subagent returned exactly `MODE=NONE`.
+
+This proves that parent operational presence does not propagate sufficiently into that Copilot subagent boundary by default.
+
+The bounded remediation therefore adds exactly one `subagentStart` hook and points it at the existing `session_start.mjs`. No new runtime, prompt copy, behavioral fork, state file, tool interception, or enforcement hook is introduced. Repository regressions must prove that persisted `ultra` produces the same maintained context for a synthetic subagent while leaving the target repository untouched.
+
+F04 is not PASS until exact-head Public CI succeeds and a real fresh Explore probe returns `MODE=ultra` under persisted ultra mode. If that live proof fails, stop and diagnose the host boundary rather than adding further hooks by symmetry.
 
 ### F05 — Objective completion truth
 
@@ -231,6 +250,7 @@ Before release-candidate promotion prove:
 - exact mode controls update only bounded plugin data;
 - ordinary prompts create no mode state and are not rewritten;
 - malformed state/input fails safely;
+- subagent continuity exists only through the evidence-justified `subagentStart` presence hook;
 - no enforcement hook appears without accepted product need.
 
 ### F07 — Production-like D01 rerun
