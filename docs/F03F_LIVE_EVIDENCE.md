@@ -34,6 +34,8 @@ Verdict:
 
 The minimal F04 remediation candidate adds exactly one `subagentStart` hook that reuses the existing `hooks/session_start.mjs` presence authority. It adds no second policy copy, no new state schema, no prompt persistence, no repository bookkeeping, and no enforcement/tool-interception hook.
 
+Repository-side regression coverage now requires the same `session_start.mjs` to emit the canonical persisted-`ultra` operational context for a synthetic Explore-like `subagentStart` payload while leaving the target repository untouched. The Copilot projection checker requires exactly `sessionStart + subagentStart + userPromptSubmitted + userPromptTransformed` and continues to reject tool-interception/enforcement hooks.
+
 F04 acceptance gate:
 
 1. exact-head Public CI PASS;
