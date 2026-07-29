@@ -223,7 +223,7 @@ Current parser scope intentionally excludes colon qualification because Copilot 
 
 Ordinary prompts are neither modified nor persisted.
 
-### F04 — Subagent continuity fit — GAP CONFIRMED / REMEDIATION CANDIDATE
+### F04 — Subagent continuity fit — GAP CONFIRMED / REMEDIATION PENDING LIVE PROOF
 
 A real Copilot CLI 1.0.75 probe established the product need before any new hook was authorized:
 
@@ -234,7 +234,7 @@ A real Copilot CLI 1.0.75 probe established the product need before any new hook
 
 This proves that parent operational presence does not propagate sufficiently into that Copilot subagent boundary by default.
 
-The bounded remediation therefore adds exactly one `subagentStart` hook and points it at the existing `session_start.mjs`. No new runtime, prompt copy, behavioral fork, state file, tool interception, or enforcement hook is introduced. Repository regressions must prove that persisted `ultra` produces the same maintained context for a synthetic subagent while leaving the target repository untouched.
+The bounded remediation therefore adds exactly one `subagentStart` hook and points it at the existing `session_start.mjs`. No new runtime, prompt copy, behavioral fork, state file, tool interception, or enforcement hook is introduced. Repository regressions prove that persisted `ultra` produces the same maintained context for a synthetic subagent while leaving the target repository untouched.
 
 F04 is not PASS until exact-head Public CI succeeds and a real fresh Explore probe returns `MODE=ultra` under persisted ultra mode. If that live proof fails, stop and diagnose the host boundary rather than adding further hooks by symmetry.
 
