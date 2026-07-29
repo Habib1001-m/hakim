@@ -1,8 +1,8 @@
-# Hakim Operational Presence Architecture
+# Hakim Operational Presence
 
-**Status:** R3.2 design/feasibility authority. This document records accepted experimental evidence and current design boundaries. It does not promote a release candidate.
+**Status:** accepted R3.2 development architecture through F04. This is unreleased development and does not itself create a new prerelease identity or release authorization.
 
-Hakim is designed for capable coding agents. It should preserve model creativity and judgment while making its engineering discipline reliably present and verifying objective truth only at consequential boundaries.
+Hakim is designed for capable coding agents. It should preserve model creativity and judgment while making its engineering discipline reliably present and checking objective truth only at consequential boundaries.
 
 > **Free reasoning. Safe action. Evidence-bound claims.**
 
@@ -10,257 +10,182 @@ UX target:
 
 > **Install once. Start coding. Hakim is already there.**
 
-## Why R3.2 exists
+## Why operational presence exists
 
-The beta.2-beta.4 D01 sequence proved that stronger skill text alone does not guarantee timely host activation or behavioral obedience. R3.2 therefore separates three concerns:
+The beta.2–beta.4 D01 sequence showed that stronger skill text alone did not guarantee timely activation or truthful final-state reporting on every host/task.
+
+R3.2 therefore separates three concerns:
 
 1. **Decision policy** — semantic guidance for the model.
 2. **Operational presence** — host-native delivery of that guidance.
-3. **Objective truth** — verification of consequences and claims.
+3. **Objective truth** — verification of observable consequences and consequential claims.
 
-R3.2 must improve reliability without turning frontier-class models into workflow bots.
+The model remains free to reason. Hakim should constrain objective consequences and unsupported claims before it constrains reasoning paths.
 
-## Reference forensics
+## Golden rules
 
-Ponytail is an upstream operational reference, not an implementation to copy. Its useful lessons are:
-
-- installation wires presence automatically;
-- lifecycle hooks remain thin;
-- one behavioral authority feeds multiple host adapters;
-- host state lives outside the target repository;
-- normal activation is quiet and fail-soft;
-- subagent propagation is used where the host exposes a real lifecycle gap;
-- mode commands control intensity rather than activating the product.
-
-Hakim keeps its own evidence/truth architecture and does not copy Ponytail runtime code.
-
-## Three-plane model
-
-```text
-capable model
-creative reasoning
-      |
-      v
-+------------------+
-| Decision Policy  |
-| soft / semantic  |
-+--------+---------+
-         |
-         v
-+---------------------+
-| Operational Presence|
-| silent / automatic  |
-+----------+----------+
-           |
-           v
-+------------------+
-| Objective Truth  |
-| consequences     |
-+------------------+
-```
-
-### Decision policy
-
-Authority remains `core/hakim-skill/SKILL.md` plus the capability registry.
-
-The policy guides reuse, stdlib/native preference, smallest sufficient/coherent/safe changes, guard preservation, proportional validation, and bounded claims. It is not a deterministic reasoning workflow.
-
-### Operational presence
-
-Operational presence answers only:
-
-> How does the active host make relevant Hakim context available automatically and quietly?
-
-Required properties:
-
-- automatic after native plugin installation;
-- default `full` unless deliberately changed;
-- host-native rather than cross-host emulation;
-- bounded state outside the target repository;
-- no prompt/source/transcript persistence;
-- no network service, daemon, MCP dependency, database, or new framework merely for presence;
-- fail-soft when optional presence machinery fails.
-
-### Objective truth
-
-Objective truth checks facts such as actual Git state, tests, changed paths, package/setup artifacts, and ownership/manifest facts. It should constrain consequential claims, not creative reasoning.
-
-## Golden-thread rules
-
-### O1 — Automatic
+### Automatic
 
 Normal use must not require `Use Hakim`, a bootstrap prompt, or repository setup after plugin installation.
 
-### O2 — Quiet
+### Quiet
 
-Successful activation adds no mandatory turn or recurring banner. Visible output is justified for explicit mode/help commands, material host failure, or bounded correction.
+Successful presence adds no mandatory turn or recurring banner. Visible output is justified for explicit mode/help commands, material host failure, or bounded correction.
 
-### O3 — Host-native
+### Host-native
 
-Each host uses its strongest minimal lifecycle mechanism. Semantic parity does not require identical hooks.
+Each host should use its strongest minimal lifecycle mechanism. Semantic parity does not require identical hooks.
 
-### O4 — One authority
+### One authority
 
-Operational adapters derive context from maintained Hakim policy instead of growing independent behavioral copies.
+Operational adapters derive behavior from the maintained Hakim policy instead of growing independent prompt copies or a second reasoning engine.
 
-### O5 — Tiny state
+### Tiny state
 
-Copilot R3.2 stores at most one plugin-data file containing only:
+Copilot mode state is bounded to one host-owned plugin-data file containing only schema version and a non-default mode. Default `full` is stateless.
 
-```json
-{"schema_version":1,"mode":"off"}
-```
+Never persist raw prompts, source code, tool arguments, reasoning, credentials, or private evidence as mode state.
 
-or the equivalent non-default `lite`/`ultra` mode. Default `full` is stateless.
+### Fail soft
 
-Never persist raw prompts, source code, tool arguments, reasoning, credentials, or private evidence.
+Presence failure must not corrupt the target repository or trap the coding session. Hakim must also avoid claiming guarantees when the relevant mechanism is unavailable.
 
-### O6 — Fail soft
+### Intervene on contradiction, not possibility
 
-Presence failure must not corrupt the target repository or trap the coding session. Hakim must also avoid claiming a guarantee when the relevant mechanism is unavailable.
+Do not create broad command denylists merely because commands can mutate files. Prefer objective correction when observable state contradicts a consequential claim.
 
-### O7 — Intelligence stays free
-
-The model remains free to inspect further for a concrete unresolved question, invent a better solution, reject an unnecessary abstraction, choose validation methods, revise hypotheses, and use dependencies/setup mutation when genuinely required.
-
-### O8 — Intervene on contradiction, not possibility
-
-Prefer objective correction after consequences are observable over speculative blocking before ordinary actions. Do not create broad command denylists merely because a command can mutate files.
-
-## Copilot operating shape
-
-Current R3.2 experimental shape:
+## Accepted Copilot topology
 
 ```text
 native plugin install
        |
        v
 sessionStart
-  -> read bounded state from COPILOT_PLUGIN_DATA
+  -> read bounded mode from COPILOT_PLUGIN_DATA
   -> default full when absent
   -> inject compact maintained Hakim context unless off
        |
-       +--------------------------+
-       |                          |
-       v                          v
+       +----------------------------+
+       |                            |
+       v                            v
 normal parent coding          subagentStart
   -> model reasons freely       -> reuse session_start.mjs
                                 -> read the same bounded mode
                                 -> inject the same maintained context unless off
        |
        v
-optional exact mode control
-  -> live-proven persistent route: /hakim/hakim <mode>
+optional explicit mode control
+  -> /hakim/hakim <full|lite|ultra|off>
        |
        v
 userPromptSubmitted
-  -> inspect only exact bounded mode command
-  -> persist only {schema_version, mode}
+  -> recognize only the bounded mode command
+  -> persist only non-default mode metadata
   -> ordinary prompts unchanged
        |
        v
 userPromptTransformed
-  -> receives prompt after submitted hooks
-  -> inspect the same exact bounded command
-  -> rewrite only the current model-facing control turn
-  -> no state access and no repository work
+  -> rewrite only the current model-facing mode-control turn
+  -> no state access
+  -> no repository work
 ```
 
-The topology is split by responsibility rather than treated as an enforcement chain:
+Responsibilities are deliberately split:
 
-- `sessionStart` owns silent parent-session presence;
-- `subagentStart` owns continuity only when Copilot creates a subagent;
-- `userPromptSubmitted` owns persistent control metadata;
-- `userPromptTransformed` owns current-turn mode semantics only.
+- `sessionStart` owns silent parent-session presence.
+- `subagentStart` owns subagent continuity and reuses the same presence authority.
+- `userPromptSubmitted` owns persistent non-default mode metadata.
+- `userPromptTransformed` owns current-turn mode-control semantics only.
 
-`subagentStart` does not introduce a second behavioral authority. It executes the same `session_start.mjs` used by the parent session, so parent and subagent presence derive from the same installed Hakim skill and the same persisted mode state.
+No `preToolUse`, `postToolUse`, `agentStop`, or `subagentStop` enforcement hook is part of the accepted operational-presence topology.
 
-GitHub's hook contract specifies that `userPromptTransformed.prompt` is the prompt after `userPromptSubmitted` hooks have run. F03f relies on that documented order, not on timing assumptions.
+The transformed hook is deliberately stateless. Presence and submitted-mode persistence use host-owned `COPILOT_PLUGIN_DATA` directly; accepted Copilot CLI 1.0.75 evidence proved that path without repository-local state.
 
-The transformed hook is deliberately stateless. It does not read or write plugin data. The submitted and presence hooks use the host-owned `COPILOT_PLUGIN_DATA` directly; real Copilot CLI 1.0.75 evidence proved that location by creating `~/.copilot/plugin-data/hakim/hakim/mode.json` from the submitted-prompt hook.
+## Accepted evidence
 
-No `preToolUse`, `postToolUse`, `agentStop`, or `subagentStop` hook is authorized by the operational-presence work.
+| Slice | Verdict | Bounded evidence |
+|---|---|---|
+| F01 — silent parent presence | **PASS** | `sessionStart` loaded automatically, no repository instructions required, no target-repository mutation |
+| F02 — plugin-data mode state | **PASS** | `off` suppressed presence in a fresh session; `full` removed the override and restored stateless default behavior |
+| F03 — native mode control | **PASS END-TO-END** | `/hakim/hakim off → ultra → full` passed current-turn semantics, persistence/reset, and repository isolation |
+| F04 — subagent continuity | **PASS** | pre-fix Explore returned `MODE=NONE`; evidence-justified `subagentStart` reuse then returned `MODE=ultra` with a clean target repository |
 
-## Feasibility evidence
+Key immutable refs:
 
-### F01 — Silent auto-presence — PASS
+- F01: `evidence/r32-f01-copilot-3825b7c`
+- F02: `evidence/r32-f02-mode-5c558d4`
+- F03 runtime: `evidence/r32-f03f-split-lifecycle-6022a09`
+- F04 runtime: `evidence/r32-f04-subagent-presence-5c224c7`
 
-Evidence:
+Public CI passed on the exact accepted F03 and F04 runtime heads before those live probes were promoted.
 
-- immutable experimental ref `evidence/r32-f01-copilot-3825b7c`;
-- Public CI #580 PASS;
-- real Copilot CLI 1.0.75 loaded `sessionStart` from `hakim@hakim`;
-- no repository Copilot instructions were required;
-- session state contained the Hakim operational-presence marker;
-- activation produced no target-repository mutation;
-- an ordinary prompt that did not mention Hakim produced bounded Hakim-style decision behavior.
+Historical failed probes remain visible in GitHub issue/PR history and immutable evidence refs. They are not copied into this architecture authority line-by-line because the maintained document should describe the accepted design and the evidence boundaries, not reproduce the debugging transcript.
 
-### F02 — Plugin-data mode state — PASS
+## Why F04 added one hook
 
-Evidence:
+Subagent propagation was not added for symmetry.
 
-- immutable experimental ref `evidence/r32-f02-mode-5c558d4`;
-- Public CI #581 PASS;
-- `off` suppressed Hakim context in a fresh real Copilot session;
-- target repository remained unchanged;
-- restoring `full` removed the override file;
-- a new full session restored Hakim context;
-- plugin-data was empty again at default full.
+A real Copilot CLI 1.0.75 parent session in persisted `ultra` mode delegated a bounded diagnostic to built-in Explore without revealing the parent mode and without allowing file/plugin-state/tool inspection. Explore reported:
 
-### F03 — Native mode-control UX — PASS END-TO-END
+```text
+MODE=NONE
+```
 
-The F03 history is intentionally preserved because each live failure isolated a different host boundary.
+That live gap justified exactly one `subagentStart` hook reusing `session_start.mjs`.
 
-1. `evidence/r32-f03-modes-8d8acbb` passed repository CI #583 but failed live because `argument-hint` was encoded as a YAML sequence. Copilot rejected the `hakim` skill and `/hakim` was unknown.
-2. Quoting `argument-hint` fixed the loader. A bare `/hakim off` was recognized, but the host-expanded skill payload still reported `full`, and no persistent state appeared.
-3. `evidence/r32-f03c-mode-control-67ea974` moved current-turn control to `userPromptTransformed` and passed Public CI #587. Live Copilot then produced `Hakim mode: off` and kept the target repository clean, proving the transformed boundary for current-turn semantics. A complete `COPILOT_HOME` search found no `mode.json`, so persistence still failed.
-4. `evidence/r32-f03d-plugin-data-a0994ae` and `evidence/r32-f03e-safe-plugin-data-9f616e3` explored explicit hook-env rebinding of `${COPILOT_PLUGIN_DATA}`. F03e passed Public CI #590 but its live probe regressed to `Hakim mode set to: full` and still produced no state. Its safety guard did prevent repository-local pollution. The explicit rebinding approach is therefore not part of F03f.
-5. A control experiment returned to the loader-fixed `userPromptSubmitted` design and used the plugin-qualified `/hakim/hakim off` route. Copilot CLI 1.0.75 wrote exactly `{"schema_version":1,"mode":"off"}` to `/home/habib1001/.copilot/plugin-data/hakim/hakim/mode.json`, while `git status --porcelain=v1 -uall` remained empty. This proved submitted-hook persistence and direct `COPILOT_PLUGIN_DATA` availability. The same turn still asked the user to disambiguate the requested action, so current-turn mode semantics remained a separate failure.
-6. `evidence/r32-f03f-split-lifecycle-6022a09` composed only the two behaviors already proven live: submitted-hook persistence from step 5 and transformed-hook current-turn correction from step 3. Public CI #591 passed on runtime SHA `6022a099518dd958d1d5d4f8f75b53b3159b34c3`. A clean Copilot CLI 1.0.75 run then loaded `sessionStart + userPromptSubmitted + userPromptTransformed`, returned `Hakim mode: off`, persisted exact `off` state, and kept the frozen fixture clean.
-7. The same runtime passed the bounded lifecycle matrix: `off` persisted, `ultra` persisted, and `full` removed `mode.json` to restore stateless default full.
+The accepted rerun then reported:
 
-Current parser scope intentionally excludes colon qualification because Copilot CLI 1.0.75 rejected `/hakim:hakim`. The implementation recognizes bare `/hakim` forms for compatibility, but accepted persistent live evidence uses slash-qualified `/hakim/hakim <mode>`.
+```text
+MODE=ultra
+```
 
-Ordinary prompts are neither modified nor persisted.
+with the target repository still clean.
 
-### F04 — Subagent continuity fit — GAP CONFIRMED / REMEDIATION PENDING LIVE PROOF
+No further lifecycle hook is justified without another concrete host gap.
 
-A real Copilot CLI 1.0.75 probe established the product need before any new hook was authorized:
+## Next gate — F05 Objective Completion Truth
 
-- the parent mode was explicitly set to `ultra`;
-- the installed Hakim plugin exposed only the accepted F03 hooks (`sessionStart`, `userPromptSubmitted`, `userPromptTransformed`);
-- a built-in Explore subagent was asked, without file reads, plugin-state inspection, shell commands, or mode disclosure from the parent, to report its own `HAKIM OPERATIONAL PRESENCE` marker;
-- the Explore subagent returned exactly `MODE=NONE`.
+F05 is separate from operational presence and mode control.
 
-This proves that parent operational presence does not propagate sufficiently into that Copilot subagent boundary by default.
+The question is narrow:
 
-The bounded remediation therefore adds exactly one `subagentStart` hook and points it at the existing `session_start.mjs`. No new runtime, prompt copy, behavioral fork, state file, tool interception, or enforcement hook is introduced. Repository regressions prove that persisted `ultra` produces the same maintained context for a synthetic subagent while leaving the target repository untouched.
+> Can Hakim reconcile consequential completion claims with objective repository/setup truth at a late boundary without becoming a prose linter, command blocker, or reasoning workflow?
 
-F04 remains **HOLD_FOR_LIVE_PROOF** until exact-head Public CI succeeds and a real fresh Explore probe returns `MODE=ultra` under persisted ultra mode. If that live proof fails, stop and diagnose the host boundary rather than adding further hooks by symmetry.
+F05 must preserve these constraints:
 
-### F05 — Objective completion truth
+- no broad shell/tool denylist;
+- no command-string inference of correctness;
+- no mandatory tool-by-tool ceremony;
+- no raw prompt/source persistence;
+- no unbounded correction loop;
+- no second policy engine in hooks;
+- intervene only where objective state can contradict a consequential completion claim.
 
-Separately test whether a completion boundary can reconcile objective repository truth with consequential claims without prose linting or correction loops. This is not part of mode control.
+## Remaining R3.2 gates
+
+### F05 — Objective Completion Truth
+
+Design and test the narrow late-bound truth mechanism described above.
 
 ### F06 — Deterministic operational regressions
 
-Before release-candidate promotion prove:
+Before candidate promotion, freeze regressions for:
 
 - silent default full presence;
-- exact mode controls update only bounded plugin data;
-- ordinary prompts create no mode state and are not rewritten;
-- malformed state/input fails safely;
-- subagent continuity exists only through the evidence-justified `subagentStart` presence hook;
-- no enforcement hook appears without accepted product need.
+- exact bounded mode controls;
+- ordinary-prompt non-persistence/non-rewrite;
+- malformed-state fail-soft behavior;
+- evidence-justified subagent continuity;
+- absence of unproven enforcement hooks.
 
 ### F07 — Production-like D01 rerun
 
-Only after the operational layer is coherent:
+Only after F05/F06 are coherent:
 
-- advance prerelease identity;
-- freeze exact candidate;
-- rerun D01 without explicit Hakim activation;
-- compare correctness, working-tree purity, claim truth, behavioral value, and ceremony with beta.2-beta.4.
+1. advance the prerelease identity;
+2. freeze the exact candidate;
+3. rerun the original production-like D01 task without explicit Hakim activation;
+4. compare correctness, repository purity, claim truth, behavioral value, and ceremony with beta.2–beta.4.
 
 ## Acceptance bar
 
@@ -277,13 +202,12 @@ install Hakim
 
 ## Explicit exclusions
 
-This design does not authorize:
+R3.2 through F04 does not authorize:
 
-- beta.5 yet;
-- merging or marking Draft PRs Ready;
+- beta.5 or any other new prerelease identity;
 - external evaluator recruitment;
 - stable `1.0.0`;
-- registry or central marketplace publication;
+- npm registry or central marketplace publication;
 - a cross-host runtime/service;
-- copying Ponytail implementation;
+- copying Ponytail runtime code;
 - broad tool blocking merely because a command can mutate files.
