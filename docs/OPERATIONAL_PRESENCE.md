@@ -129,14 +129,14 @@ Prefer objective correction after consequences are observable over speculative b
 
 ## Copilot operating shape
 
-Accepted/current R3.2 shape:
+Current F03f experimental shape:
 
 ```text
 native plugin install
        |
        v
 sessionStart
-  -> read bounded plugin-data mode
+  -> read bounded state from COPILOT_PLUGIN_DATA
   -> default full when absent
   -> inject compact maintained Hakim context unless off
        |
@@ -145,25 +145,32 @@ normal coding
   -> model reasons freely
        |
        v
-optional /hakim <mode>
+optional exact mode control
+  -> live-proven persistent route: /hakim/hakim <mode>
+       |
+       v
+userPromptSubmitted
+  -> inspect only exact bounded mode command
+  -> persist only {schema_version, mode}
+  -> ordinary prompts unchanged
        |
        v
 userPromptTransformed
-  -> inspect only exact Hakim mode-control prompt
-  -> persist only bounded mode metadata
-  -> replace the host-expanded mode-control turn with one concise
-     model-facing directive for the selected mode
-  -> ordinary prompts remain unchanged
+  -> receives prompt after submitted hooks
+  -> inspect the same exact bounded command
+  -> rewrite only the current model-facing control turn
+  -> no state access and no repository work
 ```
 
-The mode-control hook is not an enforcement engine. It exists because real Copilot CLI evidence showed that a native skill invocation could load successfully while its mode argument was lost in the host-expanded model-facing payload. `userPromptTransformed` is the host boundary designed to observe the raw submitted prompt together with the transformed prompt just before model delivery.
+This three-event topology is intentionally split by responsibility rather than treated as an enforcement chain:
 
-Plugin-data authority is bound at the hook edge rather than assumed inside a child process. `hooks.json` expands the host-owned `${COPILOT_PLUGIN_DATA}` location into `HAKIM_PLUGIN_DATA`; Hakim runtime code prefers that explicit binding and keeps direct `COPILOT_PLUGIN_DATA` only as a compatibility fallback.
+- `sessionStart` owns silent presence;
+- `userPromptSubmitted` owns persistent control metadata;
+- `userPromptTransformed` owns current-turn mode semantics only.
 
-The accepted hook topology remains two hooks:
+GitHub's hook contract specifies that `userPromptTransformed.prompt` is the prompt after `userPromptSubmitted` hooks have run. F03f relies on that documented order, not on timing assumptions.
 
-- `sessionStart`
-- `userPromptTransformed`
+The transformed hook is deliberately stateless. It does not read or write plugin data. The submitted hook uses the host-owned `COPILOT_PLUGIN_DATA` directly; real Copilot CLI 1.0.75 evidence proved that location by creating `~/.copilot/plugin-data/hakim/hakim/mode.json` from the submitted-prompt hook.
 
 No `preToolUse`, `postToolUse`, or `agentStop` hook is authorized by the operational-presence work.
 
@@ -195,37 +202,16 @@ Evidence:
 
 ### F03 — Native mode-control UX — REMEDIATION IN PROGRESS
 
-First frozen F03 ref:
+The F03 history is intentionally preserved because each live failure isolated a different host boundary.
 
-- `evidence/r32-f03-modes-8d8acbb`
-- Public CI #583 PASS repository-side.
+1. `evidence/r32-f03-modes-8d8acbb` passed repository CI #583 but failed live because `argument-hint` was encoded as a YAML sequence. Copilot rejected the `hakim` skill and `/hakim` was unknown.
+2. Quoting `argument-hint` fixed the loader. A bare `/hakim off` was recognized, but the host-expanded skill payload still reported `full`, and no persistent state appeared.
+3. `evidence/r32-f03c-mode-control-67ea974` moved current-turn control to `userPromptTransformed` and passed Public CI #587. Live Copilot then produced `Hakim mode: off` and kept the target repository clean, proving the transformed boundary for current-turn semantics. A complete `COPILOT_HOME` search found no `mode.json`, so persistence still failed.
+4. `evidence/r32-f03d-plugin-data-a0994ae` and `evidence/r32-f03e-safe-plugin-data-9f616e3` explored explicit hook-env rebinding of `${COPILOT_PLUGIN_DATA}`. F03e passed Public CI #590 but its live probe regressed to `Hakim mode set to: full` and still produced no state. Its safety guard did prevent repository-local pollution. The explicit rebinding approach is therefore not part of F03f.
+5. A control experiment returned to the loader-fixed `userPromptSubmitted` design and used the plugin-qualified `/hakim/hakim off` route. Copilot CLI 1.0.75 wrote exactly `{"schema_version":1,"mode":"off"}` to `/home/habib1001/.copilot/plugin-data/hakim/hakim/mode.json`, while `git status --porcelain=v1 -uall` remained empty. This proves submitted-hook persistence and direct `COPILOT_PLUGIN_DATA` availability. The same turn still asked the user to disambiguate the requested action, so current-turn mode semantics remained a separate failure.
+6. F03f composes only the two behaviors already proven live: submitted-hook persistence from step 5 and transformed-hook current-turn correction from step 3. It is not accepted until exact-head CI and one clean end-to-end Copilot journey both pass.
 
-First live probe failed because Copilot rejected the `hakim` skill: `argument-hint` had been encoded as a YAML sequence rather than the required string. The ref remains immutable evidence of that loader failure.
-
-Loader remediation changed it to:
-
-```yaml
-argument-hint: "[lite|full|ultra|off]"
-```
-
-The next live probe proved the loader fix: `hakim` appeared as a Plugin skill and `/hakim off` was recognized. It exposed a second host-boundary defect: the model-facing expanded skill payload reported `full` and no mode state was written. The submitted mode argument therefore was not reliably carried through the pre-transform control design.
-
-F03c then moved mode control to `userPromptTransformed` and froze `evidence/r32-f03c-mode-control-67ea974` after Public CI #587 PASS. Its live probe improved current-turn behavior: Copilot loaded `sessionStart + userPromptTransformed`, `/hakim off` produced `Hakim mode: off`, and the target repository stayed clean. However a complete search under `COPILOT_HOME` found no `mode.json`, so cross-session persistence was **not** established. F03c is therefore not accepted end-to-end.
-
-The current F03d remediation keeps the same two-hook topology and same control semantics, but removes an implicit child-process environment assumption. Hook configuration now binds:
-
-```text
-HAKIM_PLUGIN_DATA=${COPILOT_PLUGIN_DATA}
-```
-
-using the host's documented hook `env` variable expansion. Runtime code consumes `HAKIM_PLUGIN_DATA` first and retains `COPILOT_PLUGIN_DATA` only as fallback. Regression coverage explicitly removes `COPILOT_PLUGIN_DATA` from the spawned hook process and proves that mode persistence still succeeds through the explicit binding.
-
-Exact supported command shapes remain bounded to:
-
-- `/hakim`
-- `/hakim lite|full|ultra|off`
-- `/hakim/hakim lite|full|ultra|off`
-- `/hakim:hakim lite|full|ultra|off`
+Current parser scope intentionally excludes colon qualification because Copilot CLI 1.0.75 rejected `/hakim:hakim`. The implementation recognizes bare `/hakim` forms for compatibility, but current persistent live evidence exists only for slash-qualified `/hakim/hakim <mode>`.
 
 Ordinary prompts are neither modified nor persisted.
 
