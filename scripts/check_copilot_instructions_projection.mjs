@@ -60,7 +60,7 @@ function main() {
   requireFile(MARKETPLACE, 'Copilot marketplace', errors);
   requireFile(MANIFEST, 'Copilot plugin manifest', errors);
   requireFile(HOOK_CONFIG, 'Copilot operational-presence hook config', errors);
-  requireFile(SESSION_HOOK, 'Copilot session-start hook', errors);
+  requireFile(SESSION_HOOK, 'Copilot session/subagent presence hook', errors);
   requireFile(MODE_STATE, 'Copilot bounded mode-state helper', errors);
   requireFile(MODE_TRACKER, 'Copilot submitted-prompt mode tracker', errors);
   requireFile(MODE_CONTROL, 'Copilot transformed mode-control hook', errors);
@@ -89,9 +89,9 @@ function main() {
   const hookConfig = fs.existsSync(HOOK_CONFIG) ? parseJson(HOOK_CONFIG, errors) : null;
   if (hookConfig?.version !== 1) errors.push('Copilot hook configuration version must be 1');
   const hookNames = Object.keys(hookConfig?.hooks || {}).sort();
-  const expectedHooks = ['sessionStart', 'userPromptSubmitted', 'userPromptTransformed'];
+  const expectedHooks = ['sessionStart', 'subagentStart', 'userPromptSubmitted', 'userPromptTransformed'];
   if (JSON.stringify(hookNames) !== JSON.stringify(expectedHooks)) {
-    errors.push(`R3.2 F03 hooks must be exactly ${expectedHooks.join(' + ')}; found: ${hookNames.join(', ') || 'none'}`);
+    errors.push(`R3.2 operational hooks must be exactly ${expectedHooks.join(' + ')}; found: ${hookNames.join(', ') || 'none'}`);
   }
 
   const sessionHooks = hookConfig?.hooks?.sessionStart;
@@ -103,6 +103,17 @@ function main() {
     if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/session_start.mjs"') errors.push('Copilot sessionStart hook must execute the plugin-local session_start.mjs');
     if (hook?.env !== undefined) errors.push('Copilot sessionStart must rely on the host-owned COPILOT_PLUGIN_DATA runtime instead of a rebinding layer');
     if (hook?.timeoutSec !== 5) errors.push('Copilot sessionStart hook timeoutSec must remain 5');
+  }
+
+  const subagentHooks = hookConfig?.hooks?.subagentStart;
+  if (!Array.isArray(subagentHooks) || subagentHooks.length !== 1) {
+    errors.push('R3.2 F04 must expose exactly one Copilot subagentStart presence hook');
+  } else {
+    const hook = subagentHooks[0];
+    if (hook?.type !== 'command') errors.push('Copilot subagentStart hook must use the command hook type');
+    if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/session_start.mjs"') errors.push('Copilot subagentStart must reuse the plugin-local session_start.mjs presence authority');
+    if (hook?.env !== undefined) errors.push('Copilot subagentStart must rely on host-owned COPILOT_PLUGIN_DATA directly');
+    if (hook?.timeoutSec !== 5) errors.push('Copilot subagentStart hook timeoutSec must remain 5');
   }
 
   const submittedHooks = hookConfig?.hooks?.userPromptSubmitted;
@@ -205,10 +216,10 @@ function main() {
     skills: SKILLS,
     agents: ALL_AGENTS,
     baseline_role: 'FALLBACK_ONLY',
-    operational_presence: 'SESSION_START_PLUS_SUBMITTED_STATE_PLUS_TRANSFORMED_CONTROL_EXPERIMENTAL',
+    operational_presence: 'SESSION_AND_SUBAGENT_PRESENCE_PLUS_SUBMITTED_STATE_PLUS_TRANSFORMED_CONTROL_EXPERIMENTAL',
     persistent_modes: ['lite', 'ultra', 'off'],
     default_mode_state: 'STATELESS_FULL',
-    plugin_data_binding: 'DIRECT_HOST_COPILOT_PLUGIN_DATA_IN_SUBMITTED_HOOK',
+    plugin_data_binding: 'DIRECT_HOST_COPILOT_PLUGIN_DATA_IN_PRESENCE_AND_SUBMITTED_HOOKS',
     enforcement_hooks: [],
     ok: errors.length === 0,
     errors,
