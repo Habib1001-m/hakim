@@ -46,8 +46,8 @@ assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
 assert.equal(pyproject['tool.hakim'].phase, undefined);
 assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
 
-// Current host-acceptance truth is structural. A new prerelease candidate starts
-// from NOT_RUN rather than inheriting accepted evidence from a prior version.
+// Frozen-candidate host acceptance is structural and candidate-bounded. Unreleased
+// main development must not silently promote or rewrite this authority.
 assert.equal(nativeAcceptance.product_version, version);
 assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
@@ -75,14 +75,19 @@ assert.equal(claudeMarketplace.plugins.find((item) => item.name === 'hakim')?.ve
 assert.equal(copilotMarketplace.plugins.find((item) => item.name === 'hakim')?.version, version);
 assert.equal(codexMarketplace.name, 'hakim');
 assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
-assert.ok(readme.includes('Hakim `' + version + '` is public beta software'));
+
+// Documentation projection checks intentionally avoid locking copy to one sentence.
+assert.match(readme, /public beta software/i);
+assert.match(readme, new RegExp(escapeRegExp(version)));
+assert.match(readme, /Latest frozen prerelease/i);
+assert.match(readme, /Unreleased development/i);
 assert.match(security, new RegExp(escapeRegExp(version)));
 assert.match(limitations, new RegExp(escapeRegExp(version)));
-assert.match(changelog, /^## Unreleased$/m);
-assert.match(changelog, /^## 1\.0\.0-beta\.1$/m);
-assert.match(changelog, /Withdrew the premature External Public-Beta Evaluator Campaign/);
-assert.match(changelog, /private-prerelease/);
-assert.match(changelog, /accepted real-host evidence for the Git-backed OpenCode/i);
+assert.match(changelog, /^## Unreleased\b/m);
+for (const prerelease of ['1.0.0-beta.4', '1.0.0-beta.3', '1.0.0-beta.2', '1.0.0-beta.1']) {
+  assert.match(changelog, new RegExp(`^## ${escapeRegExp(prerelease)}\\b`, 'm'));
+}
+assert.match(`${readme}\n${limitations}`, /External evaluator (?:campaign|recruitment).*suspended/is);
 
 for (const obsolete of [
   'scripts/check_product_state_truth.mjs',
@@ -107,8 +112,9 @@ for (const obsolete of [
 
 assert.equal(fs.existsSync(path.join(root, 'docs/EXTERNAL_BETA_EVALUATION.md')), false, 'suspended evaluator guide must not remain active');
 assert.equal(fs.existsSync(path.join(root, '.github/ISSUE_TEMPLATE/public-beta-feedback.yml')), false, 'suspended evaluator issue form must not remain active');
+assert.equal(fs.existsSync(path.join(root, 'docs/F03_PASS_EVIDENCE.md')), false, 'phase-specific F03 evidence must not remain in the primary docs surface');
+assert.equal(fs.existsSync(path.join(root, 'docs/F03F_LIVE_EVIDENCE.md')), false, 'phase-specific F03f evidence must not remain in the primary docs surface');
 
-assert.match(readme, /^## What changes with Hakim$/m);
 assert.match(readme, /need\? → reuse existing code\?/);
 assert.match(readme, /^## Quick start$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
@@ -124,18 +130,28 @@ assert.match(liveAcceptance, /github:Habib1001-m\/hakim#\$SOURCE_SHA/);
 assert.match(liveAcceptance, /npm\/cli#6723/);
 assert.ok(!liveAcceptance.includes('npx --yes --package=npm@11 npm exec --yes'), 'acceptance docs must not use the nested npm exec wrapper');
 assert.match(liveAcceptance, /does not upgrade or replace the system npm/);
-assert.match(readme, /^## Product readiness$/m);
-assert.match(readme, /External evaluator recruitment remains suspended/i);
+assert.match(readme, /^## Project status$/m);
+assert.match(readme, /F05 — Objective Completion Truth/);
 
 const hostSurfaces = new Map([
+  ['codex', 'Codex'],
+  ['claude-code', 'Claude Code'],
+  ['github-copilot', 'GitHub Copilot CLI'],
+  ['opencode', 'OpenCode'],
+]);
+for (const host of expectedHosts) {
+  const displayName = hostSurfaces.get(host);
+  assert.match(readme, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from README Quick start`);
+}
+
+const installHostSurfaces = new Map([
   ['codex', 'Codex'],
   ['claude-code', 'Claude Code'],
   ['github-copilot', 'GitHub Copilot'],
   ['opencode', 'OpenCode'],
 ]);
 for (const host of expectedHosts) {
-  const displayName = hostSurfaces.get(host);
-  assert.match(readme, new RegExp(`^### ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from README Quick start`);
+  const displayName = installHostSurfaces.get(host);
   assert.match(install, new RegExp(`^## ${escapeRegExp(displayName)}$`, 'm'), `${displayName} missing from INSTALL.md`);
 }
 
@@ -147,8 +163,7 @@ assert.match(combinedFirstRun, /claude plugin install hakim@hakim/);
 assert.match(combinedFirstRun, /\/hakim:full/);
 assert.match(combinedFirstRun, /copilot plugin marketplace add Habib1001-m\/hakim/);
 assert.match(combinedFirstRun, /copilot plugin install hakim@hakim/);
-assert.match(combinedFirstRun, /\/skills list/);
-assert.match(combinedFirstRun, /\/agent/);
+assert.match(combinedFirstRun, /\/hakim\/hakim (?:full|lite|ultra|off)/);
 assert.ok(combinedFirstRun.includes(opencodeBootstrap));
 assert.ok(!combinedFirstRun.includes('--package=npm@11'), 'normal OpenCode first-run must not require the npm 11 acceptance wrapper');
 assert.match(combinedFirstRun, /Git-backed bootstrap/);
@@ -177,6 +192,7 @@ const productDocs = [
   'docs/ARCHITECTURE.md',
   'docs/LIVE_HOST_ACCEPTANCE.md',
   'docs/PRODUCT_READINESS.md',
+  'docs/OPERATIONAL_PRESENCE.md',
   'core/hakim-skill/AGENTS.md',
   'core/hakim-skill/INSTALL.md',
   'core/hakim-skill/MIGRATION.md',
@@ -224,4 +240,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, current acceptance ${nativeAcceptance.overall_status}, ${documentedScripts.size} documented npm scripts, version ${version}`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, frozen acceptance ${nativeAcceptance.overall_status}, ${documentedScripts.size} documented npm scripts, version ${version}`);
