@@ -236,7 +236,7 @@ This proves that parent operational presence does not propagate sufficiently int
 
 The bounded remediation therefore adds exactly one `subagentStart` hook and points it at the existing `session_start.mjs`. No new runtime, prompt copy, behavioral fork, state file, tool interception, or enforcement hook is introduced. Repository regressions prove that persisted `ultra` produces the same maintained context for a synthetic subagent while leaving the target repository untouched.
 
-F04 is not PASS until exact-head Public CI succeeds and a real fresh Explore probe returns `MODE=ultra` under persisted ultra mode. If that live proof fails, stop and diagnose the host boundary rather than adding further hooks by symmetry.
+F04 remains **HOLD_FOR_LIVE_PROOF** until exact-head Public CI succeeds and a real fresh Explore probe returns `MODE=ultra` under persisted ultra mode. If that live proof fails, stop and diagnose the host boundary rather than adding further hooks by symmetry.
 
 ### F05 — Objective completion truth
 
