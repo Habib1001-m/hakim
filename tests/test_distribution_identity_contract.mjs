@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
@@ -46,7 +47,10 @@ const installDocs = [
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
 const expectedHosts = ['claude-code', 'codex', 'github-copilot', 'opencode'];
+const acceptedHost = 'codex';
+const pendingHosts = expectedHosts.filter((host) => host !== acceptedHost);
 const exactSha = /^[0-9a-f]{40}$/;
+const exactSha256 = /^[0-9a-f]{64}$/;
 const oldUnpinnedRoutes = [
   'codex plugin marketplace add Habib1001-m/hakim',
   'claude plugin marketplace add Habib1001-m/hakim',
@@ -107,15 +111,22 @@ test('moving-main metadata and acceptance report only the development identity',
   assert.equal(copilotMarketplace.plugins.find((item) => item.name === 'hakim')?.version, current.version);
 });
 
-test('frozen beta4 retains its own machine-readable acceptance projection', () => {
+test('frozen beta4 retains its own partially accepted machine-readable projection', () => {
   assert.equal(frozenAcceptance.schema_version, 1);
   assert.equal(frozenAcceptance.product_version, frozen.version);
   assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
   assert.match(frozenAcceptance.source_policy, new RegExp(escapeRegExp(frozen.source_sha)));
-  assert.match(frozenAcceptance.source_policy, /fresh real-host evidence/i);
+  assert.match(frozenAcceptance.source_policy, /Codex exact-SHA transport/i);
   assert.deepEqual(Object.keys(frozenAcceptance.hosts).sort(), expectedHosts);
 
-  for (const entry of Object.values(frozenAcceptance.hosts)) {
+  const codex = frozenAcceptance.hosts.codex;
+  assert.equal(codex.status, 'PASS');
+  assert.equal(codex.host_version, 'codex-cli 0.145.0');
+  assert.equal(codex.verified_at, '2026-07-30T21:16:31Z');
+  assert.equal(codex.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471');
+
+  for (const host of pendingHosts) {
+    const entry = frozenAcceptance.hosts[host];
     assert.equal(entry.status, 'NOT_RUN');
     assert.equal(entry.host_version, null);
     assert.equal(entry.verified_at, null);
@@ -140,15 +151,16 @@ test('normal frozen-candidate install declarations name one exact source SHA', (
   }
 });
 
-test('transport reconciliation fails closed until every host records resolved source proof', () => {
+test('transport reconciliation accepts only the approved Codex packet and fails closed for the remaining hosts', () => {
   const reconciliation = frozen.transport_reconciliation;
   const contracts = frozen.host_transport_contracts;
 
   assert.equal(reconciliation.status, 'HOLD_FOR_HOST_NATIVE_PROOF');
   assert.equal(reconciliation.authority, 'docs/P0_HOST_TRANSPORT_RECONCILIATION.md');
-  assert.equal(reconciliation.verified_hosts, 0);
+  assert.equal(reconciliation.verified_hosts, 1);
   assert.equal(reconciliation.required_hosts, expectedHosts.length);
   assert.match(transportAuthority, /^\*\*Status:\*\* `HOLD_FOR_HOST_NATIVE_PROOF`/m);
+  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= PARTIAL_1_OF_4/);
   assert.match(transportAuthority, /command.*transport declaration/i);
   assert.match(transportAuthority, /RESOLVED_SOURCE_SHA/);
 
@@ -158,13 +170,46 @@ test('transport reconciliation fails closed until every host records resolved so
     assert.equal(contract.command_key, host);
     assert.equal(contract.expected_source_sha, frozen.source_sha);
     assert.match(contract.expected_source_sha, exactSha);
-    assert.equal(contract.live_resolution_status, 'NOT_RUN');
-    assert.equal(contract.evidence_ref, null);
-    assert.equal(contract.candidate_evidence_eligible, false);
     assert.ok(frozen.normal_install_commands[contract.command_key]);
   }
 
-  assert.equal(contracts.codex.static_contract_status, 'EXACT_SHA_DECLARED');
+  const codex = contracts.codex;
+  assert.equal(codex.static_contract_status, 'EXACT_SHA_DECLARED');
+  assert.equal(codex.live_resolution_status, 'PASS');
+  assert.equal(codex.resolved_source_sha, frozen.source_sha);
+  assert.equal(codex.installed_product_version, frozen.version);
+  assert.equal(codex.host_version, 'codex-cli 0.145.0');
+  assert.equal(codex.verified_at, '2026-07-30T21:16:31Z');
+  assert.equal(codex.evidence_ref, frozenAcceptance.hosts.codex.evidence_ref);
+  assert.equal(codex.candidate_evidence_eligible, true);
+  assert.equal(codex.packet_path, 'conformance/history/p0-host-transport/codex-1.0.0-beta.4.json');
+  assert.match(codex.packet_sha256, exactSha256);
+
+  const packetText = read(codex.packet_path);
+  const packet = JSON.parse(packetText);
+  const packetSha256 = crypto.createHash('sha256').update(packetText).digest('hex');
+  assert.equal(packetSha256, codex.packet_sha256);
+  assert.equal(packet.packet_type, 'P0_HOST_TRANSPORT_EVIDENCE');
+  assert.equal(packet.mode, 'CANDIDATE_EVIDENCE');
+  assert.equal(packet.packet_status, 'PASS');
+  assert.equal(packet.host, 'codex');
+  assert.equal(packet.expected.source_sha, frozen.source_sha);
+  assert.equal(packet.observed.resolved_source_sha, frozen.source_sha);
+  assert.equal(packet.observed.installed_product_version, frozen.version);
+  assert.equal(packet.observed.installation_status, 'PASS');
+  assert.equal(packet.observed.activation_status, 'PASS');
+  assert.equal(packet.observed.invocation_status, 'PASS');
+  assert.equal(packet.evidence_ref, codex.evidence_ref);
+  assert.equal(packet.safety.acceptance_projection_mutated, false);
+  assert.equal(packet.safety.output_is_create_only, true);
+
+  for (const host of pendingHosts) {
+    const contract = contracts[host];
+    assert.equal(contract.live_resolution_status, 'NOT_RUN');
+    assert.equal(contract.evidence_ref, null);
+    assert.equal(contract.candidate_evidence_eligible, false);
+  }
+
   assert.equal(contracts.opencode.static_contract_status, 'EXACT_SHA_DECLARED');
   assert.equal(contracts['claude-code'].static_contract_status, 'REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN');
   assert.equal(contracts['github-copilot'].static_contract_status, 'REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN');
