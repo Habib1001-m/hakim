@@ -9,6 +9,7 @@ import {
   parseArgs,
   validateOutputPath,
 } from '../scripts/hakim_live_host_acceptance.mjs';
+import { OPENCODE_BOOTSTRAP } from '../scripts/hakim_install_plan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -73,7 +74,12 @@ try {
     opencodeDependencies,
   );
   assert.equal(opencodeInspect.install_plan.distribution_mode, 'GIT_BACKED_PROJECT_LOCAL_INSTALLER');
-  assert.ok(opencodeInspect.install_commands.some((command) => /npx --yes --package=github:Habib1001-m\/hakim hakim-opencode install/.test(command)));
+  assert.ok(
+    opencodeInspect.install_commands.some((command) => command === `${OPENCODE_BOOTSTRAP} --target <repository>`),
+  );
+  assert.ok(
+    opencodeInspect.install_commands.some((command) => command === `${OPENCODE_BOOTSTRAP} --target <repository> --dry-run`),
+  );
   assert.ok(opencodeInspect.install_commands.some((command) => /exact Git commit/.test(command)));
   assert.match(opencodeInspect.journey[0].description, /Git-backed Hakim bootstrap/);
 } finally {
@@ -144,4 +150,4 @@ try {
   fs.rmSync(outputRoot, { recursive: true, force: true });
 }
 
-console.log('live host acceptance harness stays read-only, tracks the Git-backed OpenCode journey, and produces create-only reviewable candidate evidence');
+console.log('live host acceptance harness stays read-only, follows the exact Git-backed OpenCode authority, and produces create-only reviewable candidate evidence');
