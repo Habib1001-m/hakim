@@ -20,6 +20,9 @@ const FROZEN_BETA2_VERSION = '1.0.0-beta.2';
 const FROZEN_BETA2_SHA = '126a228a4ff9c1afafb6075f81b4e0bbfdf702bf';
 const FROZEN_BETA3_VERSION = '1.0.0-beta.3';
 const FROZEN_BETA3_SHA = 'a697b5e24d05e38b925d849fee4a02daa623c24b';
+const FROZEN_BETA4_VERSION = '1.0.0-beta.4';
+const FROZEN_BETA4_SHA = '5d00039479f2f11b7fe30ccf2385e70ce24553c3';
+const FROZEN_BETA4_SKILL_SHA256 = '9eabe421c203d0e4cb6730525b7bc706998719ce7f675c6a1bee4a9c682611d3';
 
 function passingDoctorResults() {
   return CHECK_DEFINITIONS.map((definition) => ({
@@ -84,21 +87,29 @@ test('doctor derives native-host recovery guidance from the host that actually f
   assert.doesNotMatch(report.next_safe_action, /current OpenCode managed lifecycle/i);
 });
 
-test('current development accepts only exact frozen beta.2 and beta.3 persisted OpenCode manifests as prior managed authority', () => {
+test('current development accepts only exact frozen beta.2, beta.3, and beta.4 persisted OpenCode manifests', () => {
   assert.equal(CURRENT_VERSION, '1.0.0-beta.4.post1');
-  assert.equal(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.length, 2);
+  assert.equal(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.length, 3);
   const byVersion = new Map(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.map((manifest) => [manifest.product_version, manifest]));
   const beta2 = byVersion.get(FROZEN_BETA2_VERSION);
   const beta3 = byVersion.get(FROZEN_BETA3_VERSION);
+  const beta4 = byVersion.get(FROZEN_BETA4_VERSION);
   assert.ok(beta2);
   assert.ok(beta3);
+  assert.ok(beta4);
   assert.equal(beta2.source_commit, FROZEN_BETA2_SHA);
   assert.equal(beta3.source_commit, FROZEN_BETA3_SHA);
-  assert.equal(beta2.files.length, 9);
-  assert.equal(beta3.files.length, 9);
+  assert.equal(beta4.source_commit, FROZEN_BETA4_SHA);
+
+  for (const prior of [beta2, beta3, beta4]) assert.equal(prior.files.length, 9);
+
+  const beta4Skill = beta4.files.find((entry) => entry.target_relative.endsWith('/hakim-skill/SKILL.md'));
+  assert.ok(beta4Skill);
+  assert.equal(beta4Skill.sha256, FROZEN_BETA4_SKILL_SHA256);
+  assert.equal(beta4Skill.size, 12490);
 
   const bundle = buildOpenCodeBundle(ROOT);
-  for (const prior of [beta2, beta3]) {
+  for (const prior of [beta2, beta3, beta4]) {
     const exactManaged = {
       manifest_source: 'INSTALLED_MANIFEST',
       manifest: JSON.parse(JSON.stringify(prior)),
@@ -106,7 +117,7 @@ test('current development accepts only exact frozen beta.2 and beta.3 persisted 
     assert.deepEqual(validateManagedInstallationAuthority(exactManaged, bundle), { ok: true });
   }
 
-  const forged = JSON.parse(JSON.stringify(beta3));
+  const forged = JSON.parse(JSON.stringify(beta4));
   forged.files[0].sha256 = '0'.repeat(64);
   const refused = validateManagedInstallationAuthority({ manifest_source: 'INSTALLED_MANIFEST', manifest: forged }, bundle);
   assert.equal(refused.ok, false);
