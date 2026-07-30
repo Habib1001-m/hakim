@@ -11,12 +11,17 @@ import {
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const version = fs.readFileSync(path.join(root, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
 const projection = JSON.parse(fs.readFileSync(path.join(root, 'conformance', 'native-host-acceptance.json'), 'utf8'));
+const identity = JSON.parse(fs.readFileSync(path.join(root, 'conformance', 'distribution-identity.json'), 'utf8'));
 const beta1History = JSON.parse(fs.readFileSync(path.join(root, 'conformance', 'history', 'native-host-acceptance-1.0.0-beta.1.json'), 'utf8'));
 
 const current = validateProjection(projection, version);
 assert.equal(current.ok, true, current.errors.join('\n'));
 assert.equal(current.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.deepEqual(Object.keys(projection.hosts).sort(), [...EXPECTED_HOSTS].sort());
+assert.equal(version, identity.current_development.version);
+assert.equal(identity.current_development.channel, 'unreleased-development');
+assert.equal(identity.current_development.candidate, false);
+assert.equal(identity.current_development.evidence_eligible, false);
 
 for (const host of EXPECTED_HOSTS) {
   assert.equal(projection.hosts[host].status, 'NOT_RUN');
@@ -24,10 +29,13 @@ for (const host of EXPECTED_HOSTS) {
   assert.equal(projection.hosts[host].verified_at, null);
   assert.equal(projection.hosts[host].evidence_ref, null);
 }
+assert.match(projection.source_policy, /unreleased development/i);
+assert.match(projection.source_policy, /not a frozen candidate/i);
+assert.match(projection.source_policy, new RegExp(identity.latest_frozen_candidate.source_sha));
 assert.match(projection.source_policy, /beta\.1/i);
 assert.match(projection.source_policy, /beta\.2/i);
+assert.match(projection.source_policy, /beta\.3/i);
 assert.match(projection.source_policy, /historical/i);
-assert.match(projection.source_policy, /fresh real-host evidence/i);
 
 const historical = validateProjection(beta1History, '1.0.0-beta.1');
 assert.equal(historical.ok, true, historical.errors.join('\n'));
@@ -67,4 +75,4 @@ const legacyResult = validateProjection(legacy, version);
 assert.equal(legacyResult.ok, false);
 assert.ok(legacyResult.errors.some((error) => /legacy acceptance marker/.test(error)));
 
-console.log('native host acceptance projection preserves current-candidate truth while retaining prior accepted evidence historically');
+console.log('native host acceptance projection preserves moving-development truth while retaining prior accepted evidence historically');
