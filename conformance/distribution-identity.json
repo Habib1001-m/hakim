@@ -2,7 +2,7 @@
   "schema_version": 1,
   "current_development": {
     "channel": "unreleased-development",
-    "version": "1.0.0-beta.4.dev1",
+    "version": "1.0.0-beta.4.post1",
     "source_ref": "main",
     "frozen": false,
     "candidate": false,
@@ -16,9 +16,9 @@
     "frozen": true,
     "candidate": true,
     "normal_install_commands": {
-      "codex": "codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref evidence/beta4-r31-5d00039",
-      "claude-code": "claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#evidence/beta4-r31-5d00039",
-      "github-copilot": "copilot plugin marketplace add Habib1001-m/hakim#evidence/beta4-r31-5d00039",
+      "codex": "codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+      "claude-code": "claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+      "github-copilot": "copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
       "opencode": "npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install"
     }
   },
