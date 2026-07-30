@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "current_development": {
     "channel": "unreleased-development",
     "version": "1.0.0-beta.4.post1",
@@ -22,6 +22,50 @@
       "claude-code": "claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
       "github-copilot": "copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
       "opencode": "npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install"
+    },
+    "host_transport_contracts": {
+      "codex": {
+        "command_key": "codex",
+        "pin_layer": "marketplace-checkout-ref",
+        "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "static_contract_status": "EXACT_SHA_DECLARED",
+        "live_resolution_status": "NOT_RUN",
+        "evidence_ref": null,
+        "candidate_evidence_eligible": false
+      },
+      "claude-code": {
+        "command_key": "claude-code",
+        "pin_layer": "marketplace-checkout-ref",
+        "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "static_contract_status": "REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN",
+        "live_resolution_status": "NOT_RUN",
+        "evidence_ref": null,
+        "candidate_evidence_eligible": false
+      },
+      "github-copilot": {
+        "command_key": "github-copilot",
+        "pin_layer": "marketplace-checkout-ref",
+        "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "static_contract_status": "REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN",
+        "live_resolution_status": "NOT_RUN",
+        "evidence_ref": null,
+        "candidate_evidence_eligible": false
+      },
+      "opencode": {
+        "command_key": "opencode",
+        "pin_layer": "git-package-spec",
+        "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "static_contract_status": "EXACT_SHA_DECLARED",
+        "live_resolution_status": "NOT_RUN",
+        "evidence_ref": null,
+        "candidate_evidence_eligible": false
+      }
+    },
+    "transport_reconciliation": {
+      "status": "HOLD_FOR_HOST_NATIVE_PROOF",
+      "authority": "docs/P0_HOST_TRANSPORT_RECONCILIATION.md",
+      "verified_hosts": 0,
+      "required_hosts": 4
     }
   },
   "next_candidate": {
@@ -31,6 +75,8 @@
   "policy": {
     "normal_install_must_resolve_immutable_candidate": true,
     "moving_main_must_be_explicitly_development": true,
-    "evidence_requires_exact_source_sha": true
+    "evidence_requires_exact_source_sha": true,
+    "command_text_is_not_runtime_proof": true,
+    "host_verification_requires_resolved_source_sha": true
   }
 }
