@@ -20,27 +20,30 @@ Hakim is public beta software.
 
 | Surface | Current truth |
 |---|---|
-| Latest frozen prerelease | `1.0.0-beta.4` at `evidence/beta4-r31-5d00039` |
-| Unreleased development | R3.2 operational-presence work accepted through F04 |
-| Next development gate | F05 — Objective Completion Truth |
+| Latest frozen prerelease | `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`) |
+| Moving `main` | `1.0.0-beta.4.post1`, explicit unreleased development; not a frozen candidate and not eligible for release/promotion evidence |
+| Immediate repository gate | P0 — Truthful Immutable Distribution Identity |
+| Next feature gate after P0 | F05 — Objective Completion Truth |
 | Stable `1.0.0` | Not authorized |
 | External evaluator campaign | Suspended pending a separate product decision |
 | npm registry / central marketplace publication | Not claimed |
 
-`main` development and a frozen prerelease identity are intentionally different things. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
+`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, and normal install sources.
 
-R3.2 has live Copilot CLI evidence for silent parent-session presence, bounded persisted modes, current-turn mode control, and subagent continuity. That development evidence is not silently relabeled as full release-candidate host acceptance.
+Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
+
+R3.2 has live Copilot CLI evidence for silent parent-session presence, bounded persisted modes, current-turn mode control, and subagent continuity. That development evidence is not silently relabeled as beta.4 release-candidate host acceptance.
 
 See [Product Readiness](docs/PRODUCT_READINESS.md), [Operational Presence](docs/OPERATIONAL_PRESENCE.md), and [Supported Hosts](SUPPORTED_HOSTS.md) for the maintained truth.
 
-## Quick start
+## Quick start — frozen beta.4
 
-Choose the coding host you already use. None of the maintained first-run paths requires manually cloning Hakim.
+The normal first-run commands below all resolve the same exact beta.4 source commit. They do not follow moving `main`.
 
 ### Codex
 
 ```bash
-codex plugin marketplace add Habib1001-m/hakim
+codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
 ```
 
 Open `/plugins`, select **Hakim**, install `hakim`, review/trust the SessionStart hook in `/hooks`, then start a new thread. The installed identity is `hakim@hakim`.
@@ -50,7 +53,7 @@ Use the installed skills, for example `$hakim:hakim`, `$hakim:hakim-review`, and
 ### Claude Code
 
 ```bash
-claude plugin marketplace add Habib1001-m/hakim
+claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
 claude plugin install hakim@hakim
 ```
 
@@ -61,13 +64,11 @@ Start Claude Code normally. Maintained commands include `/hakim:help`, `/hakim:f
 ### GitHub Copilot CLI
 
 ```bash
-copilot plugin marketplace add Habib1001-m/hakim
+copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
 copilot plugin install hakim@hakim
 ```
 
-Start Copilot normally. On the accepted R3.2 development path, Hakim is present automatically through host-native lifecycle hooks; no repository instruction file is required for normal activation.
-
-Explicit mode control uses the plugin-qualified skill route:
+Start Copilot normally. Explicit mode control uses the plugin-qualified skill route:
 
 ```text
 /hakim/hakim full
@@ -76,7 +77,7 @@ Explicit mode control uses the plugin-qualified skill route:
 /hakim/hakim off
 ```
 
-Non-default modes use bounded plugin-owned state; `full` is the stateless default. The accepted R3.2 subagent path reuses the same maintained presence authority rather than introducing a second policy engine.
+Default `full` is stateless. Non-default modes use bounded plugin-owned state. The accepted R3.2 development path adds silent parent-session presence and subagent continuity, but that behavior is not claimed for frozen beta.4 without exact-candidate live-host evidence.
 
 `.github/copilot-instructions.md` remains an optional repository baseline, not the primary Hakim product surface.
 
@@ -85,14 +86,29 @@ Non-default modes use bounded plugin-owned state; `full` is the stateless defaul
 From the target repository:
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install
 ```
 
-The Git-backed bootstrap invokes Hakim's guarded project-local managed lifecycle from the public repository. It persists an exact install manifest, supports bounded create/adopt/transactional-upgrade paths, can remove supported older verified installations with a newer CLI, refuses conflicting or unsafe state, and does not edit `opencode.json` or install global Hakim state.
+The exact-SHA Git bootstrap invokes Hakim's guarded project-local managed lifecycle. It persists an exact install manifest, supports bounded create/adopt/transactional-upgrade paths, can remove supported older verified installations with a newer CLI, refuses conflicting or unsafe state, and does not edit `opencode.json` or install global Hakim state.
 
 Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
 
 See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries.
+
+## Unreleased development
+
+Moving `main` is for source development and bounded internal validation. It reports `1.0.0-beta.4.post1`, is not a frozen candidate, and must not be used as release, promotion, benchmark, external-evaluator, or candidate-specific live-host evidence.
+
+To work on that moving source explicitly:
+
+```bash
+git clone https://github.com/Habib1001-m/hakim.git
+cd hakim
+git checkout main
+npm test
+```
+
+Any observation against `main` must record the exact 40-character commit it used. No beta.5 candidate exists until a later deliberate identity advance and freeze.
 
 ## Core capabilities
 
@@ -106,7 +122,7 @@ See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific life
 
 ## Requirements
 
-For product use, install the supported host you intend to use. The OpenCode Git-backed bootstrap additionally requires Node.js/npm; the shipped package declares Node.js `>=22`.
+For product use, install the supported host you intend to use. The OpenCode exact-SHA bootstrap additionally requires Node.js/npm; the shipped package declares Node.js `>=22`.
 
 Repository development and local validation require:
 
@@ -124,6 +140,7 @@ For the maintained Codex plugin-hook path, use Codex `0.131.0` or newer.
 npm test
 npm run doctor
 npm run plan:install -- --host all
+npm run check:distribution-identity
 ```
 
 Historical controlled-experiment fixtures are intentionally separate from the permanent product gate:
@@ -157,6 +174,8 @@ See:
 A passing deterministic check means only that the enabled rule set found no matching violation. It is not a substitute for correctness, security, architecture, semantic review, live-host validation, or product usefulness.
 
 A changed prerelease identity, first-run transport, lifecycle, or runtime behavior requires its own evidence before that exact path is promoted. Prior evidence remains historical rather than being silently inherited.
+
+Moving-development observations are never candidate evidence merely because their embedded version is ordered after the latest frozen prerelease. They require an exact commit and remain development-only until a candidate is deliberately cut.
 
 Hakim does not claim universal model-quality improvement, performance gain, token savings, return on investment, or complete protection from unrelated local processes.
 
