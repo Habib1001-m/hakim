@@ -26,6 +26,7 @@ const install = read('core/hakim-skill/INSTALL.md');
 const versioning = read('VERSIONING.md');
 const readiness = read('docs/PRODUCT_READINESS.md');
 const operationalPresence = read('docs/OPERATIONAL_PRESENCE.md');
+const transportAuthority = read(frozen.transport_reconciliation.authority);
 
 const versionedJsonPaths = [
   'plugins/codex/.codex-plugin/plugin.json',
@@ -44,6 +45,7 @@ const installDocs = [
   'plugins/claude-code/skills/hakim-help/SKILL.md',
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
+const expectedHosts = ['claude-code', 'codex', 'github-copilot', 'opencode'];
 const exactSha = /^[0-9a-f]{40}$/;
 const oldUnpinnedRoutes = [
   'codex plugin marketplace add Habib1001-m/hakim',
@@ -57,7 +59,7 @@ function escapeRegExp(value) {
 }
 
 test('distribution identity authority separates moving development from the frozen candidate', () => {
-  assert.equal(identity.schema_version, 1);
+  assert.equal(identity.schema_version, 2);
 
   assert.equal(current.channel, 'unreleased-development');
   assert.equal(current.version, '1.0.0-beta.4.post1');
@@ -111,7 +113,7 @@ test('frozen beta4 retains its own machine-readable acceptance projection', () =
   assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
   assert.match(frozenAcceptance.source_policy, new RegExp(escapeRegExp(frozen.source_sha)));
   assert.match(frozenAcceptance.source_policy, /fresh real-host evidence/i);
-  assert.deepEqual(Object.keys(frozenAcceptance.hosts).sort(), ['claude-code', 'codex', 'github-copilot', 'opencode']);
+  assert.deepEqual(Object.keys(frozenAcceptance.hosts).sort(), expectedHosts);
 
   for (const entry of Object.values(frozenAcceptance.hosts)) {
     assert.equal(entry.status, 'NOT_RUN');
@@ -121,15 +123,15 @@ test('frozen beta4 retains its own machine-readable acceptance projection', () =
   }
 });
 
-test('normal frozen-candidate install routes resolve one exact source SHA', () => {
+test('normal frozen-candidate install declarations name one exact source SHA', () => {
   const commands = frozen.normal_install_commands;
-  assert.deepEqual(Object.keys(commands).sort(), ['claude-code', 'codex', 'github-copilot', 'opencode']);
+  assert.deepEqual(Object.keys(commands).sort(), expectedHosts);
 
   for (const [host, command] of Object.entries(commands)) {
-    assert.match(command, new RegExp(escapeRegExp(frozen.source_sha)), `${host} route is not pinned to the frozen SHA`);
-    assert.doesNotMatch(command, /(?:#|--ref\s+)(?:main|master)(?:\s|$)/i, `${host} normal route resolves a moving branch`);
-    assert.ok(readme.includes(command), `${host} immutable route missing from README.md`);
-    assert.ok(install.includes(command), `${host} immutable route missing from INSTALL.md`);
+    assert.match(command, new RegExp(escapeRegExp(frozen.source_sha)), `${host} declaration is not pinned to the frozen SHA`);
+    assert.doesNotMatch(command, /(?:#|--ref\s+)(?:main|master)(?:\s|$)/i, `${host} normal declaration names a moving branch`);
+    assert.ok(readme.includes(command), `${host} frozen declaration missing from README.md`);
+    assert.ok(install.includes(command), `${host} frozen declaration missing from INSTALL.md`);
   }
 
   const normalDocs = installDocs.map((relative) => read(relative)).join('\n');
@@ -138,12 +140,45 @@ test('normal frozen-candidate install routes resolve one exact source SHA', () =
   }
 });
 
+test('transport reconciliation fails closed until every host records resolved source proof', () => {
+  const reconciliation = frozen.transport_reconciliation;
+  const contracts = frozen.host_transport_contracts;
+
+  assert.equal(reconciliation.status, 'HOLD_FOR_HOST_NATIVE_PROOF');
+  assert.equal(reconciliation.authority, 'docs/P0_HOST_TRANSPORT_RECONCILIATION.md');
+  assert.equal(reconciliation.verified_hosts, 0);
+  assert.equal(reconciliation.required_hosts, expectedHosts.length);
+  assert.match(transportAuthority, /^\*\*Status:\*\* `HOLD_FOR_HOST_NATIVE_PROOF`/m);
+  assert.match(transportAuthority, /command.*transport declaration/i);
+  assert.match(transportAuthority, /RESOLVED_SOURCE_SHA/);
+
+  assert.deepEqual(Object.keys(contracts).sort(), expectedHosts);
+  for (const host of expectedHosts) {
+    const contract = contracts[host];
+    assert.equal(contract.command_key, host);
+    assert.equal(contract.expected_source_sha, frozen.source_sha);
+    assert.match(contract.expected_source_sha, exactSha);
+    assert.equal(contract.live_resolution_status, 'NOT_RUN');
+    assert.equal(contract.evidence_ref, null);
+    assert.equal(contract.candidate_evidence_eligible, false);
+    assert.ok(frozen.normal_install_commands[contract.command_key]);
+  }
+
+  assert.equal(contracts.codex.static_contract_status, 'EXACT_SHA_DECLARED');
+  assert.equal(contracts.opencode.static_contract_status, 'EXACT_SHA_DECLARED');
+  assert.equal(contracts['claude-code'].static_contract_status, 'REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN');
+  assert.equal(contracts['github-copilot'].static_contract_status, 'REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN');
+  assert.equal(identity.policy.command_text_is_not_runtime_proof, true);
+  assert.equal(identity.policy.host_verification_requires_resolved_source_sha, true);
+});
+
 test('active authorities keep P0 before F05 and mark main as non-candidate development', () => {
-  const activeTruth = `${readme}\n${install}\n${versioning}\n${readiness}\n${operationalPresence}`;
+  const activeTruth = `${readme}\n${install}\n${versioning}\n${readiness}\n${operationalPresence}\n${transportAuthority}`;
   assert.match(activeTruth, /unreleased development/i);
   assert.match(activeTruth, /moving `?main`?/i);
   assert.match(activeTruth, /not (?:a )?(?:frozen )?candidate/i);
   assert.match(activeTruth, /P0[^\n]*Truthful Immutable Distribution Identity/i);
+  assert.match(activeTruth, /HOLD_FOR_HOST_NATIVE_PROOF/);
 
   for (const text of [readiness, operationalPresence]) {
     const p0Index = text.indexOf('P0');
