@@ -20,9 +20,12 @@ import {
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceCopilot = path.join(repoRoot, '.github', 'copilot-instructions.md');
 const expectedVersion = fs.readFileSync(path.join(repoRoot, 'core/hakim-skill/VERSION'), 'utf8').trim();
+const identity = JSON.parse(fs.readFileSync(path.join(repoRoot, 'conformance', 'distribution-identity.json'), 'utf8'));
+const frozen = identity.latest_frozen_candidate;
 
 assert.deepEqual(SUPPORTED_HOSTS, ['codex', 'claude-code', 'github-copilot', 'opencode']);
-assert.equal(OPENCODE_BOOTSTRAP, 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install');
+assert.equal(OPENCODE_BOOTSTRAP, frozen.normal_install_commands.opencode);
+assert.equal(OPENCODE_BOOTSTRAP, 'npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install');
 assert.deepEqual(parseArgs([]), { host: 'all', target: null, json: false, help: false });
 assert.deepEqual(parseArgs(['--host', 'codex', '--json']), { host: 'codex', target: null, json: true, help: false });
 assert.deepEqual(parseArgs(['--host=github-copilot', '--target=/tmp/example']), { host: 'github-copilot', target: '/tmp/example', json: false, help: false });
@@ -38,19 +41,30 @@ assert.equal(codex.distribution_mode, 'NATIVE_GIT_MARKETPLACE');
 assert.equal(codex.target_state, 'READY_FOR_NATIVE_INSTALL');
 assert.equal(codex.persistent_installation, 'SUPPORTED_BY_HOST');
 assert.equal(codex.install_identity, 'hakim@hakim');
-assert.match(codex.invocation, /codex plugin marketplace add Habib1001-m\/hakim/);
+assert.equal(codex.invocation, frozen.normal_install_commands.codex);
 assert.match(codex.next_safe_action, /open \/plugins/);
 
 const claude = inspectClaude(repoRoot, expectedVersion);
 assert.equal(claude.status, 'PASS');
 assert.equal(claude.support_boundary, 'HOST_NATIVE_PLUGIN');
-assert.equal(claude.distribution_mode, 'NATIVE_MARKETPLACE');
+assert.equal(claude.distribution_mode, 'NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE');
 assert.equal(claude.target_state, 'READY_FOR_NATIVE_INSTALL');
 assert.equal(claude.persistent_installation, 'SUPPORTED_BY_HOST');
+assert.equal(claude.install_identity, 'hakim@hakim');
+assert.equal(claude.catalog_version, frozen.version);
+assert.equal(claude.catalog_source_sha, frozen.source_sha);
 assert.match(claude.invocation, /claude plugin marketplace add Habib1001-m\/hakim/);
 assert.match(claude.invocation, /claude plugin install hakim@hakim/);
 assert.deepEqual(claude.native_user_skills, ['full', 'review', 'audit', 'debt', 'gain', 'help']);
 assert.deepEqual(claude.native_agents, ['hakim-reviewer', 'hakim-auditor', 'hakim-debt-analyst', 'hakim-evidence-verifier', 'hakim-implementer']);
+
+const claudeChecks = Object.fromEntries(claude.checks.map((item) => [item.id, item]));
+assert.equal(claudeChecks.source_tree_manifest_version_matches.status, 'PASS');
+assert.equal(claudeChecks.catalog_version_matches_frozen_candidate.status, 'PASS');
+assert.equal(claudeChecks.catalog_source_type_matches.status, 'PASS');
+assert.equal(claudeChecks.catalog_source_path_matches.status, 'PASS');
+assert.equal(claudeChecks.catalog_source_sha_matches.status, 'PASS');
+assert.equal(claudeChecks.catalog_source_ref_absent.status, 'PASS');
 
 const copilot = inspectCopilot(null, repoRoot, expectedVersion);
 assert.equal(copilot.status, 'PASS');
@@ -60,7 +74,7 @@ assert.equal(copilot.target_state, 'READY_FOR_NATIVE_INSTALL');
 assert.equal(copilot.persistent_installation, 'SUPPORTED_BY_HOST');
 assert.equal(copilot.install_identity, 'hakim@hakim');
 assert.equal(copilot.baseline_role, 'OPTIONAL_FALLBACK');
-assert.match(copilot.invocation, /copilot plugin marketplace add Habib1001-m\/hakim/);
+assert.match(copilot.invocation, /copilot plugin marketplace add Habib1001-m\/hakim#5d000394/);
 assert.match(copilot.invocation, /copilot plugin install hakim@hakim/);
 assert.deepEqual(copilot.native_skills, ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help']);
 assert.deepEqual(copilot.native_agents, ['hakim-reviewer', 'hakim-auditor', 'hakim-debt-analyst', 'hakim-evidence-verifier', 'hakim-implementer']);
@@ -119,13 +133,14 @@ assert.match(formatted, /MUTATION_PERFORMED=NO/);
 assert.match(formatted, /\[codex\]/);
 assert.match(formatted, /MODE=NATIVE_GIT_MARKETPLACE/);
 assert.match(formatted, /\[claude-code\]/);
-assert.match(formatted, /MODE=NATIVE_MARKETPLACE/);
+assert.match(formatted, /MODE=NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE/);
+assert.match(formatted, new RegExp(`CATALOG_SOURCE_SHA=${frozen.source_sha}`));
 assert.match(formatted, /\[github-copilot\]/);
 assert.match(formatted, /copilot plugin install hakim@hakim/);
 assert.match(formatted, /INSTALL_IDENTITY=hakim@hakim/);
 assert.match(formatted, /\[opencode\]/);
 assert.match(formatted, /MODE=GIT_BACKED_PROJECT_LOCAL_INSTALLER/);
-assert.match(formatted, /INVOCATION=npx --yes --package=github:Habib1001-m\/hakim hakim-opencode install/);
+assert.ok(formatted.includes(`INVOCATION=${OPENCODE_BOOTSTRAP}`));
 
 const cli = spawnSync(process.execPath, ['scripts/hakim_install_plan.mjs', '--host', 'all', '--json'], { cwd: repoRoot, encoding: 'utf8' });
 assert.equal(cli.status, 0, cli.stderr);
@@ -135,7 +150,8 @@ assert.equal(cliPlan.plans.length, 4);
 assert.equal(cliPlan.mutation_performed, false);
 assert.equal(cliPlan.hakim_version, expectedVersion);
 assert.equal(cliPlan.plans.find((item) => item.host === 'codex').distribution_mode, 'NATIVE_GIT_MARKETPLACE');
-assert.equal(cliPlan.plans.find((item) => item.host === 'claude-code').distribution_mode, 'NATIVE_MARKETPLACE');
+assert.equal(cliPlan.plans.find((item) => item.host === 'claude-code').distribution_mode, 'NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE');
+assert.equal(cliPlan.plans.find((item) => item.host === 'claude-code').catalog_source_sha, frozen.source_sha);
 assert.equal(cliPlan.plans.find((item) => item.host === 'github-copilot').distribution_mode, 'NATIVE_MARKETPLACE');
 assert.equal(cliPlan.plans.find((item) => item.host === 'opencode').distribution_mode, 'GIT_BACKED_PROJECT_LOCAL_INSTALLER');
 
@@ -146,4 +162,4 @@ assert.equal(packageJson.scripts['test:integration:js'], 'npm run test:public:js
 assert.match(packageJson.scripts['test:public:js'], /tests\/test_hakim_install_plan\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_install_plan\.mjs/);
 
-console.log('read-only Hakim installation planning covers native Codex, Claude, Copilot marketplaces and the Git-backed OpenCode project-local bootstrap');
+console.log('read-only Hakim installation planning preserves moving source manifests while pinning the frozen Claude catalog entry by exact plugin-source SHA');

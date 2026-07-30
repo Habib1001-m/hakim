@@ -4,7 +4,7 @@ Hakim is public beta software distributed from public source and repository-host
 
 The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`). Moving `main` reports `1.0.0-beta.4.post1` and is explicit unreleased development, not a frozen candidate and not eligible for release or promotion evidence.
 
-`conformance/distribution-identity.json` is the machine-readable authority for these identities, their declared normal install sources, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: a command that contains the expected SHA is not evidence that a host actually resolved or installed those bytes. See [P0 Host-Native Transport Reconciliation](../../docs/P0_HOST_TRANSPORT_RECONCILIATION.md). No npm registry package or central marketplace/directory listing is currently claimed.
+`conformance/distribution-identity.json` is the machine-readable authority for these identities, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex is accepted while Claude Code, GitHub Copilot CLI, and OpenCode remain pending. No npm registry package or central marketplace/directory listing is currently claimed.
 
 ## Codex
 
@@ -35,12 +35,22 @@ $hakim:hakim-help
 
 ## Claude Code
 
-The exact-SHA marketplace declaration below remains pending a disposable journey that records the registered marketplace source and installed cache identity:
+Register the public repository marketplace, then install Hakim:
 
 ```bash
-claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
+
+The registration command selects a catalog; it is not the immutable product pin. The `hakim` entry in `.claude-plugin/marketplace.json` advertises frozen `1.0.0-beta.4` and uses Claude Code's `git-subdir` plugin source with:
+
+```text
+url  = https://github.com/Habib1001-m/hakim.git
+path = plugins/claude-code
+sha  = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
+
+The superseded route that appended `#5d00039479f2f11b7fe30ccf2385e70ce24553c3` to the marketplace repository failed on Claude Code `2.1.220`: the host treated the commit as a branch selector. It must not be reused.
 
 Start Claude Code normally. If Hakim was installed while a session was already open, use `/reload-plugins`.
 
@@ -57,11 +67,11 @@ Maintained commands include:
 
 Hakim also ships scoped specialist agents. Claude Code's own installation scope, permissions, plugin cache, approval controls, managed policy, and trust remain authoritative.
 
-`npm run launch:claude` is a source-checkout development fallback using `--plugin-dir`; persistent frozen-product installation should use the declared exact-SHA marketplace route above only inside the P0 verification boundary until accepted host proof exists.
+`npm run launch:claude` is a source-checkout development fallback using `--plugin-dir`; it exercises moving development and is not the frozen product installation path.
 
 ## GitHub Copilot
 
-The exact-SHA marketplace declaration below remains pending a disposable journey that records the registered marketplace checkout and installed plugin source identity:
+The declaration below remains pending a disposable journey that records the registered marketplace checkout and installed plugin source identity:
 
 ```bash
 copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -158,7 +168,7 @@ npm run plan:install -- --host all
 npm run check:distribution-identity
 ```
 
-The install plan is read-only and reports the maintained Codex, Claude Code, GitHub Copilot, and OpenCode product surfaces.
+The install plan is read-only and reports the maintained Codex, Claude Code, GitHub Copilot, and OpenCode product surfaces. For Claude, it separately reports the moving source-tree manifest and the frozen exact-SHA catalog entry.
 
 ## Source validation
 

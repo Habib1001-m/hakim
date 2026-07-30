@@ -12,13 +12,17 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Added one evidence-justified `subagentStart` presence hook after a real Explore probe showed `MODE=NONE`; the accepted rerun returned `MODE=ultra` while the target repository remained clean.
 - Established the R3.2 operating principle: **Free reasoning. Safe action. Evidence-bound claims.**
 - Advanced moving `main` away from the frozen beta.4 identity to explicit development identity `1.0.0-beta.4.post1`.
-- Added `conformance/distribution-identity.json` as the machine-readable authority for current development, frozen beta.4, its exact source SHA, normal install commands, and the not-yet-cut beta.5 state.
-- Pinned normal Codex, Claude Code, GitHub Copilot CLI, and OpenCode beta.4 install routes to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
-- Added deterministic contracts that reject unpinned normal routes, version/channel mismatch, frozen ref/SHA mismatch, and frozen/development identity collapse.
+- Added `conformance/distribution-identity.json` as the machine-readable authority for current development, frozen beta.4, its exact source SHA, effective normal-install pins, and the not-yet-cut beta.5 state.
+- Pinned normal Codex, GitHub Copilot CLI, and OpenCode beta.4 transports to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+- Reconciled Claude Code after a disposable `2.1.220` journey proved that marketplace `#<commit>` is treated as a branch selector: the catalog now advertises frozen `1.0.0-beta.4` and pins `plugins/claude-code` through an exact-SHA `git-subdir` plugin source.
+- Added deterministic contracts that reject unsupported Claude source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, and frozen/development identity collapse.
+- Accepted the frozen beta.4 Codex packet while keeping P0 at `1/4` until Claude Code, GitHub Copilot CLI, and OpenCode are independently accepted.
 - Reordered product readiness so P0 — Truthful Immutable Distribution Identity closes before F05 begins.
 
 ### Pending
 
+- Rerun the repaired Claude Code exact-SHA catalog plugin-source journey.
+- Complete GitHub Copilot CLI and OpenCode P0 transport packets.
 - Complete P0 validation on the exact final pull-request head.
 - F05 — Objective Completion Truth.
 - F06 — deterministic operational regressions.
@@ -77,15 +81,3 @@ Frozen beta.2 evidence remains at `evidence/beta2-live-126a228`.
 - Git-backed `hakim-opencode` bootstrap so normal OpenCode first-run does not require manually cloning Hakim.
 - Byte-reproducible canonical skill packaging and public-safe current-native host acceptance projection.
 - Architecture, privacy, security, support, upstream-attribution, and first-run documentation for the public product.
-
-### Changed
-
-- Reconciled public/private product boundaries during the public-beta transition and removed retired global/private-prerelease OpenCode distribution code.
-- Replaced ambiguous prompt ownership with bounded start/end sentinels and preserved unrelated host content during reconciliation.
-- Hardened OpenCode transactional lifecycle behavior, rollback truth, older-version removal, session-state isolation, and Node runtime boundaries.
-- Added the F-4 truth-gate policy: structured authorities govern product state; prose checks cannot promote acceptance or release state.
-- Made the canonical skill package distribution-portable and explicitly allowlisted rather than recursively shipping source-tree material.
-- Clarified that Hakim implements no product telemetry service and does not enable raw prompt/source logging.
-- Withdrew the premature external public-beta evaluator campaign before any external report was accepted; evaluator recruitment remains suspended pending a separate product decision.
-
-The original beta.1 release introduced the first public prerelease identity. Historical accepted live-host evidence remains candidate-bounded under `conformance/history/` and immutable evidence refs.

@@ -34,13 +34,13 @@ Normal product installation is frozen Hakim `1.0.0-beta.4` at exact commit `5d00
 ## Native host use
 
 - **Codex:** register `https://github.com/Habib1001-m/hakim.git` with `--ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then use skills such as `$hakim:hakim` and `$hakim:hakim-help`.
-- **Claude Code:** add `https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then use `/hakim:full`, `/hakim:review`, or `/hakim:help`.
+- **Claude Code:** add marketplace `Habib1001-m/hakim`, whose catalog entry pins `plugins/claude-code` to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then use `/hakim:full`, `/hakim:review`, or `/hakim:help`.
 - **GitHub Copilot:** add `Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then inspect skills with `/skills list` and agents with `/agent`.
 - **OpenCode:** run `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install`, then use `/hakim full`, `/hakim-review`, or `/hakim-help`.
 
 ## Evidence boundary
 
-Public CI and host acceptance prove only their checked scope. Moving-development observations require an exact source commit and remain non-candidate evidence. Independent benchmark results, universal compatibility, correctness, security approval, performance gains, token/cost savings, adoption, and ROI remain `NOT_ESTABLISHED` unless separate accepted evidence establishes them.
+Codex has accepted frozen beta.4 evidence. Claude Code's earlier marketplace `#<commit>` attempt failed because the host treated the SHA as a branch; the repaired exact-SHA catalog plugin-source route remains `NOT_RUN` until independently exercised. Public CI and host acceptance prove only their checked scope.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 

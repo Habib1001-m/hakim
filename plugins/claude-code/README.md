@@ -6,24 +6,31 @@ Hakim is packaged as a native Claude Code plugin with skills, plugin agents, lif
 
 The normal product route installs frozen Hakim `1.0.0-beta.4` from exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is unreleased development, not a frozen candidate or release/promotion evidence.
 
+Claude Code uses two separate source layers here:
+
+- marketplace registration discovers the catalog;
+- the Hakim plugin entry uses `git-subdir` with `path: plugins/claude-code` and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+
 ## Install frozen beta.4
 
 ```bash
-claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
 Equivalent one-line setup:
 
 ```bash
-claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3 && claude plugin install hakim@hakim
+claude plugin marketplace add Habib1001-m/hakim && claude plugin install hakim@hakim
 ```
+
+Do not append the commit SHA as a marketplace URL `#ref`. Claude Code `2.1.220` treated that value as a branch name and the clone failed. The immutable pin belongs to the plugin source object inside `.claude-plugin/marketplace.json`.
 
 The default installation scope is `user`, so Hakim is available across projects. For a repository-shared installation, use `--scope project` on both commands.
 
 After installation, start Claude Code normally. If you install while a session is already open, run `/reload-plugins`.
 
-Frozen beta.4 still requires its own exact-candidate live-host journey before promotion.
+The repaired exact-SHA plugin-source route still requires a fresh disposable journey before Claude Code can be promoted in the frozen beta.4 acceptance projection.
 
 ## Native UX
 
@@ -65,7 +72,7 @@ claude plugin update hakim@hakim
 claude plugin uninstall hakim@hakim
 ```
 
-An update follows the registered marketplace source. A frozen beta.4 installation must remain registered at the exact beta.4 source commit; do not replace it with moving `main` while claiming the same candidate evidence.
+An update follows the registered catalog and its plugin-source definition. Frozen beta.4 remains pinned by the catalog entry's exact `sha`; do not replace that source with moving `main` while claiming the same candidate evidence.
 
 Claude Code's own plugin cache, installation scopes, permissions, approval controls, managed policy, and trust boundaries remain authoritative.
 

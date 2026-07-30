@@ -19,7 +19,7 @@
     "native_acceptance_projection": "conformance/history/native-host-acceptance-1.0.0-beta.4.json",
     "normal_install_commands": {
       "codex": "codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3",
-      "claude-code": "claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+      "claude-code": "claude plugin marketplace add Habib1001-m/hakim",
       "github-copilot": "copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
       "opencode": "npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install"
     },
@@ -41,12 +41,24 @@
       },
       "claude-code": {
         "command_key": "claude-code",
-        "pin_layer": "marketplace-checkout-ref",
+        "pin_layer": "catalog-plugin-source-sha",
+        "catalog_path": ".claude-plugin/marketplace.json",
+        "plugin_source_type": "git-subdir",
+        "plugin_source_url": "https://github.com/Habib1001-m/hakim.git",
+        "plugin_source_path": "plugins/claude-code",
         "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
-        "static_contract_status": "REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN",
+        "static_contract_status": "EXACT_SHA_PLUGIN_SOURCE_DECLARED",
         "live_resolution_status": "NOT_RUN",
         "evidence_ref": null,
-        "candidate_evidence_eligible": false
+        "candidate_evidence_eligible": false,
+        "superseded_failed_attempt": {
+          "host_version": "2.1.220 (Claude Code)",
+          "attempted_source": "https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+          "status": "FAIL",
+          "reason": "MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH",
+          "observed_at": "2026-07-30T21:34:00Z",
+          "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136565274"
+        }
       },
       "github-copilot": {
         "command_key": "github-copilot",
@@ -83,6 +95,7 @@
     "moving_main_must_be_explicitly_development": true,
     "evidence_requires_exact_source_sha": true,
     "command_text_is_not_runtime_proof": true,
-    "host_verification_requires_resolved_source_sha": true
+    "host_verification_requires_resolved_source_sha": true,
+    "effective_pin_may_be_declared_in_host_native_catalog": true
   }
 }

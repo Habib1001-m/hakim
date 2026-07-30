@@ -7,20 +7,20 @@
 
 ## Purpose
 
-P0 separates moving unreleased development from the frozen beta.4 candidate. That repository-level identity split is necessary but not sufficient to prove what each host installs.
+P0 separates moving unreleased development from the frozen beta.4 candidate. That repository identity split is necessary but not sufficient to prove what each host installs.
 
-A command that contains a 40-character SHA is a transport declaration. It becomes host evidence only after a disposable real-host journey records the source actually resolved, the installed plugin bytes/version, activation, and invocation.
+A command containing a SHA is one possible transport declaration, not the only valid immutable-pin layer. Host evidence requires a disposable real-host journey that records the effective source actually resolved, installed version/bytes, activation, and invocation.
 
-Repository conformance, marketplace schema support, and prior observations must not be silently promoted into exact-candidate native-host acceptance.
-
-## Reconciled decision
+## Current decision
 
 ```text
 IDENTITY_MODEL              = PASS
 METADATA_RECONCILIATION     = PASS
-TRANSPORT_DECLARATIONS      = PRESENT
+CODEX_TRANSPORT_PROOF       = PASS / OPERATOR_ACCEPTED
+CLAUDE_REPAIRED_ROUTE       = NOT_RUN
+COPILOT_TRANSPORT_PROOF     = NOT_RUN
+OPENCODE_TRANSPORT_PROOF    = NOT_RUN
 HOST_RESOLUTION_PROOF       = PARTIAL_1_OF_4
-ACCEPTED_HOSTS              = codex
 P0_OVERALL                  = HOLD_FOR_HOST_NATIVE_PROOF
 ```
 
@@ -28,28 +28,62 @@ No beta.5 candidate, release, promotion, external evaluator campaign, npm public
 
 ## Host contract matrix
 
-| Host | Current frozen-route declaration | Static and observed boundary | Required proof |
+| Host | Effective frozen route | Static pin layer | Current proof |
 |---|---|---|---|
-| Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Codex documents Git marketplace checkout through `--ref`. A disposable Codex `0.145.0` journey resolved the exact full SHA, installed `1.0.0-beta.4`, matched all 10 distributed files byte-for-byte, completed the trusted SessionStart hook, and invoked `$hakim:hakim-help`. The operator explicitly accepted the packet on 2026-07-31. | **Satisfied for Codex.** Preserve the accepted packet, public-safe evidence reference, and packet hash. |
-| Claude Code | `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Claude documents marketplace refs as branch/tag selectors. Exact commit pinning is explicitly supported for plugin source objects, but the frozen beta.4 marketplace entry uses a relative in-repository source. The command therefore remains unproven until exercised. | Record registered marketplace source, installed cache/source SHA, installed version, activation, invocation, and host version. |
-| GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Copilot documents `owner/repo#ref` registration and exact `sha` fields for plugin source objects. The frozen beta.4 marketplace entry is still relative to its checkout, so exact full-SHA registration must be verified in a disposable journey. | Record marketplace source SHA, installed plugin source SHA/version, activation, skills/agents visibility, invocation, and host version. |
-| OpenCode | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | The Git package specification names an exact commit and B7 observed the lifecycle route, but B7 had `Authority: NONE` and did not promote candidate acceptance. | Run the exact-source CLI in a clean target, record resolved package/source identity, persisted manifest identity, status, invocation, Node/npm versions, and cleanup. |
+| Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout `--ref` | `PASS`, operator accepted, packet integrity-bound |
+| Claude Code | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim` | `.claude-plugin/marketplace.json` plugin source `{source: git-subdir, path: plugins/claude-code, sha: 5d000...}` | repaired route `NOT_RUN` |
+| GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout ref | `NOT_RUN` |
+| OpenCode | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | npm Git package spec | `NOT_RUN` |
 
-## Accepted packet ledger
+## Accepted Codex checkpoint
 
-| Host | Status | Verified at | Evidence | Durable packet | SHA-256 |
-|---|---|---|---|---|---|
-| Codex | `PASS` | `2026-07-30T21:16:31Z` | `https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471` | `conformance/history/p0-host-transport/codex-1.0.0-beta.4.json` | `fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3` |
+```text
+HOST                       = codex
+HOST_VERSION               = codex-cli 0.145.0
+RESOLVED_SOURCE_SHA        = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+INSTALLED_PRODUCT_VERSION  = 1.0.0-beta.4
+INSTALLATION               = PASS
+ACTIVATION                 = PASS
+INVOCATION                 = PASS
+PACKET_SHA256              = fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3
+PACKET                     = conformance/history/p0-host-transport/codex-1.0.0-beta.4.json
+EVIDENCE                   = https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471
+```
 
-The ledger records only packets explicitly accepted by the operator. A generated `PASS` packet remains candidate evidence until that acceptance occurs.
+This acceptance is bounded to Codex `0.145.0` and does not transfer to another host.
 
-## Why the marketplace manifests are not rewritten yet
+## Claude failed route and repaired contract
 
-Changing moving `main` marketplace entries to point at frozen beta.4 would create a second ambiguity: a development catalog could advertise or install frozen bytes while the checkout itself reports `1.0.0-beta.4.post1`.
+A disposable Claude Code `2.1.220` journey attempted:
 
-P0 therefore does not mutate the frozen beta.4 commit, create a release tag, or replace host-native proof with a new moving-main catalog convention. The current declarations remain under test until real hosts establish which exact source they resolve.
+```text
+claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
 
-A later deliberate candidate cut may adopt host-native source objects pinned by `sha`, a frozen tag/ref plus resolved-SHA verification, or another proven mechanism. The chosen mechanism must keep catalog identity, plugin bytes, embedded version, and acceptance evidence coherent.
+The host treated the suffix as a clone branch selector and Git failed because no branch named with that commit exists.
+
+```text
+ATTEMPT_STATUS = FAIL
+FAILURE_CLASS  = MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH
+EVIDENCE       = https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136565274
+```
+
+The failed declaration is superseded, not erased. The repaired design uses Claude Code's host-native distinction:
+
+- **marketplace source:** catalog discovery; branch/tag semantics may apply;
+- **plugin source inside the catalog:** exact immutable product source;
+- **Hakim plugin source:** `git-subdir`, repository URL, `path: plugins/claude-code`, exact beta.4 `sha`;
+- **catalog-advertised plugin version:** `1.0.0-beta.4`;
+- **moving source-tree plugin manifest:** remains `1.0.0-beta.4.post1` and development-only.
+
+For the pre-merge P0 journey, register the branch that contains the repaired catalog:
+
+```bash
+claude plugin marketplace add "https://github.com/Habib1001-m/hakim.git#p0-truthful-immutable-distribution-identity"
+claude plugin install hakim@hakim
+```
+
+The branch is used only to obtain the catalog definition. Acceptance requires proving that the installed plugin source itself resolves `5d00039479f2f11b7fe30ccf2385e70ce24553c3` and reports `1.0.0-beta.4`.
 
 ## Disposable journey requirements
 
@@ -74,68 +108,40 @@ The packet fails closed when:
 
 - `RESOLVED_SOURCE_SHA` is missing or differs from the expected beta.4 SHA;
 - installed metadata does not report `1.0.0-beta.4`;
-- source identity is inferred only from command text;
+- source identity is inferred only from command or catalog text;
 - activation or invocation is not independently observed;
-- the test reuses mutable host cache without proving its source;
-- evidence comes from moving `main`, a different version, or a prior candidate;
+- mutable cache is reused without proving its source;
+- evidence comes from moving `main`, another version, or a prior candidate;
 - cleanup or target-state truth is unknown.
 
 ## Create-only evidence harness
 
 `scripts/hakim_transport_evidence.mjs` validates and renders a reviewable packet. It never installs a plugin, changes host configuration, captures raw host output, or modifies an acceptance projection. `--apply` is refused and `--output` is create-only.
 
-Inspect the expected contract and detect the requested host version:
-
 ```bash
-npm run capture:transport -- --host codex --json
+npm run capture:transport -- --host claude-code --json
 ```
 
-After the operator completes the disposable journey and independently obtains the resolved source SHA and installed version, create a candidate packet:
-
-```bash
-npm run capture:transport -- \
-  --host codex \
-  --record \
-  --resolved-source-sha 5d00039479f2f11b7fe30ccf2385e70ce24553c3 \
-  --installed-product-version 1.0.0-beta.4 \
-  --installation PASS \
-  --activation PASS \
-  --invocation PASS \
-  --evidence-ref '<public-safe-evidence-ref>' \
-  --output 'dist/p0-transport/codex.json' \
-  --json
-```
-
-Replace `codex` with `claude-code`, `github-copilot`, or `opencode` for the other packets. Use `--binary`, `--cwd`, `--target`, `--requested-source`, and `--verified-at` when the packet needs those explicit observations.
-
-A packet reports `PASS` only when all of the following are present and exact:
-
-- detectable host version;
-- resolved source SHA equal to the frozen beta.4 SHA;
-- installed product version equal to `1.0.0-beta.4`;
-- installation, activation, and invocation all observed as `PASS`;
-- public-safe evidence reference.
-
-A `PASS` packet remains a review input. It does not mutate or promote `conformance/history/native-host-acceptance-1.0.0-beta.4.json` without explicit operator acceptance.
+A `PASS` packet remains review input. It is promoted only after explicit operator acceptance and deterministic reconciliation.
 
 ## Ordered execution
 
-1. **Codex — accepted.** Isolated marketplace resolution, installed byte identity, SessionStart activation, and skill invocation are recorded in the accepted packet ledger.
-2. Run Claude Code in an isolated plugin cache/home and capture the registered marketplace source plus installed cache identity.
-3. Run GitHub Copilot CLI with an isolated `COPILOT_HOME`/cache and capture marketplace plus installed plugin identity.
-4. Run OpenCode against a fresh non-product target and capture the exact package/source and persisted manifest.
-5. Reconcile each remaining packet into `conformance/history/native-host-acceptance-1.0.0-beta.4.json` only after explicit operator acceptance.
-6. Rerun canonical and exact-head Public CI after every accepted evidence mutation and on the final head.
+1. Codex — accepted.
+2. Claude Code — rerun repaired exact-SHA catalog plugin-source journey.
+3. GitHub Copilot CLI — record marketplace and installed plugin source SHA.
+4. OpenCode — record exact package/source and persisted manifest.
+5. Reconcile each accepted packet independently.
+6. Run exact final-head Public CI after the final evidence mutation.
 
 ## Exit criteria
 
 P0 may leave Draft only when all are true:
 
-- the identity authority and embedded development/frozen versions remain separated;
-- every maintained normal route has a proven source-resolution mechanism;
-- every included host resolves `5d00039479f2f11b7fe30ccf2385e70ce24553c3` and reports `1.0.0-beta.4`;
-- accepted packets are exact-candidate, host/version/OS bounded, and independently attributable;
-- deterministic tests reject a host marked verified without a resolved SHA and evidence reference;
+- moving development and frozen candidate identities remain separated;
+- every maintained route has an effective immutable source-resolution mechanism;
+- all four hosts resolve `5d00039479f2f11b7fe30ccf2385e70ce24553c3` and report `1.0.0-beta.4`;
+- accepted packets are host/version/OS bounded and independently attributable;
+- deterministic tests reject unsupported verification claims;
 - exact final-head Public CI passes;
 - no release or promotion authority is inferred from P0 completion alone.
 

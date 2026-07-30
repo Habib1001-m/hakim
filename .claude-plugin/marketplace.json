@@ -5,9 +5,14 @@
   "plugins": [
     {
       "name": "hakim",
-      "source": "./plugins/claude-code",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Habib1001-m/hakim.git",
+        "path": "plugins/claude-code",
+        "sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3"
+      },
       "description": "Evidence-bound coding governance for Claude Code with skills, agents, hooks, and native slash workflows.",
-      "version": "1.0.0-beta.4.post1",
+      "version": "1.0.0-beta.4",
       "category": "development",
       "tags": ["coding", "review", "governance", "minimalism"]
     }

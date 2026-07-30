@@ -28,7 +28,7 @@ Hakim is public beta software.
 | External evaluator campaign | Suspended pending a separate product decision |
 | npm registry / central marketplace publication | Not claimed |
 
-`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, declared normal install sources, and their host-resolution proof state. P0 currently remains `HOLD_FOR_HOST_NATIVE_PROOF`; command text is not runtime evidence.
+`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex is accepted, while Claude Code, GitHub Copilot CLI, and OpenCode still require independent accepted packets.
 
 Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
 
@@ -38,7 +38,7 @@ See [Product Readiness](docs/PRODUCT_READINESS.md), [Operational Presence](docs/
 
 ## Quick start — frozen beta.4
 
-The commands below are the current frozen beta.4 transport declarations and each names the expected exact beta.4 SHA. They do not follow moving `main`, but P0 remains on hold until disposable real-host journeys record the source each host actually resolved, the installed version, activation, and invocation.
+The routes below are the maintained frozen beta.4 declarations. Codex, Copilot, and OpenCode place the SHA in their command-level transport. Claude Code uses a different host-native boundary: marketplace registration discovers the catalog, while the Hakim entry in `.claude-plugin/marketplace.json` pins `plugins/claude-code` with `git-subdir` and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
 
 ### Codex
 
@@ -48,14 +48,16 @@ codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00
 
 Open `/plugins`, select **Hakim**, install `hakim`, review/trust the SessionStart hook in `/hooks`, then start a new thread. The installed identity is `hakim@hakim`.
 
-Use the installed skills, for example `$hakim:hakim`, `$hakim:hakim-review`, and `$hakim:hakim-help`.
+Use installed skills such as `$hakim:hakim`, `$hakim:hakim-review`, and `$hakim:hakim-help`.
 
 ### Claude Code
 
 ```bash
-claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
+
+The marketplace command is catalog discovery, not the immutable pin. The catalog entry advertises `1.0.0-beta.4` and uses an exact-SHA `git-subdir` plugin source for `plugins/claude-code`. A previous attempt to append the commit as `#<sha>` to the marketplace URL failed on Claude Code `2.1.220` because the host treated it as a branch; that superseded route is not documented as a normal install path.
 
 Start Claude Code normally. Maintained commands include `/hakim:help`, `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, and `/hakim:gain`.
 
@@ -93,7 +95,7 @@ The exact-SHA Git bootstrap invokes Hakim's guarded project-local managed lifecy
 
 Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
 
-See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the exact evidence required before these declarations become accepted host-resolution proof.
+See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the exact evidence required before all maintained routes become accepted host-resolution proof.
 
 ## Unreleased development
 
@@ -178,25 +180,3 @@ A changed prerelease identity, first-run transport, lifecycle, or runtime behavi
 Moving-development observations are never candidate evidence merely because their embedded version is ordered after the latest frozen prerelease. They require an exact commit and remain development-only until a candidate is deliberately cut.
 
 Hakim does not claim universal model-quality improvement, performance gain, token savings, return on investment, or complete protection from unrelated local processes.
-
-## Privacy and security
-
-Hakim does not implement a product telemetry collection service and does not enable raw prompt or source-code logging.
-
-Do not commit credentials, private prompts, sensitive evidence, or customer source code to issues, test fixtures, or public reports.
-
-Report suspected vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-MIT. See [LICENSE](LICENSE).
-
-## Upstream relationship
-
-Hakim is an independently maintained governance-focused derivative of Ponytail. It is not a GitHub fork, not an official Ponytail distribution, and does not claim automatic compatibility or synchronization.
-
-See [UPSTREAM.md](UPSTREAM.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
