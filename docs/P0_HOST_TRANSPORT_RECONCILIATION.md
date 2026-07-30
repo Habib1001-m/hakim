@@ -71,6 +71,44 @@ The packet fails closed when:
 - evidence comes from moving `main`, a different version, or a prior candidate;
 - cleanup or target-state truth is unknown.
 
+## Create-only evidence harness
+
+`scripts/hakim_transport_evidence.mjs` validates and renders a reviewable packet. It never installs a plugin, changes host configuration, captures raw host output, or modifies an acceptance projection. `--apply` is refused and `--output` is create-only.
+
+Inspect the expected contract and detect the requested host version:
+
+```bash
+npm run capture:transport -- --host codex --json
+```
+
+After the operator completes the disposable journey and independently obtains the resolved source SHA and installed version, create a candidate packet:
+
+```bash
+npm run capture:transport -- \
+  --host codex \
+  --record \
+  --resolved-source-sha 5d00039479f2f11b7fe30ccf2385e70ce24553c3 \
+  --installed-product-version 1.0.0-beta.4 \
+  --installation PASS \
+  --activation PASS \
+  --invocation PASS \
+  --evidence-ref '<public-safe-evidence-ref>' \
+  --output 'dist/p0-transport/codex.json' \
+  --json
+```
+
+Replace `codex` with `claude-code`, `github-copilot`, or `opencode` for the other packets. Use `--binary`, `--cwd`, `--target`, `--requested-source`, and `--verified-at` when the packet needs those explicit observations.
+
+A packet reports `PASS` only when all of the following are present and exact:
+
+- detectable host version;
+- resolved source SHA equal to the frozen beta.4 SHA;
+- installed product version equal to `1.0.0-beta.4`;
+- installation, activation, and invocation all observed as `PASS`;
+- public-safe evidence reference.
+
+A `PASS` packet remains a review input. It does not mutate or promote `conformance/history/native-host-acceptance-1.0.0-beta.4.json`.
+
 ## Ordered execution
 
 1. Run Codex in an isolated plugin home and capture the resolved marketplace checkout and installed plugin identity.
