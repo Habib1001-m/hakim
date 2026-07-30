@@ -171,6 +171,12 @@ See:
 - [Product Readiness](docs/PRODUCT_READINESS.md)
 - [Known Limitations](KNOWN_LIMITATIONS.md)
 
+## Upstream relationship
+
+Hakim is a **governance-focused derivative** inspired by Ponytail. It is **not a GitHub fork**, is not the official upstream project, and does not claim automatic compatibility, synchronization, performance equivalence, or distribution equivalence.
+
+See [UPSTREAM.md](UPSTREAM.md) for the reviewed relationship and manual evidence-gated sync policy. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for retained copyright and license notices.
+
 ## Evidence boundaries
 
 A passing deterministic check means only that the enabled rule set found no matching violation. It is not a substitute for correctness, security, architecture, semantic review, live-host validation, or product usefulness.
