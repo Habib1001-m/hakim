@@ -4,13 +4,13 @@ Hakim is public beta software distributed from public source and repository-host
 
 The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`). Moving `main` reports `1.0.0-beta.4.post1` and is explicit unreleased development, not a frozen candidate and not eligible for release or promotion evidence.
 
-`conformance/distribution-identity.json` is the machine-readable authority for these identities and their normal install sources. No npm registry package or central marketplace/directory listing is currently claimed.
+`conformance/distribution-identity.json` is the machine-readable authority for these identities, their declared normal install sources, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: a command that contains the expected SHA is not evidence that a host actually resolved or installed those bytes. See [P0 Host-Native Transport Reconciliation](../../docs/P0_HOST_TRANSPORT_RECONCILIATION.md). No npm registry package or central marketplace/directory listing is currently claimed.
 
 ## Codex
 
 Use Codex `0.131.0` or newer for the maintained native plugin-hook path.
 
-Install the frozen beta.4 marketplace from its exact source commit:
+Declare the frozen beta.4 marketplace source with its exact commit. This route remains pending disposable host verification of the resolved checkout and installed plugin identity:
 
 ```bash
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -35,6 +35,8 @@ $hakim:hakim-help
 
 ## Claude Code
 
+The exact-SHA marketplace declaration below remains pending a disposable journey that records the registered marketplace source and installed cache identity:
+
 ```bash
 claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
 claude plugin install hakim@hakim
@@ -55,9 +57,11 @@ Maintained commands include:
 
 Hakim also ships scoped specialist agents. Claude Code's own installation scope, permissions, plugin cache, approval controls, managed policy, and trust remain authoritative.
 
-`npm run launch:claude` is a source-checkout development fallback using `--plugin-dir`; persistent frozen-product installation should use the exact-SHA marketplace above.
+`npm run launch:claude` is a source-checkout development fallback using `--plugin-dir`; persistent frozen-product installation should use the declared exact-SHA marketplace route above only inside the P0 verification boundary until accepted host proof exists.
 
 ## GitHub Copilot
+
+The exact-SHA marketplace declaration below remains pending a disposable journey that records the registered marketplace checkout and installed plugin source identity:
 
 ```bash
 copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -95,9 +99,9 @@ From the target repository:
 npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install
 ```
 
-This uses npm only as Git transport/command execution for the exact frozen GitHub source. Hakim is not published to the npm registry, creates no global Hakim/OpenCode installation, and the shipped bootstrap declares Node `>=22`.
+This declares npm Git transport/command execution for the exact frozen GitHub source. Hakim is not published to the npm registry, creates no global Hakim/OpenCode installation, and the shipped bootstrap declares Node `>=22`. Candidate proof still requires recording the resolved source/package identity and persisted install manifest in a clean target.
 
-Read-only inspection uses the same immutable source:
+Read-only inspection uses the same immutable declaration:
 
 ```bash
 npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install --dry-run
@@ -142,7 +146,7 @@ npm run remove:opencode -- --target /path/to/repository
 
 These commands exercise the same managed project-local lifecycle used by the Git-backed bootstrap. They are not required for normal first-run use.
 
-Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE` until their own exact-source journeys are accepted. Older accepted evidence remains candidate-bounded and historical.
+Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE` until their own exact-source journeys are accepted. P0 additionally remains `HOLD_FOR_HOST_NATIVE_PROOF` until every maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
 
 ## Inspect all maintained product surfaces
 
