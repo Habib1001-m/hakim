@@ -10,7 +10,7 @@ The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b
 
 Use Codex `0.131.0` or newer for the maintained native plugin-hook path.
 
-Declare the frozen beta.4 marketplace source with its exact commit. This route remains pending disposable host verification of the resolved checkout and installed plugin identity:
+Declare the frozen beta.4 marketplace source with its exact commit. A disposable Codex `0.145.0` P0 journey resolved this exact SHA, installed `1.0.0-beta.4`, matched all distributed plugin files byte-for-byte, completed the trusted SessionStart hook, and invoked an installed Hakim skill. That accepted evidence is bounded to the recorded host/version and does not complete P0 for the remaining hosts:
 
 ```bash
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -146,7 +146,7 @@ npm run remove:opencode -- --target /path/to/repository
 
 These commands exercise the same managed project-local lifecycle used by the Git-backed bootstrap. They are not required for normal first-run use.
 
-Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE` until their own exact-source journeys are accepted. P0 additionally remains `HOLD_FOR_HOST_NATIVE_PROOF` until every maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
+Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE`. For frozen beta.4, Codex is accepted while Claude Code, GitHub Copilot CLI, and OpenCode remain `NOT_RUN`; P0 remains `HOLD_FOR_HOST_NATIVE_PROOF` until every maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
 
 ## Inspect all maintained product surfaces
 
