@@ -7,10 +7,16 @@ import { parseTomlScalarTables } from '../scripts/lib/structured_metadata.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+const readJson = (relative) => JSON.parse(read(relative));
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const packageJson = JSON.parse(read('package.json'));
+const hasExactLine = (text, value) => text.split(/\r?\n/).some((line) => line.trim() === value);
+
+const packageJson = readJson('package.json');
 const pyproject = parseTomlScalarTables(read('pyproject.toml'));
 const version = read('core/hakim-skill/VERSION').trim();
+const distributionIdentity = readJson('conformance/distribution-identity.json');
+const currentDevelopment = distributionIdentity.current_development;
+const frozenCandidate = distributionIdentity.latest_frozen_candidate;
 const readme = read('README.md');
 const install = read('core/hakim-skill/INSTALL.md');
 const changelog = read('CHANGELOG.md');
@@ -18,20 +24,31 @@ const security = read('SECURITY.md');
 const limitations = read('KNOWN_LIMITATIONS.md');
 const liveAcceptance = read('docs/LIVE_HOST_ACCEPTANCE.md');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
-const nativeAcceptance = JSON.parse(read('conformance/native-host-acceptance.json'));
-const beta1Acceptance = JSON.parse(read('conformance/history/native-host-acceptance-1.0.0-beta.1.json'));
-const codexManifest = JSON.parse(read('plugins/codex/.codex-plugin/plugin.json'));
-const claudeManifest = JSON.parse(read('plugins/claude-code/.claude-plugin/plugin.json'));
-const copilotManifest = JSON.parse(read('plugins/copilot/plugin.json'));
-const claudeMarketplace = JSON.parse(read('.claude-plugin/marketplace.json'));
-const codexMarketplace = JSON.parse(read('.agents/plugins/marketplace.json'));
-const copilotMarketplace = JSON.parse(read('.github/plugin/marketplace.json'));
+const nativeAcceptance = readJson('conformance/native-host-acceptance.json');
+const beta1Acceptance = readJson('conformance/history/native-host-acceptance-1.0.0-beta.1.json');
+const codexManifest = readJson('plugins/codex/.codex-plugin/plugin.json');
+const claudeManifest = readJson('plugins/claude-code/.claude-plugin/plugin.json');
+const copilotManifest = readJson('plugins/copilot/plugin.json');
+const claudeMarketplace = readJson('.claude-plugin/marketplace.json');
+const codexMarketplace = readJson('.agents/plugins/marketplace.json');
+const copilotMarketplace = readJson('.github/plugin/marketplace.json');
 
 const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
-const opencodeBootstrap = 'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install';
+const immutableCommands = frozenCandidate.normal_install_commands;
 assert.deepEqual(SUPPORTED_HOSTS, expectedHosts);
 
-assert.equal(version, '1.0.0-beta.4');
+assert.equal(version, '1.0.0-beta.4.post1');
+assert.equal(currentDevelopment.version, version);
+assert.equal(currentDevelopment.channel, 'unreleased-development');
+assert.equal(currentDevelopment.candidate, false);
+assert.equal(currentDevelopment.evidence_eligible, false);
+assert.equal(frozenCandidate.version, '1.0.0-beta.4');
+assert.equal(frozenCandidate.source_sha, '5d00039479f2f11b7fe30ccf2385e70ce24553c3');
+assert.equal(frozenCandidate.frozen, true);
+assert.equal(frozenCandidate.candidate, true);
+assert.equal(distributionIdentity.next_candidate.version, '1.0.0-beta.5');
+assert.equal(distributionIdentity.next_candidate.status, 'NOT_CUT');
+
 assert.equal(packageJson.version, version);
 assert.equal(packageJson.private, true);
 assert.equal(packageJson.engines?.node, '>=22');
@@ -41,15 +58,17 @@ assert.ok(packageJson.files.includes('core/hakim-skill/skills'));
 assert.ok(packageJson.files.includes('core/hakim-skill/VERSION'));
 assert.ok(packageJson.files.includes('scripts/lib/opencode_prior_manifests.mjs'));
 assert.equal(pyproject.project.version, version);
-assert.equal(pyproject['tool.hakim'].release_channel, 'public-beta');
+assert.equal(pyproject['tool.hakim'].release_channel, 'unreleased-development');
 assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
 assert.equal(pyproject['tool.hakim'].phase, undefined);
 assert.equal(pyproject['tool.hakim'].telemetry_default, undefined);
 
-// Frozen-candidate host acceptance is structural and candidate-bounded. Unreleased
-// main development must not silently promote or rewrite this authority.
+// Current moving-main acceptance is development-only. Frozen candidate and
+// historical acceptance remain separately bounded.
 assert.equal(nativeAcceptance.product_version, version);
 assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
+assert.match(nativeAcceptance.source_policy, /unreleased development/i);
+assert.match(nativeAcceptance.source_policy, new RegExp(frozenCandidate.source_sha));
 assert.deepEqual(Object.keys(nativeAcceptance.hosts).sort(), [...expectedHosts].sort());
 for (const host of expectedHosts) {
   assert.equal(nativeAcceptance.hosts[host].status, 'NOT_RUN');
@@ -68,21 +87,24 @@ assert.equal(packageJson.scripts['build:native-plugin'], undefined);
 assert.equal(packageJson.scripts['verify:native-prerelease'], undefined);
 assert.equal(packageJson.scripts['accept:host'], 'node scripts/hakim_live_host_acceptance.mjs');
 assert.equal(packageJson.scripts['accept:host:json'], 'node scripts/hakim_live_host_acceptance.mjs --json');
+assert.equal(packageJson.scripts['check:distribution-identity'], 'node tests/test_distribution_identity_contract.mjs');
 assert.equal(codexManifest.version, version);
 assert.equal(claudeManifest.version, version);
 assert.equal(copilotManifest.version, version);
 assert.equal(claudeMarketplace.plugins.find((item) => item.name === 'hakim')?.version, version);
+assert.equal(copilotMarketplace.metadata.version, version);
 assert.equal(copilotMarketplace.plugins.find((item) => item.name === 'hakim')?.version, version);
 assert.equal(codexMarketplace.name, 'hakim');
 assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
 
-// Documentation projection checks intentionally avoid locking copy to one sentence.
 assert.match(readme, /public beta software/i);
 assert.match(readme, new RegExp(escapeRegExp(version)));
+assert.match(readme, new RegExp(escapeRegExp(frozenCandidate.version)));
 assert.match(readme, /Latest frozen prerelease/i);
-assert.match(readme, /Unreleased development/i);
-assert.match(security, new RegExp(escapeRegExp(version)));
-assert.match(limitations, new RegExp(escapeRegExp(version)));
+assert.match(readme, /Moving `main`/i);
+assert.match(readme, /P0 — Truthful Immutable Distribution Identity/);
+assert.match(security, new RegExp(escapeRegExp(frozenCandidate.version)));
+assert.match(limitations, new RegExp(escapeRegExp(frozenCandidate.version)));
 assert.match(changelog, /^## Unreleased\b/m);
 for (const prerelease of ['1.0.0-beta.4', '1.0.0-beta.3', '1.0.0-beta.2', '1.0.0-beta.1']) {
   assert.match(changelog, new RegExp(`^## ${escapeRegExp(prerelease)}\\b`, 'm'));
@@ -116,7 +138,7 @@ assert.equal(fs.existsSync(path.join(root, 'docs/F03_PASS_EVIDENCE.md')), false,
 assert.equal(fs.existsSync(path.join(root, 'docs/F03F_LIVE_EVIDENCE.md')), false, 'phase-specific F03f evidence must not remain in the primary docs surface');
 
 assert.match(readme, /need\? → reuse existing code\?/);
-assert.match(readme, /^## Quick start$/m);
+assert.match(readme, /^## Quick start — frozen beta\.4$/m);
 assert.match(readme, /npm run plan:install -- --host all/);
 assert.match(install, /npm run plan:install -- --host all/);
 assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
@@ -156,21 +178,30 @@ for (const host of expectedHosts) {
 }
 
 const combinedFirstRun = `${readme}\n${install}`;
-assert.match(combinedFirstRun, /codex plugin marketplace add Habib1001-m\/hakim/);
+for (const [host, command] of Object.entries(immutableCommands)) {
+  assert.ok(hasExactLine(readme, command), `${host} immutable command missing from README`);
+  assert.ok(hasExactLine(install, command), `${host} immutable command missing from INSTALL`);
+  assert.ok(command.includes(frozenCandidate.source_sha), `${host} immutable command does not contain exact source SHA`);
+}
 assert.match(combinedFirstRun, /hakim@hakim/);
-assert.match(combinedFirstRun, /claude plugin marketplace add Habib1001-m\/hakim/);
 assert.match(combinedFirstRun, /claude plugin install hakim@hakim/);
 assert.match(combinedFirstRun, /\/hakim:full/);
-assert.match(combinedFirstRun, /copilot plugin marketplace add Habib1001-m\/hakim/);
 assert.match(combinedFirstRun, /copilot plugin install hakim@hakim/);
 assert.match(combinedFirstRun, /\/hakim\/hakim (?:full|lite|ultra|off)/);
-assert.ok(combinedFirstRun.includes(opencodeBootstrap));
 assert.ok(!combinedFirstRun.includes('--package=npm@11'), 'normal OpenCode first-run must not require the npm 11 acceptance wrapper');
-assert.match(combinedFirstRun, /Git-backed bootstrap/);
+assert.match(combinedFirstRun, /exact-SHA|exact source commit|immutable source/i);
 assert.match(combinedFirstRun, /does not edit `opencode\.json`/);
 
+for (const obsoleteLine of [
+  'codex plugin marketplace add Habib1001-m/hakim',
+  'claude plugin marketplace add Habib1001-m/hakim',
+  'copilot plugin marketplace add Habib1001-m/hakim',
+  'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install',
+]) {
+  assert.equal(hasExactLine(combinedFirstRun, obsoleteLine), false, `moving-main normal install line remains: ${obsoleteLine}`);
+}
+
 const opencodeReadme = read('plugins/opencode/README.md');
-assert.ok(opencodeReadme.includes(opencodeBootstrap));
 assert.match(opencodeReadme, /Source-checkout fallback/);
 assert.match(opencodeReadme, /^## Evidence boundaries$/m);
 assert.match(opencodeReadme, /mode-selection turn itself is intentionally not a repository task/i);
@@ -240,4 +271,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing from package.json: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, frozen acceptance ${nativeAcceptance.overall_status}, ${documentedScripts.size} documented npm scripts, version ${version}`);
+console.log(`public first-run contract OK: ${expectedHosts.length} maintained hosts, current development ${version}, frozen ${frozenCandidate.version}@${frozenCandidate.source_sha.slice(0, 7)}, ${documentedScripts.size} documented npm scripts`);
