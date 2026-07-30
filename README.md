@@ -28,17 +28,17 @@ Hakim is public beta software.
 | External evaluator campaign | Suspended pending a separate product decision |
 | npm registry / central marketplace publication | Not claimed |
 
-`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, and normal install sources.
+`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, declared normal install sources, and their host-resolution proof state. P0 currently remains `HOLD_FOR_HOST_NATIVE_PROOF`; command text is not runtime evidence.
 
 Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
 
 R3.2 has live Copilot CLI evidence for silent parent-session presence, bounded persisted modes, current-turn mode control, and subagent continuity. That development evidence is not silently relabeled as beta.4 release-candidate host acceptance.
 
-See [Product Readiness](docs/PRODUCT_READINESS.md), [Operational Presence](docs/OPERATIONAL_PRESENCE.md), and [Supported Hosts](SUPPORTED_HOSTS.md) for the maintained truth.
+See [Product Readiness](docs/PRODUCT_READINESS.md), [Operational Presence](docs/OPERATIONAL_PRESENCE.md), [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md), and [Supported Hosts](SUPPORTED_HOSTS.md) for the maintained truth.
 
 ## Quick start — frozen beta.4
 
-The normal first-run commands below all resolve the same exact beta.4 source commit. They do not follow moving `main`.
+The commands below are the current frozen beta.4 transport declarations and each names the expected exact beta.4 SHA. They do not follow moving `main`, but P0 remains on hold until disposable real-host journeys record the source each host actually resolved, the installed version, activation, and invocation.
 
 ### Codex
 
@@ -93,7 +93,7 @@ The exact-SHA Git bootstrap invokes Hakim's guarded project-local managed lifecy
 
 Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
 
-See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries.
+See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the exact evidence required before these declarations become accepted host-resolution proof.
 
 ## Unreleased development
 
