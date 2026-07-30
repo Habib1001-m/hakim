@@ -6,7 +6,8 @@
     "source_ref": "main",
     "frozen": false,
     "candidate": false,
-    "evidence_eligible": false
+    "evidence_eligible": false,
+    "native_acceptance_projection": "conformance/native-host-acceptance.json"
   },
   "latest_frozen_candidate": {
     "channel": "public-beta",
@@ -15,6 +16,7 @@
     "source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
     "frozen": true,
     "candidate": true,
+    "native_acceptance_projection": "conformance/history/native-host-acceptance-1.0.0-beta.4.json",
     "normal_install_commands": {
       "codex": "codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3",
       "claude-code": "claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
