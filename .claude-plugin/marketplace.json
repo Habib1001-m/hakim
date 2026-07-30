@@ -1,6 +1,8 @@
 {
   "name": "hakim",
-  "owner": {"name": "Habib1001-m"},
+  "owner": {
+    "name": "Habib1001-m"
+  },
   "description": "Hakim host-native coding governance plugins.",
   "plugins": [
     {
@@ -14,7 +16,12 @@
       "description": "Evidence-bound coding governance for Claude Code with skills, agents, hooks, and native slash workflows.",
       "version": "1.0.0-beta.4",
       "category": "development",
-      "tags": ["coding", "review", "governance", "minimalism"]
+      "tags": [
+        "coding",
+        "review",
+        "governance",
+        "minimalism"
+      ]
     }
   ]
 }
