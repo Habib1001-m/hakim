@@ -2,7 +2,7 @@
 
 Notable public Hakim changes are recorded here. Evidence identities remain tied to their exact immutable refs; changelog grouping does not move or relabel accepted evidence.
 
-## Unreleased — R3.2
+## Unreleased — R3.2 / `1.0.0-beta.4.post1`
 
 ### Changed
 
@@ -11,10 +11,15 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Added plugin-qualified Copilot mode control through `/hakim/hakim <mode>` with split persistence/current-turn responsibilities.
 - Added one evidence-justified `subagentStart` presence hook after a real Explore probe showed `MODE=NONE`; the accepted rerun returned `MODE=ultra` while the target repository remained clean.
 - Established the R3.2 operating principle: **Free reasoning. Safe action. Evidence-bound claims.**
-- Reconciled public documentation so frozen prerelease truth (`1.0.0-beta.4`) is separated from unreleased `main` development.
+- Advanced moving `main` away from the frozen beta.4 identity to explicit development identity `1.0.0-beta.4.post1`.
+- Added `conformance/distribution-identity.json` as the machine-readable authority for current development, frozen beta.4, its exact source SHA, normal install commands, and the not-yet-cut beta.5 state.
+- Pinned normal Codex, Claude Code, GitHub Copilot CLI, and OpenCode beta.4 install routes to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+- Added deterministic contracts that reject unpinned normal routes, version/channel mismatch, frozen ref/SHA mismatch, and frozen/development identity collapse.
+- Reordered product readiness so P0 — Truthful Immutable Distribution Identity closes before F05 begins.
 
 ### Pending
 
+- Complete P0 validation on the exact final pull-request head.
 - F05 — Objective Completion Truth.
 - F06 — deterministic operational regressions.
 - F07 — cut a new prerelease identity and rerun the production-like D01 task before broader promotion.
@@ -32,7 +37,7 @@ No beta.5, stable release, external evaluator campaign, npm registry publication
 - Made broad-suite green insufficient by itself for semantic-equivalence claims on decision logic.
 - Added the exact beta.3 OpenCode prior-manifest authority required for bounded beta.4 upgrade/removal behavior.
 
-Frozen beta.4 evidence remains at `evidence/beta4-r31-5d00039`.
+Frozen beta.4 evidence remains at `evidence/beta4-r31-5d00039` and exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
 
 ## 1.0.0-beta.3 — R3 behavioral remediation
 
