@@ -19,7 +19,8 @@ Repository conformance, marketplace schema support, and prior observations must 
 IDENTITY_MODEL              = PASS
 METADATA_RECONCILIATION     = PASS
 TRANSPORT_DECLARATIONS      = PRESENT
-HOST_RESOLUTION_PROOF       = NOT_RUN
+HOST_RESOLUTION_PROOF       = PARTIAL_1_OF_4
+ACCEPTED_HOSTS              = codex
 P0_OVERALL                  = HOLD_FOR_HOST_NATIVE_PROOF
 ```
 
@@ -27,12 +28,20 @@ No beta.5 candidate, release, promotion, external evaluator campaign, npm public
 
 ## Host contract matrix
 
-| Host | Current frozen-route declaration | Static contract boundary | Required proof |
+| Host | Current frozen-route declaration | Static and observed boundary | Required proof |
 |---|---|---|---|
-| Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Codex documents Git marketplace checkout through `--ref`; the repository has not yet accepted a disposable journey proving that this exact full SHA is the resolved marketplace source. | Record marketplace source SHA, installed identity, hook visibility/trust state, invocation, host version, and clean disposable state. |
+| Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Codex documents Git marketplace checkout through `--ref`. A disposable Codex `0.145.0` journey resolved the exact full SHA, installed `1.0.0-beta.4`, matched all 10 distributed files byte-for-byte, completed the trusted SessionStart hook, and invoked `$hakim:hakim-help`. The operator explicitly accepted the packet on 2026-07-31. | **Satisfied for Codex.** Preserve the accepted packet, public-safe evidence reference, and packet hash. |
 | Claude Code | `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Claude documents marketplace refs as branch/tag selectors. Exact commit pinning is explicitly supported for plugin source objects, but the frozen beta.4 marketplace entry uses a relative in-repository source. The command therefore remains unproven until exercised. | Record registered marketplace source, installed cache/source SHA, installed version, activation, invocation, and host version. |
 | GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Copilot documents `owner/repo#ref` registration and exact `sha` fields for plugin source objects. The frozen beta.4 marketplace entry is still relative to its checkout, so exact full-SHA registration must be verified in a disposable journey. | Record marketplace source SHA, installed plugin source SHA/version, activation, skills/agents visibility, invocation, and host version. |
 | OpenCode | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | The Git package specification names an exact commit and B7 observed the lifecycle route, but B7 had `Authority: NONE` and did not promote candidate acceptance. | Run the exact-source CLI in a clean target, record resolved package/source identity, persisted manifest identity, status, invocation, Node/npm versions, and cleanup. |
+
+## Accepted packet ledger
+
+| Host | Status | Verified at | Evidence | Durable packet | SHA-256 |
+|---|---|---|---|---|---|
+| Codex | `PASS` | `2026-07-30T21:16:31Z` | `https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471` | `conformance/history/p0-host-transport/codex-1.0.0-beta.4.json` | `fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3` |
+
+The ledger records only packets explicitly accepted by the operator. A generated `PASS` packet remains candidate evidence until that acceptance occurs.
 
 ## Why the marketplace manifests are not rewritten yet
 
@@ -107,16 +116,16 @@ A packet reports `PASS` only when all of the following are present and exact:
 - installation, activation, and invocation all observed as `PASS`;
 - public-safe evidence reference.
 
-A `PASS` packet remains a review input. It does not mutate or promote `conformance/history/native-host-acceptance-1.0.0-beta.4.json`.
+A `PASS` packet remains a review input. It does not mutate or promote `conformance/history/native-host-acceptance-1.0.0-beta.4.json` without explicit operator acceptance.
 
 ## Ordered execution
 
-1. Run Codex in an isolated plugin home and capture the resolved marketplace checkout and installed plugin identity.
+1. **Codex — accepted.** Isolated marketplace resolution, installed byte identity, SessionStart activation, and skill invocation are recorded in the accepted packet ledger.
 2. Run Claude Code in an isolated plugin cache/home and capture the registered marketplace source plus installed cache identity.
 3. Run GitHub Copilot CLI with an isolated `COPILOT_HOME`/cache and capture marketplace plus installed plugin identity.
 4. Run OpenCode against a fresh non-product target and capture the exact package/source and persisted manifest.
-5. Reconcile all packets into `conformance/history/native-host-acceptance-1.0.0-beta.4.json` only after explicit operator acceptance.
-6. Rerun canonical and exact-head Public CI.
+5. Reconcile each remaining packet into `conformance/history/native-host-acceptance-1.0.0-beta.4.json` only after explicit operator acceptance.
+6. Rerun canonical and exact-head Public CI after every accepted evidence mutation and on the final head.
 
 ## Exit criteria
 
