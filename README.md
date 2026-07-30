@@ -57,7 +57,7 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-The marketplace command is catalog discovery, not the immutable pin. The catalog entry advertises `1.0.0-beta.4` and uses an exact-SHA `git-subdir` plugin source for `plugins/claude-code`. A previous attempt to append the commit as `#<sha>` to the marketplace URL failed on Claude Code `2.1.220` because the host treated it as a branch; that superseded route is not documented as a normal install path.
+The marketplace command is catalog discovery, not the immutable pin. The Claude catalog entry advertises `1.0.0-beta.4` and uses an exact-SHA `git-subdir` plugin source for `plugins/claude-code`. A previous attempt to append the commit as `#<sha>` to the marketplace URL failed on Claude Code `2.1.220` because the host treated it as a branch; that superseded route is not documented as a normal install path.
 
 Start Claude Code normally. Maintained commands include `/hakim:help`, `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, and `/hakim:gain`.
 
