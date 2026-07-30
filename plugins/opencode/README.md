@@ -1,7 +1,7 @@
 # Hakim for OpenCode
 
-**Status:** maintained project-local OpenCode integration. Latest frozen prerelease: `1.0.0-beta.4`; current `main` also contains unreleased R3.2 development accepted through F04. Frozen beta.4 OpenCode live-host acceptance remains `NOT_RUN` pending exact-candidate evidence.  
-**Distribution:** Git-backed bootstrap into repository-local OpenCode files; no npm registry publication or global installer.
+**Status:** maintained project-local OpenCode integration. Frozen prerelease `1.0.0-beta.4` is at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is unreleased development, not a frozen candidate. Frozen beta.4 OpenCode live-host acceptance remains `NOT_RUN` pending exact-candidate evidence.  
+**Distribution:** exact-source Git bootstrap into repository-local OpenCode files; no npm registry publication or global installer.
 
 ## What this plugin does
 
@@ -24,7 +24,7 @@ It uses OpenCode's native configuration and prompt surfaces to:
 
 The mode-selection turn itself is intentionally not a repository task: it must not load auxiliary Hakim skills, inspect the repository, or run tools merely to change mode.
 
-Repository tests cover documented hook shapes, package surface, managed project-local lifecycle, adversarial verification-to-mutation races, foreign system-content coexistence, multi-session state isolation, and direct mode activation. Real-host acceptance remains a separate evidence layer.
+Repository tests cover documented hook shapes, package surface, managed project-local lifecycle, adversarial verification-to-mutation races, foreign system-content coexistence, multi-session state isolation, direct mode activation, and distribution identity. Real-host acceptance remains a separate evidence layer.
 
 ## Installed layout
 
@@ -51,24 +51,22 @@ Repository tests cover documented hook shapes, package surface, managed project-
 
 The installer does **not** create or modify `opencode.json`. OpenCode discovers the project-local plugin from `.opencode/plugins/`; Hakim registers the installed skill path at load time.
 
-## Install — Git-backed bootstrap
+## Install frozen beta.4 — exact Git bootstrap
 
 From the target repository:
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install
 ```
 
-That command uses npm's Git-package transport to run the bounded `hakim-opencode` bootstrap. It does not install a published npm-registry Hakim package and creates no global Hakim/OpenCode state.
+That command uses npm's Git-package transport to run the bounded `hakim-opencode` bootstrap from the exact frozen beta.4 source. It does not install a published npm-registry Hakim package and creates no global Hakim/OpenCode state.
 
-Read-only inspection:
+Read-only inspection uses the same immutable source:
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode install --dry-run
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode status
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install --dry-run
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode status
 ```
-
-For immutable reproduction or acceptance, pin the Git package spec to the exact commit required by the evidence workflow.
 
 The managed installer supports only bounded safe transitions:
 
@@ -99,16 +97,16 @@ The activation hook keeps at most one Hakim-owned block delimited by `<!-- hakim
 
 Hakim never overwrites an existing OpenCode command with the same name.
 
-## Remove
+## Remove frozen beta.4
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode remove
 ```
 
 Optional dry run:
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove --dry-run
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode remove --dry-run
 ```
 
 Removal accepts a complete byte-verified supported installed manifest, including supported older Hakim versions. It does not require the currently executing package bytes to equal the older installed payload.
@@ -129,16 +127,21 @@ That is a JavaScript runtime contract, not universal OpenCode/OS compatibility.
 
 ## Source-checkout fallback
 
-Repository development and manual lifecycle inspection can use:
+Repository development and manual lifecycle inspection can use an explicit checkout:
 
 ```bash
+git clone https://github.com/Habib1001-m/hakim.git
+cd hakim
+git checkout main
 npm run plan:install -- --host opencode --target /path/to/repository
 npm run install:opencode -- --target /path/to/repository
 npm run install:opencode -- --target /path/to/repository --apply
 npm run remove:opencode -- --target /path/to/repository
 ```
 
-The first two install surfaces are read-only/dry-run; the apply/remove paths use the same managed lifecycle as the Git-backed bootstrap.
+The first two install surfaces are read-only/dry-run; the apply/remove paths use the same managed lifecycle as the exact-source bootstrap.
+
+Moving `main` is development-only. Record the exact 40-character source commit for every observation. It is not a frozen candidate and is not release/promotion evidence.
 
 ## Validate repository-side behavior
 
@@ -149,6 +152,7 @@ node tests/test_hakim_opencode_adversarial_transactions.mjs
 node tests/test_hakim_opencode_cli.mjs
 node tests/test_hakim_opencode_package_surface.mjs
 node tests/test_node_support_contract.mjs
+npm run check:distribution-identity
 npm test
 npm run check:evidence-script
 ```
@@ -157,9 +161,9 @@ These checks prove their deterministic repository/package scope only. They do no
 
 ## Evidence boundaries
 
-- The Git-backed bootstrap is transport over the project-local managed lifecycle; it does not introduce global Hakim state.
-- The frozen beta.4 OpenCode path is `NOT_RUN` in `conformance/native-host-acceptance.json`; exact-candidate install/start/invocation evidence is required before promotion.
+- The exact-SHA Git bootstrap is transport over the project-local managed lifecycle; it does not introduce global Hakim state.
+- Frozen beta.4 OpenCode remains `NOT_RUN` pending exact-candidate install/start/invocation evidence.
 - Accepted beta.1 and frozen beta.2/beta.3 evidence remains candidate-bounded historical evidence and is not reused as beta.4 proof.
-- Unreleased R3.2 work on `main` is a separate development identity; no beta.5 evidence exists until a candidate is deliberately cut.
+- Unreleased R3.2 work on moving `main` is a separate development identity; no beta.5 evidence exists until a candidate is deliberately cut.
 - Host-native permissions, trust, configuration, and runtime behavior remain authoritative.
 - Public source availability does not imply npm registry publication, central marketplace publication, global installation, signing, or universal-runtime availability.
