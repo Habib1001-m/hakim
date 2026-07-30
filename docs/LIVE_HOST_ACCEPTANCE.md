@@ -130,13 +130,13 @@ node "$NPM11_NPX" --yes \
   hakim-opencode install --json
 ```
 
-This is acceptance-only tooling for exact commit evidence. It does not upgrade or replace system npm, alter the normal quick start, or substitute a different package transport.
+This is acceptance-only tooling for exact commit evidence. It does not upgrade or replace the system npm, alter the normal quick start, or substitute a different package transport.
 
 Then start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
 
 OpenCode loads the project-local plugin from `.opencode/plugins/`. The managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global state.
 
-## 4. Record an exact-identity evidence packet
+## 4. Record an exact-identity candidate evidence packet
 
 After actually observing the journey, rerun the harness with the three checkpoints and a public-safe evidence reference.
 
@@ -178,7 +178,7 @@ The tested identity reaches `PASS` only when:
 
 `--output` is create-only. The harness refuses to overwrite an existing evidence packet; use a new path for every run so earlier evidence remains inspectable.
 
-A candidate packet is evidence for review, not authorization to edit a projection. Do not fabricate a packet that was not actually produced or observed.
+A candidate evidence packet is evidence for review, not authorization to edit a projection. Do not fabricate a packet that was not actually produced or observed.
 
 ## 5. Promote only the matching projection after review
 
