@@ -2,16 +2,18 @@
 
 Hakim is public beta software distributed from public source and repository-hosted/native Git marketplace surfaces.
 
-The latest frozen prerelease is `1.0.0-beta.4`. Current `main` also contains unreleased R3.2 development accepted through F04. Those are separate identities: R3.2 development evidence does not silently promote beta.4 and no beta.5 candidate exists yet.
+The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`). Moving `main` reports `1.0.0-beta.4.post1` and is explicit unreleased development, not a frozen candidate and not eligible for release or promotion evidence.
 
-No npm registry package or central marketplace/directory listing is currently claimed.
+`conformance/distribution-identity.json` is the machine-readable authority for these identities and their normal install sources. No npm registry package or central marketplace/directory listing is currently claimed.
 
 ## Codex
 
 Use Codex `0.131.0` or newer for the maintained native plugin-hook path.
 
+Install the frozen beta.4 marketplace from its exact source commit:
+
 ```bash
-codex plugin marketplace add Habib1001-m/hakim
+codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
 ```
 
 Open `/plugins`, select the **Hakim** marketplace, install `hakim`, review/trust the SessionStart hook in `/hooks`, then start a new thread. The installed identity is `hakim@hakim`.
@@ -29,12 +31,12 @@ $hakim:hakim-help
 
 `hakim-gain` is the retained beta compatibility ID for evidence-status reporting; it does not imply quantified performance gain.
 
-`npm run launch:codex` remains a source-checkout development fallback, not the product installation path.
+`npm run launch:codex` remains a source-checkout development fallback, not the frozen product installation path.
 
 ## Claude Code
 
 ```bash
-claude plugin marketplace add Habib1001-m/hakim
+claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
 claude plugin install hakim@hakim
 ```
 
@@ -53,12 +55,12 @@ Maintained commands include:
 
 Hakim also ships scoped specialist agents. Claude Code's own installation scope, permissions, plugin cache, approval controls, managed policy, and trust remain authoritative.
 
-`npm run launch:claude` is a source-checkout development fallback using `--plugin-dir`; persistent product installation should use the native marketplace above.
+`npm run launch:claude` is a source-checkout development fallback using `--plugin-dir`; persistent frozen-product installation should use the exact-SHA marketplace above.
 
 ## GitHub Copilot
 
 ```bash
-copilot plugin marketplace add Habib1001-m/hakim
+copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
 copilot plugin install hakim@hakim
 ```
 
@@ -70,7 +72,7 @@ copilot plugin list
 
 Inside Copilot CLI, `/skills list` and `/agent` expose Hakim's maintained skills and custom agents.
 
-On the accepted unreleased R3.2 path, Hakim is present automatically after native installation. Explicit mode control uses the plugin-qualified skill route:
+Explicit mode control uses the plugin-qualified skill route:
 
 ```text
 /hakim/hakim full
@@ -79,7 +81,7 @@ On the accepted unreleased R3.2 path, Hakim is present automatically after nativ
 /hakim/hakim off
 ```
 
-Default `full` is stateless. Non-default modes use bounded host-owned plugin data. R3.2 also adds evidence-justified subagent continuity through the same maintained presence authority.
+Default `full` is stateless. Non-default modes use bounded host-owned plugin data. Silent parent-session presence and subagent continuity are accepted on the unreleased R3.2 development path; they are not silently claimed for frozen beta.4 without exact-candidate live-host evidence.
 
 `.github/copilot-instructions.md` is an optional repository baseline/fallback, not the primary product distribution. The legacy `install:copilot` source-checkout command exists only for repositories that explicitly want that baseline file and never overwrites an existing file.
 
@@ -90,16 +92,16 @@ Hakim is a guarded **project-local** OpenCode plugin. Normal installation does n
 From the target repository:
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode install
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install
 ```
 
-This uses npm only as Git transport/command execution for the public GitHub repository. Hakim is not published to the npm registry, creates no global Hakim/OpenCode installation, and the shipped bootstrap declares Node `>=22`.
+This uses npm only as Git transport/command execution for the exact frozen GitHub source. Hakim is not published to the npm registry, creates no global Hakim/OpenCode installation, and the shipped bootstrap declares Node `>=22`.
 
-Read-only inspection:
+Read-only inspection uses the same immutable source:
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode install --dry-run
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode status
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install --dry-run
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode status
 ```
 
 The managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json` and validates schema, adapter/version support, target inventory, path safety, and exact owned bytes before mutation.
@@ -114,19 +116,24 @@ Partial, modified, unsafe, symlinked, malformed/unsupported-manifest, or unowned
 
 After installation, start OpenCode from the target repository and use `/hakim-help` or `/hakim full ...`. `/hakim <mode>` is a direct session-mode switch and must not require repository inspection merely to set the mode.
 
-Remove project-local Hakim state with:
+Remove project-local Hakim state with the same exact-source CLI:
 
 ```bash
-npx --yes --package=github:Habib1001-m/hakim hakim-opencode remove
+npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode remove
 ```
 
 Removal and rollback use bounded ownership, same-filesystem quarantine, post-move verification, and no-clobber restoration. Hakim never claims a cross-process lock or immunity from arbitrary hostile filesystem actors; conflicting concurrent state causes refusal or incomplete rollback rather than destructive guessing.
 
-### Source-checkout fallback
+### Source-checkout development
+
+Moving `main` is development-only. It is not a frozen candidate and observations from it are not release or promotion evidence. Any development observation must record the exact 40-character source commit.
 
 For repository development or manual lifecycle inspection:
 
 ```bash
+git clone https://github.com/Habib1001-m/hakim.git
+cd hakim
+git checkout main
 npm run plan:install -- --host opencode --target /path/to/repository
 npm run install:opencode -- --target /path/to/repository
 npm run install:opencode -- --target /path/to/repository --apply
@@ -135,15 +142,16 @@ npm run remove:opencode -- --target /path/to/repository
 
 These commands exercise the same managed project-local lifecycle used by the Git-backed bootstrap. They are not required for normal first-run use.
 
-The frozen beta.4 OpenCode path remains `NOT_RUN` in `conformance/native-host-acceptance.json`. Older accepted evidence remains candidate-bounded and historical.
+Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE` until their own exact-source journeys are accepted. Older accepted evidence remains candidate-bounded and historical.
 
 ## Inspect all maintained product surfaces
 
-From a Hakim source checkout:
+From an explicit Hakim source checkout:
 
 ```bash
 npm run doctor:fast
 npm run plan:install -- --host all
+npm run check:distribution-identity
 ```
 
 The install plan is read-only and reports the maintained Codex, Claude Code, GitHub Copilot, and OpenCode product surfaces.
