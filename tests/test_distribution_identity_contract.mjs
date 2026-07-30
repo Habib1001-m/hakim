@@ -48,8 +48,8 @@ const installDocs = [
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
 const expectedHosts = ['claude-code', 'codex', 'github-copilot', 'opencode'];
-const acceptedHost = 'codex';
-const pendingHosts = expectedHosts.filter((host) => host !== acceptedHost);
+const acceptedHosts = ['codex', 'claude-code'];
+const pendingHosts = expectedHosts.filter((host) => !acceptedHosts.includes(host));
 const exactSha = /^[0-9a-f]{40}$/;
 const exactSha256 = /^[0-9a-f]{64}$/;
 const invalidClaudeCommitRef = `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#${frozen.source_sha}`;
@@ -62,6 +62,25 @@ const obsoleteExactLines = [
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function assertAcceptedPacket(contract, expectedHost) {
+  assert.match(contract.packet_sha256, exactSha256);
+  const packetText = read(contract.packet_path);
+  const packet = JSON.parse(packetText);
+  const packetSha256 = crypto.createHash('sha256').update(packetText).digest('hex');
+  assert.equal(packetSha256, contract.packet_sha256);
+  assert.equal(packet.packet_type, 'P0_HOST_TRANSPORT_EVIDENCE');
+  assert.equal(packet.mode, 'CANDIDATE_EVIDENCE');
+  assert.equal(packet.packet_status, 'PASS');
+  assert.equal(packet.host, expectedHost);
+  assert.equal(packet.expected.source_sha, frozen.source_sha);
+  assert.equal(packet.observed.resolved_source_sha, frozen.source_sha);
+  assert.equal(packet.observed.installed_product_version, frozen.version);
+  assert.equal(packet.observed.installation_status, 'PASS');
+  assert.equal(packet.observed.activation_status, 'PASS');
+  assert.equal(packet.observed.invocation_status, 'PASS');
+  assert.equal(packet.evidence_ref, contract.evidence_ref);
 }
 
 test('distribution identity authority separates moving development from the frozen candidate', () => {
@@ -125,7 +144,7 @@ test('frozen beta4 retains its own partially accepted machine-readable projectio
   assert.equal(frozenAcceptance.product_version, frozen.version);
   assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
   assert.match(frozenAcceptance.source_policy, new RegExp(escapeRegExp(frozen.source_sha)));
-  assert.match(frozenAcceptance.source_policy, /Codex exact-SHA transport/i);
+  assert.match(frozenAcceptance.source_policy, /Codex and Claude Code exact-SHA transport/i);
   assert.deepEqual(Object.keys(frozenAcceptance.hosts).sort(), expectedHosts);
 
   const codex = frozenAcceptance.hosts.codex;
@@ -133,6 +152,12 @@ test('frozen beta4 retains its own partially accepted machine-readable projectio
   assert.equal(codex.host_version, 'codex-cli 0.145.0');
   assert.equal(codex.verified_at, '2026-07-30T21:16:31Z');
   assert.equal(codex.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471');
+
+  const claude = frozenAcceptance.hosts['claude-code'];
+  assert.equal(claude.status, 'PASS');
+  assert.equal(claude.host_version, '2.1.220 (Claude Code)');
+  assert.equal(claude.verified_at, '2026-07-30T23:15:48.874Z');
+  assert.equal(claude.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5137151921');
 
   for (const host of pendingHosts) {
     const entry = frozenAcceptance.hosts[host];
@@ -170,16 +195,16 @@ test('normal frozen routes use an effective exact pin at the host-native layer',
   }
 });
 
-test('transport reconciliation preserves accepted Codex proof and records Claude failed-route truth', () => {
+test('transport reconciliation preserves accepted Codex and Claude proof with failed-route provenance', () => {
   const reconciliation = frozen.transport_reconciliation;
   const contracts = frozen.host_transport_contracts;
 
   assert.equal(reconciliation.status, 'HOLD_FOR_HOST_NATIVE_PROOF');
   assert.equal(reconciliation.authority, 'docs/P0_HOST_TRANSPORT_RECONCILIATION.md');
-  assert.equal(reconciliation.verified_hosts, 1);
+  assert.equal(reconciliation.verified_hosts, 2);
   assert.equal(reconciliation.required_hosts, expectedHosts.length);
   assert.match(transportAuthority, /^\*\*Status:\*\* `HOLD_FOR_HOST_NATIVE_PROOF`/m);
-  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= PARTIAL_1_OF_4/);
+  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= PARTIAL_2_OF_4/);
   assert.match(transportAuthority, /MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH/);
   assert.match(transportAuthority, /git-subdir/);
   assert.match(transportAuthority, /RESOLVED_SOURCE_SHA/);
@@ -203,38 +228,28 @@ test('transport reconciliation preserves accepted Codex proof and records Claude
   assert.equal(codex.evidence_ref, frozenAcceptance.hosts.codex.evidence_ref);
   assert.equal(codex.candidate_evidence_eligible, true);
   assert.equal(codex.packet_path, 'conformance/history/p0-host-transport/codex-1.0.0-beta.4.json');
-  assert.match(codex.packet_sha256, exactSha256);
-
-  const packetText = read(codex.packet_path);
-  const packet = JSON.parse(packetText);
-  const packetSha256 = crypto.createHash('sha256').update(packetText).digest('hex');
-  assert.equal(packetSha256, codex.packet_sha256);
-  assert.equal(packet.packet_type, 'P0_HOST_TRANSPORT_EVIDENCE');
-  assert.equal(packet.mode, 'CANDIDATE_EVIDENCE');
-  assert.equal(packet.packet_status, 'PASS');
-  assert.equal(packet.host, 'codex');
-  assert.equal(packet.expected.source_sha, frozen.source_sha);
-  assert.equal(packet.observed.resolved_source_sha, frozen.source_sha);
-  assert.equal(packet.observed.installed_product_version, frozen.version);
-  assert.equal(packet.observed.installation_status, 'PASS');
-  assert.equal(packet.observed.activation_status, 'PASS');
-  assert.equal(packet.observed.invocation_status, 'PASS');
-  assert.equal(packet.evidence_ref, codex.evidence_ref);
+  assertAcceptedPacket(codex, 'codex');
 
   const claude = contracts['claude-code'];
   assert.equal(claude.pin_layer, 'catalog-plugin-source-sha');
   assert.equal(claude.static_contract_status, 'EXACT_SHA_PLUGIN_SOURCE_DECLARED');
   assert.equal(claude.plugin_source_type, 'git-subdir');
   assert.equal(claude.plugin_source_path, 'plugins/claude-code');
-  assert.equal(claude.live_resolution_status, 'NOT_RUN');
-  assert.equal(claude.evidence_ref, null);
-  assert.equal(claude.candidate_evidence_eligible, false);
+  assert.equal(claude.live_resolution_status, 'PASS');
+  assert.equal(claude.resolved_source_sha, frozen.source_sha);
+  assert.equal(claude.installed_product_version, frozen.version);
+  assert.equal(claude.host_version, '2.1.220 (Claude Code)');
+  assert.equal(claude.verified_at, '2026-07-30T23:15:48.874Z');
+  assert.equal(claude.evidence_ref, frozenAcceptance.hosts['claude-code'].evidence_ref);
+  assert.equal(claude.candidate_evidence_eligible, true);
+  assert.equal(claude.packet_path, 'conformance/history/p0-host-transport/claude-code-1.0.0-beta.4.json');
+  assertAcceptedPacket(claude, 'claude-code');
   assert.equal(claude.superseded_failed_attempt.host_version, '2.1.220 (Claude Code)');
   assert.equal(claude.superseded_failed_attempt.status, 'FAIL');
   assert.equal(claude.superseded_failed_attempt.reason, 'MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH');
   assert.equal(claude.superseded_failed_attempt.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136565274');
 
-  for (const host of ['github-copilot', 'opencode']) {
+  for (const host of pendingHosts) {
     assert.equal(contracts[host].live_resolution_status, 'NOT_RUN');
     assert.equal(contracts[host].evidence_ref, null);
     assert.equal(contracts[host].candidate_evidence_eligible, false);

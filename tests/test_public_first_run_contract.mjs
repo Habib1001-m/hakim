@@ -70,7 +70,8 @@ for (const host of expectedHosts) assert.equal(nativeAcceptance.hosts[host].stat
 assert.equal(frozenAcceptance.product_version, frozen.version);
 assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.equal(frozenAcceptance.hosts.codex.status, 'PASS');
-for (const host of ['claude-code', 'github-copilot', 'opencode']) assert.equal(frozenAcceptance.hosts[host].status, 'NOT_RUN');
+assert.equal(frozenAcceptance.hosts['claude-code'].status, 'PASS');
+for (const host of ['github-copilot', 'opencode']) assert.equal(frozenAcceptance.hosts[host].status, 'NOT_RUN');
 
 assert.equal(beta1Acceptance.product_version, '1.0.0-beta.1');
 assert.equal(beta1Acceptance.overall_status, 'PASS');

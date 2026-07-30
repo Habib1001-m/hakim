@@ -48,9 +48,15 @@
         "plugin_source_path": "plugins/claude-code",
         "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
         "static_contract_status": "EXACT_SHA_PLUGIN_SOURCE_DECLARED",
-        "live_resolution_status": "NOT_RUN",
-        "evidence_ref": null,
-        "candidate_evidence_eligible": false,
+        "live_resolution_status": "PASS",
+        "resolved_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "installed_product_version": "1.0.0-beta.4",
+        "host_version": "2.1.220 (Claude Code)",
+        "verified_at": "2026-07-30T23:15:48.874Z",
+        "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5137151921",
+        "packet_path": "conformance/history/p0-host-transport/claude-code-1.0.0-beta.4.json",
+        "packet_sha256": "107a56c43f24c838b1a3e120a881bedea9618bb3636aeafecb4e54cdf63992e4",
+        "candidate_evidence_eligible": true,
         "superseded_failed_attempt": {
           "host_version": "2.1.220 (Claude Code)",
           "attempted_source": "https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
@@ -82,7 +88,7 @@
     "transport_reconciliation": {
       "status": "HOLD_FOR_HOST_NATIVE_PROOF",
       "authority": "docs/P0_HOST_TRANSPORT_RECONCILIATION.md",
-      "verified_hosts": 1,
+      "verified_hosts": 2,
       "required_hosts": 4
     }
   },

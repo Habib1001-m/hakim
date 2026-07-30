@@ -17,10 +17,10 @@ A command containing a SHA is one possible transport declaration, not the only v
 IDENTITY_MODEL              = PASS
 METADATA_RECONCILIATION     = PASS
 CODEX_TRANSPORT_PROOF       = PASS / OPERATOR_ACCEPTED
-CLAUDE_REPAIRED_ROUTE       = NOT_RUN
+CLAUDE_TRANSPORT_PROOF      = PASS / OPERATOR_ACCEPTED
 COPILOT_TRANSPORT_PROOF     = NOT_RUN
 OPENCODE_TRANSPORT_PROOF    = NOT_RUN
-HOST_RESOLUTION_PROOF       = PARTIAL_1_OF_4
+HOST_RESOLUTION_PROOF       = PARTIAL_2_OF_4
 P0_OVERALL                  = HOLD_FOR_HOST_NATIVE_PROOF
 ```
 
@@ -31,7 +31,7 @@ No beta.5 candidate, release, promotion, external evaluator campaign, npm public
 | Host | Effective frozen route | Static pin layer | Current proof |
 |---|---|---|---|
 | Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout `--ref` | `PASS`, operator accepted, packet integrity-bound |
-| Claude Code | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim` | `.claude-plugin/marketplace.json` plugin source `{source: git-subdir, path: plugins/claude-code, sha: 5d000...}` | repaired route `NOT_RUN` |
+| Claude Code | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim` | `.claude-plugin/marketplace.json` plugin source `{source: git-subdir, path: plugins/claude-code, sha: 5d000...}` | `PASS`, operator accepted, packet integrity-bound |
 | GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout ref | `NOT_RUN` |
 | OpenCode | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | npm Git package spec | `NOT_RUN` |
 
@@ -52,9 +52,9 @@ EVIDENCE                   = https://github.com/Habib1001-m/hakim/issues/47#issu
 
 This acceptance is bounded to Codex `0.145.0` and does not transfer to another host.
 
-## Claude failed route and repaired contract
+## Claude failed route, repaired contract, and accepted rerun
 
-A disposable Claude Code `2.1.220` journey attempted:
+A disposable Claude Code `2.1.220` journey first attempted:
 
 ```text
 claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -76,14 +76,26 @@ The failed declaration is superseded, not erased. The repaired design uses Claud
 - **catalog-advertised plugin version:** `1.0.0-beta.4`;
 - **moving source-tree plugin manifest:** remains `1.0.0-beta.4.post1` and development-only.
 
-For the pre-merge P0 journey, register the branch that contains the repaired catalog:
+For the pre-merge P0 journey, the branch containing the repaired catalog was registered only to obtain the catalog definition. The installed plugin source independently resolved the frozen SHA, reported beta.4, matched all 22 distributed product files byte-for-byte, activated through SessionStart, and invoked `/hakim:help` successfully.
 
-```bash
-claude plugin marketplace add "https://github.com/Habib1001-m/hakim.git#p0-truthful-immutable-distribution-identity"
-claude plugin install hakim@hakim
+```text
+HOST                       = claude-code
+HOST_VERSION               = 2.1.220 (Claude Code)
+RESOLVED_SOURCE_SHA        = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+INSTALLED_PRODUCT_VERSION  = 1.0.0-beta.4
+SOURCE_PRODUCT_FILES       = 22
+MISSING_FILES              = 0
+BYTE_MISMATCHES            = 0
+UNEXPECTED_PRODUCT_FILES   = 0
+INSTALLATION               = PASS
+ACTIVATION                 = PASS
+INVOCATION                 = PASS
+PACKET_SHA256              = 107a56c43f24c838b1a3e120a881bedea9618bb3636aeafecb4e54cdf63992e4
+PACKET                     = conformance/history/p0-host-transport/claude-code-1.0.0-beta.4.json
+EVIDENCE                   = https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5137151921
 ```
 
-The branch is used only to obtain the catalog definition. Acceptance requires proving that the installed plugin source itself resolves `5d00039479f2f11b7fe30ccf2385e70ce24553c3` and reports `1.0.0-beta.4`.
+This acceptance is bounded to Claude Code `2.1.220`, the recorded Linux/WSL environment, and the exact repaired route. It does not transfer to Copilot, OpenCode, another Claude version, or moving development.
 
 ## Disposable journey requirements
 
@@ -127,8 +139,8 @@ A `PASS` packet remains review input. It is promoted only after explicit operato
 ## Ordered execution
 
 1. Codex — accepted.
-2. Claude Code — rerun repaired exact-SHA catalog plugin-source journey.
-3. GitHub Copilot CLI — record marketplace and installed plugin source SHA.
+2. Claude Code — accepted.
+3. GitHub Copilot CLI — next; record marketplace and installed plugin source SHA.
 4. OpenCode — record exact package/source and persisted manifest.
 5. Reconcile each accepted packet independently.
 6. Run exact final-head Public CI after the final evidence mutation.
