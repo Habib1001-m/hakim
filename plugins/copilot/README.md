@@ -1,13 +1,17 @@
 # Hakim for GitHub Copilot
 
-Hakim is packaged as a native GitHub Copilot plugin with reusable skills and specialized custom agents. `.github/copilot-instructions.md` remains a repository baseline, but it is no longer the whole product surface.
+Hakim is packaged as a native GitHub Copilot plugin with reusable skills and specialized custom agents. `.github/copilot-instructions.md` remains an optional repository baseline, not the whole product surface.
 
-## Install in Copilot CLI
+## Distribution identity
 
-Register the Hakim marketplace and install the plugin:
+The normal product route installs frozen Hakim `1.0.0-beta.4` from exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is unreleased development, not a frozen candidate or release/promotion evidence.
+
+## Install frozen beta.4 in Copilot CLI
+
+Register the exact frozen Hakim marketplace and install the plugin:
 
 ```bash
-copilot plugin marketplace add Habib1001-m/hakim
+copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
 copilot plugin install hakim@hakim
 ```
 
@@ -31,6 +35,8 @@ The plugin is cached by Copilot. Update or remove it with:
 copilot plugin update hakim
 copilot plugin uninstall hakim
 ```
+
+An update follows the registered marketplace source. A frozen beta.4 installation must remain registered at the exact beta.4 source commit; do not replace it with moving `main` while claiming the same candidate evidence.
 
 ## Native skills
 
@@ -59,15 +65,13 @@ Use `/agent` to select one explicitly, tell Copilot to use it by name, or let Co
 
 ## Copilot app and cloud agent
 
-GitHub's plugin system is shared beyond the CLI. For repository-managed cloud-agent use, configure the Hakim marketplace in `extraKnownMarketplaces` and enable `hakim@hakim` through the repository's `.github/copilot/settings.json` according to your organization policy.
-
-Repository permissions, Copilot policy, enabled plugins, and tool permissions remain authoritative.
+GitHub's plugin system is shared beyond the CLI. Repository-managed cloud-agent configuration must identify the exact marketplace source required by the intended candidate or development workflow and follow organization policy. Repository permissions, Copilot policy, enabled plugins, and tool permissions remain authoritative.
 
 ## Repository baseline instructions
 
-The existing `.github/copilot-instructions.md` is still useful when a repository wants lightweight Hakim guidance without requiring a user-level plugin. It contains no plugin lifecycle logic and should not be presented as a substitute for the native plugin.
+The existing `.github/copilot-instructions.md` is useful when a repository wants lightweight Hakim guidance without a user-level plugin. It contains no plugin lifecycle logic and must not be presented as a substitute for the native plugin.
 
-The legacy guarded installer remains available from the Hakim source checkout for repositories that explicitly want to copy this baseline instruction file:
+The legacy guarded installer remains available from an explicit Hakim source checkout for repositories that want to copy this baseline instruction file:
 
 ```bash
 npm run plan:install -- --host github-copilot --target /path/to/repository
@@ -77,6 +81,10 @@ npm run install:copilot -- --target /path/to/repository --apply
 
 That installer is create-only and never overwrites an existing instruction file.
 
+## Moving-main development
+
+Repository contributors may work from an explicit `main` checkout, but every observation must record the exact source commit. Moving `main` is not a frozen candidate and is not release/promotion evidence.
+
 ## Product boundary
 
-Hakim does not add MCP or LSP services to Copilot because the current Hakim workflow does not require external data or a language server. Adding unused extension surfaces would violate Hakim's own smallest-safe-change rule.
+Hakim does not add MCP or LSP services to Copilot because the current workflow does not require external data or a language server. Adding unused extension surfaces would violate Hakim's own smallest-safe-change rule.
