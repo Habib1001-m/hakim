@@ -29,9 +29,15 @@
         "pin_layer": "marketplace-checkout-ref",
         "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
         "static_contract_status": "EXACT_SHA_DECLARED",
-        "live_resolution_status": "NOT_RUN",
-        "evidence_ref": null,
-        "candidate_evidence_eligible": false
+        "live_resolution_status": "PASS",
+        "resolved_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "installed_product_version": "1.0.0-beta.4",
+        "host_version": "codex-cli 0.145.0",
+        "verified_at": "2026-07-30T21:16:31Z",
+        "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471",
+        "packet_path": "conformance/history/p0-host-transport/codex-1.0.0-beta.4.json",
+        "packet_sha256": "fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3",
+        "candidate_evidence_eligible": true
       },
       "claude-code": {
         "command_key": "claude-code",
@@ -64,7 +70,7 @@
     "transport_reconciliation": {
       "status": "HOLD_FOR_HOST_NATIVE_PROOF",
       "authority": "docs/P0_HOST_TRANSPORT_RECONCILIATION.md",
-      "verified_hosts": 0,
+      "verified_hosts": 1,
       "required_hosts": 4
     }
   },
