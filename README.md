@@ -28,7 +28,7 @@ Hakim is public beta software.
 | External evaluator campaign | Suspended pending a separate product decision |
 | npm registry / central marketplace publication | Not claimed |
 
-`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex is accepted, while Claude Code, GitHub Copilot CLI, and OpenCode still require independent accepted packets.
+`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex and Claude Code are accepted; GitHub Copilot CLI and OpenCode still require independent accepted packets.
 
 Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
 
@@ -57,7 +57,7 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-The marketplace command is catalog discovery, not the immutable pin. The Claude catalog entry advertises `1.0.0-beta.4` and uses an exact-SHA `git-subdir` plugin source for `plugins/claude-code`. A previous attempt to append the commit as `#<sha>` to the marketplace URL failed on Claude Code `2.1.220` because the host treated it as a branch; that superseded route is not documented as a normal install path.
+The marketplace command is catalog discovery, not the immutable pin. The Claude catalog entry advertises `1.0.0-beta.4` and uses an exact-SHA `git-subdir` plugin source for `plugins/claude-code`. A previous attempt to append the commit as `#<sha>` to the marketplace URL failed on Claude Code `2.1.220` because the host treated it as a branch; that superseded route is not documented as a normal install path. The repaired route is accepted on Claude Code `2.1.220`, with exact source resolution, installed-byte parity, SessionStart activation, and command invocation independently observed.
 
 Start Claude Code normally. Maintained commands include `/hakim:help`, `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, and `/hakim:gain`.
 

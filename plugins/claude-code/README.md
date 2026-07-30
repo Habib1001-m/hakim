@@ -30,7 +30,7 @@ The default installation scope is `user`, so Hakim is available across projects.
 
 After installation, start Claude Code normally. If you install while a session is already open, run `/reload-plugins`.
 
-The repaired exact-SHA plugin-source route still requires a fresh disposable journey before Claude Code can be promoted in the frozen beta.4 acceptance projection.
+The repaired route is accepted on Claude Code `2.1.220`. A disposable journey resolved the exact frozen source SHA, installed beta.4, matched all 22 distributed product files byte-for-byte, activated through SessionStart, and invoked `/hakim:help`. The evidence remains bounded to that host version and environment.
 
 ## Native UX
 

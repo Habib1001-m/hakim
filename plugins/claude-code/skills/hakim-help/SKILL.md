@@ -41,7 +41,7 @@ Normal product installation is frozen Hakim `1.0.0-beta.4` at exact commit `5d00
 
 ## Evidence boundary
 
-Codex has accepted frozen beta.4 evidence. Claude Code's earlier marketplace `#<commit>` attempt failed because the host treated the SHA as a branch; the repaired exact-SHA catalog plugin-source route remains `NOT_RUN` until independently exercised. Public CI and host acceptance prove only their checked scope.
+Codex and Claude Code have accepted frozen beta.4 evidence. GitHub Copilot CLI and OpenCode remain `NOT_RUN` for this candidate. Claude's earlier marketplace `#<commit>` failure remains preserved as superseded negative evidence. Public CI and host acceptance prove only their checked scope.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 

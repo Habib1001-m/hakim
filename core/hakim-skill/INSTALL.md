@@ -4,7 +4,7 @@ Hakim is public beta software distributed from public source and repository-host
 
 The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`). Moving `main` reports `1.0.0-beta.4.post1` and is explicit unreleased development, not a frozen candidate and not eligible for release or promotion evidence.
 
-`conformance/distribution-identity.json` is the machine-readable authority for these identities, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex is accepted while Claude Code, GitHub Copilot CLI, and OpenCode remain pending. No npm registry package or central marketplace/directory listing is currently claimed.
+`conformance/distribution-identity.json` is the machine-readable authority for these identities, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex and Claude Code are accepted while GitHub Copilot CLI and OpenCode remain pending. No npm registry package or central marketplace/directory listing is currently claimed.
 
 ## Codex
 
@@ -51,6 +51,8 @@ sha  = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
 ```
 
 The superseded route that appended `#5d00039479f2f11b7fe30ccf2385e70ce24553c3` to the marketplace repository failed on Claude Code `2.1.220`: the host treated the commit as a branch selector. It must not be reused.
+
+The repaired route is accepted on Claude Code `2.1.220`. The disposable journey resolved the exact frozen SHA, installed `1.0.0-beta.4`, matched all 22 distributed product files byte-for-byte, activated through SessionStart, and invoked `/hakim:help`. That evidence remains bounded to the recorded host/version/environment.
 
 Start Claude Code normally. If Hakim was installed while a session was already open, use `/reload-plugins`.
 
@@ -156,7 +158,7 @@ npm run remove:opencode -- --target /path/to/repository
 
 These commands exercise the same managed project-local lifecycle used by the Git-backed bootstrap. They are not required for normal first-run use.
 
-Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE`. For frozen beta.4, Codex is accepted while Claude Code, GitHub Copilot CLI, and OpenCode remain `NOT_RUN`; P0 remains `HOLD_FOR_HOST_NATIVE_PROOF` until every maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
+Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE`. For frozen beta.4, Codex and Claude Code are accepted while GitHub Copilot CLI and OpenCode remain `NOT_RUN`; P0 remains `HOLD_FOR_HOST_NATIVE_PROOF` until every maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
 
 ## Inspect all maintained product surfaces
 

@@ -16,12 +16,11 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Pinned normal Codex, GitHub Copilot CLI, and OpenCode beta.4 transports to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
 - Reconciled Claude Code after a disposable `2.1.220` journey proved that marketplace `#<commit>` is treated as a branch selector: the catalog now advertises frozen `1.0.0-beta.4` and pins `plugins/claude-code` through an exact-SHA `git-subdir` plugin source.
 - Added deterministic contracts that reject unsupported Claude source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, and frozen/development identity collapse.
-- Accepted the frozen beta.4 Codex packet while keeping P0 at `1/4` until Claude Code, GitHub Copilot CLI, and OpenCode are independently accepted.
+- Accepted exact-candidate Codex and Claude Code packets, advancing P0 host proof to `2/4` while GitHub Copilot CLI and OpenCode remain independently pending.
 - Reordered product readiness so P0 — Truthful Immutable Distribution Identity closes before F05 begins.
 
 ### Pending
 
-- Rerun the repaired Claude Code exact-SHA catalog plugin-source journey.
 - Complete GitHub Copilot CLI and OpenCode P0 transport packets.
 - Complete P0 validation on the exact final pull-request head.
 - F05 — Objective Completion Truth.
