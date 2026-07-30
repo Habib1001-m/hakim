@@ -84,8 +84,8 @@ test('doctor derives native-host recovery guidance from the host that actually f
   assert.doesNotMatch(report.next_safe_action, /current OpenCode managed lifecycle/i);
 });
 
-test('beta.4 accepts only exact frozen beta.2 and beta.3 persisted OpenCode manifests as prior managed authority', () => {
-  assert.equal(CURRENT_VERSION, '1.0.0-beta.4');
+test('current development accepts only exact frozen beta.2 and beta.3 persisted OpenCode manifests as prior managed authority', () => {
+  assert.equal(CURRENT_VERSION, '1.0.0-beta.4.post1');
   assert.equal(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.length, 2);
   const byVersion = new Map(SUPPORTED_PERSISTED_PRIOR_MANIFESTS.map((manifest) => [manifest.product_version, manifest]));
   const beta2 = byVersion.get(FROZEN_BETA2_VERSION);
@@ -114,7 +114,7 @@ test('beta.4 accepts only exact frozen beta.2 and beta.3 persisted OpenCode mani
   assert.match(refused.message, /exact supported prior manifest/i);
 });
 
-test('failed supported beta.1 to current upgrade reports the version actually restored after complete rollback', () => {
+test('failed supported beta.1 to current development upgrade reports the version actually restored after complete rollback', () => {
   const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-product-truth-upgrade-'));
   const target = path.join(parent, 'repository');
   fs.mkdirSync(target);
