@@ -27,16 +27,20 @@ Use this one-screen reference. Hakim keeps one capability contract while each ho
 | `hakim-gain` | Show evidence status. The `gain` ID is retained for beta compatibility; it does not claim a quantified gain. |
 | `hakim-help` | Show this reference without changing state. |
 
+## Distribution identity
+
+Normal product installation is frozen Hakim `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is unreleased development, not a frozen candidate or release/promotion evidence.
+
 ## Native host use
 
-- **Codex:** install `hakim@hakim` from the Hakim Git marketplace, then use skills such as `$hakim:hakim`, `$hakim:hakim-review`, and `$hakim:hakim-help`.
-- **Claude Code:** install `hakim@hakim`; use `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, or `/hakim:help`.
-- **GitHub Copilot:** install `hakim@hakim`; inspect Hakim skills with `/skills list` and specialized agents with `/agent`.
-- **OpenCode:** install the project-local Git-backed bundle with `npx --yes --package=github:Habib1001-m/hakim hakim-opencode install`, then use `/hakim full`, `/hakim-review`, `/hakim-audit`, `/hakim-debt`, `/hakim-gain`, or `/hakim-help`.
+- **Codex:** register `https://github.com/Habib1001-m/hakim.git` with `--ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then use skills such as `$hakim:hakim` and `$hakim:hakim-help`.
+- **Claude Code:** add `https://github.com/Habib1001-m/hakim.git#5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then use `/hakim:full`, `/hakim:review`, or `/hakim:help`.
+- **GitHub Copilot:** add `Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then inspect skills with `/skills list` and agents with `/agent`.
+- **OpenCode:** run `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install`, then use `/hakim full`, `/hakim-review`, or `/hakim-help`.
 
 ## Evidence boundary
 
-Public CI and host acceptance prove only their checked scope. Independent benchmark results, universal compatibility, correctness, security approval, performance gains, token/cost savings, adoption, and ROI remain `NOT_ESTABLISHED` unless separate accepted evidence establishes them. Detailed provenance belongs in the repository evidence and supported-host documentation, not in this quick reference.
+Public CI and host acceptance prove only their checked scope. Moving-development observations require an exact source commit and remain non-candidate evidence. Independent benchmark results, universal compatibility, correctness, security approval, performance gains, token/cost savings, adoption, and ROI remain `NOT_ESTABLISHED` unless separate accepted evidence establishes them.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 
