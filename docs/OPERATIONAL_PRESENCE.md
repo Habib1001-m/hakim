@@ -1,6 +1,6 @@
 # Hakim Operational Presence
 
-**Status:** accepted R3.2 development architecture through F04 on moving identity `1.0.0-beta.4.post1`; F05 Objective Completion Truth is active in design-validation and is not yet accepted. This is unreleased development, not a frozen candidate, and does not create release authorization.
+**Status:** accepted R3.2 development architecture through F04 on moving identity `1.0.0-beta.4.post1`; the current late-bound objective-truth slice is active in design-validation and is not yet accepted. This is unreleased development, not a frozen candidate, and does not create release authorization.
 
 Hakim is designed for capable coding agents. It should preserve model creativity and judgment while making its engineering discipline reliably present and checking objective truth only at consequential boundaries.
 
