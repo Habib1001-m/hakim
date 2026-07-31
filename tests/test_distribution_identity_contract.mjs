@@ -29,6 +29,7 @@ const readiness = read('docs/PRODUCT_READINESS.md');
 const operationalPresence = read('docs/OPERATIONAL_PRESENCE.md');
 const transportAuthority = read(frozen.transport_reconciliation.authority);
 const claudeMarketplace = readJson('.claude-plugin/marketplace.json');
+const copilotMarketplace = readJson('.github/plugin/marketplace.json');
 
 const versionedJsonPaths = [
   'plugins/codex/.codex-plugin/plugin.json',
@@ -53,11 +54,12 @@ const pendingHosts = expectedHosts.filter((host) => !acceptedHosts.includes(host
 const exactSha = /^[0-9a-f]{40}$/;
 const exactSha256 = /^[0-9a-f]{64}$/;
 const invalidClaudeCommitRef = `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#${frozen.source_sha}`;
+const invalidCopilotCommitRef = `copilot plugin marketplace add Habib1001-m/hakim#${frozen.source_sha}`;
 const obsoleteExactLines = [
   'codex plugin marketplace add Habib1001-m/hakim',
-  'copilot plugin marketplace add Habib1001-m/hakim',
   'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install',
   invalidClaudeCommitRef,
+  invalidCopilotCommitRef,
 ];
 
 function escapeRegExp(value) {
@@ -109,7 +111,7 @@ test('distribution identity authority separates moving development from the froz
   assert.equal(identity.next_candidate.status, 'NOT_CUT');
 });
 
-test('moving source-tree metadata stays development while Claude catalog intentionally advertises frozen beta4', () => {
+test('moving source-tree metadata stays development while Claude and Copilot catalogs advertise frozen beta4', () => {
   assert.equal(version, current.version);
   assert.equal(packageJson.version, current.version);
   assert.equal(pyproject.project.version, current.version);
@@ -134,9 +136,16 @@ test('moving source-tree metadata stays development while Claude catalog intenti
     sha: frozen.source_sha,
   });
 
-  const copilotMarketplace = readJson('.github/plugin/marketplace.json');
-  assert.equal(copilotMarketplace.metadata.version, current.version);
-  assert.equal(copilotMarketplace.plugins.find((item) => item.name === 'hakim')?.version, current.version);
+  const copilot = copilotMarketplace.plugins.find((item) => item.name === 'hakim');
+  assert.ok(copilot);
+  assert.equal(copilotMarketplace.metadata.version, frozen.version);
+  assert.equal(copilot.version, frozen.version);
+  assert.deepEqual(copilot.source, {
+    source: 'github',
+    repo: 'Habib1001-m/hakim',
+    sha: frozen.source_sha,
+    path: 'plugins/copilot',
+  });
 });
 
 test('frozen beta4 retains its own partially accepted machine-readable projection', () => {
@@ -172,10 +181,11 @@ test('normal frozen routes use an effective exact pin at the host-native layer',
   const commands = frozen.normal_install_commands;
   assert.deepEqual(Object.keys(commands).sort(), expectedHosts);
 
-  for (const host of ['codex', 'github-copilot', 'opencode']) {
+  for (const host of ['codex', 'opencode']) {
     assert.match(commands[host], new RegExp(escapeRegExp(frozen.source_sha)), `${host} declaration is not pinned to the frozen SHA`);
   }
   assert.equal(commands['claude-code'], 'claude plugin marketplace add Habib1001-m/hakim');
+  assert.equal(commands['github-copilot'], 'copilot plugin marketplace add Habib1001-m/hakim');
 
   const claudeSource = claudeMarketplace.plugins.find((item) => item.name === 'hakim')?.source;
   assert.equal(claudeSource?.source, 'git-subdir');
@@ -183,6 +193,13 @@ test('normal frozen routes use an effective exact pin at the host-native layer',
   assert.equal(claudeSource?.path, 'plugins/claude-code');
   assert.equal(claudeSource?.sha, frozen.source_sha);
   assert.equal(Object.hasOwn(claudeSource || {}, 'ref'), false);
+
+  const copilotSource = copilotMarketplace.plugins.find((item) => item.name === 'hakim')?.source;
+  assert.equal(copilotSource?.source, 'github');
+  assert.equal(copilotSource?.repo, 'Habib1001-m/hakim');
+  assert.equal(copilotSource?.path, 'plugins/copilot');
+  assert.equal(copilotSource?.sha, frozen.source_sha);
+  assert.equal(Object.hasOwn(copilotSource || {}, 'ref'), false);
 
   for (const [host, command] of Object.entries(commands)) {
     assert.ok(readme.includes(command), `${host} frozen declaration missing from README.md`);
@@ -195,7 +212,7 @@ test('normal frozen routes use an effective exact pin at the host-native layer',
   }
 });
 
-test('transport reconciliation preserves accepted Codex and Claude proof with failed-route provenance', () => {
+test('transport reconciliation preserves accepted proof and repaired Copilot failure provenance', () => {
   const reconciliation = frozen.transport_reconciliation;
   const contracts = frozen.host_transport_contracts;
 
@@ -206,7 +223,9 @@ test('transport reconciliation preserves accepted Codex and Claude proof with fa
   assert.match(transportAuthority, /^\*\*Status:\*\* `HOLD_FOR_HOST_NATIVE_PROOF`/m);
   assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= PARTIAL_2_OF_4/);
   assert.match(transportAuthority, /MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH/);
+  assert.match(transportAuthority, /MARKETPLACE_REF_SHA_TREATED_AS_BRANCH/);
   assert.match(transportAuthority, /git-subdir/);
+  assert.match(transportAuthority, /source\.github\.sha|plugin source/i);
   assert.match(transportAuthority, /RESOLVED_SOURCE_SHA/);
 
   assert.deepEqual(Object.keys(contracts).sort(), expectedHosts);
@@ -249,6 +268,30 @@ test('transport reconciliation preserves accepted Codex and Claude proof with fa
   assert.equal(claude.superseded_failed_attempt.reason, 'MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH');
   assert.equal(claude.superseded_failed_attempt.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136565274');
 
+  const copilot = contracts['github-copilot'];
+  assert.equal(copilot.pin_layer, 'catalog-plugin-source-sha');
+  assert.equal(copilot.catalog_path, '.github/plugin/marketplace.json');
+  assert.equal(copilot.plugin_source_type, 'github');
+  assert.equal(copilot.plugin_source_repo, 'Habib1001-m/hakim');
+  assert.equal(copilot.plugin_source_path, 'plugins/copilot');
+  assert.equal(copilot.static_contract_status, 'EXACT_SHA_PLUGIN_SOURCE_DECLARED');
+  assert.equal(copilot.live_resolution_status, 'NOT_RUN');
+  assert.equal(copilot.evidence_ref, null);
+  assert.equal(copilot.candidate_evidence_eligible, false);
+  assert.equal(copilot.superseded_failed_attempt.status, 'FAIL');
+  assert.equal(copilot.superseded_failed_attempt.reason, 'MARKETPLACE_REF_SHA_TREATED_AS_BRANCH');
+  assert.equal(copilot.superseded_failed_attempt.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142063851');
+  assert.equal(copilot.repair_probe.status, 'PASS');
+  assert.equal(copilot.repair_probe.probe_scope, 'LOCAL_CATALOG_SOURCE_CONTRACT_ONLY');
+  assert.equal(copilot.repair_probe.resolved_source_sha, frozen.source_sha);
+  assert.equal(copilot.repair_probe.installed_product_version, frozen.version);
+  assert.equal(copilot.repair_probe.source_file_count, 13);
+  assert.equal(copilot.repair_probe.installed_file_count, 13);
+  assert.equal(copilot.repair_probe.byte_mismatch_count, 0);
+  assert.equal(copilot.repair_probe.source_tree_sha256, 'b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2');
+  assert.equal(copilot.repair_probe.installed_tree_sha256, copilot.repair_probe.source_tree_sha256);
+  assert.equal(copilot.repair_probe.candidate_evidence_eligible, false);
+
   for (const host of pendingHosts) {
     assert.equal(contracts[host].live_resolution_status, 'NOT_RUN');
     assert.equal(contracts[host].evidence_ref, null);
@@ -256,7 +299,6 @@ test('transport reconciliation preserves accepted Codex and Claude proof with fa
   }
 
   assert.equal(contracts.opencode.static_contract_status, 'EXACT_SHA_DECLARED');
-  assert.equal(contracts['github-copilot'].static_contract_status, 'REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN');
   assert.equal(identity.policy.command_text_is_not_runtime_proof, true);
   assert.equal(identity.policy.host_verification_requires_resolved_source_sha, true);
   assert.equal(identity.policy.effective_pin_may_be_declared_in_host_native_catalog, true);
