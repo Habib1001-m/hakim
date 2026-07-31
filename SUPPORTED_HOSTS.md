@@ -8,7 +8,7 @@ Support means the repository maintains a documented, gated product surface for t
 |---|---|---|---|
 | Codex | Native Git marketplace plugin with six skills and SessionStart activation | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Codex `0.145.0` exact-candidate journey is accepted; `0.131.0+` remains the maintained compatibility floor; central directory listing is separate and not claimed |
 | Claude Code | Native marketplace plugin with commands, hidden canonical skills, lifecycle hooks, and specialized agents | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim`; catalog plugin source is `git-subdir` pinned to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Claude Code `2.1.220` repaired exact-SHA plugin-source journey is accepted; the earlier `#<commit>` marketplace attempt remains preserved as superseded failure evidence |
-| GitHub Copilot CLI | Native marketplace plugin with six skills, five custom agents, and R3.2 lifecycle presence/mode/subagent continuity | `copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | frozen beta.4 acceptance remains `NOT_RUN`; Copilot CLI 1.0.75 R3.2 evidence is development-only through F04 |
+| GitHub Copilot CLI | Native marketplace plugin with six skills, five custom agents, and R3.2 lifecycle presence/mode/subagent continuity | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim`; catalog plugin source is `github` with `repo: Habib1001-m/hakim`, `path: plugins/copilot`, exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | frozen beta.4 acceptance remains `NOT_RUN`; Copilot CLI `1.0.71` local-catalog repair probe installed 13/13 exact frozen files, while the earlier marketplace `#<sha>` route remains preserved as superseded failure evidence; R3.2 Copilot `1.0.75` evidence is development-only through F04 |
 | OpenCode | Guarded project-local plugin with exact manifest, bounded create/adopt/transactional-upgrade/removal, ownership sentinels, quarantine verification, and no-clobber rollback | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | Node `>=22`; frozen beta.4 acceptance remains `NOT_RUN`; no npm registry/global installer or `opencode.json` mutation is claimed |
 
 ## Distribution identity authorities
@@ -22,7 +22,7 @@ It links two separate acceptance projections:
 
 Both remain `HOLD_FOR_LIVE_HOST_EVIDENCE`, but frozen beta.4 now contains accepted Codex and Claude Code evidence. A host reaches `PASS` only after a real install/start/invocation journey is accepted for the exact version and source SHA being claimed.
 
-Structural, packaging, smoke, projection, or CI success does not change live-host status. A new prerelease identity or materially changed transport/lifecycle/runtime requires its own evidence.
+Structural, packaging, smoke, projection, repair-probe, or CI success does not change live-host status. A new prerelease identity or materially changed transport/lifecycle/runtime requires its own evidence.
 
 ## Node runtime contract
 
@@ -53,7 +53,7 @@ Unused extension surfaces are not added for symmetry. Hakim does not add MCP, LS
 ## General boundaries
 
 - Host-native security, permission, approval, sandbox, plugin, and managed-policy controls remain authoritative.
-- A structural, smoke, packaging, or CI pass proves only its checked scope.
+- A structural, smoke, packaging, repair-probe, or CI pass proves only its checked scope.
 - Compatibility with every operating system, provider, model, editor version, organization policy, or long-running session is not established.
 - Central marketplace/directory publication is separate from repository-hosted Git marketplace installation.
 - Candidate integrations not listed above are experimental or unsupported.
