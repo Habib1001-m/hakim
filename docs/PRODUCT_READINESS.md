@@ -10,14 +10,14 @@ This document is the maintained public product-readiness authority for Hakim. It
 | Moving `main` development | `1.0.0-beta.4.post1`; R3.2 operational-presence work accepted through F04; not a frozen candidate and not evidence-eligible |
 | Machine distribution authority | `conformance/distribution-identity.json` |
 | Canonical repository gate | `npm test` |
-| Completed repository gate | P0 — Truthful Immutable Distribution Identity; four-host proof `4/4`, exact PR-head Public CI #687 PASS, PR #48 merged as `1a7022daeceea4c86e23e342711b3c07197dc037`, issue #47 closed |
-| Immediate repository gate | F05 — Objective Completion Truth; not started by P0 closure or post-merge truth reconciliation |
+| Completed repository gate | P0 — Truthful Immutable Distribution Identity; four-host proof `4/4`, exact PR-head Public CI #687 PASS, PR #48 merged as `1a7022daeceea4c86e23e342711b3c07197dc037`, issue #47 closed, post-merge truth reconciled through PR #49 / Public CI #690 |
+| Immediate repository gate | F05 — Objective Completion Truth; `STARTED / DESIGN-VALIDATION` on branch `f05-objective-completion-truth`; live-host acceptance not run |
 | Frozen beta.4 native acceptance | `PASS` for Codex, Claude Code, GitHub Copilot CLI, and OpenCode |
 | Current development native acceptance | `HOLD_FOR_LIVE_HOST_EVIDENCE`; development-only |
 | External evaluator recruitment | `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION` |
 | Stable `1.0.0` | `NOT_AUTHORIZED` |
 
-Frozen beta.4 and moving `main` are separate identities. Normal frozen-product installation must resolve the exact beta.4 source commit. Any explicit `main` observation must record its exact 40-character commit and remains development-only.
+Frozen beta.4 and moving `main` are separate identities. Normal frozen-product installation must resolve the exact beta.4 source commit. Any explicit `main` or F05-development observation must record the exact 40-character commit it used and remains development-only.
 
 Accepted evidence never moves with a branch, version label, or marketplace name. Beta.1, beta.2, beta.3, beta.4, and R3.2 development observations remain bounded to the immutable source identity on which they were recorded.
 
@@ -47,11 +47,12 @@ Completed invariants:
 - [x] Moving `main` is explicitly not a frozen candidate and not eligible for release, promotion, benchmark, external-evaluator, or candidate-specific acceptance evidence.
 - [x] `conformance/distribution-identity.json` is the single machine-readable mapping authority.
 - [x] Deterministic tests bind accepted host packets/hashes and fail on unpinned normal routes, version mismatch, frozen ref/SHA mismatch, or frozen/development identity collapse.
-- [x] Exact P0 PR head `dd8b78663ca20b3872669f27aca60f9bdaea0aab` passed Public CI #687 after the last evidence/truth mutation.
+- [x] Exact P0 PR head `dd8b78663ca20b3872669f27aca60f9bdaea0aab` passed Public CI #687 after the last P0 evidence/truth mutation.
 - [x] PR #48 left Draft under explicit operator authorization and was squash-merged as `1a7022daeceea4c86e23e342711b3c07197dc037`.
 - [x] Issue #47 was closed `completed` with the four accepted packet hashes and merge evidence.
+- [x] Post-merge public truth was reconciled through PR #49 after Public CI #690 and merged as `c1c21d5575ae7e9a8f1d95b23f3d4ae55e75cb09`.
 
-Four host/version-bounded beta.4 packets are accepted. P0 closure does not cut beta.5, start F05 automatically, publish a package, reopen external evaluator recruitment, or authorize promotion. This post-merge reconciliation only aligns active truth after the accepted merge.
+Four host/version-bounded beta.4 packets are accepted. P0 closure does not cut beta.5, publish a package, reopen external evaluator recruitment, or authorize promotion.
 
 ## R3.2 development checkpoint
 
@@ -61,20 +62,43 @@ The development principle is:
 
 > **Free reasoning. Safe action. Evidence-bound claims.**
 
-Accepted operational-presence slices:
+Accepted operational-presence slices and current gate:
 
 - [x] **F01 — Silent parent-session presence.** Copilot loads Hakim automatically without repository instructions or an activation prompt.
 - [x] **F02 — Bounded mode state.** `lite`, `ultra`, and `off` persist only in plugin-owned state; default `full` is stateless.
 - [x] **F03 — Native mode-control lifecycle.** `/hakim/hakim off → ultra → full` passed current-turn semantics, persistence, reset, and repository-isolation checks on Copilot CLI 1.0.75.
 - [x] **F04 — Subagent continuity.** A pre-remediation Explore probe returned `MODE=NONE`; the evidence-justified `subagentStart` reuse of the existing presence authority then produced `MODE=ultra` with a clean target repository.
-- [x] **P0 — Truthful Immutable Distribution Identity.** Closed after `4/4` accepted frozen-beta.4 host proof, Public CI #687 on the exact final PR head, operator-approved Ready transition, merge of PR #48, and closure of issue #47.
-- [ ] **F05 — Objective Completion Truth.** Next active gate. Test a narrow late-bound truth mechanism for consequential completion claims without command blocking, prose policing, or reasoning-path control.
+- [x] **P0 — Truthful Immutable Distribution Identity.** Closed after `4/4` accepted frozen-beta.4 host proof, Public CI #687 on the exact final PR head, operator-approved Ready transition, merge of PR #48, issue #47 closure, and post-merge reconciliation PR #49 / Public CI #690.
+- [ ] **F05 — Objective Completion Truth. ACTIVE / DESIGN-VALIDATION.** Branch `f05-objective-completion-truth` tests a narrow one-shot Copilot `agentStop` contradiction check using existing structured completion checkpoints. Repository CI and live-host acceptance are not yet promoted.
 - [ ] **F06 — Deterministic operational regressions.** Freeze the accepted operational contracts before candidate promotion.
 - [ ] **F07 — Production-like D01 rerun.** Cut a new prerelease identity first, then rerun the original production-like task without explicit Hakim activation.
 
-No additional lifecycle hook is justified merely for symmetry. New hooks require a concrete observed host gap.
+F01–F04 did not justify an enforcement hook. F05 is the first evidence-driven experiment with one late-bound `agentStop` hook, motivated by the observed beta.3/beta.4 final-state truth gap; it remains unaccepted until its own deterministic and live-host evidence is complete. No `preToolUse`, `postToolUse`, or `subagentStop` enforcement is part of F05 v1.
 
-See [`docs/OPERATIONAL_PRESENCE.md`](OPERATIONAL_PRESENCE.md) for the architecture and bounded evidence summary.
+See [`docs/OPERATIONAL_PRESENCE.md`](OPERATIONAL_PRESENCE.md) for the architecture and bounded evidence summary and [`docs/F05_START_AND_TASK_BOUNDARY.md`](F05_START_AND_TASK_BOUNDARY.md) for the active F05 contract.
+
+## F05 acceptance boundary
+
+F05 v1 deliberately reuses the existing canonical structured final checkpoints rather than introducing a prose linter or a new response schema:
+
+```text
+FINAL_GIT_STATUS
+SETUP_ARTIFACTS
+UNRELATED_MUTATIONS
+```
+
+Only directly observable contradictions may block in v1. A false clean-tree checkpoint can be contradicted by current `git status --porcelain`; `SETUP_ARTIFACTS=NONE` can be contradicted only by a narrow high-confidence set of changed setup-artifact paths. `UNRELATED_MUTATIONS` is not an independent blocking authority because relatedness is a semantic task judgment.
+
+Required before F05 can be accepted:
+
+- [x] start/task boundary and dedicated branch established;
+- [ ] deterministic parser/decision/repository fixtures pass in the canonical gate;
+- [ ] existing F01–F04 operational regressions remain green;
+- [ ] exact F05 PR head passes canonical Public CI plus Node 22/26 compatibility;
+- [ ] bounded live Copilot probe demonstrates one true contradiction correction, strict one-shot behavior, no-claim pass-through, truthful-state pass-through, and no hook-created target-repository mutation;
+- [ ] explicit operator acceptance.
+
+Repository CI alone cannot promote F05 to accepted behavioral evidence.
 
 ## Native-host evidence rule
 
@@ -82,7 +106,7 @@ The current development projection is [`conformance/native-host-acceptance.json`
 
 A host reaches `PASS` only when a real install/start/invocation journey is accepted for the exact product identity and immutable source being claimed. Repository CI, smoke tests, projection checks, or live evidence on a different source do not promote that status.
 
-Frozen beta.4 has accepted evidence for all four maintained hosts. R3.2 Copilot development evidence proves only the bounded operational behavior it observed; it is not relabeled as beta.4 or beta.5 evidence.
+Frozen beta.4 has accepted evidence for all four maintained hosts. R3.2/F05 Copilot development evidence proves only the bounded operational behavior it actually observes; it is not relabeled as beta.4 or beta.5 evidence.
 
 ## Behavioral and dogfood protocol
 
