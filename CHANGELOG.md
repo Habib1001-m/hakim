@@ -16,13 +16,13 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Pinned Codex and OpenCode beta.4 transports directly to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`; Claude Code and GitHub Copilot CLI use host-native catalog plugin-source SHA pins to the same immutable candidate.
 - Reconciled Claude Code after a disposable `2.1.220` journey proved that marketplace `#<commit>` is treated as a branch selector: the catalog advertises frozen `1.0.0-beta.4` and pins `plugins/claude-code` through an exact-SHA `git-subdir` plugin source.
 - Reconciled GitHub Copilot CLI after a disposable `1.0.71` journey proved that marketplace `#<sha>` is also treated as a branch selector. The repaired repository route separates catalog discovery from the immutable `source: github` plugin source, resolves frozen `1.0.0-beta.4` at the exact SHA, matches all 13 Copilot product files byte-for-byte, loads all six skills and five agents, invokes `hakim-help`, and preserves a clean runtime target.
-- Added deterministic contracts that reject unsupported Claude/Copilot source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, and frozen/development identity collapse.
-- Accepted exact-candidate Codex, Claude Code, and GitHub Copilot CLI transport packets, advancing P0 host proof to `3/4` while OpenCode remains independently pending.
+- Reconciled OpenCode after system npm `10.9.8` reproduced the upstream exact-Git `GitFetcher requires an Arborist constructor to pack a tarball` blocker. The accepted journey kept the exact beta.4 Git source, used isolated npm 11 tooling without replacing system npm, created the guarded project-local bundle, persisted a 9-file manifest, matched frozen bytes 9/9, remained `EXACT_MATCH` after runtime, activated `hakim` on OpenCode `1.18.5`, and invoked `hakim-help` through the native skill tool.
+- Added deterministic contracts that reject unsupported Claude/Copilot source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, frozen/development identity collapse, and missing/mismatched accepted transport packets.
+- Accepted exact-candidate Codex, Claude Code, GitHub Copilot CLI, and OpenCode transport packets, completing P0 host-resolution proof at `4/4` while keeping P0 itself gated on exact final-head Public CI and explicit operator transition.
 - Reordered product readiness so P0 — Truthful Immutable Distribution Identity closes before F05 begins.
 
 ### Pending
 
-- Complete the OpenCode P0 transport packet.
 - Complete P0 validation on the exact final pull-request head.
 - F05 — Objective Completion Truth.
 - F06 — deterministic operational regressions.
@@ -78,6 +78,3 @@ Frozen beta.2 evidence remains at `evidence/beta2-live-126a228`.
 - Host-native integrations for Codex, Claude Code, GitHub Copilot, and OpenCode.
 - Doctor, host-preflight, installation planning, review, audit, PR Guardian, and live-host acceptance tooling.
 - Guarded project-local OpenCode lifecycle with manifests, bounded ownership, quarantine-backed removal/rollback, transactional supported-version upgrade/removal, and no `opencode.json` mutation.
-- Git-backed `hakim-opencode` bootstrap so normal OpenCode first-run does not require manually cloning Hakim.
-- Byte-reproducible canonical skill packaging and public-safe current-native host acceptance projection.
-- Architecture, privacy, security, support, upstream-attribution, and first-run documentation for the public product.
