@@ -49,7 +49,7 @@ const installDocs = [
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
 const expectedHosts = ['claude-code', 'codex', 'github-copilot', 'opencode'];
-const acceptedHosts = ['codex', 'claude-code', 'github-copilot'];
+const acceptedHosts = [...expectedHosts];
 const pendingHosts = expectedHosts.filter((host) => !acceptedHosts.includes(host));
 const exactSha = /^[0-9a-f]{40}$/;
 const exactSha256 = /^[0-9a-f]{64}$/;
@@ -120,7 +120,7 @@ test('moving source-tree metadata stays development while Claude and Copilot cat
   assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
   assert.match(nativeAcceptance.source_policy, /unreleased development/i);
   assert.match(nativeAcceptance.source_policy, /not a frozen candidate/i);
-  assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(current.version)}$`, 'm'));
+  assert.match(canonicalSkill, new RegExp(`^version:\s*${escapeRegExp(current.version)}$`, 'm'));
 
   for (const relative of versionedJsonPaths) {
     assert.equal(readJson(relative).version, current.version, `${relative} does not match current development identity`);
@@ -148,12 +148,12 @@ test('moving source-tree metadata stays development while Claude and Copilot cat
   });
 });
 
-test('frozen beta4 retains its own partially accepted machine-readable projection', () => {
+test('frozen beta4 retains its own fully accepted machine-readable projection', () => {
   assert.equal(frozenAcceptance.schema_version, 1);
   assert.equal(frozenAcceptance.product_version, frozen.version);
-  assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
+  assert.equal(frozenAcceptance.overall_status, 'PASS');
   assert.match(frozenAcceptance.source_policy, new RegExp(escapeRegExp(frozen.source_sha)));
-  assert.match(frozenAcceptance.source_policy, /Codex, Claude Code, and GitHub Copilot CLI exact-candidate transport/i);
+  assert.match(frozenAcceptance.source_policy, /Codex, Claude Code, GitHub Copilot CLI, and OpenCode exact-candidate transport/i);
   assert.deepEqual(Object.keys(frozenAcceptance.hosts).sort(), expectedHosts);
 
   const codex = frozenAcceptance.hosts.codex;
@@ -173,6 +173,12 @@ test('frozen beta4 retains its own partially accepted machine-readable projectio
   assert.equal(copilot.host_version, 'GitHub Copilot CLI 1.0.71.');
   assert.equal(copilot.verified_at, '2026-07-31T12:38:25.768Z');
   assert.equal(copilot.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571');
+
+  const opencode = frozenAcceptance.hosts.opencode;
+  assert.equal(opencode.status, 'PASS');
+  assert.equal(opencode.host_version, '1.18.5');
+  assert.equal(opencode.verified_at, '2026-07-31T14:17:34.114Z');
+  assert.equal(opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204');
 
   for (const host of pendingHosts) {
     const entry = frozenAcceptance.hosts[host];
@@ -218,16 +224,16 @@ test('normal frozen routes use an effective exact pin at the host-native layer',
   }
 });
 
-test('transport reconciliation preserves accepted proof and repaired Copilot failure provenance', () => {
+test('transport reconciliation preserves four accepted packets and repaired failure provenance', () => {
   const reconciliation = frozen.transport_reconciliation;
   const contracts = frozen.host_transport_contracts;
 
-  assert.equal(reconciliation.status, 'HOLD_FOR_HOST_NATIVE_PROOF');
+  assert.equal(reconciliation.status, 'PASS');
   assert.equal(reconciliation.authority, 'docs/P0_HOST_TRANSPORT_RECONCILIATION.md');
-  assert.equal(reconciliation.verified_hosts, 3);
+  assert.equal(reconciliation.verified_hosts, 4);
   assert.equal(reconciliation.required_hosts, expectedHosts.length);
-  assert.match(transportAuthority, /^\*\*Status:\*\* `HOLD_FOR_HOST_NATIVE_PROOF`/m);
-  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= PARTIAL_3_OF_4/);
+  assert.match(transportAuthority, /^\*\*Status:\*\* `PASS`/m);
+  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= COMPLETE_4_OF_4/);
   assert.match(transportAuthority, /MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH/);
   assert.match(transportAuthority, /MARKETPLACE_REF_SHA_TREATED_AS_BRANCH/);
   assert.match(transportAuthority, /git-subdir/);
@@ -305,13 +311,26 @@ test('transport reconciliation preserves accepted proof and repaired Copilot fai
   assert.equal(copilot.repair_probe.installed_tree_sha256, copilot.repair_probe.source_tree_sha256);
   assert.equal(copilot.repair_probe.candidate_evidence_eligible, false);
 
+  const opencode = contracts.opencode;
+  assert.equal(opencode.pin_layer, 'git-package-spec');
+  assert.equal(opencode.static_contract_status, 'EXACT_SHA_DECLARED');
+  assert.equal(opencode.live_resolution_status, 'PASS');
+  assert.equal(opencode.resolved_source_sha, frozen.source_sha);
+  assert.equal(opencode.installed_product_version, frozen.version);
+  assert.equal(opencode.host_version, '1.18.5');
+  assert.equal(opencode.verified_at, '2026-07-31T14:17:34.114Z');
+  assert.equal(opencode.evidence_ref, frozenAcceptance.hosts.opencode.evidence_ref);
+  assert.equal(opencode.candidate_evidence_eligible, true);
+  assert.equal(opencode.packet_path, 'conformance/history/p0-host-transport/opencode-1.0.0-beta.4.json');
+  assert.equal(opencode.packet_sha256, '899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304');
+  assertAcceptedPacket(opencode, 'opencode');
+
   for (const host of pendingHosts) {
     assert.equal(contracts[host].live_resolution_status, 'NOT_RUN');
     assert.equal(contracts[host].evidence_ref, null);
     assert.equal(contracts[host].candidate_evidence_eligible, false);
   }
 
-  assert.equal(contracts.opencode.static_contract_status, 'EXACT_SHA_DECLARED');
   assert.equal(identity.policy.command_text_is_not_runtime_proof, true);
   assert.equal(identity.policy.host_verification_requires_resolved_source_sha, true);
   assert.equal(identity.policy.effective_pin_may_be_declared_in_host_native_catalog, true);
@@ -323,7 +342,7 @@ test('active authorities keep P0 before F05 and mark main as non-candidate devel
   assert.match(activeTruth, /moving `?main`?/i);
   assert.match(activeTruth, /not (?:a )?(?:frozen )?candidate/i);
   assert.match(activeTruth, /P0[^\n]*Truthful Immutable Distribution Identity/i);
-  assert.match(activeTruth, /HOLD_FOR_HOST_NATIVE_PROOF/);
+  assert.match(activeTruth, /HOST_RESOLUTION_PROOF\s*= COMPLETE_4_OF_4/);
 
   for (const text of [readiness, operationalPresence]) {
     const p0Index = text.indexOf('P0');
