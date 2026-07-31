@@ -201,6 +201,7 @@ export function compareCopilotTarget(targetRoot, root = ROOT) {
 
 export function inspectCopilot(targetRoot = null, root = ROOT, version = null) {
   const identity = readIdentity(root);
+  const frozen = identity.latest_frozen_candidate;
   const expectedVersion = version || fs.readFileSync(path.join(root, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
   const sourcePath = path.join(root, 'plugins', 'copilot');
   const manifestPath = path.join(sourcePath, 'plugin.json');
@@ -210,31 +211,38 @@ export function inspectCopilot(targetRoot = null, root = ROOT, version = null) {
   const manifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : {};
   const marketplace = fs.existsSync(marketplacePath) ? JSON.parse(fs.readFileSync(marketplacePath, 'utf8')) : {};
   const entry = (marketplace.plugins || []).find((item) => item.name === 'hakim');
+  const source = entry?.source;
   const checks = [
     check('plugin_manifest_present', fs.existsSync(manifestPath), path.relative(root, manifestPath)),
-    check('plugin_version_matches', manifest.version === expectedVersion, manifest.version || null),
+    check('source_tree_manifest_version_matches', manifest.version === expectedVersion, manifest.version || null),
     check('marketplace_present', fs.existsSync(marketplacePath), path.relative(root, marketplacePath)),
     check('marketplace_name_matches', marketplace.name === 'hakim', marketplace.name || null),
     check('marketplace_entry_present', Boolean(entry), entry?.name || null),
-    check('marketplace_source_matches', entry?.source === './plugins/copilot', entry?.source || null),
-    check('marketplace_version_matches', entry?.version === expectedVersion, entry?.version || null),
+    check('catalog_version_matches_frozen_candidate', entry?.version === frozen.version, entry?.version || null),
+    check('catalog_source_type_matches', source?.source === 'github', source?.source || null),
+    check('catalog_source_repo_matches', source?.repo === 'Habib1001-m/hakim', source?.repo || null),
+    check('catalog_source_path_matches', source?.path === 'plugins/copilot', source?.path || null),
+    check('catalog_source_sha_matches', source?.sha === frozen.source_sha, source?.sha || null),
+    check('catalog_source_ref_absent', source && !Object.hasOwn(source, 'ref'), source?.ref || null),
     check('native_skills_present', skills.every((name) => fs.existsSync(path.join(sourcePath, 'skills', name, 'SKILL.md'))), skills),
     check('native_agents_present', agents.every((name) => fs.existsSync(path.join(sourcePath, 'agents', `${name}.agent.md`))), agents),
     check('baseline_instruction_present', fs.existsSync(path.join(root, '.github', 'copilot-instructions.md')), '.github/copilot-instructions.md'),
   ];
   const comparison = compareCopilotTarget(targetRoot, root);
   const explicitTargetFailure = targetRoot && comparison.target_state === 'TARGET_NOT_FOUND';
-  const marketplaceCommand = identity.latest_frozen_candidate.normal_install_commands['github-copilot'];
+  const marketplaceCommand = frozen.normal_install_commands['github-copilot'];
   const invocation = `${marketplaceCommand} && copilot plugin install hakim@hakim`;
   return {
     host: 'github-copilot',
     status: summarizeStatus(checks) === 'PASS' && !explicitTargetFailure ? 'PASS' : 'FAIL',
     support_boundary: 'HOST_NATIVE_PLUGIN',
-    distribution_mode: 'NATIVE_MARKETPLACE',
+    distribution_mode: 'NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE',
     source_path: 'plugins/copilot',
     marketplace_path: '.github/plugin/marketplace.json',
     invocation,
     install_identity: 'hakim@hakim',
+    catalog_version: entry?.version || null,
+    catalog_source_sha: source?.sha || null,
     target_state: 'READY_FOR_NATIVE_INSTALL',
     persistent_installation: 'SUPPORTED_BY_HOST',
     automatic_changes: false,
@@ -243,7 +251,7 @@ export function inspectCopilot(targetRoot = null, root = ROOT, version = null) {
     baseline_role: 'OPTIONAL_FALLBACK',
     comparison,
     checks,
-    next_safe_action: `Run \`${marketplaceCommand}\` then \`copilot plugin install hakim@hakim\`; verify with \`copilot plugin list\`, /skills list, and /agent.`,
+    next_safe_action: `Run \`${marketplaceCommand}\` then \`copilot plugin install hakim@hakim\`; the catalog entry pins ${frozen.version} to ${frozen.source_sha}. Verify with \`copilot plugin list\`, /skills list, and /agent.`,
   };
 }
 
