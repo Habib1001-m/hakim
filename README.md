@@ -22,13 +22,13 @@ Hakim is public beta software.
 |---|---|
 | Latest frozen prerelease | `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`) |
 | Moving `main` | `1.0.0-beta.4.post1`, explicit unreleased development; not a frozen candidate and not eligible for release/promotion evidence |
-| Immediate repository gate | P0 — Truthful Immutable Distribution Identity |
+| Immediate repository gate | P0 — Truthful Immutable Distribution Identity; four-host transport proof complete, exact final-head CI pending |
 | Next feature gate after P0 | F05 — Objective Completion Truth |
 | Stable `1.0.0` | Not authorized |
 | External evaluator campaign | Suspended pending a separate product decision |
 | npm registry / central marketplace publication | Not claimed |
 
-`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex, Claude Code, and GitHub Copilot CLI are accepted for frozen beta.4; OpenCode remains independently pending.
+`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. Frozen beta.4 has operator-accepted host-native transport evidence for Codex, Claude Code, GitHub Copilot CLI, and OpenCode (`4/4`). P0 itself remains open until the exact final PR head passes Public CI and the operator explicitly authorizes the next transition.
 
 Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
 
@@ -97,9 +97,11 @@ npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24
 
 The exact-SHA Git bootstrap invokes Hakim's guarded project-local managed lifecycle. It persists an exact install manifest, supports bounded create/adopt/transactional-upgrade paths, can remove supported older verified installations with a newer CLI, refuses conflicting or unsafe state, and does not edit `opencode.json` or install global Hakim state.
 
+The frozen beta.4 route is accepted on OpenCode `1.18.5`. The disposable journey resolved the exact source SHA, installed `1.0.0-beta.4`, persisted the managed manifest, matched all nine managed product files byte-for-byte, and returned `EXACT_MATCH` before and after runtime. OpenCode executed the project-local `hakim` command in `full` mode and invoked `hakim-help` through its native skill tool. OpenCode-created bootstrap files outside Hakim's owned set were separated from Hakim-owned purity; the Hakim-owned bytes remained unchanged. System npm `10.9.8` reproduced the upstream exact-Git `GitFetcher requires an Arborist constructor to pack a tarball` blocker, so the accepted journey used isolated npm 11 tooling without replacing system npm while preserving the same exact Git source.
+
 Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
 
-See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the exact evidence required before all maintained routes become accepted host-resolution proof.
+See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the accepted host/version-bounded evidence and the remaining exact-final-head CI gate.
 
 ## Unreleased development
 
