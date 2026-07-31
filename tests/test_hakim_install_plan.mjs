@@ -69,15 +69,27 @@ assert.equal(claudeChecks.catalog_source_ref_absent.status, 'PASS');
 const copilot = inspectCopilot(null, repoRoot, expectedVersion);
 assert.equal(copilot.status, 'PASS');
 assert.equal(copilot.support_boundary, 'HOST_NATIVE_PLUGIN');
-assert.equal(copilot.distribution_mode, 'NATIVE_MARKETPLACE');
+assert.equal(copilot.distribution_mode, 'NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE');
 assert.equal(copilot.target_state, 'READY_FOR_NATIVE_INSTALL');
 assert.equal(copilot.persistent_installation, 'SUPPORTED_BY_HOST');
 assert.equal(copilot.install_identity, 'hakim@hakim');
+assert.equal(copilot.catalog_version, frozen.version);
+assert.equal(copilot.catalog_source_sha, frozen.source_sha);
 assert.equal(copilot.baseline_role, 'OPTIONAL_FALLBACK');
-assert.match(copilot.invocation, /copilot plugin marketplace add Habib1001-m\/hakim#5d000394/);
+assert.match(copilot.invocation, /copilot plugin marketplace add Habib1001-m\/hakim/);
+assert.doesNotMatch(copilot.invocation, /#5d000394/);
 assert.match(copilot.invocation, /copilot plugin install hakim@hakim/);
 assert.deepEqual(copilot.native_skills, ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help']);
 assert.deepEqual(copilot.native_agents, ['hakim-reviewer', 'hakim-auditor', 'hakim-debt-analyst', 'hakim-evidence-verifier', 'hakim-implementer']);
+
+const copilotChecks = Object.fromEntries(copilot.checks.map((item) => [item.id, item]));
+assert.equal(copilotChecks.source_tree_manifest_version_matches.status, 'PASS');
+assert.equal(copilotChecks.catalog_version_matches_frozen_candidate.status, 'PASS');
+assert.equal(copilotChecks.catalog_source_type_matches.status, 'PASS');
+assert.equal(copilotChecks.catalog_source_repo_matches.status, 'PASS');
+assert.equal(copilotChecks.catalog_source_path_matches.status, 'PASS');
+assert.equal(copilotChecks.catalog_source_sha_matches.status, 'PASS');
+assert.equal(copilotChecks.catalog_source_ref_absent.status, 'PASS');
 
 const opencodeNoTarget = inspectOpenCode(null, repoRoot);
 assert.equal(opencodeNoTarget.status, 'PASS');
@@ -136,6 +148,7 @@ assert.match(formatted, /\[claude-code\]/);
 assert.match(formatted, /MODE=NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE/);
 assert.match(formatted, new RegExp(`CATALOG_SOURCE_SHA=${frozen.source_sha}`));
 assert.match(formatted, /\[github-copilot\]/);
+assert.match(formatted, /MODE=NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE/);
 assert.match(formatted, /copilot plugin install hakim@hakim/);
 assert.match(formatted, /INSTALL_IDENTITY=hakim@hakim/);
 assert.match(formatted, /\[opencode\]/);
@@ -152,7 +165,9 @@ assert.equal(cliPlan.hakim_version, expectedVersion);
 assert.equal(cliPlan.plans.find((item) => item.host === 'codex').distribution_mode, 'NATIVE_GIT_MARKETPLACE');
 assert.equal(cliPlan.plans.find((item) => item.host === 'claude-code').distribution_mode, 'NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE');
 assert.equal(cliPlan.plans.find((item) => item.host === 'claude-code').catalog_source_sha, frozen.source_sha);
-assert.equal(cliPlan.plans.find((item) => item.host === 'github-copilot').distribution_mode, 'NATIVE_MARKETPLACE');
+assert.equal(cliPlan.plans.find((item) => item.host === 'github-copilot').distribution_mode, 'NATIVE_MARKETPLACE_EXACT_SHA_PLUGIN_SOURCE');
+assert.equal(cliPlan.plans.find((item) => item.host === 'github-copilot').catalog_version, frozen.version);
+assert.equal(cliPlan.plans.find((item) => item.host === 'github-copilot').catalog_source_sha, frozen.source_sha);
 assert.equal(cliPlan.plans.find((item) => item.host === 'opencode').distribution_mode, 'GIT_BACKED_PROJECT_LOCAL_INSTALLER');
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
@@ -162,4 +177,4 @@ assert.equal(packageJson.scripts['test:integration:js'], 'npm run test:public:js
 assert.match(packageJson.scripts['test:public:js'], /tests\/test_hakim_install_plan\.mjs/);
 assert.match(packageJson.scripts['check:evidence-script'], /node --check scripts\/hakim_install_plan\.mjs/);
 
-console.log('read-only Hakim installation planning preserves moving source manifests while pinning the frozen Claude catalog entry by exact plugin-source SHA');
+console.log('read-only Hakim installation planning preserves moving source manifests while pinning frozen Claude and Copilot catalog entries by exact plugin-source SHA');
