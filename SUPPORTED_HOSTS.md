@@ -2,14 +2,14 @@
 
 Hakim is public beta software. The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is explicit unreleased development, not a frozen candidate.
 
-Support means the repository maintains a documented, gated product surface for the host. It does not imply universal compatibility, current candidate acceptance, or stable-release authorization.
+Support means the repository maintains a documented, gated product surface for the host. It does not imply universal compatibility, moving-development acceptance, or stable-release authorization.
 
 | Host | Maintained product surface | Frozen beta.4 install | Current boundary |
 |---|---|---|---|
 | Codex | Native Git marketplace plugin with six skills and SessionStart activation | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Codex `0.145.0` exact-candidate journey is accepted; `0.131.0+` remains the maintained compatibility floor; central directory listing is separate and not claimed |
 | Claude Code | Native marketplace plugin with commands, hidden canonical skills, lifecycle hooks, and specialized agents | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim`; catalog plugin source is `git-subdir` pinned to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Claude Code `2.1.220` repaired exact-SHA plugin-source journey is accepted; the earlier `#<commit>` marketplace attempt remains preserved as superseded failure evidence |
 | GitHub Copilot CLI | Native marketplace plugin with six skills, five custom agents, and R3.2 lifecycle presence/mode/subagent continuity | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim`; catalog plugin source is `github` with `repo: Habib1001-m/hakim`, `path: plugins/copilot`, exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Copilot CLI `1.0.71` frozen beta.4 repository-route journey is accepted with 13/13 byte parity, loaded six skills/five agents, explicit `hakim-help` invocation, and clean runtime target; the earlier marketplace `#<sha>` route remains preserved as superseded failure evidence; R3.2 Copilot `1.0.75` evidence is development-only through F04 |
-| OpenCode | Guarded project-local plugin with exact manifest, bounded create/adopt/transactional-upgrade/removal, ownership sentinels, quarantine verification, and no-clobber rollback | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | Node `>=22`; frozen beta.4 acceptance remains `NOT_RUN`; no npm registry/global installer or `opencode.json` mutation is claimed |
+| OpenCode | Guarded project-local plugin with exact manifest, bounded create/adopt/transactional-upgrade/removal, ownership sentinels, quarantine verification, and no-clobber rollback | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | OpenCode `1.18.5` frozen beta.4 journey is accepted: exact Git source, persisted manifest, 9/9 managed-byte parity, `EXACT_MATCH` after runtime, native `hakim` activation, and `hakim-help` invocation; Node `>=22`; no npm registry/global installer or `opencode.json` mutation is claimed |
 
 ## Distribution identity authorities
 
@@ -17,12 +17,12 @@ The machine-readable mapping is [`conformance/distribution-identity.json`](confo
 
 It links two separate acceptance projections:
 
-- moving unreleased development: [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json);
-- frozen beta.4: [`conformance/history/native-host-acceptance-1.0.0-beta.4.json`](conformance/history/native-host-acceptance-1.0.0-beta.4.json).
+- moving unreleased development: [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json), still `HOLD_FOR_LIVE_HOST_EVIDENCE` and development-only;
+- frozen beta.4: [`conformance/history/native-host-acceptance-1.0.0-beta.4.json`](conformance/history/native-host-acceptance-1.0.0-beta.4.json), now `PASS` for all four maintained hosts.
 
-Both remain `HOLD_FOR_LIVE_HOST_EVIDENCE`, but frozen beta.4 now contains accepted Codex, Claude Code, and GitHub Copilot CLI evidence. OpenCode remains the only pending P0 host. A host reaches `PASS` only after a real install/start/invocation journey is accepted for the exact version and source SHA being claimed.
+Frozen beta.4 host-resolution proof is `4/4` operator accepted. P0 itself remains open until the exact final PR head passes Public CI and the operator explicitly authorizes the next transition. A host reaches `PASS` only after a real install/start/invocation journey is accepted for the exact version and source SHA being claimed.
 
-Structural, packaging, smoke, projection, repair-probe, or CI success does not change live-host status. A new prerelease identity or materially changed transport/lifecycle/runtime requires its own evidence.
+Structural, packaging, smoke, projection, repair-probe, or CI success does not substitute for live-host evidence. A new prerelease identity or materially changed transport/lifecycle/runtime requires its own evidence.
 
 ## Node runtime contract
 
