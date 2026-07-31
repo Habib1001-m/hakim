@@ -36,12 +36,12 @@ Normal product installation is frozen Hakim `1.0.0-beta.4` at exact commit `5d00
 
 - **Codex:** register `https://github.com/Habib1001-m/hakim.git` with `--ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then use skills such as `$hakim:hakim` and `$hakim:hakim-help`.
 - **Claude Code:** add marketplace `Habib1001-m/hakim`, whose catalog entry pins `plugins/claude-code` to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then use `/hakim:full`, `/hakim:review`, or `/hakim:help`.
-- **GitHub Copilot:** add `Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3`, install `hakim@hakim`, then inspect skills with `/skills list` and agents with `/agent`.
+- **GitHub Copilot:** add marketplace `Habib1001-m/hakim`, whose catalog entry pins `plugins/copilot` to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` through a GitHub source object, install `hakim@hakim`, then inspect skills with `/skills list` and agents with `/agent`.
 - **OpenCode:** run `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install`, then use `/hakim full`, `/hakim-review`, or `/hakim-help`.
 
 ## Evidence boundary
 
-Codex and Claude Code have accepted frozen beta.4 evidence. GitHub Copilot CLI and OpenCode remain `NOT_RUN` for this candidate. Claude's earlier marketplace `#<commit>` failure remains preserved as superseded negative evidence. Public CI and host acceptance prove only their checked scope.
+Codex and Claude Code have accepted frozen beta.4 evidence. GitHub Copilot CLI and OpenCode remain `NOT_RUN` for this candidate. Claude's earlier marketplace `#<commit>` failure and Copilot's earlier marketplace `#<sha>` failure remain preserved as superseded negative evidence; Copilot's local exact-SHA source repair probe is contract evidence only, not candidate acceptance. Public CI and host acceptance prove only their checked scope.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 
