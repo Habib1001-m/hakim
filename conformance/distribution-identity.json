@@ -75,9 +75,15 @@
         "plugin_source_path": "plugins/copilot",
         "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
         "static_contract_status": "EXACT_SHA_PLUGIN_SOURCE_DECLARED",
-        "live_resolution_status": "NOT_RUN",
-        "evidence_ref": null,
-        "candidate_evidence_eligible": false,
+        "live_resolution_status": "PASS",
+        "resolved_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "installed_product_version": "1.0.0-beta.4",
+        "host_version": "GitHub Copilot CLI 1.0.71.",
+        "verified_at": "2026-07-31T12:38:25.768Z",
+        "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571",
+        "packet_path": "conformance/history/p0-host-transport/github-copilot-1.0.0-beta.4.json",
+        "packet_sha256": "60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6",
+        "candidate_evidence_eligible": true,
         "superseded_failed_attempt": {
           "host_version": "GitHub Copilot CLI 1.0.71.",
           "attempted_source": "Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
@@ -112,7 +118,7 @@
     "transport_reconciliation": {
       "status": "HOLD_FOR_HOST_NATIVE_PROOF",
       "authority": "docs/P0_HOST_TRANSPORT_RECONCILIATION.md",
-      "verified_hosts": 2,
+      "verified_hosts": 3,
       "required_hosts": 4
     }
   },
