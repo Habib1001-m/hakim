@@ -1,6 +1,6 @@
 # Hakim Operational Presence
 
-**Status:** accepted R3.2 development architecture through F04 on moving `main` identity `1.0.0-beta.4.post1`. This is unreleased development, not a frozen candidate, and does not create release authorization.
+**Status:** accepted R3.2 development architecture through F04 on moving identity `1.0.0-beta.4.post1`; F05 Objective Completion Truth is active in design-validation and is not yet accepted. This is unreleased development, not a frozen candidate, and does not create release authorization.
 
 Hakim is designed for capable coding agents. It should preserve model creativity and judgment while making its engineering discipline reliably present and checking objective truth only at consequential boundaries.
 
@@ -15,10 +15,10 @@ UX target:
 Operational presence and distribution identity are separate concerns.
 
 - Frozen beta.4 is `1.0.0-beta.4` at exact source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
-- Moving `main` reports `1.0.0-beta.4.post1` and channel `unreleased-development`.
-- Moving `main` is not a frozen candidate and is not eligible for release, promotion, benchmark, external-evaluator, or candidate-specific acceptance evidence.
+- Moving development reports `1.0.0-beta.4.post1` and channel `unreleased-development`.
+- Moving development is not a frozen candidate and is not eligible for release, promotion, benchmark, external-evaluator, or candidate-specific acceptance evidence.
 - `conformance/distribution-identity.json` is the machine-readable mapping authority.
-- P0 — Truthful Immutable Distribution Identity must close before F05 starts.
+- P0 — Truthful Immutable Distribution Identity is closed after four-host proof, exact-head Public CI #687, PR #48 merge, issue #47 closure, and post-merge reconciliation PR #49 / Public CI #690.
 
 Operational evidence remains bounded to its exact source commit. A working lifecycle on moving development cannot be relabeled as frozen beta.4 or future beta.5 evidence.
 
@@ -56,17 +56,17 @@ Operational adapters derive behavior from the maintained Hakim policy instead of
 
 Copilot mode state is bounded to one host-owned plugin-data file containing only schema version and a non-default mode. Default `full` is stateless.
 
-Never persist raw prompts, source code, tool arguments, reasoning, credentials, or private evidence as mode state.
+Never persist raw prompts, source code, tool arguments, reasoning, credentials, private evidence, or transcript content as Hakim state.
 
 ### Fail soft
 
-Presence failure must not corrupt the target repository or trap the coding session. Hakim must also avoid claiming guarantees when the relevant mechanism is unavailable.
+Presence or objective-truth hook failure must not corrupt the target repository or trap the coding session. Hakim must also avoid claiming guarantees when the relevant mechanism or authority is unavailable.
 
 ### Intervene on contradiction, not possibility
 
-Do not create broad command denylists merely because commands can mutate files. Prefer objective correction when observable state contradicts a consequential claim.
+Do not create broad command denylists merely because commands can mutate files. Prefer one bounded correction when an observable final-state fact contradicts a consequential structured completion claim.
 
-## Accepted Copilot topology
+## Accepted Copilot topology through F04
 
 ```text
 native plugin install
@@ -109,9 +109,7 @@ Responsibilities are deliberately split:
 - `userPromptSubmitted` owns persistent non-default mode metadata.
 - `userPromptTransformed` owns current-turn mode-control semantics only.
 
-No `preToolUse`, `postToolUse`, `agentStop`, or `subagentStop` enforcement hook is part of the accepted operational-presence topology.
-
-The transformed hook is deliberately stateless. Presence and submitted-mode persistence use host-owned `COPILOT_PLUGIN_DATA` directly; accepted Copilot CLI 1.0.75 evidence proved that path without repository-local state.
+F01–F04 did not authorize `preToolUse`, `postToolUse`, `agentStop`, or `subagentStop`. The transformed hook is deliberately stateless. Presence and submitted-mode persistence use host-owned `COPILOT_PLUGIN_DATA` directly; accepted Copilot CLI 1.0.75 evidence proved that path without repository-local state.
 
 ## Accepted evidence
 
@@ -153,65 +151,94 @@ MODE=ultra
 
 with the target repository still clean.
 
-No further lifecycle hook is justified without another concrete host gap.
+The same evidence rule applies to later hooks: no lifecycle hook is accepted merely for symmetry.
 
-## Immediate gate — P0 Truthful Immutable Distribution Identity
+## Completed prerequisite — P0 Truthful Immutable Distribution Identity
 
-P0 is separate from operational-presence behavior. It reconciles which bytes normal install transports deliver and what identity those bytes report.
+P0 is complete and closed. It reconciled which bytes normal frozen install transports deliver and what identity those bytes report before F05 began.
 
-P0 acceptance requires:
+Final P0 boundary:
 
-- exact-SHA normal install routes for Codex, Claude Code, GitHub Copilot CLI, and OpenCode;
-- development metadata parity across the canonical version, package metadata, host manifests, marketplaces, and current acceptance projection;
-- explicit development-only boundaries for moving `main`;
-- deterministic failure on unpinned normal routes, source/version mismatch, or frozen/development identity collapse;
-- `npm test` green on the exact final P0 head.
+```text
+HOST_PROOF      = 4/4
+FINAL_HEAD_CI   = PUBLIC_CI_687_PASS
+PR_48           = MERGED
+ISSUE_47        = CLOSED_COMPLETED
+POST_MERGE_CI   = PUBLIC_CI_690_PASS
+PR_49           = MERGED
+P0              = PASS
+```
 
-P0 adds no runtime hook and makes no host-behavior claim.
+P0 added no runtime hook and made no new behavioral-effectiveness claim.
 
-## Next feature gate after P0 — F05 Objective Completion Truth
+## Active gate — F05 Objective Completion Truth
 
 F05 is separate from operational presence, mode control, and distribution identity.
 
-The question is narrow:
+The question remains narrow:
 
 > Can Hakim reconcile consequential completion claims with objective repository/setup truth at a late boundary without becoming a prose linter, command blocker, or reasoning workflow?
 
-F05 must preserve these constraints:
+The active F05 design hypothesis uses exactly one Copilot `agentStop` command hook as a **one-shot objective contradiction check**. This hook is development-only and remains unaccepted until deterministic gates and a bounded live Copilot probe pass.
 
+```text
+agentStop
+  -> read host-provided cwd + transcriptPath ephemerally
+  -> inspect only the last assistant completion
+  -> parse existing structured final checkpoints
+       FINAL_GIT_STATUS
+       SETUP_ARTIFACTS
+       UNRELATED_MUTATIONS
+  -> observe git status --porcelain directly
+  -> allow when no objective contradiction is established
+  -> block once when a supported structured claim contradicts observable state
+  -> if stop_hook_active=true, allow termination; never create a correction loop
+```
+
+F05 v1 does **not** use general prose interpretation. It reuses the structured completion checkpoints already required by the canonical Hakim policy.
+
+Supported blocking authorities in v1 are deliberately narrower than the parsed checkpoint set:
+
+- `FINAL_GIT_STATUS` may be contradicted when it explicitly claims a clean tree while current `git status --porcelain` is non-empty.
+- `SETUP_ARTIFACTS=NONE` may be contradicted when current changed/untracked paths contain narrowly classified setup artifacts such as `.venv`, `venv`, `*.egg-info`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `__pycache__`, or `.pyc`.
+- `UNRELATED_MUTATIONS` is parsed but does **not** independently authorize blocking in v1 because whether a mutation is “unrelated” is a semantic task judgment, not a fact established by Git status alone.
+- Files such as `uv.lock` are not generically classified as setup artifacts because they can be intentional product files.
+
+F05 preserves these constraints:
+
+- no `preToolUse` or `postToolUse` enforcement;
 - no broad shell/tool denylist;
 - no command-string inference of correctness;
 - no mandatory tool-by-tool ceremony;
-- no raw prompt/source persistence;
+- no new completion schema solely for the hook;
+- no raw prompt/source/transcript persistence;
 - no unbounded correction loop;
 - no second policy engine in hooks;
-- intervene only where objective state can contradict a consequential completion claim.
+- no ordinary final-prose rewriting;
+- no block merely because a repository is dirty when the structured completion does not claim it is clean;
+- fail soft when transcript, Git, or runtime truth is unavailable.
+
+Task boundary authority: `docs/F05_START_AND_TASK_BOUNDARY.md`. Active workstream: issue #41. Active branch: `f05-objective-completion-truth`.
 
 ## Remaining R3.2 gates
 
-### P0 — Truthful Immutable Distribution Identity
+### F05 — Objective Completion Truth — active / not accepted
 
-Complete the transport/product-identity reconciliation before feature work continues.
+Required before acceptance:
 
-### F05 — Objective Completion Truth
-
-Design and test the narrow late-bound truth mechanism described above.
+1. deterministic decision/parser/repository-state fixtures;
+2. existing F01–F04 operational regressions remain green;
+3. canonical repository gate plus Node 22/26 compatibility on the exact F05 head;
+4. bounded live Copilot probe proving true-positive, no-claim pass-through, truthful-clean pass-through, strict one-shot correction, and target-repository non-mutation;
+5. explicit operator acceptance.
 
 ### F06 — Deterministic operational regressions
 
-Before candidate promotion, freeze regressions for:
-
-- silent default full presence;
-- exact bounded mode controls;
-- ordinary-prompt non-persistence/non-rewrite;
-- malformed-state fail-soft behavior;
-- evidence-justified subagent continuity;
-- absence of unproven enforcement hooks;
-- immutable distribution identity and exact-source evidence attribution.
+After F05 is accepted, freeze the combined operational contracts before candidate promotion.
 
 ### F07 — Production-like D01 rerun
 
-Only after P0/F05/F06 are coherent:
+Only after F05/F06 are coherent:
 
 1. advance to a new candidate identity distinct from beta.4 and the development identity;
 2. freeze the exact candidate source;
@@ -233,7 +260,7 @@ install exact Hakim candidate
 
 ## Explicit exclusions
 
-R3.2 through F04 and P0 do not authorize:
+R3.2 through accepted F04 plus active F05 does not authorize:
 
 - beta.5 or any other new frozen prerelease identity;
 - external evaluator recruitment;
@@ -241,4 +268,5 @@ R3.2 through F04 and P0 do not authorize:
 - npm registry or central marketplace publication;
 - a cross-host runtime/service;
 - copying Ponytail runtime code;
-- broad tool blocking merely because a command can mutate files.
+- broad tool blocking merely because a command can mutate files;
+- treating F05 repository CI as live-host acceptance or operator acceptance.
