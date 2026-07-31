@@ -20,11 +20,13 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Added deterministic contracts that reject unsupported Claude/Copilot source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, frozen/development identity collapse, and missing/mismatched accepted transport packets.
 - Accepted exact-candidate Codex, Claude Code, GitHub Copilot CLI, and OpenCode transport packets, completing P0 host-resolution proof at `4/4`.
 - Completed P0 — Truthful Immutable Distribution Identity after exact PR head `dd8b78663ca20b3872669f27aca60f9bdaea0aab` passed Public CI #687, the operator approved Ready, PR #48 squash-merged as `1a7022daeceea4c86e23e342711b3c07197dc037`, and issue #47 closed `completed`.
-- Reconciled post-merge public truth so F05 — Objective Completion Truth is the next active repository gate without starting F05 or creating release/promotion authorization.
+- Reconciled post-merge public P0 truth through PR #49 / Public CI #690.
+- Started F05 — Objective Completion Truth in development-only design-validation. The current v1 experiment adds one Copilot `agentStop` hook that reuses existing structured final checkpoints, checks only directly observable Git/setup contradictions, fails soft when truth is unavailable, and self-limits to one correction turn through `stop_hook_active`.
+- F05 v1 deliberately does not add `preToolUse`, `postToolUse`, broad command blocking, general prose linting, raw transcript persistence, or semantic blocking for `UNRELATED_MUTATIONS`.
 
 ### Pending
 
-- F05 — Objective Completion Truth.
+- Complete F05 deterministic/Public CI gates, then run a bounded live Copilot probe and require explicit operator acceptance before marking F05 accepted.
 - F06 — deterministic operational regressions.
 - F07 — cut a new prerelease identity and rerun the production-like D01 task before broader promotion.
 
