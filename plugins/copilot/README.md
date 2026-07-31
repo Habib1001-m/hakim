@@ -8,12 +8,24 @@ The normal product route installs frozen Hakim `1.0.0-beta.4` from exact commit 
 
 ## Install frozen beta.4 in Copilot CLI
 
-Register the exact frozen Hakim marketplace and install the plugin:
+Register the Hakim marketplace and install the plugin:
 
 ```bash
-copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
+
+Marketplace registration discovers the catalog; it is not the immutable product pin. The `hakim` entry in `.github/plugin/marketplace.json` advertises frozen `1.0.0-beta.4` and pins the product with a GitHub plugin source object:
+
+```text
+repo = Habib1001-m/hakim
+path = plugins/copilot
+sha  = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
+
+A superseded attempt to append that SHA as `#<sha>` to marketplace registration failed on Copilot CLI `1.0.71` because the host passed the value to Git as a branch selector. Do not reuse that route.
+
+A disposable local-catalog repair probe on Copilot CLI `1.0.71` installed `v1.0.0-beta.4`, exposed six skills and five agents, and matched all 13 frozen product files byte-for-byte. The source and installed tree digest was `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`. That proves the exact-SHA source contract only; the maintained repository route still requires its own activation/invocation acceptance journey.
 
 Inspect the installation:
 
@@ -36,7 +48,7 @@ copilot plugin update hakim
 copilot plugin uninstall hakim
 ```
 
-An update follows the registered marketplace source. A frozen beta.4 installation must remain registered at the exact beta.4 source commit; do not replace it with moving `main` while claiming the same candidate evidence.
+An update follows the registered marketplace and its plugin-source definition. Frozen beta.4 remains pinned by the catalog entry's exact SHA; do not replace that source with moving `main` while claiming the same candidate evidence.
 
 ## Native skills
 
