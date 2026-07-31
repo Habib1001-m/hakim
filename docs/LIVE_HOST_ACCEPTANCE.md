@@ -1,20 +1,41 @@
-# Current-Native Live Host Acceptance
+# Exact-Identity Live Host Acceptance
 
-This document defines the public-safe workflow for accepting Hakim `1.0.0-beta.4` on a real supported coding host. The current beta.4 projection is intentionally `HOLD_FOR_LIVE_HOST_EVIDENCE` until fresh candidate-specific journeys are reviewed and accepted.
+This document defines the public-safe workflow for accepting a specific Hakim identity on a real supported coding host.
+
+Current identities:
+
+- frozen beta.4: `1.0.0-beta.4` at exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`;
+- moving development: `1.0.0-beta.4.post1`, which must be paired with the exact observed `main` commit and is not candidate or release/promotion evidence.
+
+`conformance/distribution-identity.json` maps each identity to its own acceptance projection and records the effective pin layer for each host. Frozen beta.4 now has operator-accepted Codex, Claude Code, GitHub Copilot CLI, and OpenCode evidence. Moving development remains a separate development-only projection.
 
 ## Boundary
 
-A green repository CI run is not live-host acceptance.
-
-A host or materially changed candidate, first-run, lifecycle, or runtime path can be promoted by public evidence only after the exact end-to-end journey has been observed on the real host and a public-safe evidence reference has been reviewed.
+A green repository CI run is not live-host acceptance. A marketplace name, version label, command string, or catalog declaration is not sufficient proof of the bytes a host installed.
 
 Hakim never asks for credentials, private prompts, customer source code, authentication tokens, or private governance records as live-host evidence.
 
-Accepted evidence from an older candidate remains historical evidence for that older identity. It is not relabeled as current acceptance merely because a later candidate preserves some implementation details.
+## 1. Select and record the identity
 
-## 1. Inspect before running the host journey
+For frozen beta.4:
 
-From a current Hakim checkout:
+```bash
+HAKIM_VERSION=1.0.0-beta.4
+SOURCE_SHA=5d00039479f2f11b7fe30ccf2385e70ce24553c3
+ACCEPTANCE_PROJECTION=conformance/history/native-host-acceptance-1.0.0-beta.4.json
+```
+
+For explicit moving development:
+
+```bash
+HAKIM_VERSION=1.0.0-beta.4.post1
+SOURCE_SHA="$(git rev-parse HEAD)"
+ACCEPTANCE_PROJECTION=conformance/native-host-acceptance.json
+```
+
+Before continuing, verify `SOURCE_SHA` is a full 40-character commit and that the effective host transport under test resolves that exact object.
+
+## 2. Inspect before running the host journey
 
 ```bash
 npm run accept:host -- --host codex
@@ -23,40 +44,59 @@ npm run accept:host -- --host github-copilot
 npm run accept:host -- --host opencode --target /path/to/test-project
 ```
 
-The command is read-only. It:
+The command is read-only. It resolves the binary, runs only `--version`, validates the current install-plan contract, and prints the checklist. It does not install or edit acceptance. `--apply` is intentionally refused.
 
-- resolves the requested host binary;
-- runs only the host's `--version` probe;
-- validates Hakim's current install-plan contract;
-- prints the current install/start/invocation checklist;
-- does not install a plugin, change host configuration, start an interactive host, or edit the acceptance projection.
-
-`--apply` is intentionally refused.
-
-## 2. Run the real product journey
+## 3. Run the real exact-source product journey
 
 ### Codex
 
-Hakim's direct-repository beta path asks the operator to try:
-
 ```bash
-codex plugin marketplace add Habib1001-m/hakim
+codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref "$SOURCE_SHA"
 ```
 
-Then use the Codex plugin UI to select the Hakim marketplace, install `hakim`, review/trust the bundled SessionStart hook, start a new thread, and invoke an installed Hakim skill.
-
-The repository-marketplace command is itself part of the live acceptance question. Do not mark Codex `PASS` unless that exact candidate path is observed to work on the tested Codex version, or the product path is deliberately changed and re-reviewed.
+Then select Hakim in `/plugins`, install `hakim`, trust the SessionStart hook, start a new thread, and invoke an installed skill. Frozen beta.4 Codex `0.145.0` has an accepted packet; another host or identity does not inherit it.
 
 ### Claude Code
+
+Claude distinguishes marketplace catalog discovery from plugin source resolution. For the repaired frozen route, the catalog entry uses:
+
+```text
+source = git-subdir
+url    = https://github.com/Habib1001-m/hakim.git
+path   = plugins/claude-code
+sha    = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
+
+After P0 is merged, normal installation is:
 
 ```bash
 claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-Start Claude Code with the plugin enabled. If installation occurred during an active session, use `/reload-plugins` when appropriate. Invoke `/hakim:help` or another Hakim command/agent and verify that the installed plugin responds.
+For the pre-merge P0 journey, register the branch containing the repaired catalog:
+
+```bash
+claude plugin marketplace add "https://github.com/Habib1001-m/hakim.git#p0-truthful-immutable-distribution-identity"
+claude plugin install hakim@hakim
+```
+
+The branch is only catalog discovery. Inspect Claude's installed plugin cache/source and prove that the plugin itself resolves `$SOURCE_SHA`, reports `$HAKIM_VERSION`, activates, and invokes `/hakim:help`.
+
+The superseded command that used `...hakim.git#$SOURCE_SHA` failed on Claude Code `2.1.220`; the host treated the commit as a branch. The failure classification is `MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH`. Do not retry that route.
 
 ### GitHub Copilot CLI
+
+Copilot also separates marketplace catalog discovery from the immutable plugin source. The maintained catalog entry uses:
+
+```text
+source = github
+repo   = Habib1001-m/hakim
+path   = plugins/copilot
+sha    = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
+
+After P0 is merged, normal installation is:
 
 ```bash
 copilot plugin marketplace add Habib1001-m/hakim
@@ -64,17 +104,31 @@ copilot plugin install hakim@hakim
 copilot plugin list
 ```
 
-Inside Copilot CLI, verify `/skills list` and `/agent`, then invoke a Hakim skill or agent and verify the installed plugin responds.
+For the pre-merge P0 journey, register the branch containing the repaired catalog:
+
+```bash
+copilot plugin marketplace add "Habib1001-m/hakim#p0-truthful-immutable-distribution-identity"
+copilot plugin install hakim@hakim
+copilot plugin list
+```
+
+The branch is only catalog discovery. Verify the cached catalog checkout identity, then prove the installed plugin resolves `$SOURCE_SHA`, reports `$HAKIM_VERSION`, and matches the frozen `plugins/copilot` bytes. Inside Copilot CLI, `/skills list` and `/agent` establish the loaded Hakim surface. To force the unique frozen help skill, use an explicit instruction such as `Use the /hakim-help skill ...`; accepted beta.4 evidence recorded `skill(hakim-help)` and the expected quick reference.
+
+The superseded command `copilot plugin marketplace add "Habib1001-m/hakim#$SOURCE_SHA"` failed on Copilot CLI `1.0.71`; the host passed the SHA to Git as a branch selector. The failure classification is `MARKETPLACE_REF_SHA_TREATED_AS_BRANCH`. Do not retry that route.
 
 ### OpenCode
 
-Use a disposable or deliberately selected test repository. Normal user first-run uses the documented Git-backed `npx --package=github:Habib1001-m/hakim ...` bootstrap and does not require npm 11.
-
-For an unreleased acceptance candidate, evidence must still identify the exact 40-character commit. npm CLI has a known upstream bug for exact Git commit refs that reproduces on npm `10.9.8` as `GitFetcher requires an Arborist constructor to pack a tarball` (npm/cli#6723); the fix is available in npm 11. To preserve the exact `npx` product transport without changing the system npm, install npm 11 only into a disposable directory and invoke its bundled `npx-cli.js` directly:
+Use a disposable or deliberately selected test repository:
 
 ```bash
 cd /path/to/test-project
-SOURCE_SHA=<40-char-candidate-sha>
+npx --yes --package="github:Habib1001-m/hakim#$SOURCE_SHA" hakim-opencode install
+```
+
+npm CLI has a known upstream exact-Git-commit issue that reproduces on npm `10.9.8` as `GitFetcher requires an Arborist constructor to pack a tarball` (`npm/cli#6723`). When that exact environment blocks acceptance, preserve the npx transport without replacing system npm:
+
+```bash
+cd /path/to/test-project
 NPM11_ROOT="$(mktemp -d /tmp/hakim-npm11.XXXXXX)"
 
 npm install --prefix "$NPM11_ROOT" --no-save --ignore-scripts --no-audit --no-fund npm@11
@@ -97,19 +151,13 @@ node "$NPM11_NPX" --yes \
   hakim-opencode install --json
 ```
 
-This is acceptance-only tooling for immutable commit evidence. It does not upgrade or replace the system npm, does not alter the normal OpenCode quick start, and still exercises npm 11's `npx` path against the exact Git candidate rather than substituting a different package-install transport.
+This acceptance-only tooling does not upgrade or replace the system npm. Then start OpenCode and invoke `/hakim-help`.
 
-Then start OpenCode from that project and invoke `/hakim-help` or another Hakim command/skill.
+The accepted frozen beta.4 OpenCode journey used OpenCode `1.18.5` and this bounded isolated-npm11 path after reproducing the npm10 blocker. It preserved the same exact Git source, persisted the beta.4 install manifest, matched all nine Hakim-managed files byte-for-byte, returned `EXACT_MATCH` before and after runtime, executed `hakim` in full mode, and invoked `hakim-help` through the native skill tool. The accepted packet is `conformance/history/p0-host-transport/opencode-1.0.0-beta.4.json` with evidence at issue #47 comment `5143738204`.
 
-OpenCode loads the resulting project-local plugin from `.opencode/plugins/`. The managed lifecycle persists `.opencode/hakim-runtime/install-manifest.json`, supports bounded create/adopt/transactional-upgrade transitions and supported older-version removal, uses same-filesystem quarantine with post-move verification and no-clobber rollback, does not edit `opencode.json`, and creates no global Hakim/OpenCode state. Prompt activation is bounded by explicit start/end sentinels so Hakim removes only its owned system range and preserves unrelated trailing content.
+## 4. Record an exact-identity candidate evidence packet
 
-The beta.4 OpenCode path is currently `NOT_RUN`. Accepted beta.1 and frozen beta.2/beta.3 host evidence remains bounded to those exact historical candidates and is not reused to promote beta.4.
-
-## 3. Record a candidate evidence packet
-
-After actually observing the journey, rerun the harness with the three checkpoints and a public-safe evidence reference when you need a local structured packet for review.
-
-Example:
+After observing the journey, rerun the harness with the three checkpoints and a public-safe evidence reference:
 
 ```bash
 npm run accept:host -- --host claude-code \
@@ -117,50 +165,26 @@ npm run accept:host -- --host claude-code \
   --installation PASS \
   --activation PASS \
   --invocation PASS \
-  --evidence-ref 'issue:<number>#comment-containing-exact-candidate-identity' \
-  --output dist/live-host-acceptance/claude-code.json \
+  --evidence-ref "issue:<number>#comment-version-$HAKIM_VERSION-sha-$SOURCE_SHA" \
+  --output "dist/live-host-acceptance/claude-code-$SOURCE_SHA.json" \
   --json
 ```
 
-For OpenCode, include the tested target repository and make the evidence reference identify the exact candidate commit used by the Git-backed command:
+For the P0 transport-specific packet, use `npm run capture:transport`. `--output` is create-only and a candidate evidence packet is evidence for review, not automatic projection authority.
 
-```bash
-npm run accept:host -- --host opencode \
-  --target /path/to/test-project \
-  --record \
-  --installation PASS \
-  --activation PASS \
-  --invocation PASS \
-  --evidence-ref 'issue:<number>#comment-containing-exact-40-char-sha' \
-  --output dist/live-host-acceptance/opencode-git-bootstrap.json \
-  --json
-```
+A tested identity reaches `PASS` only when all three observations pass, the real host/version is detected, the installed product version and `RESOLVED_SOURCE_SHA` match, and a public-safe evidence reference is reviewed.
 
-The candidate becomes `PASS` only when:
+## 5. Promote only the matching projection after review
 
-- all three observed checkpoints are `PASS`;
-- the host binary is resolved;
-- the host version is detected from the real binary;
-- a non-empty public-safe evidence reference is supplied;
-- the public-safe evidence identifies the immutable candidate actually tested when the product is unreleased.
+Only explicit operator acceptance authorizes updating the matching host entry. Never broaden old evidence to another version, SHA, transport, lifecycle, runtime behavior, or host.
 
-`--output` is create-only. The harness refuses to overwrite an existing evidence packet; use a new path for every run so earlier evidence remains inspectable.
+Frozen beta.4 has completed this process on all four maintained hosts. That does not promote moving development, create beta.5, authorize stable release, or reopen external evaluator recruitment. P0 still requires exact final-head Public CI and an explicit operator transition before it leaves Draft.
 
-A candidate evidence packet is evidence for review, not authorization to change the public acceptance projection. A public-safe issue/PR comment that directly records the observed checkpoints, resolved host/version, immutable candidate identity, and evidence boundary may also serve as the projection's `evidence_ref`; do not fabricate a packet that was not actually produced by the harness.
-
-## 4. Promote only after review
-
-Review the candidate packet and/or public-safe evidence reference. Then, and only then, update the corresponding host/product-path evidence when the reviewed observation actually covers the claimed journey.
-
-Do not broaden old evidence to a new candidate, transport, lifecycle, runtime behavior, version, or journey merely because part of the payload is similar. Evidence for older identities remains bounded to the identity on which it was observed.
-
-External evaluator recruitment is currently `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION`. Live-host acceptance is a separate evidence dimension and must not reopen the withdrawn evaluator campaign automatically.
+External evaluator recruitment remains suspended pending an explicit product decision. Live-host acceptance must not reopen it automatically.
 
 ## Upstream host references
 
-Host-native behavior remains authoritative in each host's documentation:
-
-- Claude Code plugin discovery and installation: https://code.claude.com/docs/en/discover-plugins
-- GitHub Copilot CLI plugin installation: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing
-- OpenCode project-local plugins: https://opencode.ai/docs/plugins/
-- Current Codex plugin overview: https://help.openai.com/en/articles/20001256-plugins-in-codex/
+- Claude Code marketplace/plugin source configuration: `https://code.claude.com/docs/en/plugin-marketplaces`
+- GitHub Copilot CLI plugin installation: `https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing`
+- OpenCode project-local plugins: `https://opencode.ai/docs/plugins/`
+- Codex plugin overview: `https://help.openai.com/en/articles/20001256-plugins-in-codex/`

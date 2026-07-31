@@ -15,10 +15,12 @@ Use one maintained authority per question:
 - Capability identifiers and host mappings: `capabilities.json`.
 - Repository modification rules: this file.
 - Product installation: `INSTALL.md` plus the maintained host integration.
+- Distribution identity, immutable install source, and frozen/development mapping: repository `conformance/distribution-identity.json`.
 - Supported-host boundaries: repository `SUPPORTED_HOSTS.md`.
 - Current product-readiness state: repository `docs/PRODUCT_READINESS.md`.
 - Operational-presence architecture: repository `docs/OPERATIONAL_PRESENCE.md`.
-- Frozen-candidate live-host projection: repository `conformance/native-host-acceptance.json`.
+- Moving-development live-host projection: repository `conformance/native-host-acceptance.json`.
+- Frozen beta.4 live-host projection: repository `conformance/history/native-host-acceptance-1.0.0-beta.4.json`.
 - Historical accepted host evidence: repository `conformance/history/`.
 - Release/version contract: repository `VERSIONING.md` and version/manifests.
 - Support/deprecation boundary: repository `SUPPORT.md`.
@@ -29,9 +31,13 @@ Tests and documentation may verify or project these authorities; they are not a 
 
 ## Current product boundary
 
-The latest frozen prerelease is `1.0.0-beta.4`. Current `main` contains unreleased R3.2 development accepted through F04. Those identities are deliberately separate: R3.2 evidence must not be relabeled as beta.4 release-candidate acceptance, and no beta.5 candidate exists until one is explicitly cut and frozen.
+The latest frozen prerelease is `1.0.0-beta.4` at exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and contains unreleased R3.2 development accepted through F04.
 
-Maintained product surfaces exist for Codex, Claude Code, GitHub Copilot, and OpenCode. Frozen beta.4 native-host acceptance remains `HOLD_FOR_LIVE_HOST_EVIDENCE` until exact-candidate journeys are accepted.
+Those identities are deliberately separate: R3.2 evidence must not be relabeled as beta.4 candidate acceptance, and no beta.5 candidate exists until one is explicitly cut and frozen. Moving `main` is not a frozen candidate and is not eligible for release or promotion evidence.
+
+Maintained product surfaces exist for Codex, Claude Code, GitHub Copilot, and OpenCode. Frozen beta.4 and moving development each remain `HOLD_FOR_LIVE_HOST_EVIDENCE` under their own machine-readable projections until exact-identity journeys are accepted.
+
+P0 — Truthful Immutable Distribution Identity is the immediate repository gate. F05 must not start until P0 closes on an exact green final head.
 
 The product does not claim or ship an MCP server, A2A runtime, LSP server, telemetry service, GRPO trainer, reward-model runtime, independent benchmark result, npm registry publication, central marketplace/directory publication, signing, notarization, or universal host compatibility. The private root package may act as bounded Git transport for OpenCode without becoming an npm registry release.
 
@@ -87,6 +93,20 @@ The public repository contains public product code, documentation, tests, manife
 
 Public issues and PRs should contain only public-safe product work that belongs in repository history.
 
+## Distribution identity changes
+
+When changing version, normal install transport, candidate source, marketplace metadata, or live-host projection:
+
+- update `conformance/distribution-identity.json` first;
+- keep moving development and frozen candidate identities distinct;
+- pin normal candidate installation to an exact 40-character source SHA;
+- update canonical/package/host/marketplace metadata together;
+- preserve separate acceptance projections for identities whose evidence must remain attributable;
+- never move evidence with a branch name or version label;
+- run `npm run check:distribution-identity` and the canonical gate.
+
+A new development identity does not create a candidate. A candidate cut does not create acceptance. Acceptance does not authorize release.
+
 ## Canonical skill changes
 
 When changing `SKILL.md` or canonical capability skills:
@@ -94,7 +114,7 @@ When changing `SKILL.md` or canonical capability skills:
 - preserve the seven-rung decision ladder unless an explicitly approved product change replaces it;
 - preserve `lite`, `full`, `ultra`, and `off` unless an approved product change replaces them;
 - update `capabilities.json` when capability identity or host mapping changes;
-- update maintained host projections when canonical behavior changes;
+- update maintained host projections and canonical hash markers when canonical behavior changes;
 - keep examples host-neutral unless explicitly host-scoped;
 - remove stale/unavailable resource references instead of copying them across projections.
 
@@ -138,6 +158,7 @@ npm test
 Useful bounded diagnostics:
 
 ```bash
+npm run check:distribution-identity
 npm run doctor
 npm run plan:install -- --host all
 ```
@@ -161,6 +182,7 @@ Before describing work as complete:
 - confirm active documentation matches the implementation;
 - confirm packaged documentation does not reference absent resources;
 - state remaining compatibility/runtime uncertainty explicitly;
-- distinguish frozen prerelease truth from unreleased `main` development.
+- distinguish frozen prerelease truth from moving unreleased development;
+- identify the exact final source commit whose CI result is being cited.
 
 Do not mark a PR Ready or merge solely because documentation is internally consistent. Final acceptance requires evidence on the exact final head and explicit operator approval.

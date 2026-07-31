@@ -1,6 +1,6 @@
 # Hakim Operational Presence
 
-**Status:** accepted R3.2 development architecture through F04. This is unreleased development and does not itself create a new prerelease identity or release authorization.
+**Status:** accepted R3.2 development architecture through F04 on moving `main` identity `1.0.0-beta.4.post1`. This is unreleased development, not a frozen candidate, and does not create release authorization.
 
 Hakim is designed for capable coding agents. It should preserve model creativity and judgment while making its engineering discipline reliably present and checking objective truth only at consequential boundaries.
 
@@ -9,6 +9,18 @@ Hakim is designed for capable coding agents. It should preserve model creativity
 UX target:
 
 > **Install once. Start coding. Hakim is already there.**
+
+## Distribution identity boundary
+
+Operational presence and distribution identity are separate concerns.
+
+- Frozen beta.4 is `1.0.0-beta.4` at exact source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+- Moving `main` reports `1.0.0-beta.4.post1` and channel `unreleased-development`.
+- Moving `main` is not a frozen candidate and is not eligible for release, promotion, benchmark, external-evaluator, or candidate-specific acceptance evidence.
+- `conformance/distribution-identity.json` is the machine-readable mapping authority.
+- P0 — Truthful Immutable Distribution Identity must close before F05 starts.
+
+Operational evidence remains bounded to its exact source commit. A working lifecycle on moving development cannot be relabeled as frozen beta.4 or future beta.5 evidence.
 
 ## Why operational presence exists
 
@@ -117,9 +129,9 @@ Key immutable refs:
 - F03 runtime: `evidence/r32-f03f-split-lifecycle-6022a09`
 - F04 runtime: `evidence/r32-f04-subagent-presence-5c224c7`
 
-Public CI passed on the exact accepted F03 and F04 runtime heads before those live probes were promoted.
+Public CI passed on the exact accepted F03 and F04 runtime heads before those live probes were promoted. Those refs remain development evidence and do not inherit frozen-candidate status.
 
-Historical failed probes remain visible in GitHub issue/PR history and immutable evidence refs. They are not copied into this architecture authority line-by-line because the maintained document should describe the accepted design and the evidence boundaries, not reproduce the debugging transcript.
+Historical failed probes remain visible in GitHub issue/PR history and immutable evidence refs. They are not copied into this architecture authority line-by-line because the maintained document describes the accepted design and evidence boundaries rather than reproducing debugging transcripts.
 
 ## Why F04 added one hook
 
@@ -143,9 +155,23 @@ with the target repository still clean.
 
 No further lifecycle hook is justified without another concrete host gap.
 
-## Next gate — F05 Objective Completion Truth
+## Immediate gate — P0 Truthful Immutable Distribution Identity
 
-F05 is separate from operational presence and mode control.
+P0 is separate from operational-presence behavior. It reconciles which bytes normal install transports deliver and what identity those bytes report.
+
+P0 acceptance requires:
+
+- exact-SHA normal install routes for Codex, Claude Code, GitHub Copilot CLI, and OpenCode;
+- development metadata parity across the canonical version, package metadata, host manifests, marketplaces, and current acceptance projection;
+- explicit development-only boundaries for moving `main`;
+- deterministic failure on unpinned normal routes, source/version mismatch, or frozen/development identity collapse;
+- `npm test` green on the exact final P0 head.
+
+P0 adds no runtime hook and makes no host-behavior claim.
+
+## Next feature gate after P0 — F05 Objective Completion Truth
+
+F05 is separate from operational presence, mode control, and distribution identity.
 
 The question is narrow:
 
@@ -163,6 +189,10 @@ F05 must preserve these constraints:
 
 ## Remaining R3.2 gates
 
+### P0 — Truthful Immutable Distribution Identity
+
+Complete the transport/product-identity reconciliation before feature work continues.
+
 ### F05 — Objective Completion Truth
 
 Design and test the narrow late-bound truth mechanism described above.
@@ -176,14 +206,15 @@ Before candidate promotion, freeze regressions for:
 - ordinary-prompt non-persistence/non-rewrite;
 - malformed-state fail-soft behavior;
 - evidence-justified subagent continuity;
-- absence of unproven enforcement hooks.
+- absence of unproven enforcement hooks;
+- immutable distribution identity and exact-source evidence attribution.
 
 ### F07 — Production-like D01 rerun
 
-Only after F05/F06 are coherent:
+Only after P0/F05/F06 are coherent:
 
-1. advance the prerelease identity;
-2. freeze the exact candidate;
+1. advance to a new candidate identity distinct from beta.4 and the development identity;
+2. freeze the exact candidate source;
 3. rerun the original production-like D01 task without explicit Hakim activation;
 4. compare correctness, repository purity, claim truth, behavioral value, and ceremony with beta.2–beta.4.
 
@@ -192,7 +223,7 @@ Only after F05/F06 are coherent:
 R3.2 succeeds only if Hakim becomes **more reliable and less visible at the same time**.
 
 ```text
-install Hakim
+install exact Hakim candidate
     -> open coding agent
         -> code normally
             -> Hakim is already present
@@ -202,9 +233,9 @@ install Hakim
 
 ## Explicit exclusions
 
-R3.2 through F04 does not authorize:
+R3.2 through F04 and P0 do not authorize:
 
-- beta.5 or any other new prerelease identity;
+- beta.5 or any other new frozen prerelease identity;
 - external evaluator recruitment;
 - stable `1.0.0`;
 - npm registry or central marketplace publication;

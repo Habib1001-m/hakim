@@ -1,20 +1,24 @@
 # Hakim for Codex
 
-Hakim is packaged as a native Codex plugin with six reusable skills and a SessionStart hook. The repository is also a Codex Git marketplace, so product users do not need the npm launcher.
+Hakim is packaged as a native Codex plugin with six reusable skills and a SessionStart hook. The repository is also a Codex Git marketplace.
+
+## Distribution identity
+
+The normal product route installs frozen Hakim `1.0.0-beta.4` from exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is unreleased development, not a frozen candidate or release/promotion evidence.
 
 ## Compatibility
 
-Use Codex `0.131.0` or newer for the full Hakim beta product path. In `rust-v0.130.0`, plugin-bundled hooks were still behind the disabled-by-default `plugin_hooks` feature; `rust-v0.131.0` marks that feature stable and enables it by default. Host-native hook discovery, enablement, trust, approvals, and managed policy remain authoritative.
+Use Codex `0.131.0` or newer for the full Hakim native plugin-hook path. In `rust-v0.130.0`, plugin-bundled hooks were still behind the disabled-by-default `plugin_hooks` feature; `rust-v0.131.0` marks that feature stable and enables it by default. Host-native hook discovery, enablement, trust, approvals, and managed policy remain authoritative.
 
-## Install
+## Install frozen beta.4
 
-Add the Hakim repository as a Codex marketplace:
+Add the exact frozen Hakim source as a Codex marketplace:
 
 ```bash
-codex plugin marketplace add Habib1001-m/hakim
+codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
 ```
 
-Then open `/plugins`, select the **Hakim** marketplace, and install the `hakim` plugin. Review and trust the single SessionStart hook from `/hooks`, then start a new thread.
+Then open `/plugins`, select the **Hakim** marketplace, and install the `hakim` plugin. Review and trust the SessionStart hook from `/hooks`, then start a new thread.
 
 The installed identity is:
 
@@ -22,7 +26,7 @@ The installed identity is:
 hakim@hakim
 ```
 
-This same installation is intended to be picked up by Codex surfaces that share the same plugin configuration. Host-native availability, workspace policy, permissions, approval, sandbox, and hook trust remain authoritative.
+Host-native availability, workspace policy, permissions, approval, sandbox, and hook trust remain authoritative. Frozen beta.4 still requires its own exact-candidate live-host evidence before promotion.
 
 ## Native usage
 
@@ -47,6 +51,7 @@ Hakim's SessionStart hook injects only a compact activation context. It does **n
 
 ```bash
 npm test
+npm run check:distribution-identity
 npm run check:conformance
 npm run check:capability-parity
 npm run check:codex-projection
@@ -55,14 +60,17 @@ node plugins/codex/hooks/session_start.mjs
 
 ## Development fallback
 
-Repository contributors can still inspect or launch the local checkout without changing Codex plugin installation state:
+Repository contributors can inspect or launch an explicit source checkout without changing Codex plugin installation state:
 
 ```bash
+git clone https://github.com/Habib1001-m/hakim.git
+cd hakim
+git checkout main
 npm run launch:codex -- --binary codex --cwd /path/to/workspace
 npm run launch:codex -- --apply --binary codex --cwd /path/to/workspace
 ```
 
-The launcher is a **development fallback**, not the product installation path. It remains shell-free and refuses `--cd`/`-C` overrides plus approval/sandbox bypass flags.
+This path follows moving `main`. Record the exact source commit for every observation. It remains development-only and is not the frozen product installation path.
 
 ## Troubleshooting
 
@@ -76,6 +84,6 @@ Retain one `hakim@hakim` installation and one trusted SessionStart hook. Preserv
 
 ## Product boundary
 
-Hakim's public Git marketplace makes the plugin installable from source, but it does not by itself claim an approved listing in OpenAI's central Plugin Directory. Publishing there is a separate distribution step.
+Hakim's public Git marketplace makes the plugin installable from exact public source, but it does not by itself claim an approved listing in OpenAI's central Plugin Directory. Publishing there is a separate distribution step.
 
 Runtime validation remains scoped evidence and does not prove universal compatibility, correctness, security approval, benchmark results, performance gains, or ROI.

@@ -2,7 +2,7 @@
 
 Notable public Hakim changes are recorded here. Evidence identities remain tied to their exact immutable refs; changelog grouping does not move or relabel accepted evidence.
 
-## Unreleased — R3.2
+## Unreleased — R3.2 / `1.0.0-beta.4.post1`
 
 ### Changed
 
@@ -11,10 +11,19 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Added plugin-qualified Copilot mode control through `/hakim/hakim <mode>` with split persistence/current-turn responsibilities.
 - Added one evidence-justified `subagentStart` presence hook after a real Explore probe showed `MODE=NONE`; the accepted rerun returned `MODE=ultra` while the target repository remained clean.
 - Established the R3.2 operating principle: **Free reasoning. Safe action. Evidence-bound claims.**
-- Reconciled public documentation so frozen prerelease truth (`1.0.0-beta.4`) is separated from unreleased `main` development.
+- Advanced moving `main` away from the frozen beta.4 identity to explicit development identity `1.0.0-beta.4.post1`.
+- Added `conformance/distribution-identity.json` as the machine-readable authority for current development, frozen beta.4, its exact source SHA, effective normal-install pins, and the not-yet-cut beta.5 state.
+- Pinned Codex and OpenCode beta.4 transports directly to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`; Claude Code and GitHub Copilot CLI use host-native catalog plugin-source SHA pins to the same immutable candidate.
+- Reconciled Claude Code after a disposable `2.1.220` journey proved that marketplace `#<commit>` is treated as a branch selector: the catalog advertises frozen `1.0.0-beta.4` and pins `plugins/claude-code` through an exact-SHA `git-subdir` plugin source.
+- Reconciled GitHub Copilot CLI after a disposable `1.0.71` journey proved that marketplace `#<sha>` is also treated as a branch selector. The repaired repository route separates catalog discovery from the immutable `source: github` plugin source, resolves frozen `1.0.0-beta.4` at the exact SHA, matches all 13 Copilot product files byte-for-byte, loads all six skills and five agents, invokes `hakim-help`, and preserves a clean runtime target.
+- Reconciled OpenCode after system npm `10.9.8` reproduced the upstream exact-Git `GitFetcher requires an Arborist constructor to pack a tarball` blocker. The accepted journey kept the exact beta.4 Git source, used isolated npm 11 tooling without replacing system npm, created the guarded project-local bundle, persisted a 9-file manifest, matched frozen bytes 9/9, remained `EXACT_MATCH` after runtime, activated `hakim` on OpenCode `1.18.5`, and invoked `hakim-help` through the native skill tool.
+- Added deterministic contracts that reject unsupported Claude/Copilot source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, frozen/development identity collapse, and missing/mismatched accepted transport packets.
+- Accepted exact-candidate Codex, Claude Code, GitHub Copilot CLI, and OpenCode transport packets, completing P0 host-resolution proof at `4/4` while keeping P0 itself gated on exact final-head Public CI and explicit operator transition.
+- Reordered product readiness so P0 — Truthful Immutable Distribution Identity closes before F05 begins.
 
 ### Pending
 
+- Complete P0 validation on the exact final pull-request head.
 - F05 — Objective Completion Truth.
 - F06 — deterministic operational regressions.
 - F07 — cut a new prerelease identity and rerun the production-like D01 task before broader promotion.
@@ -32,7 +41,7 @@ No beta.5, stable release, external evaluator campaign, npm registry publication
 - Made broad-suite green insufficient by itself for semantic-equivalence claims on decision logic.
 - Added the exact beta.3 OpenCode prior-manifest authority required for bounded beta.4 upgrade/removal behavior.
 
-Frozen beta.4 evidence remains at `evidence/beta4-r31-5d00039`.
+Frozen beta.4 evidence remains at `evidence/beta4-r31-5d00039` and exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
 
 ## 1.0.0-beta.3 — R3 behavioral remediation
 
@@ -57,7 +66,7 @@ Frozen beta.3 evidence remains at `evidence/beta3-r3-a697b5e`.
 - Promoted permanent behavior/runtime/product-truth contracts out of phase-history naming while retaining controlled historical experiment fixtures separately.
 - Removed the unreferenced Hitchhiker reference document and other retired public surfaces.
 - Restored compact `hakim-help` UX and clarified `hakim-gain` as an evidence-status compatibility ID rather than a quantified-gain claim.
-- Added `SUPPORT.md`, durable product-readiness gates, deterministic CycloneDX SBOM generation, checksums, and clean-room artifact verification.
+- Added `SUPPORT.md`, durable product-readiness gates, deterministic CycloneDX source/product-inventory SBOM generation, checksums, and clean-room artifact verification.
 
 Frozen beta.2 evidence remains at `evidence/beta2-live-126a228`.
 
@@ -69,18 +78,3 @@ Frozen beta.2 evidence remains at `evidence/beta2-live-126a228`.
 - Host-native integrations for Codex, Claude Code, GitHub Copilot, and OpenCode.
 - Doctor, host-preflight, installation planning, review, audit, PR Guardian, and live-host acceptance tooling.
 - Guarded project-local OpenCode lifecycle with manifests, bounded ownership, quarantine-backed removal/rollback, transactional supported-version upgrade/removal, and no `opencode.json` mutation.
-- Git-backed `hakim-opencode` bootstrap so normal OpenCode first-run does not require manually cloning Hakim.
-- Byte-reproducible canonical skill packaging and public-safe current-native host acceptance projection.
-- Architecture, privacy, security, support, upstream-attribution, and first-run documentation for the public product.
-
-### Changed
-
-- Reconciled public/private product boundaries during the public-beta transition and removed retired global/private-prerelease OpenCode distribution code.
-- Replaced ambiguous prompt ownership with bounded start/end sentinels and preserved unrelated host content during reconciliation.
-- Hardened OpenCode transactional lifecycle behavior, rollback truth, older-version removal, session-state isolation, and Node runtime boundaries.
-- Added the F-4 truth-gate policy: structured authorities govern product state; prose checks cannot promote acceptance or release state.
-- Made the canonical skill package distribution-portable and explicitly allowlisted rather than recursively shipping source-tree material.
-- Clarified that Hakim implements no product telemetry service and does not enable raw prompt/source logging.
-- Withdrew the premature external public-beta evaluator campaign before any external report was accepted; evaluator recruitment remains suspended pending a separate product decision.
-
-The original beta.1 release introduced the first public prerelease identity. Historical accepted live-host evidence remains candidate-bounded under `conformance/history/` and immutable evidence refs.

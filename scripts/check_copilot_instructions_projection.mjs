@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CANONICAL = path.join(ROOT, 'core/hakim-skill/SKILL.md');
 const VERSION = path.join(ROOT, 'core/hakim-skill/VERSION');
+const IDENTITY = path.join(ROOT, 'conformance', 'distribution-identity.json');
 const BASELINE = path.join(ROOT, '.github/copilot-instructions.md');
 const MARKETPLACE = path.join(ROOT, '.github/plugin/marketplace.json');
 const PLUGIN_ROOT = path.join(ROOT, 'plugins/copilot');
@@ -55,6 +56,8 @@ function main() {
   const canonical = read(CANONICAL);
   const canonicalHash = sha256(canonical);
   const expectedVersion = read(VERSION).trim();
+  const identity = parseJson(IDENTITY, errors);
+  const frozen = identity?.latest_frozen_candidate || {};
 
   requireFile(BASELINE, 'Copilot baseline instructions', errors);
   requireFile(MARKETPLACE, 'Copilot marketplace', errors);
@@ -73,11 +76,16 @@ function main() {
 
   const marketplace = fs.existsSync(MARKETPLACE) ? parseJson(MARKETPLACE, errors) : null;
   const entry = marketplace?.plugins?.find((item) => item.name === 'hakim');
+  const source = entry?.source;
   if (marketplace?.name !== 'hakim') errors.push('Copilot marketplace name must be hakim');
-  if (marketplace?.metadata?.version !== expectedVersion) errors.push(`Copilot marketplace version must be ${expectedVersion}`);
+  if (marketplace?.metadata?.version !== frozen.version) errors.push(`Copilot marketplace version must be frozen ${frozen.version}`);
   if (!entry) errors.push('Copilot marketplace must expose hakim');
-  if (entry?.version !== expectedVersion) errors.push(`Copilot marketplace plugin version must be ${expectedVersion}`);
-  if (entry?.source !== './plugins/copilot') errors.push('Copilot marketplace source must be ./plugins/copilot');
+  if (entry?.version !== frozen.version) errors.push(`Copilot marketplace plugin version must be frozen ${frozen.version}`);
+  if (source?.source !== 'github') errors.push('Copilot marketplace source type must be github');
+  if (source?.repo !== 'Habib1001-m/hakim') errors.push('Copilot marketplace source repo must be Habib1001-m/hakim');
+  if (source?.path !== 'plugins/copilot') errors.push('Copilot marketplace source path must be plugins/copilot');
+  if (source?.sha !== frozen.source_sha) errors.push(`Copilot marketplace source SHA must be ${frozen.source_sha}`);
+  if (source && Object.hasOwn(source, 'ref')) errors.push('Copilot frozen marketplace source must not use ref');
 
   const manifest = fs.existsSync(MANIFEST) ? parseJson(MANIFEST, errors) : null;
   if (manifest?.name !== 'hakim') errors.push('Copilot plugin manifest name must be hakim');
@@ -212,6 +220,8 @@ function main() {
     mode_control: path.relative(ROOT, MODE_CONTROL),
     canonical_hash: canonicalHash,
     expected_version: expectedVersion,
+    catalog_version: entry?.version || null,
+    catalog_source_sha: source?.sha || null,
     native_install: 'copilot plugin marketplace add Habib1001-m/hakim && copilot plugin install hakim@hakim',
     skills: SKILLS,
     agents: ALL_AGENTS,

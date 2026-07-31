@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 const CANONICAL = path.join(ROOT, 'core/hakim-skill/SKILL.md');
 const VERSION_FILE = path.join(ROOT, 'core/hakim-skill/VERSION');
+const IDENTITY_FILE = path.join(ROOT, 'conformance/distribution-identity.json');
 const PLUGIN_ROOT = path.join(ROOT, 'plugins', 'claude-code');
 const PROJECTION = path.join(PLUGIN_ROOT, 'skills', 'hakim', 'SKILL.md');
 const MANIFEST = path.join(PLUGIN_ROOT, '.claude-plugin', 'plugin.json');
@@ -106,7 +107,6 @@ function validateHooks(errors) {
 
   const hooksConfig = parseJson(HOOKS, errors);
   if (!hooksConfig) return;
-
   const events = Object.keys(hooksConfig.hooks || {}).sort();
   if (JSON.stringify(events) !== JSON.stringify(['PostToolUse', 'SessionStart'])) {
     errors.push(`Claude hooks must define SessionStart and PostToolUse only; found ${events.join(', ')}`);
@@ -140,37 +140,43 @@ function validateHooks(errors) {
 
   if (exists(DIAGNOSTIC_HANDLER)) {
     const text = readUtf8(DIAGNOSTIC_HANDLER);
-    if (!text.includes('HAKIM_CLAUDE_DIAGNOSTIC_HOOK')) {
-      errors.push('Claude diagnostic hook must remain opt-in');
-    }
-    if (text.includes('permissionDecision')) {
-      errors.push('Claude post-edit diagnostic must not make permission decisions');
-    }
+    if (!text.includes('HAKIM_CLAUDE_DIAGNOSTIC_HOOK')) errors.push('Claude diagnostic hook must remain opt-in');
+    if (text.includes('permissionDecision')) errors.push('Claude post-edit diagnostic must not make permission decisions');
   }
 }
 
-function validateMarketplace(expectedVersion, errors) {
-  if (!requireFile(MARKETPLACE, errors, 'Claude marketplace manifest')) return;
+function validateMarketplace(frozen, errors) {
+  if (!requireFile(MARKETPLACE, errors, 'Claude marketplace manifest')) return null;
   const marketplace = parseJson(MARKETPLACE, errors);
-  if (!marketplace) return;
+  if (!marketplace) return null;
   if (marketplace.name !== 'hakim') errors.push('Claude marketplace name must be hakim');
   const plugin = Array.isArray(marketplace.plugins)
     ? marketplace.plugins.find((item) => item.name === 'hakim')
     : null;
   if (!plugin) {
     errors.push('Claude marketplace must expose the hakim plugin');
-    return;
+    return null;
   }
-  if (plugin.source !== './plugins/claude-code') errors.push('Claude marketplace source must be ./plugins/claude-code');
-  if (plugin.version !== expectedVersion) errors.push(`Claude marketplace version must be ${expectedVersion}`);
+
+  const source = plugin.source;
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    errors.push('Claude marketplace source must be an exact-SHA git-subdir object');
+  } else {
+    if (source.source !== 'git-subdir') errors.push('Claude marketplace plugin source type must be git-subdir');
+    if (source.url !== 'https://github.com/Habib1001-m/hakim.git') errors.push('Claude marketplace plugin source URL mismatch');
+    if (source.path !== 'plugins/claude-code') errors.push('Claude marketplace plugin source path must be plugins/claude-code');
+    if (source.sha !== frozen.source_sha) errors.push(`Claude marketplace plugin source SHA must be ${frozen.source_sha}`);
+    if (Object.hasOwn(source, 'ref')) errors.push('Claude marketplace exact-SHA source must not also declare ref');
+  }
+  if (plugin.version !== frozen.version) errors.push(`Claude marketplace version must be frozen ${frozen.version}`);
+  return plugin;
 }
 
 function validateNativeSurface(errors) {
   for (const skill of NATIVE_SKILLS) {
     const filePath = path.join(PLUGIN_ROOT, 'skills', skill, 'SKILL.md');
     if (!requireFile(filePath, errors, `Claude native skill ${skill}`)) continue;
-    const text = readUtf8(filePath);
-    if (!text.includes('disable-model-invocation: true')) {
+    if (!readUtf8(filePath).includes('disable-model-invocation: true')) {
       errors.push(`Claude native skill ${skill} must be user-controlled`);
     }
   }
@@ -178,15 +184,13 @@ function validateNativeSurface(errors) {
   for (const skill of CANONICAL_SKILLS) {
     const filePath = path.join(PLUGIN_ROOT, 'skills', skill, 'SKILL.md');
     if (!requireFile(filePath, errors, `Claude canonical skill ${skill}`)) continue;
-    const text = readUtf8(filePath);
-    if (!text.includes('user-invocable: false')) {
+    if (!readUtf8(filePath).includes('user-invocable: false')) {
       errors.push(`Claude canonical skill ${skill} must be hidden from the slash menu`);
     }
   }
 
   for (const agent of AGENTS) {
-    const filePath = path.join(PLUGIN_ROOT, 'agents', `${agent}.md`);
-    requireFile(filePath, errors, `Claude plugin agent ${agent}`);
+    requireFile(path.join(PLUGIN_ROOT, 'agents', `${agent}.md`), errors, `Claude plugin agent ${agent}`);
   }
 
   const implementer = path.join(PLUGIN_ROOT, 'agents', 'hakim-implementer.md');
@@ -199,30 +203,27 @@ function main() {
   const errors = [];
   const canonical = readUtf8(CANONICAL);
   const expectedVersion = readUtf8(VERSION_FILE).trim();
+  const identity = parseJson(IDENTITY_FILE, errors);
+  const frozen = identity?.latest_frozen_candidate;
   const projection = readUtf8(PROJECTION);
   const canonicalHash = sha256(canonical);
   const projectionMarker = extractMarker(projection);
   const manifest = parseJson(MANIFEST, errors);
 
   validateHooks(errors);
-  validateMarketplace(expectedVersion, errors);
+  const catalogPlugin = frozen ? validateMarketplace(frozen, errors) : null;
   validateNativeSurface(errors);
 
-  if (!projectionMarker) {
-    errors.push('missing hakim-canonical-sha256 marker in Claude compact skill');
-  } else if (projectionMarker !== canonicalHash) {
-    errors.push(`canonical hash drift: projection=${projectionMarker} canonical=${canonicalHash}`);
-  }
+  if (!projectionMarker) errors.push('missing hakim-canonical-sha256 marker in Claude compact skill');
+  else if (projectionMarker !== canonicalHash) errors.push(`canonical hash drift: projection=${projectionMarker} canonical=${canonicalHash}`);
 
   for (const phrase of REQUIRED_PHRASES) {
-    if (!projection.toLowerCase().includes(phrase.toLowerCase())) {
-      errors.push(`missing required projection phrase: ${phrase}`);
-    }
+    if (!projection.toLowerCase().includes(phrase.toLowerCase())) errors.push(`missing required projection phrase: ${phrase}`);
   }
 
   if (manifest) {
     if (manifest.name !== 'hakim') errors.push('manifest name must be hakim');
-    if (manifest.version !== expectedVersion) errors.push(`manifest version must be ${expectedVersion}`);
+    if (manifest.version !== expectedVersion) errors.push(`source-tree Claude manifest version must be ${expectedVersion}`);
     if (!manifest.description || !manifest.description.toLowerCase().includes('smallest safe diff')) {
       errors.push('manifest description must describe Hakim behavior');
     }
@@ -239,22 +240,21 @@ function main() {
     native_skills: NATIVE_SKILLS,
     canonical_skills: CANONICAL_SKILLS,
     plugin_agents: AGENTS,
-    expected_version: expectedVersion,
+    source_tree_version: expectedVersion,
+    catalog_version: catalogPlugin?.version || null,
+    catalog_source_sha: catalogPlugin?.source?.sha || null,
     canonical_hash: canonicalHash,
     projection_marker: projectionMarker,
     ok: errors.length === 0,
     errors,
   };
 
-  if (process.argv.includes('--json')) {
-    console.log(JSON.stringify(payload, null, 2));
-  } else if (payload.ok) {
-    console.log(`Claude native plugin projection OK (${canonicalHash.slice(0, 12)})`);
-  } else {
+  if (process.argv.includes('--json')) console.log(JSON.stringify(payload, null, 2));
+  else if (payload.ok) console.log(`Claude native plugin projection OK (${canonicalHash.slice(0, 12)})`);
+  else {
     console.error('Claude native plugin projection drift detected:');
     for (const error of errors) console.error(`- ${error}`);
   }
-
   process.exit(payload.ok ? 0 : 1);
 }
 
