@@ -46,6 +46,9 @@ assert.equal(frozen.version, '1.0.0-beta.4');
 assert.equal(frozen.source_sha, '5d00039479f2f11b7fe30ccf2385e70ce24553c3');
 assert.equal(frozen.frozen, true);
 assert.equal(frozen.candidate, true);
+assert.equal(frozen.transport_reconciliation.status, 'PASS');
+assert.equal(frozen.transport_reconciliation.verified_hosts, 4);
+assert.equal(frozen.transport_reconciliation.required_hosts, 4);
 assert.equal(identity.next_candidate.version, '1.0.0-beta.5');
 assert.equal(identity.next_candidate.status, 'NOT_CUT');
 
@@ -68,13 +71,15 @@ assert.match(nativeAcceptance.source_policy, new RegExp(frozen.source_sha));
 for (const host of expectedHosts) assert.equal(nativeAcceptance.hosts[host].status, 'NOT_RUN');
 
 assert.equal(frozenAcceptance.product_version, frozen.version);
-assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
+assert.equal(frozenAcceptance.overall_status, 'PASS');
 assert.equal(frozenAcceptance.hosts.codex.status, 'PASS');
 assert.equal(frozenAcceptance.hosts['claude-code'].status, 'PASS');
 assert.equal(frozenAcceptance.hosts['github-copilot'].status, 'PASS');
 assert.equal(frozenAcceptance.hosts['github-copilot'].host_version, 'GitHub Copilot CLI 1.0.71.');
 assert.equal(frozenAcceptance.hosts['github-copilot'].evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571');
-assert.equal(frozenAcceptance.hosts.opencode.status, 'NOT_RUN');
+assert.equal(frozenAcceptance.hosts.opencode.status, 'PASS');
+assert.equal(frozenAcceptance.hosts.opencode.host_version, '1.18.5');
+assert.equal(frozenAcceptance.hosts.opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204');
 
 assert.equal(beta1Acceptance.product_version, '1.0.0-beta.1');
 assert.equal(beta1Acceptance.overall_status, 'PASS');
@@ -252,4 +257,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} hosts, development ${version}, frozen Claude/Copilot catalogs ${frozen.version}@${frozen.source_sha.slice(0, 7)}, ${documentedScripts.size} documented npm scripts`);
+console.log(`public first-run contract OK: ${expectedHosts.length} hosts, development ${version}, frozen beta4 acceptance ${frozenAcceptance.overall_status}, ${documentedScripts.size} documented npm scripts`);
