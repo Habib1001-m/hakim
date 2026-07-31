@@ -8,7 +8,7 @@ Support means the repository maintains a documented, gated product surface for t
 |---|---|---|---|
 | Codex | Native Git marketplace plugin with six skills and SessionStart activation | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Codex `0.145.0` exact-candidate journey is accepted; `0.131.0+` remains the maintained compatibility floor; central directory listing is separate and not claimed |
 | Claude Code | Native marketplace plugin with commands, hidden canonical skills, lifecycle hooks, and specialized agents | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim`; catalog plugin source is `git-subdir` pinned to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Claude Code `2.1.220` repaired exact-SHA plugin-source journey is accepted; the earlier `#<commit>` marketplace attempt remains preserved as superseded failure evidence |
-| GitHub Copilot CLI | Native marketplace plugin with six skills, five custom agents, and R3.2 lifecycle presence/mode/subagent continuity | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim`; catalog plugin source is `github` with `repo: Habib1001-m/hakim`, `path: plugins/copilot`, exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | frozen beta.4 acceptance remains `NOT_RUN`; Copilot CLI `1.0.71` local-catalog repair probe installed 13/13 exact frozen files, while the earlier marketplace `#<sha>` route remains preserved as superseded failure evidence; R3.2 Copilot `1.0.75` evidence is development-only through F04 |
+| GitHub Copilot CLI | Native marketplace plugin with six skills, five custom agents, and R3.2 lifecycle presence/mode/subagent continuity | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim`; catalog plugin source is `github` with `repo: Habib1001-m/hakim`, `path: plugins/copilot`, exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Copilot CLI `1.0.71` frozen beta.4 repository-route journey is accepted with 13/13 byte parity, loaded six skills/five agents, explicit `hakim-help` invocation, and clean runtime target; the earlier marketplace `#<sha>` route remains preserved as superseded failure evidence; R3.2 Copilot `1.0.75` evidence is development-only through F04 |
 | OpenCode | Guarded project-local plugin with exact manifest, bounded create/adopt/transactional-upgrade/removal, ownership sentinels, quarantine verification, and no-clobber rollback | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | Node `>=22`; frozen beta.4 acceptance remains `NOT_RUN`; no npm registry/global installer or `opencode.json` mutation is claimed |
 
 ## Distribution identity authorities
@@ -20,7 +20,7 @@ It links two separate acceptance projections:
 - moving unreleased development: [`conformance/native-host-acceptance.json`](conformance/native-host-acceptance.json);
 - frozen beta.4: [`conformance/history/native-host-acceptance-1.0.0-beta.4.json`](conformance/history/native-host-acceptance-1.0.0-beta.4.json).
 
-Both remain `HOLD_FOR_LIVE_HOST_EVIDENCE`, but frozen beta.4 now contains accepted Codex and Claude Code evidence. A host reaches `PASS` only after a real install/start/invocation journey is accepted for the exact version and source SHA being claimed.
+Both remain `HOLD_FOR_LIVE_HOST_EVIDENCE`, but frozen beta.4 now contains accepted Codex, Claude Code, and GitHub Copilot CLI evidence. OpenCode remains the only pending P0 host. A host reaches `PASS` only after a real install/start/invocation journey is accepted for the exact version and source SHA being claimed.
 
 Structural, packaging, smoke, projection, repair-probe, or CI success does not change live-host status. A new prerelease identity or materially changed transport/lifecycle/runtime requires its own evidence.
 
@@ -40,7 +40,7 @@ R3.2 development has accepted bounded evidence on Copilot CLI 1.0.75 for:
 - subagent continuity through an evidence-justified `subagentStart` reuse of the same presence authority;
 - clean target-repository state during accepted probes.
 
-This is development evidence tied to exact immutable R3.2 refs. It does not prove beta.4 or a not-yet-created beta.5 candidate has completed native-host acceptance.
+This is development evidence tied to exact immutable R3.2 refs. It does not expand the accepted beta.4 Copilot evidence beyond the exact frozen transport/activation/invocation journey recorded for Copilot CLI `1.0.71`, and it does not establish a not-yet-created beta.5 candidate.
 
 See [`docs/OPERATIONAL_PRESENCE.md`](docs/OPERATIONAL_PRESENCE.md).
 
