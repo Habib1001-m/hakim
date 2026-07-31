@@ -84,8 +84,6 @@ assert.equal(codexManifest.version, version);
 assert.equal(claudeManifest.version, version);
 assert.equal(copilotManifest.version, version);
 assert.equal(codexMarketplace.name, 'hakim');
-assert.equal(copilotMarketplace.metadata.version, version);
-assert.equal(copilotMarketplace.plugins.find((item) => item.name === 'hakim')?.version, version);
 assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
 
 const claudeCatalogEntry = claudeMarketplace.plugins.find((item) => item.name === 'hakim');
@@ -96,6 +94,17 @@ assert.deepEqual(claudeCatalogEntry.source, {
   url: 'https://github.com/Habib1001-m/hakim.git',
   path: 'plugins/claude-code',
   sha: frozen.source_sha,
+});
+
+const copilotCatalogEntry = copilotMarketplace.plugins.find((item) => item.name === 'hakim');
+assert.ok(copilotCatalogEntry);
+assert.equal(copilotMarketplace.metadata.version, frozen.version);
+assert.equal(copilotCatalogEntry.version, frozen.version);
+assert.deepEqual(copilotCatalogEntry.source, {
+  source: 'github',
+  repo: 'Habib1001-m/hakim',
+  sha: frozen.source_sha,
+  path: 'plugins/copilot',
 });
 
 assert.match(readme, /public beta software/i);
@@ -172,17 +181,20 @@ for (const [host, command] of Object.entries(frozen.normal_install_commands)) {
   assert.ok(hasExactLine(readme, command), `${host} command missing from README`);
   assert.ok(hasExactLine(install, command), `${host} command missing from INSTALL`);
 }
-for (const host of ['codex', 'github-copilot', 'opencode']) {
+for (const host of ['codex', 'opencode']) {
   assert.ok(frozen.normal_install_commands[host].includes(frozen.source_sha));
 }
 assert.equal(frozen.normal_install_commands['claude-code'], 'claude plugin marketplace add Habib1001-m/hakim');
+assert.equal(frozen.normal_install_commands['github-copilot'], 'copilot plugin marketplace add Habib1001-m/hakim');
 assert.match(combinedFirstRun, /Claude catalog entry.*exact.*SHA/is);
+assert.match(combinedFirstRun, /Copilot catalog entry.*exact.*SHA/is);
 assert.match(combinedFirstRun, /claude plugin install hakim@hakim/);
 assert.match(combinedFirstRun, /\/hakim:full/);
 assert.match(combinedFirstRun, /copilot plugin install hakim@hakim/);
 assert.match(combinedFirstRun, /\/hakim\/hakim (?:full|lite|ultra|off)/);
 assert.match(combinedFirstRun, /does not edit `opencode\.json`/);
 assert.equal(hasExactLine(combinedFirstRun, `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#${frozen.source_sha}`), false);
+assert.equal(hasExactLine(combinedFirstRun, `copilot plugin marketplace add Habib1001-m/hakim#${frozen.source_sha}`), false);
 
 const productDocs = [
   'README.md',
@@ -237,4 +249,4 @@ for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} hosts, development ${version}, frozen Claude catalog ${frozen.version}@${frozen.source_sha.slice(0, 7)}, ${documentedScripts.size} documented npm scripts`);
+console.log(`public first-run contract OK: ${expectedHosts.length} hosts, development ${version}, frozen Claude/Copilot catalogs ${frozen.version}@${frozen.source_sha.slice(0, 7)}, ${documentedScripts.size} documented npm scripts`);
