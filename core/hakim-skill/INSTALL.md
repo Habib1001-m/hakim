@@ -4,7 +4,7 @@ Hakim is public beta software distributed from public source and repository-host
 
 The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`). Moving `main` reports `1.0.0-beta.4.post1` and is explicit unreleased development, not a frozen candidate and not eligible for release or promotion evidence.
 
-`conformance/distribution-identity.json` is the machine-readable authority for these identities, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex and Claude Code are accepted while GitHub Copilot CLI and OpenCode remain pending. No npm registry package or central marketplace/directory listing is currently claimed.
+`conformance/distribution-identity.json` is the machine-readable authority for these identities, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex, Claude Code, and GitHub Copilot CLI are accepted while OpenCode remains pending. No npm registry package or central marketplace/directory listing is currently claimed.
 
 ## Codex
 
@@ -90,7 +90,7 @@ sha  = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
 
 The superseded route that appended `#5d00039479f2f11b7fe30ccf2385e70ce24553c3` to marketplace registration failed on Copilot CLI `1.0.71`: the host passed the SHA to Git as a branch selector. It must not be reused.
 
-A disposable local-catalog repair probe on Copilot CLI `1.0.71` installed `1.0.0-beta.4` through the exact-SHA source object, exposed all six skills and five agents, and matched all 13 distributed Copilot product files byte-for-byte. The source and installed tree digests both equal `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`. That probe validates the repaired transport contract only; frozen host acceptance remains `NOT_RUN` until the repaired repository marketplace route itself is exercised with activation and invocation evidence.
+The repaired repository route is accepted on Copilot CLI `1.0.71`. For the pre-merge P0 journey, the branch `p0-truthful-immutable-distribution-identity` was used only for catalog discovery. The catalog entry independently pinned the installed plugin to frozen SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Hakim installed as `1.0.0-beta.4`; all 13 distributed Copilot product files matched byte-for-byte and source/installed tree digests both equaled `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`. Copilot loaded all six Hakim skills and five custom agents, an explicit `hakim-help` skill invocation returned the frozen quick reference, and the disposable runtime target remained unchanged. This evidence is bounded to Copilot CLI `1.0.71` and the exact frozen candidate.
 
 Verify installation with:
 
@@ -109,7 +109,7 @@ Explicit mode control uses the plugin-qualified skill route:
 /hakim/hakim off
 ```
 
-Default `full` is stateless. Non-default modes use bounded host-owned plugin data. Silent parent-session presence and subagent continuity are accepted on the unreleased R3.2 development path; they are not silently claimed for frozen beta.4 without exact-candidate live-host evidence.
+Those mode-control forms are maintained on moving development. Frozen beta.4 acceptance proves the exact plugin transport, installed bytes, loaded skill/agent surface, and help-skill invocation recorded above; silent parent-session presence, bounded mode state, and subagent continuity remain separately accepted R3.2 development evidence and are not retroactively inherited by beta.4.
 
 `.github/copilot-instructions.md` is an optional repository baseline/fallback, not the primary product distribution. The legacy `install:copilot` source-checkout command exists only for repositories that explicitly want that baseline file and never overwrites an existing file.
 
@@ -170,7 +170,7 @@ npm run remove:opencode -- --target /path/to/repository
 
 These commands exercise the same managed project-local lifecycle used by the Git-backed bootstrap. They are not required for normal first-run use.
 
-Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE`. For frozen beta.4, Codex and Claude Code are accepted while GitHub Copilot CLI and OpenCode remain `NOT_RUN`; P0 remains `HOLD_FOR_HOST_NATIVE_PROOF` until every maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
+Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE`. For frozen beta.4, Codex, Claude Code, and GitHub Copilot CLI are accepted while OpenCode remains `NOT_RUN`; P0 remains `HOLD_FOR_HOST_NATIVE_PROOF` until the final maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
 
 ## Inspect all maintained product surfaces
 
