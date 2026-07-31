@@ -21,6 +21,7 @@ const sessionScript = path.join(ROOT, 'plugins', 'copilot', 'hooks', 'session_st
 assert.equal(manifest.hooks, 'hooks/hooks.json');
 assert.equal(hookConfig.version, 1);
 assert.deepEqual(Object.keys(hookConfig.hooks).sort(), [
+  'agentStop',
   'sessionStart',
   'subagentStart',
   'userPromptSubmitted',
@@ -30,6 +31,7 @@ assert.equal(hookConfig.hooks.sessionStart.length, 1);
 assert.equal(hookConfig.hooks.subagentStart.length, 1);
 assert.equal(hookConfig.hooks.userPromptSubmitted.length, 1);
 assert.equal(hookConfig.hooks.userPromptTransformed.length, 1);
+assert.equal(hookConfig.hooks.agentStop.length, 1);
 
 const sessionStart = hookConfig.hooks.sessionStart[0];
 assert.equal(sessionStart.type, 'command');
@@ -55,8 +57,14 @@ assert.match(modeControl.command, /\$\{PLUGIN_ROOT\}\/hooks\/mode_control\.mjs/)
 assert.equal(modeControl.env, undefined);
 assert.equal(modeControl.timeoutSec, 2);
 
-for (const forbidden of ['preToolUse', 'postToolUse', 'agentStop', 'subagentStop']) {
-  assert.equal(hookConfig.hooks[forbidden], undefined, `operational presence must not add hook ${forbidden}`);
+const objectiveCompletion = hookConfig.hooks.agentStop[0];
+assert.equal(objectiveCompletion.type, 'command');
+assert.match(objectiveCompletion.command, /\$\{PLUGIN_ROOT\}\/hooks\/objective_completion_truth\.mjs/);
+assert.equal(objectiveCompletion.env, undefined);
+assert.equal(objectiveCompletion.timeoutSec, 3);
+
+for (const forbidden of ['preToolUse', 'postToolUse', 'subagentStop']) {
+  assert.equal(hookConfig.hooks[forbidden], undefined, `F05 must not add hook ${forbidden}`);
 }
 
 for (const [input, expected] of [
@@ -172,4 +180,4 @@ try {
   fs.rmSync(subagentData, { recursive: true, force: true });
 }
 
-console.log('test_copilot_operational_presence.mjs: silent presence + submitted persistence + transformed control + subagent continuity OK');
+console.log('test_copilot_operational_presence.mjs: F01-F04 presence + bounded F05 agentStop wiring OK');
