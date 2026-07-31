@@ -10,9 +10,9 @@ This document is the maintained public product-readiness authority for Hakim. It
 | Moving `main` development | `1.0.0-beta.4.post1`; R3.2 operational-presence work accepted through F04; not a frozen candidate and not evidence-eligible |
 | Machine distribution authority | `conformance/distribution-identity.json` |
 | Canonical repository gate | `npm test` |
-| Immediate repository gate | P0 — Truthful Immutable Distribution Identity |
+| Immediate repository gate | P0 — Truthful Immutable Distribution Identity; four-host transport proof complete, exact final-head CI pending |
 | Next feature gate after P0 | F05 — Objective Completion Truth |
-| Frozen beta.4 native acceptance | `HOLD_FOR_LIVE_HOST_EVIDENCE` |
+| Frozen beta.4 native acceptance | `PASS` for Codex, Claude Code, GitHub Copilot CLI, and OpenCode |
 | Current development native acceptance | `HOLD_FOR_LIVE_HOST_EVIDENCE`; development-only |
 | External evaluator recruitment | `SUSPENDED_PENDING_EXPLICIT_PRODUCT_DECISION` |
 | Stable `1.0.0` | `NOT_AUTHORIZED` |
@@ -42,14 +42,14 @@ P0 is the first safe repository step before F05.
 
 Required invariants:
 
-- [ ] Normal Codex, Claude Code, GitHub Copilot CLI, and OpenCode frozen-beta installation routes resolve `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
-- [ ] Moving `main` metadata reports `1.0.0-beta.4.post1` and channel `unreleased-development`.
-- [ ] Moving `main` is explicitly not a frozen candidate and not eligible for release, promotion, benchmark, external-evaluator, or candidate-specific acceptance evidence.
-- [ ] `conformance/distribution-identity.json` is the single machine-readable mapping authority.
-- [ ] Deterministic tests fail on unpinned normal routes, version mismatch, frozen ref/SHA mismatch, or frozen/development identity collapse.
-- [ ] The exact P0 PR head passes `npm test` before merge.
+- [x] Normal Codex, Claude Code, GitHub Copilot CLI, and OpenCode frozen-beta installation routes resolve `5d00039479f2f11b7fe30ccf2385e70ce24553c3` with accepted host-native evidence.
+- [x] Moving `main` metadata reports `1.0.0-beta.4.post1` and channel `unreleased-development`.
+- [x] Moving `main` is explicitly not a frozen candidate and not eligible for release, promotion, benchmark, external-evaluator, or candidate-specific acceptance evidence.
+- [x] `conformance/distribution-identity.json` is the single machine-readable mapping authority.
+- [x] Deterministic tests bind accepted host packets/hashes and fail on unpinned normal routes, version mismatch, frozen ref/SHA mismatch, or frozen/development identity collapse.
+- [ ] The exact final P0 PR head passes Public CI after the last evidence/truth mutation.
 
-P0 does not cut beta.5, collect live-host evidence, start F05, publish a package, or authorize promotion.
+Four host/version-bounded beta.4 packets are accepted. This does not cut beta.5, start F05, publish a package, reopen external evaluator recruitment, or authorize promotion. P0 remains open until the exact final PR head passes the canonical gate and the operator explicitly authorizes the transition.
 
 ## R3.2 development checkpoint
 
@@ -65,7 +65,7 @@ Accepted operational-presence slices:
 - [x] **F02 — Bounded mode state.** `lite`, `ultra`, and `off` persist only in plugin-owned state; default `full` is stateless.
 - [x] **F03 — Native mode-control lifecycle.** `/hakim/hakim off → ultra → full` passed current-turn semantics, persistence, reset, and repository-isolation checks on Copilot CLI 1.0.75.
 - [x] **F04 — Subagent continuity.** A pre-remediation Explore probe returned `MODE=NONE`; the evidence-justified `subagentStart` reuse of the existing presence authority then produced `MODE=ultra` with a clean target repository.
-- [ ] **P0 — Truthful Immutable Distribution Identity.** Complete the transport/product-identity reconciliation before feature work continues.
+- [ ] **P0 — Truthful Immutable Distribution Identity.** Host proof is 4/4 accepted; close only after exact final-head Public CI and explicit operator transition.
 - [ ] **F05 — Objective Completion Truth.** Test a narrow late-bound truth mechanism for consequential completion claims without command blocking, prose policing, or reasoning-path control.
 - [ ] **F06 — Deterministic operational regressions.** Freeze the accepted operational contracts before candidate promotion.
 - [ ] **F07 — Production-like D01 rerun.** Cut a new prerelease identity first, then rerun the original production-like task without explicit Hakim activation.
@@ -76,11 +76,11 @@ See [`docs/OPERATIONAL_PRESENCE.md`](OPERATIONAL_PRESENCE.md) for the architectu
 
 ## Native-host evidence rule
 
-The current development projection is [`conformance/native-host-acceptance.json`](../conformance/native-host-acceptance.json). The frozen/development mapping is [`conformance/distribution-identity.json`](../conformance/distribution-identity.json).
+The current development projection is [`conformance/native-host-acceptance.json`](../conformance/native-host-acceptance.json). The frozen beta.4 projection is [`conformance/history/native-host-acceptance-1.0.0-beta.4.json`](../conformance/history/native-host-acceptance-1.0.0-beta.4.json). Their mapping and transport packet hashes are controlled by [`conformance/distribution-identity.json`](../conformance/distribution-identity.json).
 
 A host reaches `PASS` only when a real install/start/invocation journey is accepted for the exact product identity and immutable source being claimed. Repository CI, smoke tests, projection checks, or live evidence on a different source do not promote that status.
 
-R3.2 Copilot development evidence proves only the bounded operational behavior it observed. It is not full beta.4 host acceptance and will not be relabeled as beta.5 evidence before a beta.5 candidate exists.
+Frozen beta.4 now has accepted evidence for all four maintained hosts. R3.2 Copilot development evidence proves only the bounded operational behavior it observed; it is not relabeled as beta.4 or beta.5 evidence.
 
 ## Behavioral and dogfood protocol
 
@@ -118,6 +118,7 @@ Use explicit decisions:
 
 - `GO_FOR_BOUNDED_NEXT_EVIDENCE_STEP` — current development is coherent enough for the named next learning step.
 - `HOLD_FOR_PRODUCT_REMEDIATION` — a material correctness, UX, safety, distribution-identity, or truth problem remains.
-- `HOLD_FOR_LIVE_HOST_EVIDENCE` — an exact frozen candidate is coherent but required candidate-specific host evidence is incomplete.
+- `HOLD_FOR_LIVE_HOST_EVIDENCE` — an exact candidate or moving-development projection still lacks required live-host evidence.
+- `HOLD_FOR_FINAL_EXACT_HEAD_CI` — host evidence is complete, but the final evidence/truth mutation has not yet passed the exact PR-head canonical gate.
 
 None of these states authorizes stable release, external evaluator recruitment, registry publication, central marketplace promotion, SLA, or LTS by itself.
