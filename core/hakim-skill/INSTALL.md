@@ -4,13 +4,13 @@ Hakim is public beta software distributed from public source and repository-host
 
 The latest frozen prerelease is `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`). Moving `main` reports `1.0.0-beta.4.post1` and is explicit unreleased development, not a frozen candidate and not eligible for release or promotion evidence.
 
-`conformance/distribution-identity.json` is the machine-readable authority for these identities, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex, Claude Code, and GitHub Copilot CLI are accepted while OpenCode remains pending. No npm registry package or central marketplace/directory listing is currently claimed.
+`conformance/distribution-identity.json` is the machine-readable authority for these identities, effective normal-install pins, and host-resolution proof state. Frozen beta.4 now has operator-accepted host-native transport evidence for Codex, Claude Code, GitHub Copilot CLI, and OpenCode (`4/4`). P0 itself remains open until the exact final PR head passes Public CI and the operator explicitly authorizes the next transition. No npm registry package or central marketplace/directory listing is currently claimed.
 
 ## Codex
 
 Use Codex `0.131.0` or newer for the maintained native plugin-hook path.
 
-Declare the frozen beta.4 marketplace source with its exact commit. A disposable Codex `0.145.0` P0 journey resolved this exact SHA, installed `1.0.0-beta.4`, matched all distributed plugin files byte-for-byte, completed the trusted SessionStart hook, and invoked an installed Hakim skill. That accepted evidence is bounded to the recorded host/version and does not complete P0 for the remaining hosts:
+Declare the frozen beta.4 marketplace source with its exact commit. A disposable Codex `0.145.0` P0 journey resolved this exact SHA, installed `1.0.0-beta.4`, matched all distributed plugin files byte-for-byte, completed the trusted SessionStart hook, and invoked an installed Hakim skill. That accepted evidence is bounded to the recorded host/version:
 
 ```bash
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -123,7 +123,7 @@ From the target repository:
 npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install
 ```
 
-This declares npm Git transport/command execution for the exact frozen GitHub source. Hakim is not published to the npm registry, creates no global Hakim/OpenCode installation, and the shipped bootstrap declares Node `>=22`. Candidate proof still requires recording the resolved source/package identity and persisted install manifest in a clean target.
+This declares npm Git transport/command execution for the exact frozen GitHub source. Hakim is not published to the npm registry, creates no global Hakim/OpenCode installation, and the shipped bootstrap declares Node `>=22`.
 
 Read-only inspection uses the same immutable declaration:
 
@@ -141,6 +141,10 @@ Supported transitions are intentionally bounded:
 - **upgrade** when a complete verified supported older installation is present.
 
 Partial, modified, unsafe, symlinked, malformed/unsupported-manifest, or unowned conflicting state is refused. Hakim does not edit `opencode.json`.
+
+The frozen beta.4 route is accepted on OpenCode `1.18.5`. A clean-target dry-run reported `READY_TO_CREATE` with nine managed product files and no write. The managed install then persisted the manifest and reached `EXACT_MATCH` with 9/9 exact files and zero different/unsafe files. Frozen-to-installed byte parity was 9/9. OpenCode executed the project-local `hakim` command in `full` mode and invoked `hakim-help` through its native skill tool; post-runtime status remained `EXACT_MATCH` and Hakim-owned byte/fileset purity remained unchanged.
+
+System npm `10.9.8` reproduced the upstream exact-Git `GitFetcher requires an Arborist constructor to pack a tarball` blocker. The accepted acceptance-only journey preserved the exact same Git package source and used isolated npm 11 tooling without replacing system npm. This is an environment/tooling workaround, not a different product source.
 
 After installation, start OpenCode from the target repository and use `/hakim-help` or `/hakim full ...`. `/hakim <mode>` is a direct session-mode switch and must not require repository inspection merely to set the mode.
 
@@ -170,7 +174,7 @@ npm run remove:opencode -- --target /path/to/repository
 
 These commands exercise the same managed project-local lifecycle used by the Git-backed bootstrap. They are not required for normal first-run use.
 
-Frozen beta.4 and current development live-host projections remain `HOLD_FOR_LIVE_HOST_EVIDENCE`. For frozen beta.4, Codex, Claude Code, and GitHub Copilot CLI are accepted while OpenCode remains `NOT_RUN`; P0 remains `HOLD_FOR_HOST_NATIVE_PROOF` until the final maintained frozen route records its resolved source identity. Older accepted evidence remains candidate-bounded and historical.
+Frozen beta.4 native acceptance is `PASS` across Codex, Claude Code, GitHub Copilot CLI, and OpenCode. Current moving development remains `HOLD_FOR_LIVE_HOST_EVIDENCE` and development-only. P0 host-resolution proof is complete at `4/4`, but P0 itself remains open until the exact final PR head passes Public CI and the operator explicitly authorizes the transition. Older accepted evidence remains candidate-bounded and historical.
 
 ## Inspect all maintained product surfaces
 
