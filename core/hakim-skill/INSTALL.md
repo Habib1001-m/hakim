@@ -73,14 +73,26 @@ Hakim also ships scoped specialist agents. Claude Code's own installation scope,
 
 ## GitHub Copilot
 
-The declaration below remains pending a disposable journey that records the registered marketplace checkout and installed plugin source identity:
+Register the public repository marketplace, then install Hakim:
 
 ```bash
-copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
 
-Verify the installation with:
+The registration command selects a catalog; it is not the immutable product pin. The `hakim` entry in `.github/plugin/marketplace.json` advertises frozen `1.0.0-beta.4` and uses Copilot CLI's GitHub plugin source with:
+
+```text
+repo = Habib1001-m/hakim
+path = plugins/copilot
+sha  = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
+
+The superseded route that appended `#5d00039479f2f11b7fe30ccf2385e70ce24553c3` to marketplace registration failed on Copilot CLI `1.0.71`: the host passed the SHA to Git as a branch selector. It must not be reused.
+
+A disposable local-catalog repair probe on Copilot CLI `1.0.71` installed `1.0.0-beta.4` through the exact-SHA source object, exposed all six skills and five agents, and matched all 13 distributed Copilot product files byte-for-byte. The source and installed tree digests both equal `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`. That probe validates the repaired transport contract only; frozen host acceptance remains `NOT_RUN` until the repaired repository marketplace route itself is exercised with activation and invocation evidence.
+
+Verify installation with:
 
 ```bash
 copilot plugin list
@@ -170,7 +182,7 @@ npm run plan:install -- --host all
 npm run check:distribution-identity
 ```
 
-The install plan is read-only and reports the maintained Codex, Claude Code, GitHub Copilot, and OpenCode product surfaces. For Claude, it separately reports the moving source-tree manifest and the frozen exact-SHA catalog entry.
+The install plan is read-only and reports the maintained Codex, Claude Code, GitHub Copilot, and OpenCode product surfaces. For Claude and Copilot, it separately reports the moving source-tree manifest and the frozen exact-SHA catalog entry.
 
 ## Source validation
 
