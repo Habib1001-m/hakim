@@ -18,9 +18,9 @@ IDENTITY_MODEL              = PASS
 METADATA_RECONCILIATION     = PASS
 CODEX_TRANSPORT_PROOF       = PASS / OPERATOR_ACCEPTED
 CLAUDE_TRANSPORT_PROOF      = PASS / OPERATOR_ACCEPTED
-COPILOT_TRANSPORT_PROOF     = REPAIRED_ROUTE_NOT_RUN
+COPILOT_TRANSPORT_PROOF     = PASS / OPERATOR_ACCEPTED
 OPENCODE_TRANSPORT_PROOF    = NOT_RUN
-HOST_RESOLUTION_PROOF       = PARTIAL_2_OF_4
+HOST_RESOLUTION_PROOF       = PARTIAL_3_OF_4
 P0_OVERALL                  = HOLD_FOR_HOST_NATIVE_PROOF
 ```
 
@@ -32,7 +32,7 @@ No beta.5 candidate, release, promotion, external evaluator campaign, npm public
 |---|---|---|---|
 | Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout `--ref` | `PASS`, operator accepted, packet integrity-bound |
 | Claude Code | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim` | `.claude-plugin/marketplace.json` plugin source `{source: git-subdir, path: plugins/claude-code, sha: 5d000...}` | `PASS`, operator accepted, packet integrity-bound |
-| GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim` | `.github/plugin/marketplace.json` plugin source `{source: github, repo: Habib1001-m/hakim, path: plugins/copilot, sha: 5d000...}` | repaired source contract proved locally; repository route `NOT_RUN` |
+| GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim` | `.github/plugin/marketplace.json` plugin source `{source: github, repo: Habib1001-m/hakim, path: plugins/copilot, sha: 5d000...}` | `PASS`, operator accepted, packet integrity-bound |
 | OpenCode | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | npm Git package spec | `NOT_RUN` |
 
 ## Accepted Codex checkpoint
@@ -97,9 +97,9 @@ EVIDENCE                   = https://github.com/Habib1001-m/hakim/issues/47#issu
 
 This acceptance is bounded to Claude Code `2.1.220`, the recorded Linux/WSL environment, and the exact repaired route. It does not transfer to Copilot, OpenCode, another Claude version, or moving development.
 
-## Copilot failed route and repaired source contract
+## Copilot failed route, repaired source contract, and accepted rerun
 
-A disposable authenticated Copilot CLI `1.0.71` journey attempted the previously documented route:
+A disposable authenticated Copilot CLI `1.0.71` journey first attempted the previously documented route:
 
 ```text
 copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -120,9 +120,16 @@ The failed declaration is superseded, not erased. The repaired design uses Copil
 - **catalog-advertised plugin version:** `1.0.0-beta.4`;
 - **moving source-tree plugin manifest:** remains `1.0.0-beta.4.post1` and development-only.
 
-Before mutating the repository route, a disposable local-catalog probe tested this exact source shape on Copilot CLI `1.0.71`. The host installed `hakim@hakim-p0-probe` as `v1.0.0-beta.4`, exposed six skills and five agents, and the installed product matched the frozen `plugins/copilot` tree byte-for-byte:
+Before changing the maintained route, a disposable local-catalog probe confirmed that Copilot CLI `1.0.71` supports this exact source shape. It installed frozen beta.4 and matched all 13 distributed Copilot product files byte-for-byte. That probe remained non-candidate evidence.
+
+The maintained-repository acceptance journey then used the P0 branch only for catalog discovery. The cached marketplace checkout matched PR head `7fcf6c31b49d54c8015294be72f8daa36a5704e3`; its catalog entry pinned the plugin itself to frozen source SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Installing `hakim@hakim` reported `1.0.0-beta.4`; all 13 installed product files matched the frozen `plugins/copilot` tree byte-for-byte with identical deterministic tree digest `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`.
+
+Runtime activation was observed independently: Copilot loaded the Hakim plugin, all six Hakim skills, and five Hakim custom agents. Frozen beta.4 contains no Copilot hooks, so hook absence is not an activation failure. Invocation was then observed through an explicit `hakim-help` skill call; Copilot emitted `skill(hakim-help)` and returned the frozen Hakim quick reference. The disposable runtime target remained unchanged.
 
 ```text
+HOST                       = github-copilot
+HOST_VERSION               = GitHub Copilot CLI 1.0.71.
+REQUESTED_SOURCE           = copilot plugin marketplace add Habib1001-m/hakim#p0-truthful-immutable-distribution-identity
 RESOLVED_SOURCE_SHA        = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
 INSTALLED_PRODUCT_VERSION  = 1.0.0-beta.4
 SOURCE_PRODUCT_FILES       = 13
@@ -131,12 +138,17 @@ BYTE_MISMATCHES            = 0
 SOURCE_TREE_SHA256         = b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2
 INSTALLED_TREE_SHA256      = b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2
 INSTALLATION               = PASS
-ACTIVATION                 = NOT_RUN
-INVOCATION                 = NOT_RUN
-CANDIDATE_EVIDENCE         = NO
+ACTIVATION                 = PASS
+INVOCATION                 = PASS
+RUNTIME_TARGET_MUTATION    = NONE
+PACKET_SHA256              = 60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6
+PACKET                     = conformance/history/p0-host-transport/github-copilot-1.0.0-beta.4.json
+EVIDENCE                   = https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571
 ```
 
-This repair probe proves only that Copilot CLI `1.0.71` supports the exact-SHA plugin-source contract and installs the expected frozen bytes. It is not a candidate acceptance journey because it used a local probe catalog rather than the maintained repository marketplace. The repaired repository route remains `NOT_RUN` until a fresh disposable journey registers the maintained catalog, installs `hakim@hakim`, proves source/byte identity again, and independently observes activation and invocation.
+The branch-qualified marketplace registration above is pre-merge catalog discovery evidence, not the normal post-merge product command. The normal maintained command remains `copilot plugin marketplace add Habib1001-m/hakim`; immutability is enforced by the catalog plugin `source.sha`.
+
+This acceptance is bounded to Copilot CLI `1.0.71`, the recorded WSL/Linux environment, the exact frozen plugin source, and the observed activation/invocation path. It does not transfer to OpenCode, moving R3.2 development, another Copilot version, or later candidates.
 
 ## Disposable journey requirements
 
@@ -172,7 +184,7 @@ The packet fails closed when:
 `scripts/hakim_transport_evidence.mjs` validates and renders a reviewable packet. It never installs a plugin, changes host configuration, captures raw host output, or modifies an acceptance projection. `--apply` is refused and `--output` is create-only.
 
 ```bash
-npm run capture:transport -- --host claude-code --json
+npm run capture:transport -- --host github-copilot --json
 ```
 
 A `PASS` packet remains review input. It is promoted only after explicit operator acceptance and deterministic reconciliation.
@@ -181,8 +193,8 @@ A `PASS` packet remains review input. It is promoted only after explicit operato
 
 1. Codex — accepted.
 2. Claude Code — accepted.
-3. GitHub Copilot CLI — repaired repository route next; record catalog plugin source and installed product identity.
-4. OpenCode — record exact package/source and persisted manifest.
+3. GitHub Copilot CLI — accepted.
+4. OpenCode — next; record exact package/source and persisted manifest.
 5. Reconcile each accepted packet independently.
 6. Run exact final-head Public CI after the final evidence mutation.
 
