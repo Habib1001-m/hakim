@@ -28,11 +28,11 @@ Hakim is public beta software.
 | External evaluator campaign | Suspended pending a separate product decision |
 | npm registry / central marketplace publication | Not claimed |
 
-`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex and Claude Code are accepted; GitHub Copilot CLI and OpenCode still require independent accepted packets.
+`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. P0 remains `HOLD_FOR_HOST_NATIVE_PROOF`: Codex, Claude Code, and GitHub Copilot CLI are accepted for frozen beta.4; OpenCode remains independently pending.
 
 Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
 
-R3.2 has live Copilot CLI evidence for silent parent-session presence, bounded persisted modes, current-turn mode control, and subagent continuity. That development evidence is not silently relabeled as beta.4 release-candidate host acceptance.
+R3.2 has separate development-only Copilot CLI evidence for silent parent-session presence, bounded persisted modes, current-turn mode control, and subagent continuity. Frozen beta.4 Copilot acceptance proves its exact plugin transport, installed bytes, loaded skills/agents, and Hakim skill invocation; it does not inherit those later R3.2 lifecycle behaviors.
 
 See [Product Readiness](docs/PRODUCT_READINESS.md), [Operational Presence](docs/OPERATIONAL_PRESENCE.md), [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md), and [Supported Hosts](SUPPORTED_HOSTS.md) for the maintained truth.
 
@@ -70,7 +70,9 @@ copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
 
-The marketplace command is catalog discovery, not the immutable pin. The Copilot catalog entry advertises `1.0.0-beta.4` and uses a GitHub plugin source object with repository `Habib1001-m/hakim`, `path: plugins/copilot`, and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`. A superseded attempt to append the commit as `#<sha>` to marketplace registration failed on Copilot CLI `1.0.71` because the host passed that value to Git as a branch selector. A disposable local-catalog repair probe then installed `1.0.0-beta.4` from the exact SHA and matched all 13 Copilot product files byte-for-byte; that probe validates the repaired source contract but is not frozen host acceptance.
+The marketplace command is catalog discovery, not the immutable pin. The Copilot catalog entry advertises `1.0.0-beta.4` and uses a GitHub plugin source object with repository `Habib1001-m/hakim`, `path: plugins/copilot`, and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`. A superseded attempt to append the commit as `#<sha>` to marketplace registration failed on Copilot CLI `1.0.71` because the host passed that value to Git as a branch selector.
+
+The repaired repository route is accepted on Copilot CLI `1.0.71`. During the pre-merge journey, the P0 branch was used only to discover the repaired catalog; the catalog plugin source independently resolved frozen SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. `hakim@hakim` installed as `1.0.0-beta.4`, all 13 Copilot product files matched the frozen source byte-for-byte with tree SHA-256 `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`, all six Hakim skills and five custom agents loaded, an explicit `hakim-help` skill invocation returned the frozen quick reference, and the disposable runtime target remained unchanged.
 
 Start Copilot normally. Explicit mode control uses the plugin-qualified skill route:
 
@@ -81,7 +83,7 @@ Start Copilot normally. Explicit mode control uses the plugin-qualified skill ro
 /hakim/hakim off
 ```
 
-Default `full` is stateless. Non-default modes use bounded plugin-owned state. The accepted R3.2 development path adds silent parent-session presence and subagent continuity, but that behavior is not claimed for frozen beta.4 without exact-candidate live-host evidence.
+Those mode-control forms describe the maintained moving-development surface. Frozen beta.4 acceptance is bounded to the exact transport/activation/invocation journey above; later R3.2 silent presence, bounded mode state, and subagent-continuity evidence remains development-only and is not retroactively attributed to beta.4.
 
 `.github/copilot-instructions.md` remains an optional repository baseline, not the primary Hakim product surface.
 
