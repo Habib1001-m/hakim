@@ -1,6 +1,6 @@
 # P0 Host-Native Transport Reconciliation
 
-**Status:** `CLOSED / PASS`  
+**Status:** `PASS`  
 **Authority:** closed issue #47 and merged PR #48  
 **Frozen candidate:** `1.0.0-beta.4`  
 **Expected source SHA:** `5d00039479f2f11b7fe30ccf2385e70ce24553c3`
