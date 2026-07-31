@@ -7,7 +7,7 @@ Current identities:
 - frozen beta.4: `1.0.0-beta.4` at exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`;
 - moving development: `1.0.0-beta.4.post1`, which must be paired with the exact observed `main` commit and is not candidate or release/promotion evidence.
 
-`conformance/distribution-identity.json` maps each identity to its own acceptance projection and records the effective pin layer for each host. Frozen beta.4 currently has accepted Codex, Claude Code, and GitHub Copilot CLI evidence; OpenCode remains incomplete.
+`conformance/distribution-identity.json` maps each identity to its own acceptance projection and records the effective pin layer for each host. Frozen beta.4 now has operator-accepted Codex, Claude Code, GitHub Copilot CLI, and OpenCode evidence. Moving development remains a separate development-only projection.
 
 ## Boundary
 
@@ -54,7 +54,7 @@ The command is read-only. It resolves the binary, runs only `--version`, validat
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref "$SOURCE_SHA"
 ```
 
-Then select Hakim in `/plugins`, install `hakim`, trust the SessionStart hook, start a new thread, and invoke an installed skill. Frozen beta.4 Codex `0.145.0` has one accepted packet; another host does not inherit it.
+Then select Hakim in `/plugins`, install `hakim`, trust the SessionStart hook, start a new thread, and invoke an installed skill. Frozen beta.4 Codex `0.145.0` has an accepted packet; another host or identity does not inherit it.
 
 ### Claude Code
 
@@ -153,6 +153,8 @@ node "$NPM11_NPX" --yes \
 
 This acceptance-only tooling does not upgrade or replace the system npm. Then start OpenCode and invoke `/hakim-help`.
 
+The accepted frozen beta.4 OpenCode journey used OpenCode `1.18.5` and this bounded isolated-npm11 path after reproducing the npm10 blocker. It preserved the same exact Git source, persisted the beta.4 install manifest, matched all nine Hakim-managed files byte-for-byte, returned `EXACT_MATCH` before and after runtime, executed `hakim` in full mode, and invoked `hakim-help` through the native skill tool. The accepted packet is `conformance/history/p0-host-transport/opencode-1.0.0-beta.4.json` with evidence at issue #47 comment `5143738204`.
+
 ## 4. Record an exact-identity candidate evidence packet
 
 After observing the journey, rerun the harness with the three checkpoints and a public-safe evidence reference:
@@ -175,6 +177,8 @@ A tested identity reaches `PASS` only when all three observations pass, the real
 ## 5. Promote only the matching projection after review
 
 Only explicit operator acceptance authorizes updating the matching host entry. Never broaden old evidence to another version, SHA, transport, lifecycle, runtime behavior, or host.
+
+Frozen beta.4 has completed this process on all four maintained hosts. That does not promote moving development, create beta.5, authorize stable release, or reopen external evaluator recruitment. P0 still requires exact final-head Public CI and an explicit operator transition before it leaves Draft.
 
 External evaluator recruitment remains suspended pending an explicit product decision. Live-host acceptance must not reopen it automatically.
 
