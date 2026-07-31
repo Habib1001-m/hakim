@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "packet_type": "P0_HOST_TRANSPORT_EVIDENCE",
+  "mode": "CANDIDATE_EVIDENCE",
+  "packet_status": "PASS",
+  "host": "github-copilot",
+  "expected": {
+    "product_version": "1.0.0-beta.4",
+    "source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+    "source_ref": "evidence/beta4-r31-5d00039"
+  },
+  "observed": {
+    "requested_source": "copilot plugin marketplace add Habib1001-m/hakim#p0-truthful-immutable-distribution-identity",
+    "resolved_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+    "installed_product_version": "1.0.0-beta.4",
+    "installation_status": "PASS",
+    "activation_status": "PASS",
+    "invocation_status": "PASS"
+  },
+  "host_binary": {
+    "requested": "copilot",
+    "resolved": "/snap/bin/copilot",
+    "version_probe": {
+      "status": "PASS",
+      "version": "GitHub Copilot CLI 1.0.71.",
+      "exit_code": 0,
+      "reason": null
+    }
+  },
+  "cwd": "/tmp/hakim-copilot-packet.9jO4Dh/source",
+  "target": null,
+  "verified_at": "2026-07-31T12:38:25.768Z",
+  "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571",
+  "safety": {
+    "host_installation_performed": false,
+    "host_configuration_mutated": false,
+    "acceptance_projection_mutated": false,
+    "raw_host_output_captured": false,
+    "output_is_create_only": true
+  },
+  "next_safe_action": "Review this create-only packet. Do not promote the frozen acceptance projection without explicit operator approval and cross-checking the evidence reference."
+}
