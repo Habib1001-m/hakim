@@ -38,7 +38,7 @@ See [Product Readiness](docs/PRODUCT_READINESS.md), [Operational Presence](docs/
 
 ## Quick start — frozen beta.4
 
-The routes below are the maintained frozen beta.4 declarations. Codex, Copilot, and OpenCode place the SHA in their command-level transport. Claude Code uses a different host-native boundary: marketplace registration discovers the catalog, while the Hakim entry in `.claude-plugin/marketplace.json` pins `plugins/claude-code` with `git-subdir` and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+The routes below are the maintained frozen beta.4 declarations. Codex and OpenCode place the SHA in their command-level transport. Claude Code and GitHub Copilot CLI use host-native catalog boundaries: marketplace registration discovers the catalog, while each catalog entry pins the frozen plugin source to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
 
 ### Codex
 
@@ -66,9 +66,11 @@ Start Claude Code normally. Maintained commands include `/hakim:help`, `/hakim:f
 ### GitHub Copilot CLI
 
 ```bash
-copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
+
+The marketplace command is catalog discovery, not the immutable pin. The Copilot catalog entry advertises `1.0.0-beta.4` and uses a GitHub plugin source object with repository `Habib1001-m/hakim`, `path: plugins/copilot`, and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`. A superseded attempt to append the commit as `#<sha>` to marketplace registration failed on Copilot CLI `1.0.71` because the host passed that value to Git as a branch selector. A disposable local-catalog repair probe then installed `1.0.0-beta.4` from the exact SHA and matched all 13 Copilot product files byte-for-byte; that probe validates the repaired source contract but is not frozen host acceptance.
 
 Start Copilot normally. Explicit mode control uses the plugin-qualified skill route:
 
