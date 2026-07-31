@@ -110,15 +110,21 @@
         "pin_layer": "git-package-spec",
         "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
         "static_contract_status": "EXACT_SHA_DECLARED",
-        "live_resolution_status": "NOT_RUN",
-        "evidence_ref": null,
-        "candidate_evidence_eligible": false
+        "live_resolution_status": "PASS",
+        "resolved_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+        "installed_product_version": "1.0.0-beta.4",
+        "host_version": "1.18.5",
+        "verified_at": "2026-07-31T14:17:34.114Z",
+        "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204",
+        "packet_path": "conformance/history/p0-host-transport/opencode-1.0.0-beta.4.json",
+        "packet_sha256": "899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304",
+        "candidate_evidence_eligible": true
       }
     },
     "transport_reconciliation": {
-      "status": "HOLD_FOR_HOST_NATIVE_PROOF",
+      "status": "PASS",
       "authority": "docs/P0_HOST_TRANSPORT_RECONCILIATION.md",
-      "verified_hosts": 3,
+      "verified_hosts": 4,
       "required_hosts": 4
     }
   },
