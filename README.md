@@ -22,13 +22,13 @@ Hakim is public beta software.
 |---|---|
 | Latest frozen prerelease | `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`) |
 | Moving `main` | `1.0.0-beta.4.post1`, explicit unreleased development; not a frozen candidate and not eligible for release/promotion evidence |
-| Immediate repository gate | P0 — Truthful Immutable Distribution Identity; four-host transport proof complete, exact final-head CI pending |
-| Next feature gate after P0 | F05 — Objective Completion Truth |
+| Completed repository gate | P0 — Truthful Immutable Distribution Identity; PR #48 merged after four-host proof `4/4` and exact-head Public CI #687 |
+| Immediate repository gate | F05 — Objective Completion Truth; not started by the P0 merge or this reconciliation |
 | Stable `1.0.0` | Not authorized |
 | External evaluator campaign | Suspended pending a separate product decision |
 | npm registry / central marketplace publication | Not claimed |
 
-`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. Frozen beta.4 has operator-accepted host-native transport evidence for Codex, Claude Code, GitHub Copilot CLI, and OpenCode (`4/4`). P0 itself remains open until the exact final PR head passes Public CI and the operator explicitly authorizes the next transition.
+`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. Frozen beta.4 has operator-accepted host-native transport evidence for Codex, Claude Code, GitHub Copilot CLI, and OpenCode (`4/4`). P0 completed after exact PR head `dd8b78663ca20b3872669f27aca60f9bdaea0aab` passed Public CI #687 and PR #48 merged as `1a7022daeceea4c86e23e342711b3c07197dc037`; issue #47 is closed.
 
 Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
 
@@ -101,7 +101,7 @@ The frozen beta.4 route is accepted on OpenCode `1.18.5`. The disposable journey
 
 Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
 
-See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the accepted host/version-bounded evidence and the remaining exact-final-head CI gate.
+See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the accepted host/version-bounded evidence and P0 closure record.
 
 ## Unreleased development
 

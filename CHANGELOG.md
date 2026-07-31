@@ -18,12 +18,12 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Reconciled GitHub Copilot CLI after a disposable `1.0.71` journey proved that marketplace `#<sha>` is also treated as a branch selector. The repaired repository route separates catalog discovery from the immutable `source: github` plugin source, resolves frozen `1.0.0-beta.4` at the exact SHA, matches all 13 Copilot product files byte-for-byte, loads all six skills and five agents, invokes `hakim-help`, and preserves a clean runtime target.
 - Reconciled OpenCode after system npm `10.9.8` reproduced the upstream exact-Git `GitFetcher requires an Arborist constructor to pack a tarball` blocker. The accepted journey kept the exact beta.4 Git source, used isolated npm 11 tooling without replacing system npm, created the guarded project-local bundle, persisted a 9-file manifest, matched frozen bytes 9/9, remained `EXACT_MATCH` after runtime, activated `hakim` on OpenCode `1.18.5`, and invoked `hakim-help` through the native skill tool.
 - Added deterministic contracts that reject unsupported Claude/Copilot source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, frozen/development identity collapse, and missing/mismatched accepted transport packets.
-- Accepted exact-candidate Codex, Claude Code, GitHub Copilot CLI, and OpenCode transport packets, completing P0 host-resolution proof at `4/4` while keeping P0 itself gated on exact final-head Public CI and explicit operator transition.
-- Reordered product readiness so P0 — Truthful Immutable Distribution Identity closes before F05 begins.
+- Accepted exact-candidate Codex, Claude Code, GitHub Copilot CLI, and OpenCode transport packets, completing P0 host-resolution proof at `4/4`.
+- Completed P0 — Truthful Immutable Distribution Identity after exact PR head `dd8b78663ca20b3872669f27aca60f9bdaea0aab` passed Public CI #687, the operator approved Ready, PR #48 squash-merged as `1a7022daeceea4c86e23e342711b3c07197dc037`, and issue #47 closed `completed`.
+- Reconciled post-merge public truth so F05 — Objective Completion Truth is the next active repository gate without starting F05 or creating release/promotion authorization.
 
 ### Pending
 
-- Complete P0 validation on the exact final pull-request head.
 - F05 — Objective Completion Truth.
 - F06 — deterministic operational regressions.
 - F07 — cut a new prerelease identity and rerun the production-like D01 task before broader promotion.
@@ -47,7 +47,7 @@ Frozen beta.4 evidence remains at `evidence/beta4-r31-5d00039` and exact commit 
 
 ### Changed
 
-- Classified dependency/editable installs, lockfile/package-metadata generation, local bootstrap/environment creation, code generation, formatter writes, and similar effects as mutations rather than harmless baseline discovery.
+- Classified dependency/editable installs, lockfile/package-metadata generation, local bootstrap/environment creation, code generation, formatter writes, and similar effects as mutations rather than harmless discovery.
 - Made baseline discovery read-only by default and required justification before setup mutation.
 - Bounded `NO_CHANGE` to the inspected evidence rather than treating lack of a discovered change as global minimum-complexity proof.
 - Strengthened evidence sufficiency so agents stop inspecting once decision-relevant uncertainty is resolved.

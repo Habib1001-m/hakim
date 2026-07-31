@@ -1,7 +1,7 @@
 # P0 Host-Native Transport Reconciliation
 
 **Status:** `PASS`  
-**Authority:** issue #47 and Draft PR #48  
+**Authority:** closed issue #47 and merged PR #48  
 **Frozen candidate:** `1.0.0-beta.4`  
 **Expected source SHA:** `5d00039479f2f11b7fe30ccf2385e70ce24553c3`
 
@@ -9,7 +9,7 @@
 
 P0 separates moving unreleased development from the frozen beta.4 candidate and proves what every maintained host actually resolves and runs. A command containing a SHA is only a declaration until a disposable real-host journey establishes the effective source, installed version/bytes, activation, and invocation.
 
-## Current decision
+## Final decision
 
 ```text
 IDENTITY_MODEL              = PASS
@@ -19,16 +19,20 @@ CLAUDE_TRANSPORT_PROOF      = PASS / OPERATOR_ACCEPTED
 COPILOT_TRANSPORT_PROOF     = PASS / OPERATOR_ACCEPTED
 OPENCODE_TRANSPORT_PROOF    = PASS / OPERATOR_ACCEPTED
 HOST_RESOLUTION_PROOF       = COMPLETE_4_OF_4
-P0_OVERALL                  = HOLD_FOR_FINAL_EXACT_HEAD_CI
+EXACT_FINAL_PR_HEAD_CI      = PASS / PUBLIC_CI_687
+PR_48                       = MERGED
+ISSUE_47                    = CLOSED_COMPLETED
+P0_OVERALL                  = PASS
+F05                         = NEXT_NOT_STARTED
 ```
 
-All four frozen-beta.4 transport packets are now operator accepted. This closes the host-resolution proof slice only. PR #48 remains Draft until the exact final PR head passes Public CI; issue #47 remains open and F05 remains blocked until that final gate is accepted.
+Exact P0 PR head `dd8b78663ca20b3872669f27aca60f9bdaea0aab` passed Public CI #687 with canonical, Node 22, and Node 26 gates green. PR #48 then left Draft under explicit operator authorization and was squash-merged as `1a7022daeceea4c86e23e342711b3c07197dc037`. Issue #47 was closed `completed` with the accepted packet hashes and merge evidence.
 
-No beta.5 candidate, release, promotion, external evaluator campaign, npm publication, central marketplace publication, or F05 implementation is authorized by this document.
+P0 closure does not create a beta.5 candidate, release/promotion authorization, external evaluator campaign, npm publication, central marketplace publication, or F05 implementation. F05 is only the next active repository gate after this post-merge truth reconciliation.
 
 ## Host contract matrix
 
-| Host | Effective frozen route | Static pin layer | Current proof |
+| Host | Effective frozen route | Static pin layer | Final proof |
 |---|---|---|---|
 | Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout `--ref` | `PASS`, operator accepted, packet integrity-bound |
 | Claude Code | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim` | `.claude-plugin/marketplace.json` plugin source `{source: git-subdir, path: plugins/claude-code, sha: 5d000...}` | `PASS`, operator accepted, packet integrity-bound |
@@ -177,26 +181,28 @@ The packet fails closed when the resolved SHA is missing/wrong, installed metada
 
 `scripts/hakim_transport_evidence.mjs` validates and renders a reviewable packet. It never installs a plugin, changes host configuration, captures raw host output, or modifies an acceptance projection. `--apply` is refused and `--output` is create-only.
 
-A `PASS` packet remains review input until explicit operator acceptance and deterministic reconciliation. All four beta.4 packets have now crossed that boundary.
+A `PASS` packet remains review input until explicit operator acceptance and deterministic reconciliation. All four beta.4 packets crossed that boundary before merge.
 
-## Ordered execution
+## Ordered execution — complete
 
 1. Codex — accepted.
 2. Claude Code — accepted.
 3. GitHub Copilot CLI — accepted.
 4. OpenCode — accepted.
 5. Four-host deterministic reconciliation — complete.
-6. Exact final-head Public CI — pending.
-7. Only after that gate may PR #48 leave Draft under an explicit operator decision.
+6. Exact final-head Public CI — Public CI #687 PASS on `dd8b78663ca20b3872669f27aca60f9bdaea0aab`.
+7. Operator-approved Ready transition — complete.
+8. PR #48 squash merge — complete as `1a7022daeceea4c86e23e342711b3c07197dc037`.
+9. Issue #47 closure — complete.
+10. Post-merge public-truth reconciliation — this bounded follow-up; no runtime behavior change.
 
 ## Exit criteria
 
-Host-native transport reconciliation is complete: all four maintained routes resolve frozen beta.4 and have accepted host/version-bounded packets. P0 itself may leave Draft only when the exact final PR head also passes Public CI and the operator explicitly authorizes the transition.
-
-Until that final gate:
+P0 is complete and closed. The frozen beta.4 transport proof remains bounded to the four accepted packets and exact source identity. Moving `main` remains unreleased development and does not inherit candidate acceptance.
 
 ```text
-PR_48_READY = NO
-ISSUE_47    = OPEN
-F05         = BLOCKED
+PR_48      = MERGED
+ISSUE_47   = CLOSED_COMPLETED
+P0         = PASS
+F05        = NEXT_NOT_STARTED
 ```
