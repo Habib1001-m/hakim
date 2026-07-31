@@ -7,7 +7,7 @@ Current identities:
 - frozen beta.4: `1.0.0-beta.4` at exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`;
 - moving development: `1.0.0-beta.4.post1`, which must be paired with the exact observed `main` commit and is not candidate or release/promotion evidence.
 
-`conformance/distribution-identity.json` maps each identity to its own acceptance projection and records the effective pin layer for each host. Frozen beta.4 currently has accepted Codex evidence only; the other hosts remain incomplete.
+`conformance/distribution-identity.json` maps each identity to its own acceptance projection and records the effective pin layer for each host. Frozen beta.4 currently has accepted Codex, Claude Code, and GitHub Copilot CLI evidence; OpenCode remains incomplete.
 
 ## Boundary
 
@@ -87,13 +87,34 @@ The superseded command that used `...hakim.git#$SOURCE_SHA` failed on Claude Cod
 
 ### GitHub Copilot CLI
 
+Copilot also separates marketplace catalog discovery from the immutable plugin source. The maintained catalog entry uses:
+
+```text
+source = github
+repo   = Habib1001-m/hakim
+path   = plugins/copilot
+sha    = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
+
+After P0 is merged, normal installation is:
+
 ```bash
-copilot plugin marketplace add "Habib1001-m/hakim#$SOURCE_SHA"
+copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 copilot plugin list
 ```
 
-Inside Copilot CLI, verify `/skills list` and `/agent`, then invoke a Hakim skill or agent.
+For the pre-merge P0 journey, register the branch containing the repaired catalog:
+
+```bash
+copilot plugin marketplace add "Habib1001-m/hakim#p0-truthful-immutable-distribution-identity"
+copilot plugin install hakim@hakim
+copilot plugin list
+```
+
+The branch is only catalog discovery. Verify the cached catalog checkout identity, then prove the installed plugin resolves `$SOURCE_SHA`, reports `$HAKIM_VERSION`, and matches the frozen `plugins/copilot` bytes. Inside Copilot CLI, `/skills list` and `/agent` establish the loaded Hakim surface. To force the unique frozen help skill, use an explicit instruction such as `Use the /hakim-help skill ...`; accepted beta.4 evidence recorded `skill(hakim-help)` and the expected quick reference.
+
+The superseded command `copilot plugin marketplace add "Habib1001-m/hakim#$SOURCE_SHA"` failed on Copilot CLI `1.0.71`; the host passed the SHA to Git as a branch selector. The failure classification is `MARKETPLACE_REF_SHA_TREATED_AS_BRANCH`. Do not retry that route.
 
 ### OpenCode
 
