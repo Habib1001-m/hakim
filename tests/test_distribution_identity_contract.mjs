@@ -49,7 +49,7 @@ const installDocs = [
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
 const expectedHosts = ['claude-code', 'codex', 'github-copilot', 'opencode'];
-const acceptedHosts = ['codex', 'claude-code'];
+const acceptedHosts = ['codex', 'claude-code', 'github-copilot'];
 const pendingHosts = expectedHosts.filter((host) => !acceptedHosts.includes(host));
 const exactSha = /^[0-9a-f]{40}$/;
 const exactSha256 = /^[0-9a-f]{64}$/;
@@ -153,7 +153,7 @@ test('frozen beta4 retains its own partially accepted machine-readable projectio
   assert.equal(frozenAcceptance.product_version, frozen.version);
   assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
   assert.match(frozenAcceptance.source_policy, new RegExp(escapeRegExp(frozen.source_sha)));
-  assert.match(frozenAcceptance.source_policy, /Codex and Claude Code exact-SHA transport/i);
+  assert.match(frozenAcceptance.source_policy, /Codex, Claude Code, and GitHub Copilot CLI exact-candidate transport/i);
   assert.deepEqual(Object.keys(frozenAcceptance.hosts).sort(), expectedHosts);
 
   const codex = frozenAcceptance.hosts.codex;
@@ -167,6 +167,12 @@ test('frozen beta4 retains its own partially accepted machine-readable projectio
   assert.equal(claude.host_version, '2.1.220 (Claude Code)');
   assert.equal(claude.verified_at, '2026-07-30T23:15:48.874Z');
   assert.equal(claude.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5137151921');
+
+  const copilot = frozenAcceptance.hosts['github-copilot'];
+  assert.equal(copilot.status, 'PASS');
+  assert.equal(copilot.host_version, 'GitHub Copilot CLI 1.0.71.');
+  assert.equal(copilot.verified_at, '2026-07-31T12:38:25.768Z');
+  assert.equal(copilot.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571');
 
   for (const host of pendingHosts) {
     const entry = frozenAcceptance.hosts[host];
@@ -218,10 +224,10 @@ test('transport reconciliation preserves accepted proof and repaired Copilot fai
 
   assert.equal(reconciliation.status, 'HOLD_FOR_HOST_NATIVE_PROOF');
   assert.equal(reconciliation.authority, 'docs/P0_HOST_TRANSPORT_RECONCILIATION.md');
-  assert.equal(reconciliation.verified_hosts, 2);
+  assert.equal(reconciliation.verified_hosts, 3);
   assert.equal(reconciliation.required_hosts, expectedHosts.length);
   assert.match(transportAuthority, /^\*\*Status:\*\* `HOLD_FOR_HOST_NATIVE_PROOF`/m);
-  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= PARTIAL_2_OF_4/);
+  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= PARTIAL_3_OF_4/);
   assert.match(transportAuthority, /MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH/);
   assert.match(transportAuthority, /MARKETPLACE_REF_SHA_TREATED_AS_BRANCH/);
   assert.match(transportAuthority, /git-subdir/);
@@ -275,9 +281,16 @@ test('transport reconciliation preserves accepted proof and repaired Copilot fai
   assert.equal(copilot.plugin_source_repo, 'Habib1001-m/hakim');
   assert.equal(copilot.plugin_source_path, 'plugins/copilot');
   assert.equal(copilot.static_contract_status, 'EXACT_SHA_PLUGIN_SOURCE_DECLARED');
-  assert.equal(copilot.live_resolution_status, 'NOT_RUN');
-  assert.equal(copilot.evidence_ref, null);
-  assert.equal(copilot.candidate_evidence_eligible, false);
+  assert.equal(copilot.live_resolution_status, 'PASS');
+  assert.equal(copilot.resolved_source_sha, frozen.source_sha);
+  assert.equal(copilot.installed_product_version, frozen.version);
+  assert.equal(copilot.host_version, 'GitHub Copilot CLI 1.0.71.');
+  assert.equal(copilot.verified_at, '2026-07-31T12:38:25.768Z');
+  assert.equal(copilot.evidence_ref, frozenAcceptance.hosts['github-copilot'].evidence_ref);
+  assert.equal(copilot.candidate_evidence_eligible, true);
+  assert.equal(copilot.packet_path, 'conformance/history/p0-host-transport/github-copilot-1.0.0-beta.4.json');
+  assert.equal(copilot.packet_sha256, '60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6');
+  assertAcceptedPacket(copilot, 'github-copilot');
   assert.equal(copilot.superseded_failed_attempt.status, 'FAIL');
   assert.equal(copilot.superseded_failed_attempt.reason, 'MARKETPLACE_REF_SHA_TREATED_AS_BRANCH');
   assert.equal(copilot.superseded_failed_attempt.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142063851');
