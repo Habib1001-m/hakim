@@ -20,7 +20,7 @@
     "normal_install_commands": {
       "codex": "codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3",
       "claude-code": "claude plugin marketplace add Habib1001-m/hakim",
-      "github-copilot": "copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+      "github-copilot": "copilot plugin marketplace add Habib1001-m/hakim",
       "opencode": "npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install"
     },
     "host_transport_contracts": {
@@ -68,12 +68,36 @@
       },
       "github-copilot": {
         "command_key": "github-copilot",
-        "pin_layer": "marketplace-checkout-ref",
+        "pin_layer": "catalog-plugin-source-sha",
+        "catalog_path": ".github/plugin/marketplace.json",
+        "plugin_source_type": "github",
+        "plugin_source_repo": "Habib1001-m/hakim",
+        "plugin_source_path": "plugins/copilot",
         "expected_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
-        "static_contract_status": "REF_SYNTAX_DOCUMENTED_SHA_RESOLUTION_UNPROVEN",
+        "static_contract_status": "EXACT_SHA_PLUGIN_SOURCE_DECLARED",
         "live_resolution_status": "NOT_RUN",
         "evidence_ref": null,
-        "candidate_evidence_eligible": false
+        "candidate_evidence_eligible": false,
+        "superseded_failed_attempt": {
+          "host_version": "GitHub Copilot CLI 1.0.71.",
+          "attempted_source": "Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+          "status": "FAIL",
+          "reason": "MARKETPLACE_REF_SHA_TREATED_AS_BRANCH",
+          "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142063851"
+        },
+        "repair_probe": {
+          "host_version": "GitHub Copilot CLI 1.0.71.",
+          "status": "PASS",
+          "probe_scope": "LOCAL_CATALOG_SOURCE_CONTRACT_ONLY",
+          "resolved_source_sha": "5d00039479f2f11b7fe30ccf2385e70ce24553c3",
+          "installed_product_version": "1.0.0-beta.4",
+          "source_file_count": 13,
+          "installed_file_count": 13,
+          "byte_mismatch_count": 0,
+          "source_tree_sha256": "b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2",
+          "installed_tree_sha256": "b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2",
+          "candidate_evidence_eligible": false
+        }
       },
       "opencode": {
         "command_key": "opencode",
