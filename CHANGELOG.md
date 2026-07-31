@@ -13,15 +13,17 @@ Notable public Hakim changes are recorded here. Evidence identities remain tied 
 - Established the R3.2 operating principle: **Free reasoning. Safe action. Evidence-bound claims.**
 - Advanced moving `main` away from the frozen beta.4 identity to explicit development identity `1.0.0-beta.4.post1`.
 - Added `conformance/distribution-identity.json` as the machine-readable authority for current development, frozen beta.4, its exact source SHA, effective normal-install pins, and the not-yet-cut beta.5 state.
-- Pinned normal Codex, GitHub Copilot CLI, and OpenCode beta.4 transports to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
-- Reconciled Claude Code after a disposable `2.1.220` journey proved that marketplace `#<commit>` is treated as a branch selector: the catalog now advertises frozen `1.0.0-beta.4` and pins `plugins/claude-code` through an exact-SHA `git-subdir` plugin source.
-- Added deterministic contracts that reject unsupported Claude source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, and frozen/development identity collapse.
+- Pinned Codex and OpenCode beta.4 transports directly to exact source commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`; Claude Code and GitHub Copilot CLI now use host-native catalog plugin-source SHA pins to the same immutable candidate.
+- Reconciled Claude Code after a disposable `2.1.220` journey proved that marketplace `#<commit>` is treated as a branch selector: the catalog advertises frozen `1.0.0-beta.4` and pins `plugins/claude-code` through an exact-SHA `git-subdir` plugin source.
+- Reconciled GitHub Copilot CLI after a disposable `1.0.71` journey proved that marketplace `#<sha>` is also treated as a branch selector. A local-catalog repair probe then installed frozen `1.0.0-beta.4` through a `source: github` object pinned to the exact SHA and matched all 13 Copilot product files byte-for-byte; repository-route activation/invocation acceptance remains pending.
+- Added deterministic contracts that reject unsupported Claude/Copilot source shapes, catalog/source version collapse, unpinned effective routes, version/channel mismatch, frozen ref/SHA mismatch, and frozen/development identity collapse.
 - Accepted exact-candidate Codex and Claude Code packets, advancing P0 host proof to `2/4` while GitHub Copilot CLI and OpenCode remain independently pending.
 - Reordered product readiness so P0 — Truthful Immutable Distribution Identity closes before F05 begins.
 
 ### Pending
 
-- Complete GitHub Copilot CLI and OpenCode P0 transport packets.
+- Complete the repaired GitHub Copilot CLI repository-route P0 transport packet.
+- Complete the OpenCode P0 transport packet.
 - Complete P0 validation on the exact final pull-request head.
 - F05 — Objective Completion Truth.
 - F06 — deterministic operational regressions.
@@ -65,7 +67,7 @@ Frozen beta.3 evidence remains at `evidence/beta3-r3-a697b5e`.
 - Promoted permanent behavior/runtime/product-truth contracts out of phase-history naming while retaining controlled historical experiment fixtures separately.
 - Removed the unreferenced Hitchhiker reference document and other retired public surfaces.
 - Restored compact `hakim-help` UX and clarified `hakim-gain` as an evidence-status compatibility ID rather than a quantified-gain claim.
-- Added `SUPPORT.md`, durable product-readiness gates, deterministic CycloneDX SBOM generation, checksums, and clean-room artifact verification.
+- Added `SUPPORT.md`, durable product-readiness gates, deterministic CycloneDX source/product-inventory SBOM generation, checksums, and clean-room artifact verification.
 
 Frozen beta.2 evidence remains at `evidence/beta2-live-126a228`.
 
