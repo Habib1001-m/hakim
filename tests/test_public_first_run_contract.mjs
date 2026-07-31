@@ -71,7 +71,10 @@ assert.equal(frozenAcceptance.product_version, frozen.version);
 assert.equal(frozenAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
 assert.equal(frozenAcceptance.hosts.codex.status, 'PASS');
 assert.equal(frozenAcceptance.hosts['claude-code'].status, 'PASS');
-for (const host of ['github-copilot', 'opencode']) assert.equal(frozenAcceptance.hosts[host].status, 'NOT_RUN');
+assert.equal(frozenAcceptance.hosts['github-copilot'].status, 'PASS');
+assert.equal(frozenAcceptance.hosts['github-copilot'].host_version, 'GitHub Copilot CLI 1.0.71.');
+assert.equal(frozenAcceptance.hosts['github-copilot'].evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571');
+assert.equal(frozenAcceptance.hosts.opencode.status, 'NOT_RUN');
 
 assert.equal(beta1Acceptance.product_version, '1.0.0-beta.1');
 assert.equal(beta1Acceptance.overall_status, 'PASS');
