@@ -120,7 +120,7 @@ test('moving source-tree metadata stays development while Claude and Copilot cat
   assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
   assert.match(nativeAcceptance.source_policy, /unreleased development/i);
   assert.match(nativeAcceptance.source_policy, /not a frozen candidate/i);
-  assert.match(canonicalSkill, new RegExp(`^version:\s*${escapeRegExp(current.version)}$`, 'm'));
+  assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(current.version)}$`, 'm'));
 
   for (const relative of versionedJsonPaths) {
     assert.equal(readJson(relative).version, current.version, `${relative} does not match current development identity`);
