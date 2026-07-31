@@ -18,7 +18,7 @@ IDENTITY_MODEL              = PASS
 METADATA_RECONCILIATION     = PASS
 CODEX_TRANSPORT_PROOF       = PASS / OPERATOR_ACCEPTED
 CLAUDE_TRANSPORT_PROOF      = PASS / OPERATOR_ACCEPTED
-COPILOT_TRANSPORT_PROOF     = NOT_RUN
+COPILOT_TRANSPORT_PROOF     = REPAIRED_ROUTE_NOT_RUN
 OPENCODE_TRANSPORT_PROOF    = NOT_RUN
 HOST_RESOLUTION_PROOF       = PARTIAL_2_OF_4
 P0_OVERALL                  = HOLD_FOR_HOST_NATIVE_PROOF
@@ -32,7 +32,7 @@ No beta.5 candidate, release, promotion, external evaluator campaign, npm public
 |---|---|---|---|
 | Codex | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout `--ref` | `PASS`, operator accepted, packet integrity-bound |
 | Claude Code | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim` | `.claude-plugin/marketplace.json` plugin source `{source: git-subdir, path: plugins/claude-code, sha: 5d000...}` | `PASS`, operator accepted, packet integrity-bound |
-| GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3` | marketplace checkout ref | `NOT_RUN` |
+| GitHub Copilot CLI | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim` | `.github/plugin/marketplace.json` plugin source `{source: github, repo: Habib1001-m/hakim, path: plugins/copilot, sha: 5d000...}` | repaired source contract proved locally; repository route `NOT_RUN` |
 | OpenCode | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | npm Git package spec | `NOT_RUN` |
 
 ## Accepted Codex checkpoint
@@ -97,6 +97,47 @@ EVIDENCE                   = https://github.com/Habib1001-m/hakim/issues/47#issu
 
 This acceptance is bounded to Claude Code `2.1.220`, the recorded Linux/WSL environment, and the exact repaired route. It does not transfer to Copilot, OpenCode, another Claude version, or moving development.
 
+## Copilot failed route and repaired source contract
+
+A disposable authenticated Copilot CLI `1.0.71` journey attempted the previously documented route:
+
+```text
+copilot plugin marketplace add Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3
+```
+
+Copilot passed the suffix to Git as `--branch 5d000394...`; Git failed because no branch has that name.
+
+```text
+ATTEMPT_STATUS = FAIL
+FAILURE_CLASS  = MARKETPLACE_REF_SHA_TREATED_AS_BRANCH
+EVIDENCE       = https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142063851
+```
+
+The failed declaration is superseded, not erased. The repaired design uses Copilot CLI's host-native catalog/plugin-source distinction:
+
+- **marketplace registration:** catalog discovery only;
+- **Hakim plugin source:** `source: github`, `repo: Habib1001-m/hakim`, `path: plugins/copilot`, exact 40-character beta.4 `sha`;
+- **catalog-advertised plugin version:** `1.0.0-beta.4`;
+- **moving source-tree plugin manifest:** remains `1.0.0-beta.4.post1` and development-only.
+
+Before mutating the repository route, a disposable local-catalog probe tested this exact source shape on Copilot CLI `1.0.71`. The host installed `hakim@hakim-p0-probe` as `v1.0.0-beta.4`, exposed six skills and five agents, and the installed product matched the frozen `plugins/copilot` tree byte-for-byte:
+
+```text
+RESOLVED_SOURCE_SHA        = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
+INSTALLED_PRODUCT_VERSION  = 1.0.0-beta.4
+SOURCE_PRODUCT_FILES       = 13
+INSTALLED_PRODUCT_FILES    = 13
+BYTE_MISMATCHES            = 0
+SOURCE_TREE_SHA256         = b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2
+INSTALLED_TREE_SHA256      = b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2
+INSTALLATION               = PASS
+ACTIVATION                 = NOT_RUN
+INVOCATION                 = NOT_RUN
+CANDIDATE_EVIDENCE         = NO
+```
+
+This repair probe proves only that Copilot CLI `1.0.71` supports the exact-SHA plugin-source contract and installs the expected frozen bytes. It is not a candidate acceptance journey because it used a local probe catalog rather than the maintained repository marketplace. The repaired repository route remains `NOT_RUN` until a fresh disposable journey registers the maintained catalog, installs `hakim@hakim`, proves source/byte identity again, and independently observes activation and invocation.
+
 ## Disposable journey requirements
 
 Every host packet must include:
@@ -140,7 +181,7 @@ A `PASS` packet remains review input. It is promoted only after explicit operato
 
 1. Codex — accepted.
 2. Claude Code — accepted.
-3. GitHub Copilot CLI — next; record marketplace and installed plugin source SHA.
+3. GitHub Copilot CLI — repaired repository route next; record catalog plugin source and installed product identity.
 4. OpenCode — record exact package/source and persisted manifest.
 5. Reconcile each accepted packet independently.
 6. Run exact final-head Public CI after the final evidence mutation.
