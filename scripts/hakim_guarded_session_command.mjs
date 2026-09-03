@@ -19,7 +19,7 @@ import {
   runDoctorBounded,
   runTestBounded,
   validateOutputPlacement,
-} from './lib/guarded_session_integrity.mjs';
+} from './lib/guarded_session_runtime.mjs';
 import { DEFAULT_PROCESS_LIMITS } from './lib/bounded_process.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);

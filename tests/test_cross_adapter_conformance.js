@@ -25,10 +25,17 @@ try {
     const hostDir = path.join(tempRoot, host);
     const prompts = fs.readFileSync(path.join(hostDir, 'PROMPTS.md'), 'utf8');
     const results = fs.readFileSync(path.join(hostDir, 'RESULTS.md'), 'utf8');
+    const session = fs.readFileSync(path.join(hostDir, 'SESSION.md'), 'utf8');
     const manifest = JSON.parse(fs.readFileSync(path.join(hostDir, 'manifest.json'), 'utf8'));
     assert.equal(manifest.host, host);
     assert.equal(manifest.cases.length, 10);
     assert.equal(manifest.acceptance_status, 'HOLD_FOR_OPERATOR_TRANSCRIPTS');
+    assert.match(prompts, /^# Hakim Runtime Conformance Prompts/m);
+    assert.match(results, /^# Hakim Runtime Conformance Results/m);
+    assert.match(session, /^# Hakim Runtime Conformance Session Instructions/m);
+    assert.doesNotMatch(prompts, /P1\.1A/);
+    assert.doesNotMatch(results, /P1\.1A/);
+    assert.doesNotMatch(session, /P1\.1A/);
     assert.match(prompts, /HC-101 — Current diff only/);
     assert.match(prompts, /HC-104 — Evidence status without inherited metrics/);
     assert.match(results, /Allowed verdicts: `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`/);
@@ -45,8 +52,25 @@ try {
   assert.match(copilotPrompts, /Use the installed Hakim skill hakim-review\./);
   assert.doesNotMatch(copilotPrompts, /Use Hakim capability hakim-review\./);
   assert.match(openCodePrompts, /\/hakim-review/);
+
+  const packet = path.join(tempRoot, 'github-copilot');
+  const evidencePath = path.join(packet, 'evidence.json');
+  const capture = spawnSync('node', [path.join(root, 'scripts/capture_runtime_fixture_state.mjs'), '--packet', packet], { cwd: root, encoding: 'utf8' });
+  assert.equal(capture.status, 0, capture.stderr + capture.stdout);
+  const capturedEvidence = JSON.parse(fs.readFileSync(evidencePath, 'utf8'));
+  assert.ok(capturedEvidence.cases.every((item) => item.fixture_state_after));
+  assert.ok(capturedEvidence.cases.every((item) => typeof item.mutation_observed === 'boolean'));
+
+  const validate = spawnSync('node', [path.join(root, 'scripts/validate_runtime_conformance_evidence.mjs'), '--input', evidencePath], { cwd: root, encoding: 'utf8' });
+  assert.equal(validate.status, 0, validate.stderr + validate.stdout);
+  const validation = JSON.parse(validate.stdout);
+  assert.equal(validation.structurally_valid, true);
+  assert.equal(validation.acceptance_status, 'HOLD_FOR_OPERATOR_TRANSCRIPTS');
+
+  const requireComplete = spawnSync('node', [path.join(root, 'scripts/validate_runtime_conformance_evidence.mjs'), '--input', evidencePath, '--require-complete'], { cwd: root, encoding: 'utf8' });
+  assert.notEqual(requireComplete.status, 0, 'NOT_RUN evidence must not pass --require-complete');
 } finally {
   fs.rmSync(tempRoot, { recursive: true, force: true });
 }
 
-console.log('test_cross_adapter_conformance.js: native host activations ok');
+console.log('test_cross_adapter_conformance.js: native host activations and current runtime evidence utilities ok');

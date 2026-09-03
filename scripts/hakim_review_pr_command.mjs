@@ -5,7 +5,7 @@ import {
   formatText as formatLegacyText,
   parseArgs,
 } from './hakim_review_pr.mjs';
-import { buildReviewReportBounded } from './lib/guarded_session_integrity.mjs';
+import { buildReviewReportBounded } from './lib/guarded_session_runtime.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 

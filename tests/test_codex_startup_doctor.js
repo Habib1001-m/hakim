@@ -8,6 +8,7 @@ const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 const doctor = path.join(root, 'scripts/codex_startup_doctor.sh');
+const currentVersion = fs.readFileSync(path.join(root, 'core/hakim-skill/VERSION'), 'utf8').trim();
 const hooksPayload = JSON.stringify({
   hooks: {
     SessionStart: [
@@ -54,7 +55,7 @@ function runDoctor(fixture) {
 {
   const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-codex-doctor-single-'));
   const plugin = path.join(fixture, 'plugins/cache/hakim');
-  writePlugin(plugin, '1.0.0');
+  writePlugin(plugin, currentVersion);
 
   const output = runDoctor(fixture);
   assert.match(output, /HAKIM_PLUGIN_MANIFEST_COUNT=1/);
@@ -68,8 +69,8 @@ function runDoctor(fixture) {
 
 {
   const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-codex-doctor-duplicate-'));
-  writePlugin(path.join(fixture, 'plugins/cache/a'), '1.0.0');
-  writePlugin(path.join(fixture, 'plugins/cache/b'), '1.0.0');
+  writePlugin(path.join(fixture, 'plugins/cache/a'), currentVersion);
+  writePlugin(path.join(fixture, 'plugins/cache/b'), currentVersion);
 
   const output = runDoctor(fixture);
   assert.match(output, /HAKIM_PLUGIN_MANIFEST_COUNT=2/);
