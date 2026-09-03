@@ -70,7 +70,7 @@ for (const host of selectedHosts) {
   fs.writeFileSync(path.join(hostDir, 'transcripts/README.md'), '# Runtime transcripts\n\nStore one complete transcript per case as `HC-XXX.txt` or `HC-XXX.md`.\n');
 
   const promptLines = [
-    `# Hakim P1.1A Runtime Conformance Prompts — ${host}`,
+    `# Hakim Runtime Conformance Prompts — ${host}`,
     '',
     `Suite: \`${suite.suite_id}\``,
     `Repository commit: \`${repositoryCommit}\``,
@@ -80,7 +80,7 @@ for (const host of selectedHosts) {
     '',
   ];
   const resultLines = [
-    `# Hakim P1.1A Runtime Conformance Results — ${host}`,
+    `# Hakim Runtime Conformance Results — ${host}`,
     '',
     'Allowed verdicts: `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`.',
     'The authoritative machine-readable record is `evidence.json`.',
@@ -118,12 +118,12 @@ for (const host of selectedHosts) {
   const manifest = { schema_version: schema.schema_version, suite_id: suite.suite_id, host, adapter_id: binding.adapter_id, invocation_kind: binding.invocation_kind, repository_commit: repositoryCommit, hakim_version: hakimVersion, generated_from: ['conformance/suite.json', 'conformance/policy-profiles.json', 'conformance/adapter-bindings.json', 'conformance/runtime-scenarios.json', 'conformance/runtime-evidence.schema.json'], cases: manifestCases, acceptance_status: 'HOLD_FOR_OPERATOR_TRANSCRIPTS' };
   const evidence = { schema_version: schema.schema_version, suite_id: suite.suite_id, host, adapter_id: binding.adapter_id, repository_commit: repositoryCommit, hakim_version: hakimVersion, host_version: null, started_at: null, completed_at: null, policy_isolation: { competing_policy_context_observed: null, observed_contexts: [], evidence: '' }, cases: evidenceCases, acceptance_status: 'HOLD_FOR_OPERATOR_TRANSCRIPTS' };
   const sessionLines = [
-    `# P1.1A Session Instructions — ${host}`,
+    `# Hakim Runtime Conformance Session Instructions — ${host}`,
     '',
     `Launch requirement: \`${launchCommand(host)}\``,
     '',
     'Isolation gate before running any case:',
-    '1. Disable or exclude other policy/behavior plugins and hooks, including Ponytail, for this conformance session.',
+    '1. Disable or exclude unrelated policy/behavior plugins and hooks for this conformance session.',
     '2. Confirm Hakim is the only policy plugin active for the case.',
     '3. If another policy context appears, stop and mark the run RETEST_REQUIRED; do not assign PASS.',
     '',

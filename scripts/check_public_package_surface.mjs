@@ -91,6 +91,20 @@ if (!fs.existsSync(packagePath)) {
   ]) {
     if (pkg.scripts?.[internalScript]) errors.push(`internal package script remains: ${internalScript}`);
   }
+
+  const directGate = pkg.scripts?.['test:public:js'] || '';
+  let effectiveGate = directGate;
+  for (const match of directGate.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) {
+    effectiveGate += ` && ${pkg.scripts?.[match[1]] || ''}`;
+  }
+  const testsDirectory = path.join(root, 'tests');
+  if (fs.existsSync(testsDirectory)) {
+    for (const entry of fs.readdirSync(testsDirectory, { withFileTypes: true })) {
+      if (!entry.isFile() || !/^test_.*\.(?:js|mjs)$/.test(entry.name)) continue;
+      const relative = `tests/${entry.name}`;
+      if (!effectiveGate.includes(relative)) errors.push(`orphan JavaScript test is outside test:public:js: ${relative}`);
+    }
+  }
 }
 
 for (const relative of [
@@ -150,21 +164,22 @@ for (const relative of [
   'docs/phase-history',
   'scripts/analyze_post_e1_efficiency.mjs',
   'scripts/audit_complexity.py',
+  'scripts/build_runtime_conformance_matrix.mjs',
   'scripts/capability_runtime_smoke_capture.sh',
   'scripts/claude_runtime_evidence_capture.sh',
   'scripts/codex_runtime_evidence_capture.sh',
-  'scripts/codex_startup_doctor.sh',
   'scripts/copilot_runtime_evidence_capture.sh',
   'scripts/package_skill.py',
+  'scripts/prepare_runtime_conformance_session.sh',
   'scripts/print_claude_runtime_commands.sh',
   'scripts/print_codex_runtime_commands.sh',
   'scripts/run_clean_evaluator_journey.mjs',
   'scripts/run_guarded_session_fixture.mjs',
+  'scripts/run_runtime_conformance_case.sh',
   'scripts/verify_independent_benchmark_pilot.mjs',
   'scripts/hakim_pr_guardian_v2.mjs',
   'scripts/lib/guarded_session_integrity.mjs',
   'tests/test_capability_runtime_smoke_capture.js',
-  'tests/test_codex_startup_doctor.js',
   'tests/test_post_e1_prompt_neutrality.mjs',
   'tests/test_post_e1_e2_fixture.mjs',
   'tests/test_post_e1_e2_materializer.mjs',

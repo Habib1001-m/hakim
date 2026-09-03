@@ -14,7 +14,7 @@ name = "hakim"
 version = "1.0.0"
 
 [tool.hakim]
-phase = "P1.1A cross-host runtime conformance execution and acceptance"
+phase = "runtime conformance execution and acceptance"
 telemetry_default = false
 `);
 
@@ -22,7 +22,7 @@ telemetry_default = false
   assert.strictEqual(toml.project.version, '1.0.0');
   assert.strictEqual(
     toml['tool.hakim'].phase,
-    'P1.1A cross-host runtime conformance execution and acceptance',
+    'runtime conformance execution and acceptance',
   );
   assert.strictEqual(toml['tool.hakim'].telemetry_default, false);
 
