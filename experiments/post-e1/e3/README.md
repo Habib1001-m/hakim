@@ -1,6 +1,9 @@
 # E3 — Bounded Refactor / Reuse
 
-Status: **FIXTURE FROZEN / NOT YET EXECUTED**
+Historical status at fixture freeze: **FIXTURE FROZEN / NOT YET EXECUTED**  
+Later execution: **COMPLETED** — accepted E3 evidence is recorded in [`../T06_ACCEPTANCE.md`](../T06_ACCEPTANCE.md).
+
+This file preserves the E3 fixture contract as it existed before execution. The criteria below are historical pre-run rules, not a current run-status claim.
 
 ## Purpose
 

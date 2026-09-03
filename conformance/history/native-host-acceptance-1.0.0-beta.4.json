@@ -3,7 +3,7 @@
   "product_version": "1.0.0-beta.4",
   "scope": "current-native-product-paths",
   "projection_updated_at": "2026-07-31",
-  "source_policy": "Frozen beta.4 candidate at exact source commit 5d00039479f2f11b7fe30ccf2385e70ce24553c3. Codex, Claude Code, GitHub Copilot CLI, and OpenCode exact-candidate transport, installed-byte identity, activation, and invocation evidence were explicitly accepted by 2026-07-31. Accepted beta.1, beta.2, and beta.3 evidence remains bounded to those immutable historical candidates. Private acceptance ledgers and release authorization remain outside the public repository.",
+  "source_policy": "Frozen beta.4 candidate at exact source commit 5d00039479f2f11b7fe30ccf2385e70ce24553c3. Codex, Claude Code, GitHub Copilot CLI, and OpenCode exact-candidate transport, installed-byte identity, activation, and invocation evidence were explicitly accepted by 2026-07-31. Accepted beta.1 and beta.2 native-host evidence remains bounded to those immutable historical candidates. Beta.3 was a frozen candidate with repository CI evidence, but no accepted native-host journey was recorded for it (NOT_RUN on all four hosts). Private acceptance ledgers and release authorization remain outside the public repository.",
   "overall_status": "PASS",
   "status_semantics": {
     "PASS": "A current native end-to-end install/start/invocation journey was observed on a real host and has a public-safe evidence reference.",

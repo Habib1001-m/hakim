@@ -1,6 +1,9 @@
 # E2 — Bug Repair / Domain-Guard Preservation
 
-Status: **FIXTURE FROZEN / NOT YET EXECUTED**
+Historical status at fixture freeze: **FIXTURE FROZEN / NOT YET EXECUTED**  
+Later execution: **COMPLETED** — accepted E2 evidence is recorded in [`../T06_ACCEPTANCE.md`](../T06_ACCEPTANCE.md) and the later E2 efficiency replication in [`../T07_ACCEPTANCE.md`](../T07_ACCEPTANCE.md).
+
+This file preserves the E2 fixture contract as it existed before execution. The criteria below are historical pre-run rules, not a current run-status claim.
 
 ## Purpose
 

@@ -1,12 +1,12 @@
 # Hakim Cross-Adapter Conformance
 
-This directory defines the host-neutral semantic contract used to compare Hakim behavior across Codex, Claude Code, and GitHub Copilot.
+This directory contains Hakim's semantic conformance contracts. The runtime-profile suite in `suite.json` currently compares Codex, Claude Code, and GitHub Copilot CLI. Hakim's maintained product support set has four hosts; OpenCode remains a supported product surface but is not included in this specific runtime-profile suite host list.
 
 ## Contracts
 
 - `policy-profiles.json` — four policy profiles that constrain existing capabilities.
-- `suite.json` — ten semantic cases with required and forbidden assertions.
-- `adapter-bindings.json` — host-specific activation forms and profile prompt text.
+- `suite.json` — ten semantic cases with required and forbidden assertions, scoped to the hosts listed in that file.
+- `adapter-bindings.json` — host-specific activation forms and profile prompt text, including maintained OpenCode bindings used by broader conformance tooling.
 
 Exact packaged copies live under `core/hakim-skill/conformance/`.
 
@@ -14,22 +14,19 @@ Exact packaged copies live under `core/hakim-skill/conformance/`.
 
 ```text
 STATIC_CONFORMANCE=PASS when npm run check:conformance succeeds
-CROSS_HOST_RUNTIME_PROFILE_CONFORMANCE=HOLD_FOR_P1_1A_OPERATOR_EVIDENCE
+RUNTIME_PROFILE_SUITE_HOSTS=codex,claude-code,github-copilot
+CURRENT_LIVE_RUNTIME_PROFILE_VERDICT=NOT_CLAIMED_BY_THIS_DOCUMENT
 ```
 
-Static conformance proves schema, coverage, packaged-copy parity, host bindings, and regression assertions. It does not prove live model behavior.
+Static conformance proves schema, coverage, packaged-copy parity, host bindings, and regression assertions. It does not prove live model behavior or four-host runtime-profile equivalence.
 
-## Commands
+## Command
 
 ```bash
 npm run check:conformance
-npm run generate:conformance
-npm run generate:conformance -- --host codex
-npm run generate:conformance -- --host claude-code
-npm run generate:conformance -- --host github-copilot
 ```
 
-Generated output defaults to `dist/conformance-runtime/` and contains `PROMPTS.md`, `RESULTS.md`, and `manifest.json` for each host.
+The repository contains source-level conformance fixture/evidence utilities, but they are not exposed through a maintained `npm run generate:conformance` script. Do not infer an npm command from the presence of those source files.
 
 ## Verdicts
 

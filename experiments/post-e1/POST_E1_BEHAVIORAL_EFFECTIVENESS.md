@@ -1,9 +1,11 @@
-# POST-E1 Behavioral Effectiveness & Efficiency Hardening
+# Historical Record — POST-E1 Behavioral Effectiveness & Efficiency Hardening
 
-Status: **COMPLETE / PRODUCT-VALUE DECISION RECORDED**  
+> **Historical evidence only.** This file preserves the POST-E1 program record and closure state. Status and authorization statements below are as recorded at that historical checkpoint; this file is not current Hakim project-control authority and does not override current product documentation or conformance truth.
+
+Status at phase closure: **COMPLETE / PRODUCT-VALUE DECISION RECORDED**  
 Tracking issue: [#22](https://github.com/Habib1001-m/hakim/issues/22)  
 Final T08 decision: `PROCEED_TO_BOUNDED_EXTERNAL_EVALUATION`  
-Evaluator campaign start: **NOT AUTHORIZED NOW**
+Evaluator campaign start at closure: **NOT AUTHORIZED NOW**
 
 ## Phase outcome
 
@@ -19,11 +21,11 @@ The final product-value decision is:
 
 `T08_D_DECISION = PROCEED_TO_BOUNDED_EXTERNAL_EVALUATION`
 
-This does **not** start an evaluator campaign. The operator explicitly directed at closure:
+This did **not** start an evaluator campaign. The operator explicitly directed at closure:
 
 `EVALUATOR_CAMPAIGN_START = NOT_AUTHORIZED_NOW`
 
-Stable `1.0.0`, release publication, broad recruitment, registry publication, marketplace promotion, and universal product/performance claims remain unauthorized.
+Stable `1.0.0`, release publication, broad recruitment, registry publication, marketplace promotion, and universal product/performance claims remained unauthorized by this historical decision.
 
 ## Final taskboard
 
@@ -32,9 +34,9 @@ Stable `1.0.0`, release publication, broad recruitment, registry publication, ma
 - [x] **T03 — Domain-guard preservation** ([#26](https://github.com/Habib1001-m/hakim/issues/26)) — real domain/security/privacy/integrity/accessibility/trust invariants protected by contract and preserved in accepted controlled scenarios.
 - [x] **T04 — Outcome-oriented restraint** ([#27](https://github.com/Habib1001-m/hakim/issues/27)) — smallest means sufficient/coherent/safe rather than minimum LOC/files.
 - [x] **T05 — Behavioral regression coverage** ([#28](https://github.com/Habib1001-m/hakim/issues/28)) — deterministic semantic coverage plus real structured-trace runtime checking implemented and CI-protected.
-- [x] **T06 — Repeated controlled experiments** ([#29](https://github.com/Habib1001-m/hakim/issues/29)) — **PASS**. Corrected E2 plus E3/E4 produced 3/3 `TREATMENT_ADVANTAGE`, no accepted functional regression, median elapsed overhead `+3.21%`, and median tool-call delta `-29.17%`. Ledger: [`T06_ACCEPTANCE.md`](../experiments/post-e1/T06_ACCEPTANCE.md).
-- [x] **T07 — Efficiency reconciliation** ([#30](https://github.com/Habib1001-m/hakim/issues/30)) — **COMPLETE** with `EFFICIENCY_RECONCILED_NO_CHANGE`. The original E2 `+73.15%` debit was causally unidentifiable and failed counterbalanced replication, which produced approximately `+0.008%` / `+7ms` elapsed delta and `-45%` Treatment tool calls. Ledger: [`T07_ACCEPTANCE.md`](../experiments/post-e1/T07_ACCEPTANCE.md).
-- [x] **T08 — Product-value decision** ([#31](https://github.com/Habib1001-m/hakim/issues/31)) — **COMPLETE** with `PROCEED_TO_BOUNDED_EXTERNAL_EVALUATION`. Review: [`T08_PRODUCT_VALUE_REVIEW.md`](../experiments/post-e1/T08_PRODUCT_VALUE_REVIEW.md). Acceptance: [`T08_ACCEPTANCE.md`](../experiments/post-e1/T08_ACCEPTANCE.md).
+- [x] **T06 — Repeated controlled experiments** ([#29](https://github.com/Habib1001-m/hakim/issues/29)) — **PASS**. Corrected E2 plus E3/E4 produced 3/3 `TREATMENT_ADVANTAGE`, no accepted functional regression, median elapsed overhead `+3.21%`, and median tool-call delta `-29.17%`. Ledger: [`T06_ACCEPTANCE.md`](T06_ACCEPTANCE.md).
+- [x] **T07 — Efficiency reconciliation** ([#30](https://github.com/Habib1001-m/hakim/issues/30)) — **COMPLETE** with `EFFICIENCY_RECONCILED_NO_CHANGE`. The original E2 `+73.15%` debit was causally unidentifiable and failed counterbalanced replication, which produced approximately `+0.008%` / `+7ms` elapsed delta and `-45%` Treatment tool calls. Ledger: [`T07_ACCEPTANCE.md`](T07_ACCEPTANCE.md).
+- [x] **T08 — Product-value decision** ([#31](https://github.com/Habib1001-m/hakim/issues/31)) — **COMPLETE** with `PROCEED_TO_BOUNDED_EXTERNAL_EVALUATION`. Review: [`T08_PRODUCT_VALUE_REVIEW.md`](T08_PRODUCT_VALUE_REVIEW.md). Acceptance: [`T08_ACCEPTANCE.md`](T08_ACCEPTANCE.md).
 
 ## Designed outcome
 
@@ -138,7 +140,7 @@ The single `PARTIAL` dimension is bounded evidence gathering. The stopping contr
 
 No accepted internal evidence demonstrates a material correctness, safety, product-truth, or execution-efficiency defect that would invalidate a future small controlled real-user evaluation.
 
-The remaining material uncertainties are real-user questions:
+The remaining material uncertainties were real-user questions at that checkpoint:
 
 - independent developer value/preference;
 - inspection sufficiency in naturally messy repositories;
@@ -147,7 +149,7 @@ The remaining material uncertainties are real-user questions:
 
 `T08_D_DECISION = PROCEED_TO_BOUNDED_EXTERNAL_EVALUATION`
 
-This means only that such an evaluation is evidence-justified **when separately authorized**.
+This meant only that such an evaluation was evidence-justified **when separately authorized**.
 
 ## POST-E1 acceptance gate
 
@@ -159,14 +161,14 @@ This means only that such an evaluation is evidence-justified **when separately 
 6. [x] Repeated controlled experiments show reproducible positive internal value.
 7. [x] Accepted correctness/safety does not regress relative to Control.
 8. [x] Execution overhead is measured and explicitly reconciled.
-9. [x] No user-facing preference claim is made without real-user evidence; independent preference remains an explicitly unresolved future evaluation question.
+9. [x] No user-facing preference claim is made without real-user evidence; independent preference remained an explicitly unresolved future evaluation question.
 10. [x] T08 records the explicit post-phase product decision.
 
 `POST_E1_PHASE_DECISION = COMPLETE`
 
 ## Authorization boundary after closure
 
-POST-E1 closure does **not** authorize:
+POST-E1 closure did **not** authorize:
 
 - starting an evaluator campaign without a new explicit operator instruction;
 - stable `1.0.0`;
@@ -177,12 +179,12 @@ POST-E1 closure does **not** authorize:
 - universal speed, token, cost, ROI, model-quality, safety, or coding-quality claims;
 - broad cross-host effectiveness claims beyond accepted evidence.
 
-A future bounded evaluator campaign remains a separate operator-controlled action.
+A future bounded evaluator campaign remained a separate operator-controlled action.
 
 ## Final claim boundary
 
-The strongest supported internal statement is:
+The strongest supported historical internal statement was:
 
 > On the tested controlled engineering set, the hardened Hakim behavior repeatedly improved the engineering process without observed accepted correctness regression and without a reproducible unacceptable efficiency penalty.
 
-This remains bounded internal evidence, not a universal product-quality or performance claim.
+This remains bounded historical evidence, not a universal product-quality or performance claim.
