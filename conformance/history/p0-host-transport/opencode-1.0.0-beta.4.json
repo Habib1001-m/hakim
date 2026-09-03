@@ -18,8 +18,8 @@
     "invocation_status": "PASS"
   },
   "host_binary": {
-    "requested": "/home/habib1001/.local/bin/opencode",
-    "resolved": "/home/habib1001/.local/bin/opencode",
+    "requested": null,
+    "resolved": null,
     "version_probe": {
       "status": "PASS",
       "version": "1.18.5",
@@ -27,8 +27,8 @@
       "reason": null
     }
   },
-  "cwd": "/home/habib1001/hakim-p0-proof-runs/opencode.UPXzfe/target",
-  "target": "/home/habib1001/hakim-p0-proof-runs/opencode.UPXzfe/target",
+  "cwd": null,
+  "target": null,
   "verified_at": "2026-07-31T14:17:34.114Z",
   "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204",
   "safety": {
@@ -38,5 +38,10 @@
     "raw_host_output_captured": false,
     "output_is_create_only": true
   },
-  "next_safe_action": "Review this create-only packet. Do not promote the frozen acceptance projection without explicit operator approval and cross-checking the evidence reference."
+  "next_safe_action": "Review this create-only packet. Do not promote the frozen acceptance projection without explicit operator approval and cross-checking the evidence reference.",
+  "public_projection": {
+    "local_execution_paths": "REDACTED",
+    "raw_packet_sha256": "899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304",
+    "redaction_scope": "host_binary.requested, host_binary.resolved, cwd, target"
+  }
 }
