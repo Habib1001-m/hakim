@@ -8,7 +8,7 @@ Moving `main` is unreleased development (`1.0.0-beta.4.post1`) and is not a froz
 
 ## Codex
 
-Use Codex `0.131.0` or newer for the maintained plugin-hook path.
+Use Codex `0.131.0` or newer for the maintained native plugin-hook path.
 
 ```bash
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
@@ -36,7 +36,7 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-Marketplace registration selects the catalog. The `hakim` catalog entry pins `plugins/claude-code` to the exact frozen beta.4 SHA.
+Marketplace registration selects a catalog; it is not the immutable product pin. The Claude catalog entry uses an exact SHA for `plugins/claude-code`.
 
 If Hakim was installed while a session was already open, use `/reload-plugins`.
 
@@ -60,7 +60,7 @@ copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
 
-Marketplace registration selects the catalog. The `hakim` catalog entry pins `plugins/copilot` to the exact frozen beta.4 SHA.
+Marketplace registration selects a catalog; it is not the immutable product pin. The Copilot catalog entry uses an exact SHA for `plugins/copilot`.
 
 Verify installation:
 
