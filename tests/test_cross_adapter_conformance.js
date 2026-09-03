@@ -12,7 +12,7 @@ const checkPayload = JSON.parse(check.stdout);
 assert.equal(checkPayload.ok, true);
 assert.equal(checkPayload.case_count, 10);
 assert.deepEqual(checkPayload.hosts, ['codex', 'claude-code', 'github-copilot']);
-assert.equal(checkPayload.runtime_behavior_status, 'HOLD_FOR_P1_1A_OPERATOR_EVIDENCE');
+assert.equal(checkPayload.runtime_behavior_status, 'NOT_CLAIMED_BY_STATIC_CONFORMANCE');
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-conformance-'));
 try {
