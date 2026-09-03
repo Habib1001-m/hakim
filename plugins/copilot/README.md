@@ -1,69 +1,38 @@
-# Hakim for GitHub Copilot
+# Hakim for GitHub Copilot CLI
 
-Hakim is packaged as a native GitHub Copilot plugin with reusable skills and specialized custom agents. `.github/copilot-instructions.md` remains an optional repository baseline, not the whole product surface.
+Hakim is a native GitHub Copilot plugin with reusable skills, custom agents, and host-native lifecycle hooks. `.github/copilot-instructions.md` remains an optional repository baseline, not the primary product surface.
 
-## Distribution identity
-
-The normal product route installs frozen Hakim `1.0.0-beta.4` from exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is unreleased development, not a frozen candidate or release/promotion evidence.
-
-## Install frozen beta.4 in Copilot CLI
-
-Register the Hakim marketplace and install the plugin:
+## Install frozen beta.4
 
 ```bash
 copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
 
-Marketplace registration discovers the catalog; it is not the immutable product pin. The `hakim` entry in `.github/plugin/marketplace.json` advertises frozen `1.0.0-beta.4` and pins the product with a GitHub plugin source object:
+Marketplace registration discovers the catalog. The Hakim catalog entry pins `plugins/copilot` to frozen source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
 
-```text
-repo = Habib1001-m/hakim
-path = plugins/copilot
-sha  = 5d00039479f2f11b7fe30ccf2385e70ce24553c3
-```
-
-A superseded attempt to append that SHA as `#<sha>` to marketplace registration failed on Copilot CLI `1.0.71` because the host passed the value to Git as a branch selector. Do not reuse that route.
-
-A disposable local-catalog repair probe on Copilot CLI `1.0.71` installed `v1.0.0-beta.4`, exposed six skills and five agents, and matched all 13 frozen product files byte-for-byte. The source and installed tree digest was `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`. That proves the exact-SHA source contract only; the maintained repository route still requires its own activation/invocation acceptance journey.
-
-Inspect the installation:
+Inspect the installation with:
 
 ```bash
 copilot plugin list
 ```
 
-Inside an interactive Copilot CLI session:
-
-```text
-/plugin list
-/skills list
-/agent
-```
-
-The plugin is cached by Copilot. Update or remove it with:
-
-```bash
-copilot plugin update hakim
-copilot plugin uninstall hakim
-```
-
-An update follows the registered marketplace and its plugin-source definition. Frozen beta.4 remains pinned by the catalog entry's exact SHA; do not replace that source with moving `main` while claiming the same candidate evidence.
+Inside Copilot CLI, `/skills list` and `/agent` expose the loaded Hakim skills and agents.
 
 ## Native skills
 
 Hakim provides:
 
 - `hakim` — full smallest-safe-diff workflow.
-- `hakim-review` — read-only removable-complexity review.
-- `hakim-audit` — evidence-backed read-only audit.
+- `hakim-review` — bounded removable-complexity review.
+- `hakim-audit` — evidence-backed audit.
 - `hakim-debt` — technical-debt provenance.
 - `hakim-gain` — evidence-status verification.
 - `hakim-help` — usage and trust boundaries.
 
-Use `/skills list` to inspect the exact loaded names. Copilot may load a matching skill when its description fits the task.
+Copilot may load a matching skill when its description fits the task.
 
-## Native custom agents
+## Native agents
 
 The plugin ships:
 
@@ -71,19 +40,39 @@ The plugin ships:
 - `hakim-auditor` — read/search only.
 - `hakim-debt-analyst` — read/search only.
 - `hakim-evidence-verifier` — read/search only.
-- `hakim-implementer` — read/search/edit/execute for bounded implementation.
+- `hakim-implementer` — bounded read/search/edit/execute implementation.
 
-Use `/agent` to select one explicitly, tell Copilot to use it by name, or let Copilot infer a specialist from the agent description. Read-only specialists do not receive edit or execute tools.
+Use `/agent` to select one explicitly or allow Copilot to use its normal agent selection behavior.
 
-## Copilot app and cloud agent
+## Operational behavior in moving development
 
-GitHub's plugin system is shared beyond the CLI. Repository-managed cloud-agent configuration must identify the exact marketplace source required by the intended candidate or development workflow and follow organization policy. Repository permissions, Copilot policy, enabled plugins, and tool permissions remain authoritative.
+Moving development uses host-native hooks for silent parent-session presence, subagent continuity, bounded non-default mode persistence, current-turn mode control, and a late objective-contradiction check.
+
+Explicit mode control:
+
+```text
+/hakim/hakim full
+/hakim/hakim lite
+/hakim/hakim ultra
+/hakim/hakim off
+```
+
+The late objective check is designed to intervene only when supported observable repository/setup state contradicts a consequential structured completion claim. It does not add broad command blocking or general prose linting.
+
+Moving-development behavior remains separate from the frozen beta.4 product identity until a later candidate is deliberately cut.
+
+## Update or remove
+
+```bash
+copilot plugin update hakim
+copilot plugin uninstall hakim
+```
+
+Updates follow the registered marketplace and its pinned plugin-source definition.
 
 ## Repository baseline instructions
 
-The existing `.github/copilot-instructions.md` is useful when a repository wants lightweight Hakim guidance without a user-level plugin. It contains no plugin lifecycle logic and must not be presented as a substitute for the native plugin.
-
-The legacy guarded installer remains available from an explicit Hakim source checkout for repositories that want to copy this baseline instruction file:
+`.github/copilot-instructions.md` can provide lightweight Hakim guidance to a repository without being the full plugin. The guarded source-checkout installer is create-only and does not overwrite an existing instructions file:
 
 ```bash
 npm run plan:install -- --host github-copilot --target /path/to/repository
@@ -91,12 +80,6 @@ npm run install:copilot -- --target /path/to/repository
 npm run install:copilot -- --target /path/to/repository --apply
 ```
 
-That installer is create-only and never overwrites an existing instruction file.
-
-## Moving-main development
-
-Repository contributors may work from an explicit `main` checkout, but every observation must record the exact source commit. Moving `main` is not a frozen candidate and is not release/promotion evidence.
-
 ## Product boundary
 
-Hakim does not add MCP or LSP services to Copilot because the current workflow does not require external data or a language server. Adding unused extension surfaces would violate Hakim's own smallest-safe-change rule.
+Hakim does not add MCP or LSP services to Copilot because the maintained product does not require them. Copilot permissions, policy, enabled plugins, host cache, and tool permissions remain authoritative.
