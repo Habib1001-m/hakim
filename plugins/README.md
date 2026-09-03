@@ -7,7 +7,7 @@ This directory contains Hakim's maintained host-specific product surfaces.
 - `copilot/` — native GitHub Copilot CLI plugin with six skills, five custom agents, and bounded host-native lifecycle hooks. `.github/copilot-instructions.md` is an optional repository baseline.
 - `opencode/` — guarded project-local OpenCode plugin and managed lifecycle.
 
-See [`SUPPORTED_HOSTS.md`](../SUPPORTED_HOSTS.md) for the maintained compatibility boundary and each integration README for installation/usage details.
+See [`SUPPORTED_HOSTS.md`](../SUPPORTED_HOSTS.md) for the maintained compatibility boundary and each integration README for installation and usage details.
 
 Add another host surface only for a concrete supported product need. Hakim preserves host-native differences instead of creating placeholder integrations or a cross-host runtime for symmetry.
 
