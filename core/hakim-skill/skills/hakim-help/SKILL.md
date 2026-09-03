@@ -40,7 +40,7 @@ Normal product installation is frozen Hakim `1.0.0-beta.4` at exact commit `5d00
 
 ## Evidence boundary
 
-Codex and Claude Code have accepted frozen beta.4 evidence. GitHub Copilot CLI and OpenCode remain `NOT_RUN` for this candidate. Claude's earlier marketplace `#<commit>` failure and Copilot's earlier marketplace `#<sha>` failure remain preserved as superseded negative evidence; Copilot's local exact-SHA source repair probe is contract evidence only, not candidate acceptance. Public CI and host acceptance prove only their checked scope.
+Frozen beta.4 has accepted exact-identity live-host evidence for Codex, Claude Code, GitHub Copilot CLI, and OpenCode (`4/4 PASS`). Moving `main` (`1.0.0-beta.4.post1`) is separate unreleased development and remains `HOLD_FOR_LIVE_HOST_EVIDENCE` with `0/4` current-native journeys recorded. Earlier failed immutable-transport probes remain superseded historical negative evidence, not current candidate acceptance. Public CI and host acceptance prove only their checked scope.
 
 Host-native permissions, approval, trust, sandbox, managed policy, plugin enablement, and removal controls remain authoritative.
 
