@@ -1,106 +1,67 @@
 # Upstream Relationship and Synchronization Policy
 
-## Decision
+## Relationship
 
-```text
-UPSTREAM_PROJECT=Ponytail
-RELATIONSHIP=GOVERNANCE_FOCUSED_DERIVATIVE
-GIT_FORK=NO
-OFFICIAL_UPSTREAM_AFFILIATION=NO
-AUTOMATIC_COMPATIBILITY=NO
-AUTOMATIC_SYNC=NO
-UPSTREAM_BENCHMARK_TRANSFER=NO
-```
+Hakim is an independently maintained governance-focused derivative inspired by Ponytail's published minimalist coding methodology.
 
-Hakim is an independently maintained project derived in part from Ponytail's
-published minimalist coding methodology. It is not a GitHub fork, an official
-Ponytail distribution, a compatibility layer, or an endorsed successor.
+It is not a GitHub fork, official Ponytail distribution, compatibility layer, or endorsed successor. Automatic synchronization and inherited benchmark claims are not assumed.
 
-The authoritative machine-readable record is `upstream/ponytail.json`.
+The machine-readable relationship record is `upstream/ponytail.json`.
 
-## What Hakim inherits
+## Inherited methodology
 
-Hakim acknowledges Ponytail as the source of these core concepts:
+Hakim acknowledges Ponytail as the source of core concepts including:
 
-- the seven-level smallest-safe-change decision ladder;
-- reuse-first and YAGNI enforcement;
-- the `lite`, `full`, and `ultra` intensity model;
-- the principle that minimalism must not remove safety, validation, security,
-  accessibility, or data-integrity protections.
+- the smallest-safe-change decision ladder;
+- reuse-first and YAGNI discipline;
+- `lite`, `full`, and `ultra` intensity modes;
+- the principle that minimalism must preserve safety, validation, security, accessibility, and data integrity.
 
-Hakim expresses these ideas through its own canonical skill, adds an `off` mode,
-and maintains its own host integrations, evidence boundaries, and governance
-contracts.
+Hakim expresses these ideas through its own canonical skill, adds an `off` mode, and maintains its own host integrations, evidence model, and product contracts.
 
 ## What does not transfer
 
-The following Ponytail properties are not Hakim evidence and must not be copied
-into Hakim claims:
+Ponytail properties are not automatically Hakim evidence, including:
 
-- benchmark results, percentages, cost, speed, safety, or ROI claims;
+- benchmark, cost, speed, safety, or ROI claims;
 - release, package, marketplace, or adapter availability;
 - installation, update, uninstall, MCP, or workflow behavior;
 - compatibility with Ponytail configuration, state, hooks, or commands;
-- stars, users, community adoption, endorsements, trademarks, or branding.
+- adoption, endorsement, trademark, or branding claims.
 
-A Ponytail PASS does not imply a Hakim PASS. A similar command name does not
-establish implementation parity.
+A Ponytail pass does not imply a Hakim pass. Similar names do not establish implementation parity.
 
-## Current Hakim differentiation
+## Hakim differentiation
 
-Hakim's implemented differentiation is governance and conformance, not broader
-agent coverage or proven performance superiority:
+Hakim's implemented differentiation is governance and conformance rather than claimed performance superiority:
 
-1. **Evidence-bound status:** runtime, benchmark, release, and support claims are
-   limited to inspectable evidence and explicit `NOT_ESTABLISHED` boundaries.
-2. **Cross-host conformance:** a machine-readable six-capability contract maps
-   semantic capability parity across the maintained Codex, Claude Code, GitHub
-   Copilot, and OpenCode product surfaces while allowing host-native invocation.
-3. **Provenance controls:** live repository evidence is kept separate from
-   upstream, historical, synthetic, or unsupported material.
-4. **Product-truth gates:** versions, metadata, projections, public package
-   boundaries, and active claims are checked in CI within their documented scope.
-5. **Safe diagnostics:** local inspection and planning commands are bounded and do
-   not establish broader runtime, benchmark, correctness, or security claims.
+1. evidence-bound product claims and explicit unknowns;
+2. a machine-readable capability contract across maintained host-native surfaces;
+3. source/evidence provenance separated from upstream and historical material;
+4. deterministic checks for versions, projections, package boundaries, and distribution identity;
+5. bounded diagnostics and lifecycle controls with claims limited to observed evidence.
 
-This is a product-direction declaration, not a claim that these properties are
-unique in the market or superior to Ponytail.
+These are product-direction statements, not claims of market uniqueness or superiority.
 
-## Manual upstream review policy
+## Manual upstream review
 
 Hakim does not continuously merge or automatically track Ponytail.
 
-Run an upstream review:
+Review upstream when:
 
-- before changing an inherited methodology surface;
-- before a public release or distribution change;
-- when Ponytail changes its license or attribution requirements;
-- when a relevant upstream security or correctness fix is identified.
+- changing an inherited methodology surface;
+- preparing a public distribution change where upstream compatibility/licensing matters;
+- Ponytail changes its license or attribution requirements;
+- a relevant upstream security or correctness fix is identified.
 
-Each candidate must be classified as `adopt`, `adapt`, `reject`, or `defer` and
-must record:
+A reviewed change should be classified as `adopt`, `adapt`, `reject`, or `defer` and record the upstream source, affected Hakim surface, attribution impact, rationale, and verification impact.
 
-- the upstream release or commit;
-- the affected Hakim surface;
-- license and attribution impact;
-- behavioral rationale;
-- tests and projection impact;
-- the final decision.
-
-Direct cherry-picking without this review is prohibited by policy.
+Direct cherry-picking without reviewing compatibility and attribution is not the maintained policy.
 
 ## Reviewed upstream snapshot
 
-The P0.4 review recorded Ponytail release `v4.8.4`, commit `bc9ee94`, released
-2026-06-29, under the MIT License. This is a review snapshot, not a promise to
-remain synchronized with that release.
+The latest recorded review snapshot in this repository is Ponytail `v4.8.4`, commit `bc9ee94`, released 2026-06-29 under the MIT License. This is provenance, not a synchronization promise.
 
-## Release boundary
+## Boundaries
 
-This declaration does not establish:
-
-- independent Hakim benchmark evidence;
-- Ponytail compatibility;
-- central marketplace or directory publication, signing, or universal host compatibility;
-- enterprise, MCP, or A2A readiness;
-- permission to use Ponytail branding as Hakim branding.
+This relationship does not establish independent Hakim benchmark evidence, Ponytail compatibility, marketplace publication, signing, universal host compatibility, or permission to use Ponytail branding as Hakim branding.
