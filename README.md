@@ -40,7 +40,9 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-The catalog entry pins the Claude plugin to the exact frozen beta.4 source. Commands include `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, and `/hakim:help`.
+The Claude catalog entry uses an exact SHA to pin `plugins/claude-code` to frozen beta.4.
+
+Commands include `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, and `/hakim:help`.
 
 ### GitHub Copilot CLI
 
@@ -49,7 +51,9 @@ copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
 
-The catalog entry pins the Copilot plugin to the exact frozen beta.4 source. Moving development supports `/hakim/hakim full`, `/hakim/hakim lite`, `/hakim/hakim ultra`, and `/hakim/hakim off`.
+The Copilot catalog entry uses an exact SHA to pin `plugins/copilot` to frozen beta.4.
+
+Moving development supports `/hakim/hakim full`, `/hakim/hakim lite`, `/hakim/hakim ultra`, and `/hakim/hakim off`.
 
 ### OpenCode
 
