@@ -18,8 +18,8 @@
     "invocation_status": "PASS"
   },
   "host_binary": {
-    "requested": "copilot",
-    "resolved": "/snap/bin/copilot",
+    "requested": null,
+    "resolved": null,
     "version_probe": {
       "status": "PASS",
       "version": "GitHub Copilot CLI 1.0.71.",
@@ -27,7 +27,7 @@
       "reason": null
     }
   },
-  "cwd": "/tmp/hakim-copilot-packet.9jO4Dh/source",
+  "cwd": null,
   "target": null,
   "verified_at": "2026-07-31T12:38:25.768Z",
   "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571",
@@ -38,5 +38,10 @@
     "raw_host_output_captured": false,
     "output_is_create_only": true
   },
-  "next_safe_action": "Review this create-only packet. Do not promote the frozen acceptance projection without explicit operator approval and cross-checking the evidence reference."
+  "next_safe_action": "Review this create-only packet. Do not promote the frozen acceptance projection without explicit operator approval and cross-checking the evidence reference.",
+  "public_projection": {
+    "local_execution_paths": "REDACTED",
+    "raw_packet_sha256": "60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6",
+    "redaction_scope": "host_binary.requested, host_binary.resolved, cwd, target"
+  }
 }
