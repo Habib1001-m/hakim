@@ -44,13 +44,17 @@ const scenarios = readJson('conformance/runtime-scenarios.json');
 const schema = readJson('conformance/runtime-evidence.schema.json');
 const profileMap = new Map(profiles.profiles.map((profile) => [profile.id, profile]));
 const scenarioMap = new Map(scenarios.scenarios.map((scenario) => [scenario.case_id, scenario]));
-const availableHosts = Object.keys(bindings.hosts);
+const availableHosts = suite.hosts;
 const selectedHosts = requestedHost === 'all' ? availableHosts : [requestedHost];
 const hakimVersion = fs.readFileSync(path.join(ROOT, 'core/hakim-skill/VERSION'), 'utf8').trim();
 
 for (const host of selectedHosts) {
+  if (!availableHosts.includes(host)) {
+    console.error(`${host} is not a runtime suite host for ${suite.suite_id}`);
+    process.exit(2);
+  }
   if (!bindings.hosts[host]) {
-    console.error(`unknown host: ${host}`);
+    console.error(`missing binding for runtime suite host: ${host}`);
     process.exit(2);
   }
 }
