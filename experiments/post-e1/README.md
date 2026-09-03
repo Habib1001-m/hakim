@@ -1,10 +1,11 @@
 # POST-E1 Controlled Internal Experiment Set
 
-Status: **FROZEN BEFORE E2 EXECUTION**  
-Governing phase: `docs/POST_E1_BEHAVIORAL_EFFECTIVENESS.md`  
+Historical status at protocol freeze: **FROZEN BEFORE E2 EXECUTION**  
+Later program outcome: **COMPLETE** — see `T06_ACCEPTANCE.md`, `T07_ACCEPTANCE.md`, and `T08_ACCEPTANCE.md`.  
+Historical program record: [`POST_E1_BEHAVIORAL_EFFECTIVENESS.md`](POST_E1_BEHAVIORAL_EFFECTIVENESS.md)  
 Tracking issue: #29
 
-This directory defines the internal evidence program used to decide whether the POST-E1 Hakim behavioral hardening produces repeatable value. It is not a public benchmark and does not authorize a release or external evaluator campaign.
+This file preserves the experiment protocol as frozen before E2 execution. Later results do not retroactively change the gates or interpretation rules below. This directory is internal historical evidence, not a public benchmark and not current project-control or release authority.
 
 ## Conditions
 
@@ -27,7 +28,7 @@ E1 is retained as the pre-hardening historical feature experiment. E1 does **not
 
 ## Frozen phase-level acceptance
 
-These gates are frozen before E2 execution:
+These gates were frozen before E2 execution:
 
 1. **Correctness non-regression:** Treatment must pass every objective functional/hidden-evaluator gate that Control passes. A Treatment correctness or safety regression is phase-failing until remediated and repeated.
 2. **Baseline discipline:** Treatment must establish a representative pre-mutation baseline before the first mutation in every runnable scenario, unless execution is unsafe/unavailable/disallowed and the trace records that boundary truthfully.
@@ -133,7 +134,7 @@ Each scenario receives one of:
 
 ## Unblinding / qualitative review
 
-Objective evaluator results and normalized engineering metrics are recorded before any optional qualitative preference judgment. Broad external UX evaluation remains HOLD during T06.
+Objective evaluator results and normalized engineering metrics are recorded before any optional qualitative preference judgment. Broad external UX evaluation remained HOLD during T06.
 
 ## Phase handoff
 
