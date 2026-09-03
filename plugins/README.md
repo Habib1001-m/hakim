@@ -2,13 +2,13 @@
 
 This directory contains Hakim's maintained host-specific product surfaces.
 
-Maintained product surfaces:
+- `codex/` — native Codex plugin with six skills and SessionStart presence.
+- `claude-code/` — native Claude Code plugin with commands, skills, agents, and lifecycle hooks.
+- `copilot/` — native GitHub Copilot CLI plugin with six skills, five custom agents, and bounded host-native lifecycle hooks. `.github/copilot-instructions.md` is an optional repository baseline.
+- `opencode/` — guarded project-local OpenCode plugin and managed lifecycle.
 
-- `codex/`: native Codex plugin with six skills and a bundled SessionStart hook; repository marketplace metadata lives under `.agents/plugins/`.
-- `claude-code/`: native Claude Code plugin with commands, hidden canonical skills, agents, and lifecycle hooks; repository marketplace metadata lives under `.claude-plugin/`.
-- `copilot/`: native GitHub Copilot plugin with six skills and five custom agents; repository marketplace metadata lives under `.github/plugin/`. `.github/copilot-instructions.md` is only an optional baseline/fallback.
-- `opencode/`: project-local OpenCode runtime plugin. Normal first-run uses the bounded Git-backed `hakim-opencode` bootstrap; source-checkout lifecycle scripts under `scripts/` remain development fallbacks. No npm registry publication or global Hakim/OpenCode installer is claimed.
+See [`SUPPORTED_HOSTS.md`](../SUPPORTED_HOSTS.md) for the maintained compatibility boundary and each integration README for installation/usage details.
 
-Candidate or exploratory host integrations should not remain in the public product tree merely as placeholders. Add a new host surface only when there is a concrete product path and an explicit support/acceptance plan. See `SUPPORTED_HOSTS.md` for the authoritative public support boundary.
+Add another host surface only for a concrete supported product need. Hakim preserves host-native differences instead of creating placeholder integrations or a cross-host runtime for symmetry.
 
-Host-native trust, approval, sandboxing, activation, plugin policy, and removal controls remain authoritative. A structural projection or passing deterministic check does not establish universal runtime or model compatibility.
+Host-native trust, approval, sandboxing, activation, plugin policy, permissions, and removal remain authoritative. Repository projection checks prove only their checked scope.
