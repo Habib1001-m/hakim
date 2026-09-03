@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
+const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 
 function valueAfter(flag, fallback = null) {
   const index = args.indexOf(flag);
@@ -99,7 +100,7 @@ if (evidence.host && bindings.hosts[evidence.host]?.adapter_id !== evidence.adap
   errors.push(`adapter_id ${JSON.stringify(evidence.adapter_id)} does not match host ${evidence.host}`);
 }
 if (!/^[a-f0-9]{40}$/i.test(evidence.repository_commit || '')) errors.push('repository_commit must be a full 40-character commit SHA');
-if (!/^\d+\.\d+\.\d+$/.test(evidence.hakim_version || '')) errors.push('hakim_version must be plain semver');
+if (!SEMVER.test(evidence.hakim_version || '')) errors.push('hakim_version must be valid semver');
 if (!Array.isArray(evidence.cases)) errors.push('cases must be an array');
 
 const cases = Array.isArray(evidence.cases) ? evidence.cases : [];
