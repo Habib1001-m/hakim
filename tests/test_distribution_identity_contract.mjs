@@ -66,6 +66,13 @@ function assertAcceptedPacket(contract, expectedHost) {
   assert.equal(packet.observed.activation_status, 'PASS');
   assert.equal(packet.observed.invocation_status, 'PASS');
   assert.equal(packet.evidence_ref, contract.evidence_ref);
+
+  assert.equal(packet.public_projection?.local_execution_paths, 'REDACTED');
+  assert.equal(packet.host_binary?.requested, null);
+  assert.equal(packet.host_binary?.resolved, null);
+  assert.equal(packet.cwd, null);
+  assert.equal(packet.target, null);
+  assert.doesNotMatch(packetText, /(?:\/home\/|\/tmp\/|[A-Za-z]:\\\\)/, `${expectedHost} public packet leaks a local execution path`);
 }
 
 test('distribution identity separates moving development from the frozen candidate', () => {
