@@ -1,7 +1,10 @@
 # POST-E1 T07-D — Counterbalanced E2 Diagnostic Replication
 
-Status: **FROZEN BEFORE EXECUTION**  
-Governing issue: [#30](https://github.com/Habib1001-m/hakim/issues/30)
+Historical status at protocol freeze: **FROZEN BEFORE EXECUTION**  
+Later outcome: **COMPLETE** — see [`T07_ACCEPTANCE.md`](T07_ACCEPTANCE.md).  
+Governing issue at that checkpoint: [#30](https://github.com/Habib1001-m/hakim/issues/30)
+
+This file preserves the pre-execution replication protocol. Later results do not retroactively alter the frozen controls or interpretation rules below.
 
 ## Purpose
 
@@ -19,7 +22,7 @@ It is diagnostic evidence, not a new product benchmark and not permission to cha
 - Claude plugin tree: `fe3ceb770d1b9b082dab802662bc396da8bc3044`
 - T07 analyzer implementation SHA entering replication: `8bae8297ffa2c68e5cb7a6d5deb8a2dbfeec51eb`
 
-No Hakim product-behavior mutation is permitted before this replication completes.
+No Hakim product-behavior mutation was permitted before this replication completed.
 
 ## Frozen E2 task/evaluator identity
 
@@ -36,11 +39,11 @@ Accepted E2 Run-002 used:
 
 `TREATMENT -> CONTROL`
 
-T07-D diagnostic replication is deliberately fixed to:
+T07-D diagnostic replication was deliberately fixed to:
 
 `CONTROL -> TREATMENT`
 
-This order is **not randomized**. Counterbalancing is the diagnostic intervention, and the order is frozen before either condition is executed.
+This order was **not randomized**. Counterbalancing was the diagnostic intervention, and the order was frozen before either condition was executed.
 
 ## Required pre-execution controls
 
