@@ -10,7 +10,7 @@ Hakim is deliberately evidence-bound and host-native. Contributions should impro
 - Reuse existing code, standard-library behavior, and native host capabilities before adding custom machinery.
 - Preserve unrelated files and material security/privacy/integrity/accessibility/migration/trust guards.
 - Treat setup mutation separately from product mutation.
-- Keep `NO_CHANGE`, correctness, compatibility, performance, and release claims bounded to evidence that actually establishes them.
+- Keep `NO_CHANGE`, correctness, compatibility, performance, and release claims bounded to evidence that establishes them.
 - Do not add cross-host abstraction merely for symmetry.
 - Do not rewrite historical evidence to match a newer implementation.
 
@@ -22,7 +22,7 @@ cd hakim
 npm test
 ```
 
-Useful focused checks include:
+Useful focused checks:
 
 ```bash
 npm run doctor
@@ -31,7 +31,7 @@ npm run package:skill
 npm run test:node-compat
 ```
 
-For OpenCode lifecycle changes, also validate the maintained project-local path:
+For OpenCode lifecycle changes:
 
 ```bash
 node tests/test_hakim_opencode_lifecycle.mjs
@@ -39,43 +39,42 @@ node tests/test_hakim_opencode_lifecycle.mjs
 
 ## Before changing behavior
 
-1. Identify the maintained authority for the behavior you are changing.
+1. Identify the maintained authority for the behavior being changed.
 2. Run the smallest representative existing baseline read-only where practical.
 3. Inspect only enough adjacent code/documentation to resolve decision-relevant uncertainty.
-4. Add or update focused regression coverage for changed behavior.
+4. Add or update focused regression coverage.
 5. For decision-logic transformations, test boundary states rather than inferring semantic equivalence from broad-suite green alone.
 
-## Documentation truth
+## Documentation
 
-Public documentation is a projection of maintained authorities, not a second product-state database.
+Public documentation explains the product; it is not a project-control database.
 
-When changing version, host support, readiness, lifecycle, or release claims, reconcile the relevant maintained sources together:
+Reconcile only the reader-facing surfaces affected by the change:
 
-- `README.md`
-- `docs/PRODUCT_READINESS.md`
-- `docs/ARCHITECTURE.md`
-- `docs/OPERATIONAL_PRESENCE.md` when applicable
-- `SUPPORTED_HOSTS.md`
-- `KNOWN_LIMITATIONS.md`
-- `VERSIONING.md` / `SUPPORT.md` when the release or support contract changes
+- `README.md` — product overview and quick start.
+- `core/hakim-skill/INSTALL.md` — installation and lifecycle.
+- `SUPPORTED_HOSTS.md` — compatibility/support boundaries.
+- `docs/ARCHITECTURE.md` — stable product architecture.
+- `KNOWN_LIMITATIONS.md` — current product limitations.
+- `VERSIONING.md`, `SUPPORT.md`, `SECURITY.md` — durable contracts when applicable.
+- `CHANGELOG.md` — notable user/operator-visible changes.
 
-Prefer one current authority plus concise links over phase-specific status documents in the primary docs surface.
+Prefer machine-readable authorities for mutable identity/evidence facts. Do not create phase-specific status pages or public taskboards to synchronize project execution.
 
 ## Pull requests
 
 A PR should state:
 
-- the problem being solved;
+- the product problem being solved;
 - the chosen scope and why it is sufficient;
 - user-visible or contract-visible behavior changes;
-- validation performed on the exact proposed head;
-- remaining risks or evidence gaps;
-- whether the change affects a frozen prerelease identity, unreleased `main` development, or both.
+- validation performed;
+- remaining compatibility or risk boundaries.
 
-Keep PRs reviewable. Historical experiment refs may remain immutable even when the implementation later changes; do not move or relabel them.
+Keep PRs reviewable and product-focused. Do not turn PR descriptions into execution diaries.
 
 ## Security and private evidence
 
-Do not include credentials, private prompts, customer source, private repository identities, private base SHAs, model/provider secrets, or sensitive local evidence in public issues, PRs, fixtures, or logs.
+Do not include credentials, private prompts, customer source, private repository identities, provider secrets, or sensitive local evidence in public issues, PRs, fixtures, or logs.
 
 Do not disclose exploitable security details publicly. Follow [SECURITY.md](SECURITY.md).
