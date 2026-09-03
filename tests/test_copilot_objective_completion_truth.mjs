@@ -65,6 +65,33 @@ test('extracts the last assistant text without treating tool payloads as complet
   assert.equal(extractLastAssistantText(raw), 'FINAL_GIT_STATUS=CLEAN');
 });
 
+test('handles the observed live Copilot assistant.message transcript shape', () => {
+  const falseClean = 'FINAL_GIT_STATUS=CLEAN\nSETUP_ARTIFACTS=NONE\nUNRELATED_MUTATIONS=NONE';
+  const raw = [
+    JSON.stringify({ type: 'user.message', data: { content: `Quoted checkpoint only:\n${falseClean}` } }),
+    JSON.stringify({ type: 'assistant.turn_start', data: { turnId: '0' } }),
+    JSON.stringify({ type: 'assistant.message', data: { content: falseClean, turnId: '0', toolRequests: [] } }),
+    JSON.stringify({ type: 'assistant.turn_end', data: { turnId: '0' } }),
+  ].join('\n');
+
+  assert.equal(extractLastAssistantText(raw), falseClean);
+
+  const result = runObjectiveCompletionTruth(input('/tmp/f05-live-fixture'), {
+    transcriptText: raw,
+    gitObservation: {
+      available: true,
+      reason: null,
+      clean: false,
+      lines: [' M README.md'],
+      setup_artifacts: [],
+    },
+  });
+
+  assert.equal(result.decision, 'block');
+  assert.match(result.reason, /FINAL_GIT_STATUS claims a clean tree/i);
+  assert.match(result.reason, /README\.md/);
+});
+
 test('parses only existing structured completion checkpoint fields', () => {
   assert.deepEqual(parseStructuredCompletion([
     'Done.',
