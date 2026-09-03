@@ -15,6 +15,9 @@ assert.deepEqual(checkPayload.hosts, ['codex', 'claude-code', 'github-copilot'])
 assert.equal(checkPayload.runtime_behavior_status, 'NOT_CLAIMED_BY_STATIC_CONFORMANCE');
 
 const runtimeHosts = ['codex', 'claude-code', 'github-copilot'];
+const runtimeSchema = JSON.parse(fs.readFileSync(path.join(root, 'conformance/runtime-evidence.schema.json'), 'utf8'));
+assert.deepEqual(runtimeSchema.allowed_hosts, runtimeHosts, 'runtime evidence schema must match suite host authority');
+
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-conformance-'));
 try {
   const generated = spawnSync('node', [path.join(root, 'scripts/generate_conformance_packets.mjs'), '--output', tempRoot], { cwd: root, encoding: 'utf8' });
@@ -46,6 +49,13 @@ try {
     assert.match(prompts, /HC-101 — Current diff only/);
     assert.match(prompts, /HC-104 — Evidence status without inherited metrics/);
     assert.match(results, /Allowed verdicts: `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`/);
+
+    const roundTripEvidencePath = path.join(hostDir, 'evidence.json');
+    const roundTrip = spawnSync('node', [path.join(root, 'scripts/validate_runtime_conformance_evidence.mjs'), '--input', roundTripEvidencePath], { cwd: root, encoding: 'utf8' });
+    assert.equal(roundTrip.status, 0, `${host} generated evidence must validate:\n${roundTrip.stderr}${roundTrip.stdout}`);
+    const roundTripPayload = JSON.parse(roundTrip.stdout);
+    assert.equal(roundTripPayload.host, host);
+    assert.equal(roundTripPayload.structurally_valid, true);
   }
 
   const codexPrompts = fs.readFileSync(path.join(tempRoot, 'codex/PROMPTS.md'), 'utf8');
