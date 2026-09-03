@@ -116,7 +116,7 @@ Repository development requires Node.js 22+ and Python 3.10+.
 
 ## Upstream relationship
 
-Hakim is a governance-focused derivative inspired by Ponytail. It is not the official upstream project and does not claim inherited benchmark results. See [UPSTREAM.md](UPSTREAM.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Hakim is a governance-focused derivative inspired by Ponytail. It is not a GitHub fork, not the official upstream project, and does not claim inherited benchmark results. See [UPSTREAM.md](UPSTREAM.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Evidence boundaries
 
