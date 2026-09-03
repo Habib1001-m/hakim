@@ -36,7 +36,7 @@
         "verified_at": "2026-07-30T21:16:31Z",
         "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471",
         "packet_path": "conformance/history/p0-host-transport/codex-1.0.0-beta.4.json",
-        "packet_sha256": "fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3",
+        "packet_sha256": "16670650069254350272664e3a8f3211d45fc8297ddbe5e04c15791d551ee4c0",
         "candidate_evidence_eligible": true
       },
       "claude-code": {
@@ -55,7 +55,7 @@
         "verified_at": "2026-07-30T23:15:48.874Z",
         "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5137151921",
         "packet_path": "conformance/history/p0-host-transport/claude-code-1.0.0-beta.4.json",
-        "packet_sha256": "107a56c43f24c838b1a3e120a881bedea9618bb3636aeafecb4e54cdf63992e4",
+        "packet_sha256": "33fed855492fc10417500dc338292b25e4b2ee27a5073ad5a133770bd46d5b9a",
         "candidate_evidence_eligible": true,
         "superseded_failed_attempt": {
           "host_version": "2.1.220 (Claude Code)",
@@ -82,7 +82,7 @@
         "verified_at": "2026-07-31T12:38:25.768Z",
         "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571",
         "packet_path": "conformance/history/p0-host-transport/github-copilot-1.0.0-beta.4.json",
-        "packet_sha256": "60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6",
+        "packet_sha256": "c1225d4a400d791fb8f8b27e1819ea6d0a22a1a3d57326a40cfd529805683424",
         "candidate_evidence_eligible": true,
         "superseded_failed_attempt": {
           "host_version": "GitHub Copilot CLI 1.0.71.",
@@ -117,7 +117,7 @@
         "verified_at": "2026-07-31T14:17:34.114Z",
         "evidence_ref": "https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204",
         "packet_path": "conformance/history/p0-host-transport/opencode-1.0.0-beta.4.json",
-        "packet_sha256": "899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304",
+        "packet_sha256": "a2e829030f1abf1ea146f730020975fca9ffc1d5c9fd71da17aa66306e36e344",
         "candidate_evidence_eligible": true
       }
     },
