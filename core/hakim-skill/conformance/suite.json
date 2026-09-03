@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "suite_id": "hakim-cross-adapter-conformance-v1",
-  "policy": "the same semantic case and acceptance assertions apply to every supported adapter; invocation syntax may differ",
+  "policy": "the same semantic case and acceptance assertions apply to each adapter listed in this suite; invocation syntax may differ",
   "hosts": ["codex", "claude-code", "github-copilot"],
   "cases": [
     {
