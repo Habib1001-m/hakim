@@ -59,6 +59,10 @@ function assistantTextFromObject(value) {
     return textFromContent(value.content ?? value.text ?? '');
   }
 
+  if (value.type === 'assistant.message' && value.data && typeof value.data === 'object') {
+    return textFromContent(value.data.content ?? value.data.text ?? '');
+  }
+
   return '';
 }
 
