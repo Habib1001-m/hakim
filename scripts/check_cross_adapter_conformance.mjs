@@ -51,7 +51,7 @@ sameSet(Object.keys(bindings.hosts || {}), expectedBindingHosts, 'binding hosts'
 sameSet((suite.cases || []).map((item) => item.id), expectedCases, 'conformance case ids');
 
 if (profilesContract.policy !== 'profiles constrain existing Hakim capabilities; they do not add commands, adapters, or benchmark claims') errors.push('policy profile boundary changed');
-if (suite.policy !== 'the same semantic case and acceptance assertions apply to every supported adapter; invocation syntax may differ') errors.push('suite semantic parity policy changed');
+if (suite.policy !== 'the same semantic case and acceptance assertions apply to each adapter listed in this suite; invocation syntax may differ') errors.push('suite semantic parity policy changed');
 
 const profiles = new Map((profilesContract.profiles || []).map((profile) => [profile.id, profile]));
 const capabilityMap = new Map((capabilitiesContract.capabilities || []).map((capability) => [capability.id, capability]));
@@ -167,7 +167,7 @@ const result = {
   profiles: expectedProfiles,
   case_count: (suite.cases || []).length,
   packaged_contract_copies: 3,
-  runtime_behavior_status: 'HOLD_FOR_P1_1A_OPERATOR_EVIDENCE',
+  runtime_behavior_status: 'NOT_CLAIMED_BY_STATIC_CONFORMANCE',
   opencode_runtime_validation: 'NOT_PERFORMED',
   ok: errors.length === 0,
   errors,
