@@ -17,6 +17,7 @@ const SESSION_HOOK = path.join(PLUGIN_ROOT, 'hooks', 'session_start.mjs');
 const MODE_STATE = path.join(PLUGIN_ROOT, 'hooks', 'mode_state.mjs');
 const MODE_TRACKER = path.join(PLUGIN_ROOT, 'hooks', 'mode_tracker.mjs');
 const MODE_CONTROL = path.join(PLUGIN_ROOT, 'hooks', 'mode_control.mjs');
+const OBJECTIVE_COMPLETION_HOOK = path.join(PLUGIN_ROOT, 'hooks', 'objective_completion_truth.mjs');
 
 const SKILLS = ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'];
 const READ_ONLY_AGENTS = ['hakim-reviewer', 'hakim-auditor', 'hakim-debt-analyst', 'hakim-evidence-verifier'];
@@ -67,6 +68,7 @@ function main() {
   requireFile(MODE_STATE, 'Copilot bounded mode-state helper', errors);
   requireFile(MODE_TRACKER, 'Copilot submitted-prompt mode tracker', errors);
   requireFile(MODE_CONTROL, 'Copilot transformed mode-control hook', errors);
+  requireFile(OBJECTIVE_COMPLETION_HOOK, 'Copilot F05 objective-completion hook', errors);
 
   const baseline = fs.existsSync(BASELINE) ? read(BASELINE) : '';
   if (marker(baseline) !== canonicalHash) errors.push('Copilot baseline canonical hash drift');
@@ -97,9 +99,9 @@ function main() {
   const hookConfig = fs.existsSync(HOOK_CONFIG) ? parseJson(HOOK_CONFIG, errors) : null;
   if (hookConfig?.version !== 1) errors.push('Copilot hook configuration version must be 1');
   const hookNames = Object.keys(hookConfig?.hooks || {}).sort();
-  const expectedHooks = ['sessionStart', 'subagentStart', 'userPromptSubmitted', 'userPromptTransformed'];
+  const expectedHooks = ['agentStop', 'sessionStart', 'subagentStart', 'userPromptSubmitted', 'userPromptTransformed'];
   if (JSON.stringify(hookNames) !== JSON.stringify(expectedHooks)) {
-    errors.push(`R3.2 operational hooks must be exactly ${expectedHooks.join(' + ')}; found: ${hookNames.join(', ') || 'none'}`);
+    errors.push(`R3.2/F05 operational hooks must be exactly ${expectedHooks.join(' + ')}; found: ${hookNames.join(', ') || 'none'}`);
   }
 
   const sessionHooks = hookConfig?.hooks?.sessionStart;
@@ -146,6 +148,17 @@ function main() {
     if (hook?.timeoutSec !== 2) errors.push('Copilot mode control timeoutSec must remain 2');
   }
 
+  const objectiveCompletionHooks = hookConfig?.hooks?.agentStop;
+  if (!Array.isArray(objectiveCompletionHooks) || objectiveCompletionHooks.length !== 1) {
+    errors.push('F05 must expose exactly one Copilot agentStop objective-completion hook');
+  } else {
+    const hook = objectiveCompletionHooks[0];
+    if (hook?.type !== 'command') errors.push('Copilot F05 agentStop hook must use the command hook type');
+    if (hook?.command !== 'node "${PLUGIN_ROOT}/hooks/objective_completion_truth.mjs"') errors.push('Copilot F05 agentStop must execute plugin-local objective_completion_truth.mjs');
+    if (hook?.env !== undefined) errors.push('Copilot F05 agentStop must consume host-provided cwd/transcriptPath directly without env rebinding');
+    if (hook?.timeoutSec !== 3) errors.push('Copilot F05 agentStop timeoutSec must remain 3');
+  }
+
   if (fs.existsSync(MODE_STATE)) {
     const text = read(MODE_STATE);
     if (!text.includes("VALID_MODES = Object.freeze(['lite', 'full', 'ultra', 'off'])")) errors.push('Copilot mode state must preserve canonical lite/full/ultra/off modes');
@@ -172,6 +185,16 @@ function main() {
     if (!text.includes('modifiedTransformedPrompt')) errors.push('Copilot mode control must explicitly rewrite only the transformed control prompt');
     if (text.includes('writeModeState')) errors.push('Copilot transformed mode control must remain stateless');
     if (text.includes('COPILOT_PLUGIN_DATA') || text.includes('HAKIM_PLUGIN_DATA')) errors.push('Copilot transformed mode control must not depend on plugin-data environment');
+  }
+
+  if (fs.existsSync(OBJECTIVE_COMPLETION_HOOK)) {
+    const text = read(OBJECTIVE_COMPLETION_HOOK);
+    for (const token of ['stop_hook_active', 'transcriptPath', 'FINAL_GIT_STATUS', 'SETUP_ARTIFACTS', "spawn('git'", "'status'", "'--porcelain=v1'"]) {
+      if (!text.includes(token)) errors.push(`Copilot F05 objective-completion hook missing bounded contract token: ${token}`);
+    }
+    if (!text.includes("if (hookInput?.stop_hook_active === true) return allow();")) errors.push('Copilot F05 objective-completion hook must self-limit correction to one stop turn');
+    if (/writeFileSync|appendFileSync|createWriteStream/.test(text)) errors.push('Copilot F05 objective-completion hook must not persist transcript/repository content');
+    if (/preToolUse|postToolUse/.test(text)) errors.push('Copilot F05 objective-completion hook must not grow tool-by-tool enforcement');
   }
 
   for (const skill of SKILLS) {
@@ -218,6 +241,7 @@ function main() {
     mode_state: path.relative(ROOT, MODE_STATE),
     mode_tracker: path.relative(ROOT, MODE_TRACKER),
     mode_control: path.relative(ROOT, MODE_CONTROL),
+    objective_completion_hook: path.relative(ROOT, OBJECTIVE_COMPLETION_HOOK),
     canonical_hash: canonicalHash,
     expected_version: expectedVersion,
     catalog_version: entry?.version || null,
@@ -226,11 +250,11 @@ function main() {
     skills: SKILLS,
     agents: ALL_AGENTS,
     baseline_role: 'FALLBACK_ONLY',
-    operational_presence: 'SESSION_AND_SUBAGENT_PRESENCE_PLUS_SUBMITTED_STATE_PLUS_TRANSFORMED_CONTROL_EXPERIMENTAL',
+    operational_presence: 'SESSION_AND_SUBAGENT_PRESENCE_PLUS_MODE_CONTROL_PLUS_ONE_SHOT_OBJECTIVE_COMPLETION_TRUTH',
     persistent_modes: ['lite', 'ultra', 'off'],
     default_mode_state: 'STATELESS_FULL',
     plugin_data_binding: 'DIRECT_HOST_COPILOT_PLUGIN_DATA_IN_PRESENCE_AND_SUBMITTED_HOOKS',
-    enforcement_hooks: [],
+    enforcement_hooks: ['agentStop:one-shot-objective-contradiction'],
     ok: errors.length === 0,
     errors,
   };

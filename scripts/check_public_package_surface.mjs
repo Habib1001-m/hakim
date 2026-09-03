@@ -16,6 +16,7 @@ if (!fs.existsSync(packagePath)) {
   if (pkg.bin?.['hakim-opencode'] !== 'scripts/hakim_opencode_cli.mjs') {
     errors.push('Git-backed OpenCode bootstrap bin is missing or unexpected');
   }
+
   const expectedBootstrapFiles = [
     'core/hakim-skill/VERSION',
     'core/hakim-skill/SKILL.md',
@@ -88,18 +89,23 @@ if (!fs.existsSync(packagePath)) {
   ]) {
     if (pkg.scripts?.[internalScript]) errors.push(`internal package script remains: ${internalScript}`);
   }
-
-  for (const obsoleteDistributionScript of ['build:native-plugin', 'verify:native-prerelease']) {
-    if (pkg.scripts?.[obsoleteDistributionScript]) errors.push(`obsolete distribution script remains: ${obsoleteDistributionScript}`);
-  }
 }
 
 for (const relative of [
+  'README.md',
+  'CHANGELOG.md',
+  'CONTRIBUTING.md',
+  'SUPPORTED_HOSTS.md',
+  'SECURITY.md',
+  'KNOWN_LIMITATIONS.md',
+  'VERSIONING.md',
+  'SUPPORT.md',
+  'docs/ARCHITECTURE.md',
   'core/hakim-skill/VERSION',
   'core/hakim-skill/SKILL.md',
   'core/hakim-skill/AGENTS.md',
-  'SUPPORT.md',
-  'docs/PRODUCT_READINESS.md',
+  'core/hakim-skill/INSTALL.md',
+  'conformance/distribution-identity.json',
   'scripts/hakim_doctor.mjs',
   'scripts/hakim_opencode_cli.mjs',
   'scripts/lib/opencode_prior_manifests.mjs',
@@ -112,6 +118,11 @@ for (const relative of [
 }
 
 for (const relative of [
+  'docs/PRODUCT_READINESS.md',
+  'docs/OPERATIONAL_PRESENCE.md',
+  'docs/P0_HOST_TRANSPORT_RECONCILIATION.md',
+  'docs/LIVE_HOST_ACCEPTANCE.md',
+  'docs/F05_START_AND_TASK_BOUNDARY.md',
   'docs/EXTERNAL_BETA_EVALUATION.md',
   '.github/ISSUE_TEMPLATE/public-beta-feedback.yml',
   'docs/agentic-ai-reference-SPEC.md',

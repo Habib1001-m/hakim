@@ -2,62 +2,38 @@
 
 ## Supported versions
 
-Security fixes are maintained on a best-effort basis for the latest public
-`main` candidate and the current `1.0.0-beta.4` public-beta line. Historical
-beta evidence does not imply an active support guarantee for arbitrary old
-snapshots.
+Security fixes are maintained on a best-effort basis for moving development and the current frozen `1.0.0-beta.4` public-beta line. Historical snapshots do not carry an active support guarantee merely because evidence exists for them.
 
-Hakim does not currently provide a paid support plan, response-time guarantee,
-enterprise compliance certification, or long-term-support release. See
-[`SUPPORT.md`](SUPPORT.md) for the current beta support and deprecation boundary.
+Hakim does not provide a paid support plan, response-time guarantee, enterprise compliance certification, or long-term-support release. See [`SUPPORT.md`](SUPPORT.md).
 
 ## Reporting a vulnerability
 
-Use a GitHub private security advisory whenever possible. Do not open a public
-issue containing exploit details, credentials, private source code, raw prompts,
-sensitive filesystem paths, or unsanitized runtime evidence.
+Use a GitHub private security advisory whenever possible. Do not open a public issue containing exploit details, credentials, private source code, raw prompts, sensitive filesystem paths, or unsanitized runtime evidence.
 
-Include the affected version or commit, the smallest safe reproduction,
-expected and observed behavior, impact, and any mitigation already tested.
+Include the affected version or commit, the smallest safe reproduction, expected and observed behavior, impact, and any mitigation already tested.
 
 ## Security design boundaries
 
-Hakim's maintained product paths use defensive controls appropriate to each host.
-For the project-local OpenCode lifecycle these include canonical content hashes,
-refusal of symlink/non-regular or conflicting target state, bounded manifest
-adoption, staged transactional upgrade with rollback, manifest-authorized removal
-of current or explicitly supported older exact installations, quarantine-backed
-recovery, and post-mutation verification. Public CI uses least-privilege
-permissions and immutable action references.
+Hakim uses defensive controls appropriate to each host. For the project-local OpenCode lifecycle these include canonical content hashes, refusal of symlink/non-regular or conflicting target state, bounded manifest adoption, staged transactional upgrade with rollback, manifest-authorized removal, quarantine-backed recovery, and post-mutation verification.
 
-These controls reduce risk but do not prove the absence of vulnerabilities. The
-project-local OpenCode lifecycle does not claim a cross-process operation lock or
-immunity to malicious/concurrent filesystem replacement between every validation
-and mutation checkpoint. Local write access by unrelated processes remains part
-of the threat model.
+Public CI uses least-privilege permissions and immutable action references.
+
+These controls reduce risk but do not prove the absence of vulnerabilities. The OpenCode lifecycle does not claim a cross-process operation lock or immunity to malicious/concurrent filesystem replacement between every validation and mutation checkpoint. Local write access by unrelated processes remains part of the threat model.
 
 ## Supply-chain artifacts
 
-The release pipeline builds a deterministic CycloneDX JSON SBOM from the
-Git-tracked source/product inventory and includes that SBOM in the release
-checksum manifest. This SBOM is deliberately bounded: it inventories Hakim's
-tracked repository files and does not claim to inventory host binaries, model
-providers, operating-system packages, or unrelated local tooling.
+The release pipeline builds a deterministic CycloneDX JSON SBOM from the Git-tracked source/product inventory and includes that SBOM in the release checksum manifest.
 
-Checksums, reproducibility, and the SBOM improve inspectability but do not amount
-to signing, notarization, provenance attestation, or proof that the software is
-vulnerability-free.
+The SBOM does not claim to inventory host binaries, model providers, operating-system packages, or unrelated local tooling.
+
+Checksums, reproducibility, and the SBOM improve inspectability but are not signing, notarization, provenance attestation, or proof that the software is vulnerability-free.
 
 ## Privacy
 
-Hakim does not implement a product telemetry collection service and does not
-enable raw prompt or source-code logging. Repository conformance, evidence, and
-outcome schemas are local validation artifacts rather than a telemetry service.
-Any captured runtime evidence must be minimized, sanitized, and free of
-credentials or private customer material.
+Hakim does not implement a product telemetry collection service and does not enable raw prompt or source-code logging as a product feature.
+
+Repository conformance/evidence artifacts are validation data rather than telemetry. Any captured runtime evidence must be minimized, sanitized, and free of credentials or private customer material.
 
 ## Host boundaries
 
-Host-native trust, approval, sandboxing, hook activation, and permission
-controls remain authoritative. Hakim does not rotate credentials, repair host
-configuration automatically, or bypass host security controls.
+Host-native trust, approval, sandboxing, hook activation, permissions, managed policy, and removal controls remain authoritative. Hakim does not rotate credentials, repair host configuration automatically, or bypass host security controls.

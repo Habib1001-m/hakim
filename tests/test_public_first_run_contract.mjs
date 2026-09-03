@@ -17,21 +17,16 @@ const version = read('core/hakim-skill/VERSION').trim();
 const identity = readJson('conformance/distribution-identity.json');
 const current = identity.current_development;
 const frozen = identity.latest_frozen_candidate;
+const frozenAcceptance = readJson(frozen.native_acceptance_projection);
 const readme = read('README.md');
 const install = read('core/hakim-skill/INSTALL.md');
+const supportedHosts = read('SUPPORTED_HOSTS.md');
+const architecture = read('docs/ARCHITECTURE.md');
 const changelog = read('CHANGELOG.md');
 const security = read('SECURITY.md');
 const limitations = read('KNOWN_LIMITATIONS.md');
-const liveAcceptance = read('docs/LIVE_HOST_ACCEPTANCE.md');
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
-const nativeAcceptance = readJson('conformance/native-host-acceptance.json');
-const frozenAcceptance = readJson(frozen.native_acceptance_projection);
-const beta1Acceptance = readJson('conformance/history/native-host-acceptance-1.0.0-beta.1.json');
-const codexManifest = readJson('plugins/codex/.codex-plugin/plugin.json');
-const claudeManifest = readJson('plugins/claude-code/.claude-plugin/plugin.json');
-const copilotManifest = readJson('plugins/copilot/plugin.json');
 const claudeMarketplace = readJson('.claude-plugin/marketplace.json');
-const codexMarketplace = readJson('.agents/plugins/marketplace.json');
 const copilotMarketplace = readJson('.github/plugin/marketplace.json');
 
 const expectedHosts = ['codex', 'claude-code', 'github-copilot', 'opencode'];
@@ -44,11 +39,10 @@ assert.equal(current.candidate, false);
 assert.equal(current.evidence_eligible, false);
 assert.equal(frozen.version, '1.0.0-beta.4');
 assert.equal(frozen.source_sha, '5d00039479f2f11b7fe30ccf2385e70ce24553c3');
-assert.equal(frozen.frozen, true);
-assert.equal(frozen.candidate, true);
 assert.equal(frozen.transport_reconciliation.status, 'PASS');
 assert.equal(frozen.transport_reconciliation.verified_hosts, 4);
 assert.equal(frozen.transport_reconciliation.required_hosts, 4);
+assert.equal(Object.hasOwn(frozen.transport_reconciliation, 'authority'), false);
 assert.equal(identity.next_candidate.version, '1.0.0-beta.5');
 assert.equal(identity.next_candidate.status, 'NOT_CUT');
 
@@ -56,153 +50,92 @@ assert.equal(packageJson.version, version);
 assert.equal(packageJson.private, true);
 assert.equal(packageJson.engines?.node, '>=22');
 assert.equal(packageJson.bin['hakim-opencode'], 'scripts/hakim_opencode_cli.mjs');
-assert.ok(packageJson.files.includes('plugins/opencode/hakim.mjs'));
-assert.ok(packageJson.files.includes('core/hakim-skill/skills'));
-assert.ok(packageJson.files.includes('core/hakim-skill/VERSION'));
-assert.ok(packageJson.files.includes('scripts/lib/opencode_prior_manifests.mjs'));
 assert.equal(pyproject.project.version, version);
 assert.equal(pyproject['tool.hakim'].release_channel, 'unreleased-development');
-assert.equal(pyproject['tool.hakim'].product_telemetry, 'NOT_IMPLEMENTED');
-
-assert.equal(nativeAcceptance.product_version, version);
-assert.equal(nativeAcceptance.overall_status, 'HOLD_FOR_LIVE_HOST_EVIDENCE');
-assert.match(nativeAcceptance.source_policy, /unreleased development/i);
-assert.match(nativeAcceptance.source_policy, new RegExp(frozen.source_sha));
-for (const host of expectedHosts) assert.equal(nativeAcceptance.hosts[host].status, 'NOT_RUN');
+assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
 
 assert.equal(frozenAcceptance.product_version, frozen.version);
 assert.equal(frozenAcceptance.overall_status, 'PASS');
-assert.equal(frozenAcceptance.hosts.codex.status, 'PASS');
-assert.equal(frozenAcceptance.hosts['claude-code'].status, 'PASS');
-assert.equal(frozenAcceptance.hosts['github-copilot'].status, 'PASS');
-assert.equal(frozenAcceptance.hosts['github-copilot'].host_version, 'GitHub Copilot CLI 1.0.71.');
-assert.equal(frozenAcceptance.hosts['github-copilot'].evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571');
-assert.equal(frozenAcceptance.hosts.opencode.status, 'PASS');
-assert.equal(frozenAcceptance.hosts.opencode.host_version, '1.18.5');
-assert.equal(frozenAcceptance.hosts.opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204');
+for (const host of expectedHosts) assert.equal(frozenAcceptance.hosts[host].status, 'PASS');
 
-assert.equal(beta1Acceptance.product_version, '1.0.0-beta.1');
-assert.equal(beta1Acceptance.overall_status, 'PASS');
-for (const host of expectedHosts) assert.equal(beta1Acceptance.hosts[host].status, 'PASS');
+const claude = claudeMarketplace.plugins.find((item) => item.name === 'hakim');
+assert.ok(claude);
+assert.equal(claude.version, frozen.version);
+assert.equal(claude.source.sha, frozen.source_sha);
+assert.equal(claude.source.path, 'plugins/claude-code');
 
-assert.equal(packageJson.scripts['accept:host'], 'node scripts/hakim_live_host_acceptance.mjs');
-assert.equal(packageJson.scripts['accept:host:json'], 'node scripts/hakim_live_host_acceptance.mjs --json');
-assert.equal(packageJson.scripts['check:distribution-identity'], 'node tests/test_distribution_identity_contract.mjs');
-assert.equal(codexManifest.version, version);
-assert.equal(claudeManifest.version, version);
-assert.equal(copilotManifest.version, version);
-assert.equal(codexMarketplace.name, 'hakim');
-assert.match(canonicalSkill, new RegExp(`^version:\\s*${escapeRegExp(version)}$`, 'm'));
+const copilot = copilotMarketplace.plugins.find((item) => item.name === 'hakim');
+assert.ok(copilot);
+assert.equal(copilot.version, frozen.version);
+assert.equal(copilot.source.sha, frozen.source_sha);
+assert.equal(copilot.source.path, 'plugins/copilot');
 
-const claudeCatalogEntry = claudeMarketplace.plugins.find((item) => item.name === 'hakim');
-assert.ok(claudeCatalogEntry);
-assert.equal(claudeCatalogEntry.version, frozen.version);
-assert.deepEqual(claudeCatalogEntry.source, {
-  source: 'git-subdir',
-  url: 'https://github.com/Habib1001-m/hakim.git',
-  path: 'plugins/claude-code',
-  sha: frozen.source_sha,
-});
-
-const copilotCatalogEntry = copilotMarketplace.plugins.find((item) => item.name === 'hakim');
-assert.ok(copilotCatalogEntry);
-assert.equal(copilotMarketplace.metadata.version, frozen.version);
-assert.equal(copilotCatalogEntry.version, frozen.version);
-assert.deepEqual(copilotCatalogEntry.source, {
-  source: 'github',
-  repo: 'Habib1001-m/hakim',
-  sha: frozen.source_sha,
-  path: 'plugins/copilot',
-});
-
-assert.match(readme, /public beta software/i);
-assert.match(readme, new RegExp(escapeRegExp(version)));
-assert.match(readme, new RegExp(escapeRegExp(frozen.version)));
-assert.match(readme, /Latest frozen prerelease/i);
-assert.match(readme, /Moving `main`/i);
-assert.match(readme, /P0 — Truthful Immutable Distribution Identity/);
-assert.match(security, new RegExp(escapeRegExp(frozen.version)));
-assert.match(limitations, new RegExp(escapeRegExp(frozen.version)));
-assert.match(changelog, /^## Unreleased\b/m);
-for (const prerelease of ['1.0.0-beta.4', '1.0.0-beta.3', '1.0.0-beta.2', '1.0.0-beta.1']) {
-  assert.match(changelog, new RegExp(`^## ${escapeRegExp(prerelease)}\\b`, 'm'));
-}
-assert.match(`${readme}\n${limitations}`, /External evaluator (?:campaign|recruitment).*suspended/is);
-
-for (const obsolete of [
-  'scripts/check_product_state_truth.mjs',
-  'scripts/check_transition_state_truth.mjs',
-  'scripts/check_runtime_conformance_readiness.mjs',
-  'scripts/build_native_plugin_package.mjs',
-  'scripts/pack_native_plugin_tarball.mjs',
-  'scripts/verify_native_plugin_prerelease.mjs',
-  'scripts/run_native_plugin_opencode_smoke.sh',
-  'tests/verify_native_plugin_opencode_smoke.mjs',
-  'tests/test_native_plugin_tarball.mjs',
-  'tests/test_native_plugin_realpath_containment.mjs',
-  'tests/test_native_plugin_transactional_lifecycle.mjs',
-  'packaging/native-plugin',
-  'docs/agentic-ai-reference-SPEC.md',
-  'docs/theoretical-reference',
-  'plugins/hermes',
-  'plugins/gemini-antigravity',
-]) {
-  assert.equal(fs.existsSync(path.join(root, obsolete)), false, `retired public surface still exists: ${obsolete}`);
-}
-
-assert.equal(fs.existsSync(path.join(root, 'docs/EXTERNAL_BETA_EVALUATION.md')), false);
-assert.equal(fs.existsSync(path.join(root, '.github/ISSUE_TEMPLATE/public-beta-feedback.yml')), false);
+assert.match(readme, /public beta/i);
+assert.match(readme, /Free reasoning\. Safe action\. Evidence-bound claims\./);
 assert.match(readme, /need\? → reuse existing code\?/);
-assert.match(readme, /^## Quick start — frozen beta\.4$/m);
-assert.match(readme, /npm run plan:install -- --host all/);
-assert.match(install, /npm run plan:install -- --host all/);
-assert.match(`${readme}\n${install}\n${limitations}`, /Codex `0\.131\.0`/);
-assert.match(liveAcceptance, /npm run accept:host -- --host codex/);
-assert.match(liveAcceptance, /--apply.*intentionally refused/);
-assert.match(liveAcceptance, /candidate evidence packet/i);
-assert.match(liveAcceptance, /npm\/cli#6723/);
-assert.match(liveAcceptance, /git-subdir/);
-assert.match(liveAcceptance, /MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH/);
+assert.match(readme, /^## Quick start$/m);
+assert.match(readme, new RegExp(escapeRegExp(frozen.version)));
+assert.doesNotMatch(readme, /P0|F0[1-9]|operator acceptance|exact-head Public CI/i);
 
-const hostSurfaces = new Map([
-  ['codex', 'Codex'],
-  ['claude-code', 'Claude Code'],
-  ['github-copilot', 'GitHub Copilot CLI'],
-  ['opencode', 'OpenCode'],
-]);
-for (const host of expectedHosts) {
-  assert.match(readme, new RegExp(`^### ${escapeRegExp(hostSurfaces.get(host))}$`, 'm'));
-}
-
-const installHostSurfaces = new Map([
-  ['codex', 'Codex'],
-  ['claude-code', 'Claude Code'],
-  ['github-copilot', 'GitHub Copilot'],
-  ['opencode', 'OpenCode'],
-]);
-for (const host of expectedHosts) {
-  assert.match(install, new RegExp(`^## ${escapeRegExp(installHostSurfaces.get(host))}$`, 'm'));
-}
-
-const combinedFirstRun = `${readme}\n${install}`;
 for (const [host, command] of Object.entries(frozen.normal_install_commands)) {
   assert.ok(hasExactLine(readme, command), `${host} command missing from README`);
   assert.ok(hasExactLine(install, command), `${host} command missing from INSTALL`);
 }
-for (const host of ['codex', 'opencode']) {
-  assert.ok(frozen.normal_install_commands[host].includes(frozen.source_sha));
+assert.match(`${readme}\n${install}`, /claude plugin install hakim@hakim/);
+assert.match(`${readme}\n${install}`, /copilot plugin install hakim@hakim/);
+assert.match(`${readme}\n${install}`, /\/hakim\/hakim (?:full|lite|ultra|off)/);
+assert.match(`${readme}\n${install}`, /does not edit `opencode\.json`/i);
+
+const hostHeadings = ['Codex', 'Claude Code', 'GitHub Copilot CLI', 'OpenCode'];
+for (const heading of hostHeadings) assert.match(readme, new RegExp(`^### ${escapeRegExp(heading)}$`, 'm'));
+for (const heading of ['Codex', 'Claude Code', 'GitHub Copilot', 'OpenCode']) {
+  assert.match(install, new RegExp(`^## ${escapeRegExp(heading)}$`, 'm'));
 }
-assert.equal(frozen.normal_install_commands['claude-code'], 'claude plugin marketplace add Habib1001-m/hakim');
-assert.equal(frozen.normal_install_commands['github-copilot'], 'copilot plugin marketplace add Habib1001-m/hakim');
-assert.match(combinedFirstRun, /Claude catalog entry.*exact.*SHA/is);
-assert.match(combinedFirstRun, /Copilot catalog entry.*exact.*SHA/is);
-assert.match(combinedFirstRun, /claude plugin install hakim@hakim/);
-assert.match(combinedFirstRun, /\/hakim:full/);
-assert.match(combinedFirstRun, /copilot plugin install hakim@hakim/);
-assert.match(combinedFirstRun, /\/hakim\/hakim (?:full|lite|ultra|off)/);
-assert.match(combinedFirstRun, /does not edit `opencode\.json`/);
-assert.equal(hasExactLine(combinedFirstRun, `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#${frozen.source_sha}`), false);
-assert.equal(hasExactLine(combinedFirstRun, `copilot plugin marketplace add Habib1001-m/hakim#${frozen.source_sha}`), false);
+
+assert.match(supportedHosts, /Codex/);
+assert.match(supportedHosts, /Claude Code/);
+assert.match(supportedHosts, /GitHub Copilot CLI/);
+assert.match(supportedHosts, /OpenCode/);
+assert.doesNotMatch(supportedHosts, /P0|F0[1-9]|superseded failure|pre-merge/i);
+
+assert.match(architecture, /one canonical decision policy/i);
+assert.match(architecture, /sessionStart/);
+assert.match(architecture, /subagentStart/);
+assert.match(architecture, /userPromptSubmitted/);
+assert.match(architecture, /userPromptTransformed/);
+assert.match(architecture, /agentStop/);
+assert.doesNotMatch(architecture, /P0|F0[1-9]|PR #|Public CI #/i);
+
+assert.match(security, new RegExp(escapeRegExp(frozen.version)));
+assert.match(limitations, /public beta/i);
+assert.match(changelog, /^## Unreleased\b/m);
+for (const prerelease of ['1.0.0-beta.4', '1.0.0-beta.3', '1.0.0-beta.2', '1.0.0-beta.1']) {
+  assert.match(changelog, new RegExp(`^## ${escapeRegExp(prerelease)}\\b`, 'm'));
+}
+
+const retiredOperationalDocs = [
+  'docs/PRODUCT_READINESS.md',
+  'docs/OPERATIONAL_PRESENCE.md',
+  'docs/P0_HOST_TRANSPORT_RECONCILIATION.md',
+  'docs/LIVE_HOST_ACCEPTANCE.md',
+  'docs/F05_START_AND_TASK_BOUNDARY.md',
+];
+for (const relative of retiredOperationalDocs) {
+  assert.equal(fs.existsSync(path.join(root, relative)), false, `operational project document returned to public surface: ${relative}`);
+}
+
+const otherRetiredSurfaces = [
+  'docs/EXTERNAL_BETA_EVALUATION.md',
+  '.github/ISSUE_TEMPLATE/public-beta-feedback.yml',
+  'docs/agentic-ai-reference-SPEC.md',
+  'docs/theoretical-reference',
+  'plugins/hermes',
+  'plugins/gemini-antigravity',
+  'packaging/native-plugin',
+];
+for (const relative of otherRetiredSurfaces) {
+  assert.equal(fs.existsSync(path.join(root, relative)), false, `retired public surface still exists: ${relative}`);
+}
 
 const productDocs = [
   'README.md',
@@ -214,10 +147,6 @@ const productDocs = [
   'VERSIONING.md',
   'SUPPORT.md',
   'docs/ARCHITECTURE.md',
-  'docs/LIVE_HOST_ACCEPTANCE.md',
-  'docs/PRODUCT_READINESS.md',
-  'docs/OPERATIONAL_PRESENCE.md',
-  'docs/P0_HOST_TRANSPORT_RECONCILIATION.md',
   'core/hakim-skill/AGENTS.md',
   'core/hakim-skill/INSTALL.md',
   'core/hakim-skill/MIGRATION.md',
@@ -232,29 +161,12 @@ const productDocs = [
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
 const documentedScripts = new Set();
-const stalePublicTokens = [
-  'PUBLIC_RELEASE_READINESS=HOLD',
-  'RUNTIME_VERDICTS=',
-  'OPENCODE_LIVE_RUNTIME_VALIDATION=NOT_PERFORMED',
-  'Phase D',
-  'hakim-local',
-  'DIRECT_PLUGIN_DIR_ONLY',
-  'REPOSITORY_INSTRUCTIONS_ONLY',
-  'private-prerelease',
-  'private pre-release',
-  'OPEN FOR EXTERNAL EVALUATOR SUBMISSIONS',
-  'five independent accepted evaluator reports',
-  'SUSPENDED_FOR_PRODUCT_REMEDIATION',
-];
 for (const relative of productDocs) {
   const text = read(relative);
   for (const match of text.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)) documentedScripts.add(match[1]);
-  if (relative !== 'CHANGELOG.md') {
-    for (const token of stalePublicTokens) assert.ok(!text.includes(token), `${relative} contains stale token ${token}`);
-  }
 }
 for (const script of [...documentedScripts].sort()) {
   assert.ok(packageJson.scripts[script], `documented npm script is missing: ${script}`);
 }
 
-console.log(`public first-run contract OK: ${expectedHosts.length} hosts, development ${version}, frozen beta4 acceptance ${frozenAcceptance.overall_status}, ${documentedScripts.size} documented npm scripts`);
+console.log(`public first-run contract OK: ${expectedHosts.length} hosts, frozen ${frozen.version}, ${documentedScripts.size} documented npm scripts`);

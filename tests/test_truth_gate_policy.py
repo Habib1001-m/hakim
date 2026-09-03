@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class TruthGatePolicyTests(unittest.TestCase):
-    def test_structured_authorities_and_negative_tripwire_policy(self) -> None:
+    def test_structured_authorities_and_reader_facing_projection_policy(self) -> None:
         architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
         package = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
         acceptance = json.loads(
@@ -21,11 +21,11 @@ class TruthGatePolicyTests(unittest.TestCase):
 
         self.assertIn("## Truth-gate policy", architecture)
         self.assertIn("Structured facts have structured authorities", architecture)
-        self.assertRegex(architecture, re.compile(r"negative tripwires", re.I))
-        self.assertRegex(architecture, re.compile(r"not semantic proof", re.I))
+        self.assertRegex(architecture, re.compile(r"machine-readable or structural sources", re.I))
+        self.assertRegex(architecture, re.compile(r"prose order is not a product invariant", re.I))
         self.assertRegex(
             architecture,
-            re.compile(r"structured authority.*projection check", re.I | re.S),
+            re.compile(r"structured authority.*focused test", re.I | re.S),
         )
 
         # Product identity and current acceptance are structural authorities.
@@ -58,12 +58,15 @@ class TruthGatePolicyTests(unittest.TestCase):
             "first-run gate must not require a hardcoded commit SHA inside README prose",
         )
 
-        # The public-doc gate may require structural markers and negative stale-
-        # language tripwires, but it must not pin README to one exact status sentence.
+        # The public-doc gate may enforce reader-facing structure and reject stale
+        # operational surfaces, but it must not copy-lock one status sentence or
+        # milestone ordering into the product contract.
         self.assertIsNone(
             re.search(r"readme\.includes\(['\"]Hakim `['\"]\s*\+\s*version", first_run),
             "first-run gate must not copy-lock README status prose",
         )
+        self.assertNotIn("P0 before F05", first_run)
+        self.assertIn("retiredOperationalDocs", first_run)
 
 
 if __name__ == "__main__":

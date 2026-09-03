@@ -27,6 +27,7 @@ const readJson = (relativePath) => {
 };
 
 const compact = (text) => text.replace(/\s+/g, ' ').trim();
+const includesCI = (text, phrase) => compact(text).toLowerCase().includes(phrase.toLowerCase());
 
 const record = readJson('upstream/ponytail.json');
 const upstreamDoc = read('UPSTREAM.md');
@@ -35,20 +36,15 @@ const packagedNotices = read('core/hakim-skill/THIRD_PARTY_NOTICES.md');
 const rootLicense = read('LICENSE');
 const coreLicense = read('core/hakim-skill/LICENSE');
 const readme = read('README.md');
-const compactReadme = compact(readme);
 
-const expected = {
+for (const [key, value] of Object.entries({
   name: 'Ponytail',
   repository: 'https://github.com/DietrichGebert/ponytail',
   license: 'MIT',
   reviewed_release: 'v4.8.4',
   reviewed_release_commit: 'bc9ee94',
-};
-
-for (const [key, value] of Object.entries(expected)) {
-  if (record.upstream?.[key] !== value) {
-    errors.push(`upstream.${key} ${JSON.stringify(record.upstream?.[key])} != ${JSON.stringify(value)}`);
-  }
+})) {
+  if (record.upstream?.[key] !== value) errors.push(`upstream.${key} ${JSON.stringify(record.upstream?.[key])} != ${JSON.stringify(value)}`);
 }
 
 for (const [key, value] of Object.entries({
@@ -60,9 +56,7 @@ for (const [key, value] of Object.entries({
   performance_equivalence: false,
   distribution_equivalence: false,
 })) {
-  if (record.relationship?.[key] !== value) {
-    errors.push(`relationship.${key} ${JSON.stringify(record.relationship?.[key])} != ${JSON.stringify(value)}`);
-  }
+  if (record.relationship?.[key] !== value) errors.push(`relationship.${key} ${JSON.stringify(record.relationship?.[key])} != ${JSON.stringify(value)}`);
 }
 
 for (const concept of [
@@ -71,9 +65,7 @@ for (const concept of [
   'lite/full/ultra intensity model',
   'lazy-not-negligent safety boundary',
 ]) {
-  if (!(record.inherited_concepts || []).includes(concept)) {
-    errors.push(`missing inherited concept: ${concept}`);
-  }
+  if (!(record.inherited_concepts || []).includes(concept)) errors.push(`missing inherited concept: ${concept}`);
 }
 
 for (const differentiation of [
@@ -85,32 +77,26 @@ for (const differentiation of [
   'archive authority boundaries',
   'read-only local startup diagnostics',
 ]) {
-  if (!(record.hakim_implemented_differentiation || []).includes(differentiation)) {
-    errors.push(`missing implemented differentiation: ${differentiation}`);
-  }
+  if (!(record.hakim_implemented_differentiation || []).includes(differentiation)) errors.push(`missing implemented differentiation: ${differentiation}`);
 }
 
-if (record.sync_policy?.mode !== 'manual evidence-gated review') {
-  errors.push('sync policy must be manual evidence-gated review');
-}
-if (record.sync_policy?.direct_cherry_pick_without_review !== false) {
-  errors.push('direct cherry-pick policy must be false');
-}
+if (record.sync_policy?.mode !== 'manual evidence-gated review') errors.push('sync policy must be manual evidence-gated review');
+if (record.sync_policy?.direct_cherry_pick_without_review !== false) errors.push('direct cherry-pick policy must be false');
 for (const decision of ['adopt', 'adapt', 'reject', 'defer']) {
-  if (!(record.sync_policy?.candidate_decisions || []).includes(decision)) {
-    errors.push(`missing upstream decision class: ${decision}`);
-  }
+  if (!(record.sync_policy?.candidate_decisions || []).includes(decision)) errors.push(`missing upstream decision class: ${decision}`);
 }
 
+// Public prose is a reader-facing projection of the machine record. Check the
+// durable semantics without requiring internal marker strings or exact wording.
 for (const phrase of [
-  'RELATIONSHIP=GOVERNANCE_FOCUSED_DERIVATIVE',
-  'GIT_FORK=NO',
-  'AUTOMATIC_COMPATIBILITY=NO',
-  'UPSTREAM_BENCHMARK_TRANSFER=NO',
-  'A Ponytail PASS does not imply a Hakim PASS',
-  'Direct cherry-picking without this review is prohibited by policy',
+  'governance-focused derivative',
+  'not a GitHub fork',
+  'automatic synchronization',
+  'benchmark claims',
+  'manual upstream review',
+  'Direct cherry-picking',
 ]) {
-  if (!upstreamDoc.includes(phrase)) errors.push(`UPSTREAM.md missing: ${phrase}`);
+  if (!includesCI(upstreamDoc, phrase)) errors.push(`UPSTREAM.md missing relationship meaning: ${phrase}`);
 }
 
 for (const text of [notices, packagedNotices]) {
@@ -124,23 +110,12 @@ for (const text of [notices, packagedNotices]) {
   }
 }
 
-if (rootLicense !== coreLicense) {
-  errors.push('root and packaged Hakim LICENSE files differ');
-}
-if (!rootLicense.includes('Copyright (c) 2026 Habib')) {
-  errors.push('Hakim license copyright is missing');
-}
-if (/DietrichGebert/.test(rootLicense)) {
-  errors.push('third-party attribution must not be embedded in the Hakim license text');
-}
+if (rootLicense !== coreLicense) errors.push('root and packaged Hakim LICENSE files differ');
+if (!rootLicense.includes('Copyright (c) 2026 Habib')) errors.push('Hakim license copyright is missing');
+if (/DietrichGebert/.test(rootLicense)) errors.push('third-party attribution must not be embedded in the Hakim license text');
 
-for (const phrase of [
-  'governance-focused derivative',
-  'not a GitHub fork',
-  'UPSTREAM.md',
-  'THIRD_PARTY_NOTICES.md',
-]) {
-  if (!compactReadme.includes(phrase)) errors.push(`README missing relationship phrase: ${phrase}`);
+for (const phrase of ['governance-focused derivative', 'not a GitHub fork', 'UPSTREAM.md', 'THIRD_PARTY_NOTICES.md']) {
+  if (!includesCI(readme, phrase)) errors.push(`README missing relationship meaning: ${phrase}`);
 }
 
 for (const forbidden of [
@@ -149,7 +124,7 @@ for (const forbidden of [
   'Ponytail benchmark applies to Hakim',
   'drop-in replacement for Ponytail',
 ]) {
-  if ([upstreamDoc, notices, packagedNotices, readme].some((text) => compact(text).includes(forbidden))) {
+  if ([upstreamDoc, notices, packagedNotices, readme].some((text) => includesCI(text, forbidden))) {
     errors.push(`unsupported upstream claim present: ${forbidden}`);
   }
 }

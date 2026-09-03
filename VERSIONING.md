@@ -1,51 +1,42 @@
 # Versioning Policy
 
-**Status:** Current public-beta and unreleased-development policy  
-**Applies from:** Hakim `1.0.0-beta.1`
+Hakim uses explicit product identities for frozen prereleases and a separate moving-development identity between candidates.
 
 ## Identity authorities
 
-`conformance/distribution-identity.json` is the machine-readable authority for:
+[`conformance/distribution-identity.json`](conformance/distribution-identity.json) is the machine-readable authority for:
 
-- the current moving-development identity;
-- the latest frozen candidate version, immutable ref, and exact source SHA;
-- normal frozen-candidate install routes and their effective host-native pin layers;
-- the next-candidate state.
+- moving-development identity;
+- latest frozen candidate version, immutable ref, and exact source SHA;
+- effective frozen install pins;
+- packet-backed host evidence;
+- next-candidate state.
 
-`core/hakim-skill/VERSION` is the canonical embedded version for the source tree being read. Public metadata that carries the current source-tree version must match it in the same change, including:
+`core/hakim-skill/VERSION` is the canonical embedded version for the source tree being read. Source-tree package/plugin metadata must match it.
 
-- `package.json`;
-- `pyproject.toml`;
-- `core/hakim-skill/SKILL.md` frontmatter;
-- `plugins/codex/.codex-plugin/plugin.json`;
-- `plugins/claude-code/.claude-plugin/plugin.json`;
-- `plugins/copilot/plugin.json`;
-- moving-development marketplace entries such as GitHub Copilot's catalog;
-- `conformance/native-host-acceptance.json` product version.
+A marketplace catalog may advertise the frozen candidate while moving source metadata carries a development identity only when the catalog's plugin source is independently pinned to the exact frozen candidate and deterministic tests enforce that distinction.
 
-A release catalog may intentionally advertise the latest frozen candidate rather than the moving source-tree version only when its plugin source is independently pinned to that exact candidate SHA and deterministic tests enforce the distinction. The Claude Code catalog is the current example: its entry advertises `1.0.0-beta.4` and pins `plugins/claude-code` through `git-subdir` at `5d00039479f2f11b7fe30ccf2385e70ce24553c3`, while the source-tree plugin manifest remains `1.0.0-beta.4.post1`.
-
-`npm run check:distribution-identity` enforces the frozen/development mapping and effective install-source contract. `npm run check:first-run` enforces maintained public metadata and first-run parity. `npm test` includes both gates.
+`npm run check:distribution-identity` enforces the identity mapping and install-source contract. `npm test` includes that gate.
 
 ## Current identities
 
 | Identity | Version | Source | Status |
 |---|---|---|---|
-| Latest frozen prerelease | `1.0.0-beta.4` | `5d00039479f2f11b7fe30ccf2385e70ce24553c3` / `evidence/beta4-r31-5d00039` | Historical frozen candidate; Codex accepted, remaining host acceptance incomplete |
-| Moving `main` development | `1.0.0-beta.4.post1` | moving `main`; every observation must record the exact commit | Unreleased development; not a frozen candidate; not release/promotion evidence |
-| Next possible candidate | `1.0.0-beta.5` | not cut | `NOT_CUT` |
+| Frozen public beta | `1.0.0-beta.4` | `5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Frozen; exact-identity host evidence accepted for all maintained hosts |
+| Moving development | `1.0.0-beta.4.post1` | moving `main` | Unreleased development; not a frozen candidate |
+| Next candidate | `1.0.0-beta.5` | not cut | `NOT_CUT` |
 
-A stable `1.0.0` version is a separate release decision. CI, development evidence, live-host evidence, or a version edit does not silently authorize it.
+Stable `1.0.0` remains a separate product decision.
 
 ## Version format
 
-Hakim uses Semantic Versioning-compatible strings and keeps Python packaging metadata parseable because both ecosystems consume repository metadata.
+Hakim uses Semantic Versioning-compatible strings:
 
 ```text
 MAJOR.MINOR.PATCH[-PRERELEASE]
 ```
 
-The moving-development identity `1.0.0-beta.4.post1` is deliberately ordered after frozen beta.4 and before a future beta.5 in both maintained metadata ecosystems. It is an unreleased identity marker, not a candidate label.
+The moving-development identity `1.0.0-beta.4.post1` is deliberately distinct from both frozen beta.4 and a future beta.5 candidate. It is an unreleased identity marker, not a release label.
 
 Build metadata is not used as the sole identity distinction because Semantic Versioning does not give build metadata separate precedence.
 
@@ -53,128 +44,101 @@ Build metadata is not used as the sole identity distinction because Semantic Ver
 
 A prerelease candidate is a product identity, not a label for arbitrary moving bytes.
 
-Before a changed plugin, first-run transport, lifecycle, runtime behavior, or shipped canonical policy is promoted as a candidate:
+Before changed distributed policy/plugin/runtime bytes become a new candidate:
 
-1. advance to a candidate version distinct from the prior frozen candidate and any moving-development identity;
-2. make all embedded product metadata agree;
-3. pass the canonical repository and release-artifact gates on the exact intended head;
-4. freeze an immutable ref and record the exact 40-character source SHA;
-5. point normal candidate install routes at an effective immutable source pin supported by each host;
-6. reset current-path live-host acceptance to no stronger than evidence collected for that exact candidate.
+1. advance to a candidate version distinct from the prior frozen candidate and moving-development identity;
+2. make embedded product metadata agree;
+3. pass the canonical repository and release-artifact gates on the intended source;
+4. freeze an immutable ref and exact 40-character source SHA;
+5. point candidate install routes at effective immutable source pins;
+6. collect candidate-specific live-host evidence for the hosts the candidate claims.
 
-Repository-only documentation corrections or test-only changes do not require a new frozen candidate merely because `main` advanced, provided they do not change shipped product behavior or invalidate accepted evidence. Moving `main` must nevertheless remain explicitly development and must not reuse a frozen candidate's embedded identity.
+Documentation-only or test-only corrections do not require a candidate cut when they do not change shipped behavior or invalidate accepted evidence.
 
 ## Immutable install and evidence identity
 
-Normal frozen-product installation must resolve one exact source SHA. A branch name, moving default branch, marketplace name, or version string alone is insufficient.
+Normal frozen-product installation must resolve one exact source SHA. A branch name, marketplace name, or version string alone is insufficient.
 
-The exact pin may live at the command transport layer or at a documented host-native plugin-source layer. If catalog discovery is mutable, the catalog entry must still resolve immutable plugin bytes, advertise the matching candidate version, and be tested against the host's actual cache/install behavior.
+The pin may live at the command transport layer or a host-native plugin-source layer. Mutable catalog discovery is acceptable only when the catalog entry independently resolves immutable plugin bytes and advertises the matching product version.
 
-Any external evaluator campaign, benchmark, third-party validation, live-host acceptance, production-like dogfood, or release-candidate evidence must record:
-
-- the embedded Hakim version;
-- the exact 40-character source commit;
-- the immutable ref or verified artifact identity when applicable;
-- the host and host version;
-- the bounded claim being tested.
-
-Two observations against different source revisions must not be pooled merely because both revisions report the same version. Moving-development observations are never candidate evidence merely because their version sorts after the latest frozen prerelease.
+Live-host, dogfood, benchmark, or external evidence must identify the exact source identity and the bounded claim being tested. Evidence does not move with a branch or version label.
 
 ## Development identity rule
 
-Moving `main` may carry unreleased work between frozen candidates, but it must remain truthful:
+Moving `main` may carry unreleased work between candidates, but it must remain truthful:
 
-- its embedded version differs from the latest frozen candidate;
+- its embedded version differs from the frozen candidate;
 - its release channel is `unreleased-development`;
-- active documentation calls it moving development, not the normal frozen product;
-- normal frozen install routes do not resolve mutable plugin bytes from `main` or another moving branch;
-- development observations record the exact source SHA;
-- no beta.5 or other future candidate is implied until deliberately cut.
+- normal frozen install routes do not resolve moving plugin bytes;
+- development observations record the exact source SHA when source identity matters;
+- a future candidate is not implied until deliberately cut.
 
-A material new development epoch should advance the development identity rather than indefinitely reusing one identifier across unrelated shipped behavior.
+## Compatibility classification
 
-## Change classification
+### Compatible correction
 
-### PATCH-level compatible change
-
-Use a patch-level compatible change for corrections that do not expand or break the canonical capability contract, including:
+Examples:
 
 - documentation corrections;
 - truth-gate hardening;
-- test and evidence-tool fixes;
-- security fixes that preserve supported behavior;
-- implementation corrections behind an unchanged command contract.
+- test/evidence-tool fixes;
+- security fixes preserving supported behavior;
+- implementation fixes behind an unchanged contract.
 
-During public beta, compatible changes may be released under a later beta identifier rather than implying stable `1.0.0`.
+### Backward-compatible capability expansion
 
-### MINOR-level capability expansion
-
-Use a minor-level capability change for backward-compatible product expansion, including:
+Examples:
 
 - a new canonical capability;
 - a new supported policy profile;
-- a new documented CLI or workflow contract;
-- a newly supported host adapter after its acceptance gate passes;
-- a new compatible machine-readable schema version.
+- a new documented CLI/product contract;
+- a newly supported host surface;
+- a compatible machine-readable schema version.
 
-### MAJOR-level breaking change
+### Breaking change
 
-Treat an intentional breaking change as major in compatibility impact, including:
+Examples:
 
 - removal or incompatible behavior change of a canonical capability;
-- incompatible changes to modes or policy profiles;
-- incompatible evidence or conformance schema changes;
-- removal of a supported host surface without a migration path;
-- changes that invalidate existing repository integration contracts.
+- incompatible mode/profile changes;
+- incompatible conformance schema changes;
+- removal of a supported host surface without migration;
+- changes invalidating maintained repository integration contracts.
 
-Prerelease status does not excuse hiding a known breaking change; release notes must state it explicitly.
+Prerelease status does not excuse hiding known breaking changes.
 
 ## Evidence and release independence
 
-A version change does not establish:
+A version change does not establish live-host acceptance, benchmark performance, publication, stable-release authorization, or enterprise support.
 
-- live-host acceptance;
-- benchmark performance;
-- public release authorization;
-- central marketplace or directory publication;
-- enterprise support.
-
-Each claim requires its own evidence. Conversely, accepted evidence does not require an immediate candidate cut when the shipped candidate contract has not changed.
+Likewise, accepted evidence does not force an immediate release when the product is still moving through development.
 
 ## Reproducible release identity
 
-The maintained skill ZIP is intended to be byte-reproducible for equivalent maintained source content. The package writer normalizes archive member ordering, timestamps, and file modes.
+The maintained skill ZIP is intended to be byte-reproducible for equivalent maintained source content. The package writer normalizes member order, timestamps, and modes.
 
-The release pipeline builds a deterministic CycloneDX JSON SBOM from the Git-tracked source/product inventory. `SHA256SUMS` and the release manifest cover both the skill ZIP and SBOM.
+The release pipeline builds a deterministic CycloneDX JSON SBOM. `SHA256SUMS` and the release manifest cover the skill ZIP and SBOM.
 
-Checksums prove integrity against particular artifacts. Reproducibility is separate from signing, notarization, third-party provenance attestation, and host/provider dependency inventory.
+Checksums and reproducibility are separate from signing, notarization, provenance attestation, publication, and host acceptance.
 
-## Public-beta candidate review
+## Candidate review
 
-Before a new version tag or GitHub release is recommended for operator approval:
+Before recommending a new prerelease:
 
-1. P0 distribution identity reconciliation is closed.
-2. `npm test` passes on the intended immutable release commit.
-3. `npm run doctor` reports bounded doctor health separately from release authorization.
-4. Workflow, public-boundary, public-package, native-acceptance, and distribution-identity checks pass.
-5. `npm run package:release` builds and verifies the reproducible skill ZIP, deterministic CycloneDX SBOM, checksums, and release manifest.
-6. Normal candidate install routes resolve the exact candidate source SHA through their effective host-native pin layer.
-7. Current-path live-host evidence matches the exact candidate for every host the release claims as accepted.
-8. Release notes state supported hosts, bounded evidence, known limitations, and unsupported distribution channels.
-9. Security, support/deprecation, installation, and documentation truth remain consistent with the candidate.
-10. Any external evidence identifies the exact immutable commit/tag/artifact it evaluated.
+1. `npm test` passes on the intended immutable candidate source.
+2. `npm run package:release` builds and verifies release artifacts.
+3. Product metadata and effective install pins identify the same candidate.
+4. Required candidate host journeys match the exact candidate source.
+5. Release notes state supported hosts, known limitations, and unsupported distribution channels.
+6. Security, support, installation, and documentation remain consistent with the candidate.
 
-A successful review does not automatically create a tag, publish a GitHub release, publish to npm, promote to a central marketplace, or authorize external evaluation. Those remain explicit operator actions.
+A successful technical review does not itself publish a tag, GitHub release, npm package, central marketplace listing, or external evaluation campaign.
 
 ## Changelog policy
 
-- User-visible and operator-visible changes are recorded under `Unreleased`.
-- A release moves applicable entries to a dated version section.
-- Historical prerelease labels remain as history when actually used.
-- Withdrawn or corrected claims remain discoverable with their replacement and reason.
+- Notable product changes are recorded under `Unreleased`.
+- A release moves applicable entries to a version section.
+- Historical prerelease labels remain when actually used.
+- Corrected claims remain discoverable in Git history and the applicable evidence records.
 
-## Compatibility and deprecation policy
-
-Frozen Hakim `1.0.0-beta.4` remains public beta software at its exact immutable source. Moving `main` is `1.0.0-beta.4.post1` unreleased development. Accepted beta.1 and frozen beta.2/beta.3 evidence remains bounded to those exact historical candidates.
-
-Current support and capability-deprecation rules are defined in [`SUPPORT.md`](SUPPORT.md). No paid SLA, enterprise certification, or LTS line is claimed. Stable release requires explicit operator authorization in addition to satisfying documented technical gates.
+See [`SUPPORT.md`](SUPPORT.md) for support and deprecation policy.

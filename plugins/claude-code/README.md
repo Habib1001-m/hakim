@@ -1,15 +1,6 @@
 # Hakim for Claude Code
 
-Hakim is packaged as a native Claude Code plugin with skills, plugin agents, lifecycle hooks, and a GitHub-hosted marketplace.
-
-## Distribution identity
-
-The normal product route installs frozen Hakim `1.0.0-beta.4` from exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. Moving `main` reports `1.0.0-beta.4.post1` and is unreleased development, not a frozen candidate or release/promotion evidence.
-
-Claude Code uses two separate source layers here:
-
-- marketplace registration discovers the catalog;
-- the Hakim plugin entry uses `git-subdir` with `path: plugins/claude-code` and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+Hakim is a native Claude Code plugin with commands, model-invocable skills, scoped specialist agents, and lifecycle hooks.
 
 ## Install frozen beta.4
 
@@ -18,50 +9,42 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-Equivalent one-line setup:
+Marketplace registration discovers the catalog. The Hakim catalog entry pins `plugins/claude-code` to frozen source `5d00039479f2f11b7fe30ccf2385e70ce24553c3` through Claude Code's `git-subdir` source shape.
 
-```bash
-claude plugin marketplace add Habib1001-m/hakim && claude plugin install hakim@hakim
-```
-
-Do not append the commit SHA as a marketplace URL `#ref`. Claude Code `2.1.220` treated that value as a branch name and the clone failed. The immutable pin belongs to the plugin source object inside `.claude-plugin/marketplace.json`.
-
-The default installation scope is `user`, so Hakim is available across projects. For a repository-shared installation, use `--scope project` on both commands.
+The default installation scope is `user`. For repository-shared installation, use Claude Code's project scope according to your repository policy.
 
 After installation, start Claude Code normally. If you install while a session is already open, run `/reload-plugins`.
 
-The repaired route is accepted on Claude Code `2.1.220`. A disposable journey resolved the exact frozen source SHA, installed beta.4, matched all 22 distributed product files byte-for-byte, activated through SessionStart, and invoked `/hakim:help`. The evidence remains bounded to that host version and environment.
-
 ## Native UX
 
-Run `/hakim:help` for the one-screen reference.
+Run `/hakim:help` for the compact reference.
 
-- `/hakim:full <task>` — full Hakim workflow in the current conversation and working tree.
-- `/hakim:review [scope]` — isolated read-only complexity review.
-- `/hakim:audit [scope]` — isolated deep read-only audit.
-- `/hakim:debt [scope]` — isolated technical-debt provenance analysis.
-- `/hakim:gain [scope]` — isolated evidence-status verification.
+- `/hakim:full <task>` — full Hakim workflow.
+- `/hakim:review [scope]` — bounded complexity review.
+- `/hakim:audit [scope]` — evidence-backed audit.
+- `/hakim:debt [scope]` — technical-debt provenance analysis.
+- `/hakim:gain [scope]` — evidence-status verification.
 - `/hakim:help` — commands, agents, installation, and trust boundaries.
 
-The canonical Hakim capabilities remain available to Claude for automatic model invocation but are hidden from the slash menu so the user-facing surface stays compact.
+The canonical Hakim capabilities also remain available for model invocation while the slash-command surface stays compact.
 
 ## Native agents
 
-Hakim ships Claude Code plugin agents:
+Hakim ships:
 
 - `hakim:hakim-reviewer` — read-only complexity review.
-- `hakim:hakim-auditor` — deep read-only evidence-backed audit.
+- `hakim:hakim-auditor` — deep read-only audit.
 - `hakim:hakim-debt-analyst` — read-only debt provenance analysis.
 - `hakim:hakim-evidence-verifier` — independent evidence/claim verification.
 - `hakim:hakim-implementer` — bounded implementation in an isolated git worktree.
 
-Claude can delegate to them automatically. Type `@` in Claude Code to select a scoped Hakim agent explicitly when you want guaranteed delegation.
+Claude Code may delegate automatically or you may select an agent explicitly. Host permissions remain authoritative.
 
 ## Hooks
 
-Hakim's `SessionStart` hook adds a small activation context when the plugin is enabled so Claude knows Hakim is available without requiring a wrapper launch command. The existing post-edit diagnostic hook remains opt-in.
+Hakim's SessionStart hook adds compact activation context when the plugin is enabled. The post-edit diagnostic hook remains opt-in and advisory.
 
-Claude Code's plugin detail view reports the installed hook inventory.
+Hakim does not replace Claude Code's approval, permissions, managed policy, trust, or plugin-cache controls.
 
 ## Inspect, update, or remove
 
@@ -72,20 +55,16 @@ claude plugin update hakim@hakim
 claude plugin uninstall hakim@hakim
 ```
 
-An update follows the registered catalog and its plugin-source definition. Frozen beta.4 remains pinned by the catalog entry's exact `sha`; do not replace that source with moving `main` while claiming the same candidate evidence.
-
-Claude Code's own plugin cache, installation scopes, permissions, approval controls, managed policy, and trust boundaries remain authoritative.
+Updates follow the registered catalog and its pinned plugin-source definition.
 
 ## Development fallback
 
-Repository contributors may test an explicit moving source checkout without installing it persistently:
+Repository contributors may test an explicit moving source checkout without persistent installation:
 
 ```bash
 git clone https://github.com/Habib1001-m/hakim.git
 cd hakim
-git checkout main
 npm run launch:claude -- --cwd /path/to/project
-npm run launch:claude -- --apply --cwd /path/to/project
 ```
 
-Record the exact source commit for every development observation. This path is not a frozen candidate and is not release/promotion evidence.
+This exercises moving development, not the frozen product identity.

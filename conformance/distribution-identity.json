@@ -123,7 +123,6 @@
     },
     "transport_reconciliation": {
       "status": "PASS",
-      "authority": "docs/P0_HOST_TRANSPORT_RECONCILIATION.md",
       "verified_hosts": 4,
       "required_hosts": 4
     }
