@@ -2,43 +2,28 @@
 
 Hakim helps capable AI coding agents make smaller, safer, better-justified changes without turning them into workflow bots.
 
-Its operating idea is simple:
-
 > **Free reasoning. Safe action. Evidence-bound claims.**
 
-Before adding code, Hakim pushes the agent through the smallest-safe decision ladder:
+Before adding code, Hakim uses a smallest-safe decision ladder:
 
 ```text
 need? → reuse existing code? → stdlib? → native platform? → existing dependency? → one clear line? → minimum custom code
 ```
 
-Hakim does not treat fewer lines as an absolute goal. Security, privacy, migrations, rollback safety, accessibility, data integrity, and user trust remain hard boundaries.
+Hakim keeps security, privacy, migrations, rollback safety, accessibility, data integrity, and user trust as hard boundaries.
 
-## Project status
+## Status
 
 Hakim is public beta software.
 
-| Surface | Current truth |
-|---|---|
-| Latest frozen prerelease | `1.0.0-beta.4` at exact commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3` (`evidence/beta4-r31-5d00039`) |
-| Moving `main` | `1.0.0-beta.4.post1`, explicit unreleased development; not a frozen candidate and not eligible for release/promotion evidence |
-| Completed repository gate | P0 — Truthful Immutable Distribution Identity; PR #48 merged after four-host proof `4/4` and exact-head Public CI #687 |
-| Immediate repository gate | F05 — Objective Completion Truth; not started by the P0 merge or this reconciliation |
-| Stable `1.0.0` | Not authorized |
-| External evaluator campaign | Suspended pending a separate product decision |
-| npm registry / central marketplace publication | Not claimed |
+- Frozen prerelease: `1.0.0-beta.4` at exact source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+- Moving `main`: unreleased development `1.0.0-beta.4.post1`; not a frozen candidate.
+- Frozen beta.4 has accepted exact-identity live-host evidence for Codex, Claude Code, GitHub Copilot CLI, and OpenCode.
+- No npm registry package or central marketplace listing is claimed.
 
-`conformance/distribution-identity.json` is the machine-readable authority for the frozen candidate, moving development identity, effective normal-install pins, and host-resolution proof state. Frozen beta.4 has operator-accepted host-native transport evidence for Codex, Claude Code, GitHub Copilot CLI, and OpenCode (`4/4`). P0 completed after exact PR head `dd8b78663ca20b3872669f27aca60f9bdaea0aab` passed Public CI #687 and PR #48 merged as `1a7022daeceea4c86e23e342711b3c07197dc037`; issue #47 is closed.
+Machine-readable identity and host evidence live under [`conformance/`](conformance/).
 
-Frozen prerelease and unreleased development are intentionally different identities. Material work may land on `main` before the next prerelease is cut; older live-host or behavioral evidence remains bounded to the exact immutable candidate on which it was observed.
-
-R3.2 has separate development-only Copilot CLI evidence for silent parent-session presence, bounded persisted modes, current-turn mode control, and subagent continuity. Frozen beta.4 Copilot acceptance proves its exact plugin transport, installed bytes, loaded skills/agents, and Hakim skill invocation; it does not inherit those later R3.2 lifecycle behaviors.
-
-See [Product Readiness](docs/PRODUCT_READINESS.md), [Operational Presence](docs/OPERATIONAL_PRESENCE.md), [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md), and [Supported Hosts](SUPPORTED_HOSTS.md) for the maintained truth.
-
-## Quick start — frozen beta.4
-
-The routes below are the maintained frozen beta.4 declarations. Codex and OpenCode place the SHA in their command-level transport. Claude Code and GitHub Copilot CLI use host-native catalog boundaries: marketplace registration discovers the catalog, while each catalog entry pins the frozen plugin source to exact SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+## Quick start
 
 ### Codex
 
@@ -46,9 +31,7 @@ The routes below are the maintained frozen beta.4 declarations. Codex and OpenCo
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3
 ```
 
-Open `/plugins`, select **Hakim**, install `hakim`, review/trust the SessionStart hook in `/hooks`, then start a new thread. The installed identity is `hakim@hakim`.
-
-Use installed skills such as `$hakim:hakim`, `$hakim:hakim-review`, and `$hakim:hakim-help`.
+Open `/plugins`, install **Hakim**, trust the SessionStart hook, and start a new thread. Skills include `$hakim:hakim`, `$hakim:hakim-review`, and `$hakim:hakim-help`.
 
 ### Claude Code
 
@@ -57,11 +40,7 @@ claude plugin marketplace add Habib1001-m/hakim
 claude plugin install hakim@hakim
 ```
 
-The marketplace command is catalog discovery, not the immutable pin. The Claude catalog entry advertises `1.0.0-beta.4` and uses an exact-SHA `git-subdir` plugin source for `plugins/claude-code`. A previous attempt to append the commit as `#<sha>` to the marketplace URL failed on Claude Code `2.1.220` because the host treated it as a branch; that superseded route is not documented as a normal install path. The repaired route is accepted on Claude Code `2.1.220`, with exact source resolution, installed-byte parity, SessionStart activation, and command invocation independently observed.
-
-Start Claude Code normally. Maintained commands include `/hakim:help`, `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, and `/hakim:gain`.
-
-`gain` is the retained beta compatibility name for evidence-status reporting; it does not imply a quantified performance gain.
+The catalog entry pins the Claude plugin to the exact frozen beta.4 source. Commands include `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, and `/hakim:help`.
 
 ### GitHub Copilot CLI
 
@@ -70,125 +49,71 @@ copilot plugin marketplace add Habib1001-m/hakim
 copilot plugin install hakim@hakim
 ```
 
-The marketplace command is catalog discovery, not the immutable pin. The Copilot catalog entry advertises `1.0.0-beta.4` and uses a GitHub plugin source object with repository `Habib1001-m/hakim`, `path: plugins/copilot`, and exact `sha: 5d00039479f2f11b7fe30ccf2385e70ce24553c3`. A superseded attempt to append the commit as `#<sha>` to marketplace registration failed on Copilot CLI `1.0.71` because the host passed that value to Git as a branch selector.
-
-The repaired repository route is accepted on Copilot CLI `1.0.71`. During the pre-merge journey, the P0 branch was used only to discover the repaired catalog; the catalog plugin source independently resolved frozen SHA `5d00039479f2f11b7fe30ccf2385e70ce24553c3`. `hakim@hakim` installed as `1.0.0-beta.4`, all 13 Copilot product files matched the frozen source byte-for-byte with tree SHA-256 `b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2`, all six Hakim skills and five custom agents loaded, an explicit `hakim-help` skill invocation returned the frozen quick reference, and the disposable runtime target remained unchanged.
-
-Start Copilot normally. Explicit mode control uses the plugin-qualified skill route:
-
-```text
-/hakim/hakim full
-/hakim/hakim lite
-/hakim/hakim ultra
-/hakim/hakim off
-```
-
-Those mode-control forms describe the maintained moving-development surface. Frozen beta.4 acceptance is bounded to the exact transport/activation/invocation journey above; later R3.2 silent presence, bounded mode state, and subagent-continuity evidence remains development-only and is not retroactively attributed to beta.4.
-
-`.github/copilot-instructions.md` remains an optional repository baseline, not the primary Hakim product surface.
+The catalog entry pins the Copilot plugin to the exact frozen beta.4 source. Moving development supports `/hakim/hakim full`, `/hakim/hakim lite`, `/hakim/hakim ultra`, and `/hakim/hakim off`.
 
 ### OpenCode
-
-From the target repository:
 
 ```bash
 npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install
 ```
 
-The exact-SHA Git bootstrap invokes Hakim's guarded project-local managed lifecycle. It persists an exact install manifest, supports bounded create/adopt/transactional-upgrade paths, can remove supported older verified installations with a newer CLI, refuses conflicting or unsafe state, and does not edit `opencode.json` or install global Hakim state.
+Hakim installs a guarded project-local bundle, refuses unsafe/conflicting state, and does not edit `opencode.json`.
 
-The frozen beta.4 route is accepted on OpenCode `1.18.5`. The disposable journey resolved the exact source SHA, installed `1.0.0-beta.4`, persisted the managed manifest, matched all nine managed product files byte-for-byte, and returned `EXACT_MATCH` before and after runtime. OpenCode executed the project-local `hakim` command in `full` mode and invoked `hakim-help` through its native skill tool. OpenCode-created bootstrap files outside Hakim's owned set were separated from Hakim-owned purity; the Hakim-owned bytes remained unchanged. System npm `10.9.8` reproduced the upstream exact-Git `GitFetcher requires an Arborist constructor to pack a tarball` blocker, so the accepted journey used isolated npm 11 tooling without replacing system npm while preserving the same exact Git source.
+See [Install Hakim](core/hakim-skill/INSTALL.md) for full lifecycle details.
 
-Start OpenCode from the same repository and use `/hakim-help` or `/hakim full ...`.
+## Core capabilities
 
-See [Install Hakim](core/hakim-skill/INSTALL.md) for complete host-specific lifecycle, dry-run, removal, and trust boundaries. See [P0 Host-Native Transport Reconciliation](docs/P0_HOST_TRANSPORT_RECONCILIATION.md) for the accepted host/version-bounded evidence and P0 closure record.
+- Canonical smallest-safe coding policy.
+- Native product surfaces for Codex, Claude Code, GitHub Copilot CLI, and OpenCode.
+- Quiet host-native presence and bounded `lite`, `full`, `ultra`, and `off` modes where supported.
+- Review, audit, debt, help, and evidence-status capabilities.
+- Deterministic doctor/preflight checks and reproducible release packaging.
+- Guarded OpenCode create/adopt/upgrade/remove lifecycle with no-clobber rollback.
 
-## Unreleased development
+`hakim-gain` is an evidence-status compatibility name, not a quantified performance claim.
 
-Moving `main` is for source development and bounded internal validation. It reports `1.0.0-beta.4.post1`, is not a frozen candidate, and must not be used as release, promotion, benchmark, external-evaluator, or candidate-specific live-host evidence.
+## Design principles
 
-To work on that moving source explicitly:
+**Capable-model freedom.** Hakim constrains objective consequences and unsupported claims before reasoning paths. It is not a workflow engine.
+
+**Host-native integration.** Capability parity is semantic; each host keeps its own trust, permissions, lifecycle, and invocation model.
+
+**Evidence-bound truth.** Repository conformance, live-host evidence, behavioral evidence, product usefulness, release authorization, and performance claims remain separate.
+
+## Development
 
 ```bash
 git clone https://github.com/Habib1001-m/hakim.git
 cd hakim
-git checkout main
 npm test
 ```
 
-Any observation against `main` must record the exact 40-character commit it used. No beta.5 candidate exists until a later deliberate identity advance and freeze.
-
-## Core capabilities
-
-- One canonical coding policy focused on the smallest sufficient, coherent, safe change.
-- Native product surfaces for Codex, Claude Code, GitHub Copilot CLI, and OpenCode.
-- Host-native skills, commands, agents, and lifecycle controls where the host supports them.
-- Deterministic PR Guardian, audit, doctor, host-preflight, and installation-planning checks.
-- Guarded OpenCode project-local lifecycle with bounded ownership, quarantine-backed mutation, verification, and no-clobber rollback.
-- Reproducible canonical skill packaging, deterministic CycloneDX source/product-inventory SBOM, and checksum/manifest verification.
-- Explicit evidence boundaries separating repository conformance, live-host acceptance, behavioral evidence, product usefulness, and release authorization.
-
-## Requirements
-
-For product use, install the supported host you intend to use. The OpenCode exact-SHA bootstrap additionally requires Node.js/npm; the shipped package declares Node.js `>=22`.
-
-Repository development and local validation require:
-
-- Node.js 22 or newer. Public CI uses Node 24 for the canonical gate and Node 22/26 as compatibility edges for the shipped JavaScript/OpenCode surface.
-- Python 3.10 or newer. Public CI currently validates Python 3.11.
-- Git.
-
-For the maintained Codex plugin-hook path, use Codex `0.131.0` or newer.
-
-## Local validation
-
-`npm test` is the canonical repository gate used by Public CI.
+Useful checks:
 
 ```bash
-npm test
 npm run doctor
 npm run plan:install -- --host all
 npm run check:distribution-identity
-```
-
-Historical controlled-experiment fixtures are intentionally separate from the permanent product gate:
-
-```bash
-npm run test:evidence:historical
-```
-
-Build the canonical skill package:
-
-```bash
 npm run package:skill
 ```
 
-Generated artifacts are local build evidence. They are not proof of registry publication, signing, notarization, third-party attestation, universal host compatibility, or product effectiveness.
+Repository development requires Node.js 22+ and Python 3.10+.
 
-## Architecture
+## Documentation
 
-Hakim keeps one behavioral authority and projects it through host-native surfaces rather than forcing every host into a lowest-common-denominator adapter.
-
-See:
-
-- [Architecture](docs/ARCHITECTURE.md)
-- [Operational Presence](docs/OPERATIONAL_PRESENCE.md)
+- [Install Hakim](core/hakim-skill/INSTALL.md)
 - [Supported Hosts](SUPPORTED_HOSTS.md)
-- [Product Readiness](docs/PRODUCT_READINESS.md)
+- [Architecture](docs/ARCHITECTURE.md)
 - [Known Limitations](KNOWN_LIMITATIONS.md)
+- [Security](SECURITY.md)
+- [Support](SUPPORT.md)
+- [Versioning](VERSIONING.md)
+- [Contributing](CONTRIBUTING.md)
 
 ## Upstream relationship
 
-Hakim is a **governance-focused derivative** inspired by Ponytail. It is **not a GitHub fork**, is not the official upstream project, and does not claim automatic compatibility, synchronization, performance equivalence, or distribution equivalence.
-
-See [UPSTREAM.md](UPSTREAM.md) for the reviewed relationship and manual evidence-gated sync policy. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for retained copyright and license notices.
+Hakim is a governance-focused derivative inspired by Ponytail. It is not the official upstream project and does not claim inherited benchmark results. See [UPSTREAM.md](UPSTREAM.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Evidence boundaries
 
-A passing deterministic check means only that the enabled rule set found no matching violation. It is not a substitute for correctness, security, architecture, semantic review, live-host validation, or product usefulness.
-
-A changed prerelease identity, first-run transport, lifecycle, or runtime behavior requires its own evidence before that exact path is promoted. Prior evidence remains historical rather than being silently inherited.
-
-Moving-development observations are never candidate evidence merely because their embedded version is ordered after the latest frozen prerelease. They require an exact commit and remain development-only until a candidate is deliberately cut.
-
-Hakim does not claim universal model-quality improvement, performance gain, token savings, return on investment, or complete protection from unrelated local processes.
+A passing deterministic check proves only its checked scope. Hakim does not claim universal model-quality improvement, performance gain, token savings, return on investment, or complete protection from unrelated local processes.
