@@ -48,6 +48,12 @@ const installDocs = [
   'plugins/claude-code/skills/hakim-help/SKILL.md',
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
+const expectedRawPacketHashes = {
+  codex: 'fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3',
+  'claude-code': '107a56c43f24c838b1a3e120a881bedea9618bb3636aeafecb4e54cdf63992e4',
+  'github-copilot': '60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6',
+  opencode: '899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304',
+};
 
 function assertAcceptedPacket(contract, expectedHost) {
   assert.match(contract.packet_sha256, exactSha256);
@@ -68,6 +74,8 @@ function assertAcceptedPacket(contract, expectedHost) {
   assert.equal(packet.evidence_ref, contract.evidence_ref);
 
   assert.equal(packet.public_projection?.local_execution_paths, 'REDACTED');
+  assert.equal(packet.public_projection?.raw_packet_sha256, expectedRawPacketHashes[expectedHost]);
+  assert.equal(packet.public_projection?.redaction_scope, 'host_binary.requested, host_binary.resolved, cwd, target');
   assert.equal(packet.host_binary?.requested, null);
   assert.equal(packet.host_binary?.resolved, null);
   assert.equal(packet.cwd, null);
@@ -205,10 +213,10 @@ test('transport reconciliation is packet-backed, not prose-backed', () => {
   assert.deepEqual(Object.keys(contracts).sort(), expectedHosts);
 
   const expectedPacketHashes = {
-    codex: 'fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3',
-    'claude-code': '107a56c43f24c838b1a3e120a881bedea9618bb3636aeafecb4e54cdf63992e4',
-    'github-copilot': '60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6',
-    opencode: '899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304',
+    codex: '16670650069254350272664e3a8f3211d45fc8297ddbe5e04c15791d551ee4c0',
+    'claude-code': '33fed855492fc10417500dc338292b25e4b2ee27a5073ad5a133770bd46d5b9a',
+    'github-copilot': 'c1225d4a400d791fb8f8b27e1819ea6d0a22a1a3d57326a40cfd529805683424',
+    opencode: 'a2e829030f1abf1ea146f730020975fca9ffc1d5c9fd71da17aa66306e36e344',
   };
 
   for (const host of expectedHosts) {
