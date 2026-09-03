@@ -26,6 +26,8 @@ const forbiddenPaths = [
   'tests/test_native_plugin_tarball.mjs',
   'tests/test_native_plugin_realpath_containment.mjs',
   'tests/test_native_plugin_transactional_lifecycle.mjs',
+  'experiments',
+  'benchmarks',
 ];
 
 const publicSurfaces = [
