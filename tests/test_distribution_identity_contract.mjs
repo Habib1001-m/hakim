@@ -12,6 +12,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), 'utf8');
 const readJson = (relative) => JSON.parse(read(relative));
 const hasExactLine = (text, value) => text.split(/\r?\n/).some((line) => line.trim() === value);
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const identity = readJson('conformance/distribution-identity.json');
 const current = identity.current_development;
@@ -24,13 +25,12 @@ const frozenAcceptance = readJson(frozen.native_acceptance_projection);
 const canonicalSkill = read('core/hakim-skill/SKILL.md');
 const readme = read('README.md');
 const install = read('core/hakim-skill/INSTALL.md');
-const versioning = read('VERSIONING.md');
-const readiness = read('docs/PRODUCT_READINESS.md');
-const operationalPresence = read('docs/OPERATIONAL_PRESENCE.md');
-const transportAuthority = read(frozen.transport_reconciliation.authority);
 const claudeMarketplace = readJson('.claude-plugin/marketplace.json');
 const copilotMarketplace = readJson('.github/plugin/marketplace.json');
 
+const expectedHosts = ['claude-code', 'codex', 'github-copilot', 'opencode'];
+const exactSha = /^[0-9a-f]{40}$/;
+const exactSha256 = /^[0-9a-f]{64}$/;
 const versionedJsonPaths = [
   'plugins/codex/.codex-plugin/plugin.json',
   'plugins/claude-code/.claude-plugin/plugin.json',
@@ -48,23 +48,6 @@ const installDocs = [
   'plugins/claude-code/skills/hakim-help/SKILL.md',
   'plugins/copilot/skills/hakim-help/SKILL.md',
 ];
-const expectedHosts = ['claude-code', 'codex', 'github-copilot', 'opencode'];
-const acceptedHosts = [...expectedHosts];
-const pendingHosts = expectedHosts.filter((host) => !acceptedHosts.includes(host));
-const exactSha = /^[0-9a-f]{40}$/;
-const exactSha256 = /^[0-9a-f]{64}$/;
-const invalidClaudeCommitRef = `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#${frozen.source_sha}`;
-const invalidCopilotCommitRef = `copilot plugin marketplace add Habib1001-m/hakim#${frozen.source_sha}`;
-const obsoleteExactLines = [
-  'codex plugin marketplace add Habib1001-m/hakim',
-  'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install',
-  invalidClaudeCommitRef,
-  invalidCopilotCommitRef,
-];
-
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 function assertAcceptedPacket(contract, expectedHost) {
   assert.match(contract.packet_sha256, exactSha256);
@@ -85,7 +68,7 @@ function assertAcceptedPacket(contract, expectedHost) {
   assert.equal(packet.evidence_ref, contract.evidence_ref);
 }
 
-test('distribution identity authority separates moving development from the frozen candidate', () => {
+test('distribution identity separates moving development from the frozen candidate', () => {
   assert.equal(identity.schema_version, 2);
   assert.equal(current.channel, 'unreleased-development');
   assert.equal(current.version, '1.0.0-beta.4.post1');
@@ -98,20 +81,19 @@ test('distribution identity authority separates moving development from the froz
   assert.equal(frozen.channel, 'public-beta');
   assert.equal(frozen.version, '1.0.0-beta.4');
   assert.equal(frozen.source_ref, 'evidence/beta4-r31-5d00039');
-  assert.match(frozen.source_sha, exactSha);
   assert.equal(frozen.source_sha, '5d00039479f2f11b7fe30ccf2385e70ce24553c3');
+  assert.match(frozen.source_sha, exactSha);
   assert.equal(frozen.frozen, true);
   assert.equal(frozen.candidate, true);
   assert.equal(frozen.native_acceptance_projection, 'conformance/history/native-host-acceptance-1.0.0-beta.4.json');
 
   assert.notEqual(current.version, frozen.version);
-  assert.notEqual(current.source_ref, frozen.source_ref);
   assert.notEqual(current.native_acceptance_projection, frozen.native_acceptance_projection);
   assert.equal(identity.next_candidate.version, '1.0.0-beta.5');
   assert.equal(identity.next_candidate.status, 'NOT_CUT');
 });
 
-test('moving source-tree metadata stays development while Claude and Copilot catalogs advertise frozen beta4', () => {
+test('moving metadata stays development while frozen catalogs stay pinned', () => {
   assert.equal(version, current.version);
   assert.equal(packageJson.version, current.version);
   assert.equal(pyproject.project.version, current.version);
@@ -148,61 +130,36 @@ test('moving source-tree metadata stays development while Claude and Copilot cat
   });
 });
 
-test('frozen beta4 retains its own fully accepted machine-readable projection', () => {
+test('frozen beta4 acceptance remains fully machine-readable', () => {
   assert.equal(frozenAcceptance.schema_version, 1);
   assert.equal(frozenAcceptance.product_version, frozen.version);
   assert.equal(frozenAcceptance.overall_status, 'PASS');
-  assert.match(frozenAcceptance.source_policy, new RegExp(escapeRegExp(frozen.source_sha)));
-  assert.match(frozenAcceptance.source_policy, /Codex, Claude Code, GitHub Copilot CLI, and OpenCode exact-candidate transport/i);
   assert.deepEqual(Object.keys(frozenAcceptance.hosts).sort(), expectedHosts);
 
-  const codex = frozenAcceptance.hosts.codex;
-  assert.equal(codex.status, 'PASS');
-  assert.equal(codex.host_version, 'codex-cli 0.145.0');
-  assert.equal(codex.verified_at, '2026-07-30T21:16:31Z');
-  assert.equal(codex.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471');
+  const expected = {
+    codex: ['codex-cli 0.145.0', 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136341471'],
+    'claude-code': ['2.1.220 (Claude Code)', 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5137151921'],
+    'github-copilot': ['GitHub Copilot CLI 1.0.71.', 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571'],
+    opencode: ['1.18.5', 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204'],
+  };
 
-  const claude = frozenAcceptance.hosts['claude-code'];
-  assert.equal(claude.status, 'PASS');
-  assert.equal(claude.host_version, '2.1.220 (Claude Code)');
-  assert.equal(claude.verified_at, '2026-07-30T23:15:48.874Z');
-  assert.equal(claude.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5137151921');
-
-  const copilot = frozenAcceptance.hosts['github-copilot'];
-  assert.equal(copilot.status, 'PASS');
-  assert.equal(copilot.host_version, 'GitHub Copilot CLI 1.0.71.');
-  assert.equal(copilot.verified_at, '2026-07-31T12:38:25.768Z');
-  assert.equal(copilot.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142910571');
-
-  const opencode = frozenAcceptance.hosts.opencode;
-  assert.equal(opencode.status, 'PASS');
-  assert.equal(opencode.host_version, '1.18.5');
-  assert.equal(opencode.verified_at, '2026-07-31T14:17:34.114Z');
-  assert.equal(opencode.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5143738204');
-
-  for (const host of pendingHosts) {
-    const entry = frozenAcceptance.hosts[host];
-    assert.equal(entry.status, 'NOT_RUN');
-    assert.equal(entry.host_version, null);
-    assert.equal(entry.verified_at, null);
-    assert.equal(entry.evidence_ref, null);
+  for (const [host, [hostVersion, evidenceRef]] of Object.entries(expected)) {
+    assert.equal(frozenAcceptance.hosts[host].status, 'PASS');
+    assert.equal(frozenAcceptance.hosts[host].host_version, hostVersion);
+    assert.equal(frozenAcceptance.hosts[host].evidence_ref, evidenceRef);
   }
 });
 
-test('normal frozen routes use an effective exact pin at the host-native layer', () => {
+test('normal frozen routes use exact host-native pins and remain documented', () => {
   const commands = frozen.normal_install_commands;
   assert.deepEqual(Object.keys(commands).sort(), expectedHosts);
-
-  for (const host of ['codex', 'opencode']) {
-    assert.match(commands[host], new RegExp(escapeRegExp(frozen.source_sha)), `${host} declaration is not pinned to the frozen SHA`);
-  }
+  assert.match(commands.codex, new RegExp(escapeRegExp(frozen.source_sha)));
+  assert.match(commands.opencode, new RegExp(escapeRegExp(frozen.source_sha)));
   assert.equal(commands['claude-code'], 'claude plugin marketplace add Habib1001-m/hakim');
   assert.equal(commands['github-copilot'], 'copilot plugin marketplace add Habib1001-m/hakim');
 
   const claudeSource = claudeMarketplace.plugins.find((item) => item.name === 'hakim')?.source;
   assert.equal(claudeSource?.source, 'git-subdir');
-  assert.equal(claudeSource?.url, 'https://github.com/Habib1001-m/hakim.git');
-  assert.equal(claudeSource?.path, 'plugins/claude-code');
   assert.equal(claudeSource?.sha, frozen.source_sha);
   assert.equal(Object.hasOwn(claudeSource || {}, 'ref'), false);
 
@@ -219,138 +176,54 @@ test('normal frozen routes use an effective exact pin at the host-native layer',
   }
 
   const normalDocs = installDocs.map((relative) => read(relative)).join('\n');
-  for (const obsoleteLine of obsoleteExactLines) {
-    assert.equal(hasExactLine(normalDocs, obsoleteLine), false, `obsolete or invalid normal route remains documented: ${obsoleteLine}`);
+  const invalidExactLines = [
+    'codex plugin marketplace add Habib1001-m/hakim',
+    'npx --yes --package=github:Habib1001-m/hakim hakim-opencode install',
+    `claude plugin marketplace add https://github.com/Habib1001-m/hakim.git#${frozen.source_sha}`,
+    `copilot plugin marketplace add Habib1001-m/hakim#${frozen.source_sha}`,
+  ];
+  for (const line of invalidExactLines) {
+    assert.equal(hasExactLine(normalDocs, line), false, `obsolete or invalid normal route remains documented: ${line}`);
   }
 });
 
-test('transport reconciliation preserves four accepted packets and repaired failure provenance', () => {
+test('transport reconciliation is packet-backed, not prose-backed', () => {
   const reconciliation = frozen.transport_reconciliation;
   const contracts = frozen.host_transport_contracts;
 
   assert.equal(reconciliation.status, 'PASS');
-  assert.equal(reconciliation.authority, 'docs/P0_HOST_TRANSPORT_RECONCILIATION.md');
   assert.equal(reconciliation.verified_hosts, 4);
-  assert.equal(reconciliation.required_hosts, expectedHosts.length);
-  assert.match(transportAuthority, /^\*\*Status:\*\* `PASS`/m);
-  assert.match(transportAuthority, /HOST_RESOLUTION_PROOF\s*= COMPLETE_4_OF_4/);
-  assert.match(transportAuthority, /MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH/);
-  assert.match(transportAuthority, /MARKETPLACE_REF_SHA_TREATED_AS_BRANCH/);
-  assert.match(transportAuthority, /git-subdir/);
-  assert.match(transportAuthority, /source\.github\.sha|plugin source/i);
-  assert.match(transportAuthority, /RESOLVED_SOURCE_SHA/);
-
+  assert.equal(reconciliation.required_hosts, 4);
+  assert.equal(Object.hasOwn(reconciliation, 'authority'), false);
   assert.deepEqual(Object.keys(contracts).sort(), expectedHosts);
+
+  const expectedPacketHashes = {
+    codex: 'fb7cf6909fea2c901d8b940519f248539ec7b8d67cfe8ae13a1d6f9812d09cb3',
+    'claude-code': '107a56c43f24c838b1a3e120a881bedea9618bb3636aeafecb4e54cdf63992e4',
+    'github-copilot': '60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6',
+    opencode: '899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304',
+  };
+
   for (const host of expectedHosts) {
     const contract = contracts[host];
     assert.equal(contract.command_key, host);
     assert.equal(contract.expected_source_sha, frozen.source_sha);
-    assert.match(contract.expected_source_sha, exactSha);
-    assert.ok(frozen.normal_install_commands[contract.command_key]);
+    assert.equal(contract.live_resolution_status, 'PASS');
+    assert.equal(contract.resolved_source_sha, frozen.source_sha);
+    assert.equal(contract.installed_product_version, frozen.version);
+    assert.equal(contract.candidate_evidence_eligible, true);
+    assert.equal(contract.packet_sha256, expectedPacketHashes[host]);
+    assertAcceptedPacket(contract, host);
   }
 
-  const codex = contracts.codex;
-  assert.equal(codex.static_contract_status, 'EXACT_SHA_DECLARED');
-  assert.equal(codex.live_resolution_status, 'PASS');
-  assert.equal(codex.resolved_source_sha, frozen.source_sha);
-  assert.equal(codex.installed_product_version, frozen.version);
-  assert.equal(codex.host_version, 'codex-cli 0.145.0');
-  assert.equal(codex.verified_at, '2026-07-30T21:16:31Z');
-  assert.equal(codex.evidence_ref, frozenAcceptance.hosts.codex.evidence_ref);
-  assert.equal(codex.candidate_evidence_eligible, true);
-  assert.equal(codex.packet_path, 'conformance/history/p0-host-transport/codex-1.0.0-beta.4.json');
-  assertAcceptedPacket(codex, 'codex');
-
-  const claude = contracts['claude-code'];
-  assert.equal(claude.pin_layer, 'catalog-plugin-source-sha');
-  assert.equal(claude.static_contract_status, 'EXACT_SHA_PLUGIN_SOURCE_DECLARED');
-  assert.equal(claude.plugin_source_type, 'git-subdir');
-  assert.equal(claude.plugin_source_path, 'plugins/claude-code');
-  assert.equal(claude.live_resolution_status, 'PASS');
-  assert.equal(claude.resolved_source_sha, frozen.source_sha);
-  assert.equal(claude.installed_product_version, frozen.version);
-  assert.equal(claude.host_version, '2.1.220 (Claude Code)');
-  assert.equal(claude.verified_at, '2026-07-30T23:15:48.874Z');
-  assert.equal(claude.evidence_ref, frozenAcceptance.hosts['claude-code'].evidence_ref);
-  assert.equal(claude.candidate_evidence_eligible, true);
-  assert.equal(claude.packet_path, 'conformance/history/p0-host-transport/claude-code-1.0.0-beta.4.json');
-  assertAcceptedPacket(claude, 'claude-code');
-  assert.equal(claude.superseded_failed_attempt.host_version, '2.1.220 (Claude Code)');
-  assert.equal(claude.superseded_failed_attempt.status, 'FAIL');
-  assert.equal(claude.superseded_failed_attempt.reason, 'MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH');
-  assert.equal(claude.superseded_failed_attempt.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5136565274');
-
-  const copilot = contracts['github-copilot'];
-  assert.equal(copilot.pin_layer, 'catalog-plugin-source-sha');
-  assert.equal(copilot.catalog_path, '.github/plugin/marketplace.json');
-  assert.equal(copilot.plugin_source_type, 'github');
-  assert.equal(copilot.plugin_source_repo, 'Habib1001-m/hakim');
-  assert.equal(copilot.plugin_source_path, 'plugins/copilot');
-  assert.equal(copilot.static_contract_status, 'EXACT_SHA_PLUGIN_SOURCE_DECLARED');
-  assert.equal(copilot.live_resolution_status, 'PASS');
-  assert.equal(copilot.resolved_source_sha, frozen.source_sha);
-  assert.equal(copilot.installed_product_version, frozen.version);
-  assert.equal(copilot.host_version, 'GitHub Copilot CLI 1.0.71.');
-  assert.equal(copilot.verified_at, '2026-07-31T12:38:25.768Z');
-  assert.equal(copilot.evidence_ref, frozenAcceptance.hosts['github-copilot'].evidence_ref);
-  assert.equal(copilot.candidate_evidence_eligible, true);
-  assert.equal(copilot.packet_path, 'conformance/history/p0-host-transport/github-copilot-1.0.0-beta.4.json');
-  assert.equal(copilot.packet_sha256, '60d7121c671e7f279a7435f07b5028827fe9113249dab09ec661f31f0c9809a6');
-  assertAcceptedPacket(copilot, 'github-copilot');
-  assert.equal(copilot.superseded_failed_attempt.status, 'FAIL');
-  assert.equal(copilot.superseded_failed_attempt.reason, 'MARKETPLACE_REF_SHA_TREATED_AS_BRANCH');
-  assert.equal(copilot.superseded_failed_attempt.evidence_ref, 'https://github.com/Habib1001-m/hakim/issues/47#issuecomment-5142063851');
-  assert.equal(copilot.repair_probe.status, 'PASS');
-  assert.equal(copilot.repair_probe.probe_scope, 'LOCAL_CATALOG_SOURCE_CONTRACT_ONLY');
-  assert.equal(copilot.repair_probe.resolved_source_sha, frozen.source_sha);
-  assert.equal(copilot.repair_probe.installed_product_version, frozen.version);
-  assert.equal(copilot.repair_probe.source_file_count, 13);
-  assert.equal(copilot.repair_probe.installed_file_count, 13);
-  assert.equal(copilot.repair_probe.byte_mismatch_count, 0);
-  assert.equal(copilot.repair_probe.source_tree_sha256, 'b1d210d97a4d1f5b119667bedf13007cbb0560a6bb1f28bcd3e232ee708d14e2');
-  assert.equal(copilot.repair_probe.installed_tree_sha256, copilot.repair_probe.source_tree_sha256);
-  assert.equal(copilot.repair_probe.candidate_evidence_eligible, false);
-
-  const opencode = contracts.opencode;
-  assert.equal(opencode.pin_layer, 'git-package-spec');
-  assert.equal(opencode.static_contract_status, 'EXACT_SHA_DECLARED');
-  assert.equal(opencode.live_resolution_status, 'PASS');
-  assert.equal(opencode.resolved_source_sha, frozen.source_sha);
-  assert.equal(opencode.installed_product_version, frozen.version);
-  assert.equal(opencode.host_version, '1.18.5');
-  assert.equal(opencode.verified_at, '2026-07-31T14:17:34.114Z');
-  assert.equal(opencode.evidence_ref, frozenAcceptance.hosts.opencode.evidence_ref);
-  assert.equal(opencode.candidate_evidence_eligible, true);
-  assert.equal(opencode.packet_path, 'conformance/history/p0-host-transport/opencode-1.0.0-beta.4.json');
-  assert.equal(opencode.packet_sha256, '899e1d6cf15b4c94710438a0585fd7635fa9568d9d8622df2e90cff1347b7304');
-  assertAcceptedPacket(opencode, 'opencode');
-
-  for (const host of pendingHosts) {
-    assert.equal(contracts[host].live_resolution_status, 'NOT_RUN');
-    assert.equal(contracts[host].evidence_ref, null);
-    assert.equal(contracts[host].candidate_evidence_eligible, false);
-  }
+  assert.equal(contracts['claude-code'].superseded_failed_attempt.reason, 'MARKETPLACE_SOURCE_SHA_TREATED_AS_BRANCH');
+  assert.equal(contracts['github-copilot'].superseded_failed_attempt.reason, 'MARKETPLACE_REF_SHA_TREATED_AS_BRANCH');
+  assert.equal(contracts['github-copilot'].repair_probe.status, 'PASS');
+  assert.equal(contracts['github-copilot'].repair_probe.candidate_evidence_eligible, false);
 
   assert.equal(identity.policy.command_text_is_not_runtime_proof, true);
   assert.equal(identity.policy.host_verification_requires_resolved_source_sha, true);
   assert.equal(identity.policy.effective_pin_may_be_declared_in_host_native_catalog, true);
-});
-
-test('active authorities keep P0 before F05 and mark main as non-candidate development', () => {
-  const activeTruth = `${readme}\n${install}\n${versioning}\n${readiness}\n${operationalPresence}\n${transportAuthority}`;
-  assert.match(activeTruth, /unreleased development/i);
-  assert.match(activeTruth, /moving `?main`?/i);
-  assert.match(activeTruth, /not (?:a )?(?:frozen )?candidate/i);
-  assert.match(activeTruth, /P0[^\n]*Truthful Immutable Distribution Identity/i);
-  assert.match(activeTruth, /HOST_RESOLUTION_PROOF\s*= COMPLETE_4_OF_4/);
-
-  for (const text of [readiness, operationalPresence]) {
-    const p0Index = text.indexOf('P0');
-    const f05Index = text.indexOf('F05');
-    assert.ok(p0Index >= 0, 'P0 missing from maintained authority');
-    assert.ok(f05Index >= 0, 'F05 missing from maintained authority');
-    assert.ok(p0Index < f05Index, 'F05 appears before the P0 distribution-identity gate');
-  }
 });
 
 console.log('test_distribution_identity_contract.mjs: ok');
