@@ -1,35 +1,53 @@
 ---
 name: help
-description: Show the native Claude Code Hakim commands, agents, installation path, and trust boundaries.
+description: Show the six Hakim capabilities, modes, Claude-native invocation forms, and trust boundaries without embedding release history, candidate SHAs, or stale acceptance state.
 disable-model-invocation: true
 ---
 
-# Hakim for Claude Code
+# Hakim Help
 
-Hakim is active as a native Claude Code plugin.
+Hakim exposes six canonical capabilities in Claude Code:
 
-Version truth is host/runtime metadata. Do not infer or restate a Hakim version from repository history, changelogs, prior evidence, or cached prose. If version identity is relevant, use the exact SessionStart activation value or ask the user to inspect `/plugin` / `claude plugin details hakim@hakim`.
+- `/hakim:hakim` — core execution judgment and mode control;
+- `/hakim:review` — bounded read-only complexity review;
+- `/hakim:audit` — deeper evidence-backed repository audit;
+- `/hakim:debt` — live deliberate-shortcut / technical-debt provenance;
+- `/hakim:status` — evidence-status reporting only;
+- `/hakim:help` — this reference.
 
-## User commands
+## Modes
 
-- `/hakim:full <task>` — apply the canonical smallest-safe-diff workflow in the current conversation.
-- `/hakim:review [scope]` — read-only complexity review in an isolated reviewer context.
-- `/hakim:audit [scope]` — deep read-only repository audit in an isolated auditor context.
-- `/hakim:debt [scope]` — inspect live Hakim debt markers and provenance.
-- `/hakim:gain [scope]` — show evidence status; `gain` is the retained beta compatibility name and does not imply a quantified gain.
-- `/hakim:help` — show this reference.
+Modes belong to `/hakim:hakim`; they are not separate skills:
 
-## Native agents
+- `lite` — execute the request and mention a materially smaller safe alternative when one exists.
+- `full` — default; apply the complete Hakim decision model with proportional verification.
+- `ultra` — aggressively challenge additions, abstractions, and dependencies while preserving the required outcome and real guards.
+- `off` — do not apply Hakim guidance beyond Claude Code and repository safety boundaries.
 
-Claude may delegate automatically to plugin agents exposed under scoped names such as `hakim:hakim-reviewer`, `hakim:hakim-auditor`, `hakim:hakim-debt-analyst`, and `hakim:hakim-evidence-verifier`. `hakim:hakim-implementer` is available for explicitly isolated implementation work in a temporary git worktree.
-
-Type `@` in Claude Code to discover and explicitly select an installed Hakim agent when you want guaranteed delegation.
-
-## Installation
+Example:
 
 ```text
-claude plugin marketplace add Habib1001-m/hakim
-claude plugin install hakim@hakim
+/hakim:hakim ultra <task>
 ```
 
-Use `/plugin` or `claude plugin details hakim@hakim` to inspect the installed component inventory. Claude Code permissions, approval controls, and managed policy remain authoritative.
+## Installed identity
+
+Do not infer the active Hakim version, source revision, or update state from this help text.
+
+Use Claude Code's plugin/runtime metadata, such as `/plugin` or `claude plugin details hakim@hakim`, to inspect the installed identity. Release history, candidate SHAs, and previous acceptance results do not belong in the skill contract.
+
+## Automatic behavior
+
+Hakim's compact core policy may be applied automatically at SessionStart after the host-native hook trust boundary is satisfied. Explicit capability invocation is for intentional mode changes and specialized work; it is not required merely to make the core coding guidance exist.
+
+## Agents
+
+Claude may expose Hakim reviewer, auditor, debt-analyst, evidence-verifier, or implementation agents as native scoped agents. Agents are execution contexts, not additional Hakim capabilities.
+
+## Trust boundary
+
+Claude Code permissions, trust prompts, sandboxing, managed policy, plugin enablement, and repository authority remain authoritative. Hakim never bypasses them.
+
+## Boundary
+
+This capability is read-only and changes no mode, repository state, settings, acceptance state, or release metadata.
