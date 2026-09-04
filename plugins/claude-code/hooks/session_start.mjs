@@ -9,12 +9,13 @@ const MANIFEST = path.join(PLUGIN_ROOT, '.claude-plugin', 'plugin.json');
 const SKILL = path.join(PLUGIN_ROOT, 'skills', 'hakim', 'SKILL.md');
 const MAX_CONTEXT_BYTES = 9_000;
 const OPERATIONAL_SECTIONS = Object.freeze([
-  'The 7-level ladder',
-  'Pre-mutation baseline',
-  'Evidence sufficiency',
-  'Domain-guard preservation',
-  'Outcome-oriented restraint',
-  'Bounded `NO_CHANGE` truth',
+  'Understand only what matters',
+  'The 7-level decision ladder',
+  'Proportional verification',
+  'Depth is earned',
+  'Preserve real guards',
+  'Evidence and authority',
+  'Evidence-bound claims',
 ]);
 
 function readStdin() {
@@ -60,8 +61,9 @@ async function main() {
     additionalContext = [
       `Hakim ${version} plugin is active for this Claude Code session.`,
       `The active Hakim version is ${version}.`,
-      'Apply the maintained Hakim policy automatically to coding work without requiring an explicit Hakim invocation.',
-      'Specialized commands and agents remain available for review, audit, debt, evidence status, help, and explicit mode-oriented work.',
+      'Apply the maintained Hakim core automatically to coding work without requiring an explicit Hakim invocation.',
+      'Choose ordinary tactics inside the authorized scope; add process only when it changes a decision, protects a real boundary, or makes material evidence observable.',
+      'Specialized capabilities remain available for review, audit, debt, evidence status, help, and explicit mode control.',
       'Preserve Claude Code permissions and host-native trust controls; never bypass them.',
       '',
       policy,
