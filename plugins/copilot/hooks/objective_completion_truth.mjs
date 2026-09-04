@@ -105,6 +105,34 @@ export function extractLastAssistantText(transcriptText) {
   return last;
 }
 
+function hasPendingLiveAssistantTurn(transcriptText) {
+  let pendingTurnId = null;
+
+  for (const line of String(transcriptText ?? '').split(/\r?\n/)) {
+    const candidate = line.trim();
+    if (!candidate) continue;
+
+    let event;
+    try { event = JSON.parse(candidate); }
+    catch { continue; }
+    if (!event || typeof event !== 'object') continue;
+
+    if (event.type === 'assistant.turn_start') {
+      pendingTurnId = event.data?.turnId ?? '';
+      continue;
+    }
+
+    if (event.type === 'assistant.message' && pendingTurnId !== null) {
+      const messageTurnId = event.data?.turnId ?? '';
+      if (!pendingTurnId || !messageTurnId || messageTurnId === pendingTurnId) {
+        pendingTurnId = null;
+      }
+    }
+  }
+
+  return pendingTurnId !== null;
+}
+
 export function parseStructuredCompletion(text) {
   const fields = {};
   for (const rawLine of String(text ?? '').split(/\r?\n/)) {
@@ -258,7 +286,8 @@ function readVisibleAssistantText(transcriptPath, options = {}) {
     if (transcriptText === null || transcriptText === undefined) return '';
 
     const finalAssistantText = extractLastAssistantText(transcriptText);
-    if (finalAssistantText) return finalAssistantText;
+    const pendingLiveTurn = hasPendingLiveAssistantTurn(transcriptText);
+    if (finalAssistantText && !pendingLiveTurn) return finalAssistantText;
 
     if (attempt < TRANSCRIPT_VISIBILITY_RETRIES) sleep(TRANSCRIPT_VISIBILITY_RETRY_MS);
   }
