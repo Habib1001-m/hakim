@@ -81,13 +81,20 @@ for (const [agentPath, expectedSkill] of [
   ['plugins/claude-code/agents/hakim-debt-analyst.md', 'hakim:debt'],
   ['plugins/claude-code/agents/hakim-evidence-verifier.md', 'hakim:status'],
   ['plugins/claude-code/agents/hakim-implementer.md', 'hakim:hakim'],
+]) {
+  assert.match(read(agentPath), new RegExp(`(?:^|\\n)\\s*-\\s*${expectedSkill.replace(':', '\\:')}\\s*(?:\\n|$)`), `${agentPath} must preload ${expectedSkill}`);
+}
+
+for (const [agentPath, capability] of [
   ['plugins/copilot/agents/hakim-reviewer.agent.md', 'review'],
   ['plugins/copilot/agents/hakim-auditor.agent.md', 'audit'],
   ['plugins/copilot/agents/hakim-debt-analyst.agent.md', 'debt'],
   ['plugins/copilot/agents/hakim-evidence-verifier.agent.md', 'status'],
   ['plugins/copilot/agents/hakim-implementer.agent.md', 'hakim'],
 ]) {
-  assert.match(read(agentPath), new RegExp(`(?:^|\\n)\\s*-\\s*${expectedSkill.replace(':', '\\:')}\\s*(?:\\n|$)`), `${agentPath} must preload ${expectedSkill}`);
+  const text = read(agentPath);
+  assert.match(text, new RegExp(`(?:load|use|follow)[^\\n]{0,120}\\b${capability}\\b[^\\n]{0,80}skill`, 'i'), `${agentPath} must route to the ${capability} skill instead of owning another contract`);
+  assert.doesNotMatch(text, /## (?:Scope contract|Evidence rule|Audit contract|The 7-level decision ladder)/i, `${agentPath} must stay a thin execution context`);
 }
 
 const help = read('core/hakim-skill/skills/help/SKILL.md');
