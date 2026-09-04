@@ -1,20 +1,19 @@
 ---
 name: hakim
 description: >
-  Apply reuse-first, evidence-bound coding guidance: question whether work needs
-  to exist, reuse the codebase, prefer standard-library and native-platform
-  features, avoid speculative architecture, and produce the smallest safe diff.
-  Use on coding, review, refactoring, dependency, and technical-debt tasks.
-argument-hint: [lite|full|ultra|off]
+  Apply Hakim to coding, repair, refactoring, dependency, and implementation
+  decisions: pursue the smallest sufficient safe outcome, reuse existing code,
+  prefer standard-library and native capabilities, verify proportionally, and
+  keep technical claims evidence-bound.
+argument-hint: [lite|full|ultra|off] [task]
 license: MIT
-version: 1.0.0-beta.5
 author: Habib1001-m
 repository: https://github.com/Habib1001-m/hakim
 tags:
   - minimalism
-  - yagni
-  - code-reduction
+  - reuse-first
   - evidence-bound
+  - coding
 intensity_levels:
   - lite
   - full
@@ -22,264 +21,169 @@ intensity_levels:
   - off
 ---
 
-# Hakim Skill Package
+# Hakim
 
-## Persistence
+Hakim is a coding and product-judgment layer for finding the **smallest sufficient safe change**. It is not a workflow engine, approval system, or substitute for repository-specific engineering rules.
 
-Default to **full** for coding tasks when Hakim is active. Host invocation syntax
-varies; use the host's discovered skill form or natural language.
+Use Hakim when implementing, repairing, refactoring, simplifying, choosing dependencies, or deciding whether code should exist at all.
 
-- `lite`: implement the request and name the smaller alternative.
-- `full`: enforce the complete smallest-safe-diff ladder.
-- `ultra`: challenge additions and prefer deletion before new code.
-- `off`: do not apply Hakim guidance.
+## Modes
 
-## The Ladder (7-Level Decision Hierarchy)
+- `lite` — execute the request and mention a materially smaller safe alternative when one exists.
+- `full` — default; apply the complete Hakim decision model with proportional verification.
+- `ultra` — challenge additions, abstractions, and dependencies aggressively; prefer deletion and reuse without weakening the required outcome or real guards.
+- `off` — do not apply Hakim guidance beyond host, repository, and safety boundaries.
 
-The 7-level ladder runs after the task and affected code paths are understood.
-Stop at the first rung that safely satisfies the request:
+Modes modify the `hakim` capability. They are not separate skills.
 
-1. **Does this need to exist?** Skip speculative work and say why.
+## Operating contract
+
+Normal execution is:
+
+```text
+UNDERSTAND -> DECIDE -> EXECUTE -> VERIFY -> CLOSE
+```
+
+Do not turn that path into ceremony. A capable agent chooses ordinary tactics inside the authorized scope. Add structure only when it changes a technical decision, protects a real boundary, or makes material evidence observable.
+
+## Understand only what matters
+
+Before changing code, resolve enough evidence to name:
+
+1. the requested outcome;
+2. the affected implementation path and relevant consumers;
+3. local conventions and real reuse candidates;
+4. material security, privacy, integrity, migration, rollback, accessibility, compatibility, or trust-boundary requirements; and
+5. the proportional verification surface that can detect a regression.
+
+Once those are known, stop inspecting. Any additional read or search must answer a concrete unresolved question whose answer could change implementation, scope, safety, or the confidence claim.
+
+Whole-repository exploration, planning artifacts, and repeated equivalent analysis are not defaults.
+
+## The 7-level decision ladder
+
+Stop at the first rung that safely satisfies the requested outcome:
+
+1. **Does this need to exist?** Remove speculative work or avoid adding it.
 2. **Is it already in the codebase?** Reuse the existing helper, type, pattern, script, or workflow.
-3. **Does the standard library do it?** Prefer it.
-4. **Does the native platform do it?** Prefer platform behavior over custom code.
-5. **Does an installed dependency already do it?** Reuse it before adding another.
-6. **Can it be one clear line?** Keep it one line.
-7. **Only then:** write the minimum custom code that works.
+3. **Can the standard library do it?** Prefer the maintained language/runtime facility.
+4. **Can the native platform do it?** Prefer host/platform behavior over custom machinery.
+5. **Can an already-accepted dependency do it?** Reuse it before adding another dependency.
+6. **Can the same outcome be implemented more directly?** Prefer the smallest clear implementation that preserves required behavior.
+7. **Only then:** add the minimum custom code required.
 
-Two rungs work: choose the higher rung. A bug fix targets the shared root cause,
-not only the reported symptom. Inspect sibling callers before editing.
+The ladder selects implementation tactics; it does not justify leaving a necessary part of the requested outcome incomplete.
 
-## Pre-mutation baseline
+## Root-cause rule
 
-Before the first mutation in an existing runnable repository, identify the
-smallest reasonably bounded validation command that can establish a useful
-pre-change signal and run that representative baseline when available.
+A bug fix targets the shared root cause, not only the reported symptom. Inspect sibling callers or equivalent paths when they are plausibly affected by the same cause, then keep the repair bounded to the actual fault domain.
 
-Baseline discovery is read-only by default. Treat dependency or editable
-installs, lockfile or package-metadata generation, repository-local environment
-or bootstrap creation, code generation, formatter writes, and similar side
-effects as mutations, not harmless preparation.
+Do not widen a one-path defect into a repository campaign without evidence that the cause is shared.
 
-- First inspect maintained repository documentation, configuration, scripts, and
-  existing tool declarations to find a non-mutating repository-native validation
-  path.
-- Do not mutate the repository merely to discover, install, or prepare a
-  baseline when a maintained non-mutating path is available.
-- If the only reasonable representative baseline genuinely requires setup
-  mutation, state why before doing it, bound that setup, and distinguish setup
-  mutation from product mutation in the final report.
-- Prefer a focused test, build, typecheck, lint, or other maintained repository
-  command that can distinguish a pre-existing failure from a regression caused
-  by the requested change.
-- Do not run an expensive full suite merely as ritual when a smaller
-  representative baseline is sufficient for the affected path and risk.
-- If execution is unsafe, unavailable, disproportionately expensive, or
-  explicitly disallowed, record why no baseline was run and carry that
-  uncertainty into the final report.
-- Never imply a pre-existing green state unless it was actually observed.
+## Proportional verification
 
-A new or non-runnable repository does not need an artificial baseline.
+Verification scales with changed behavior and failure cost, not with ritual.
 
-## Observable checkpoints
+- Use an existing representative baseline before mutation when it is cheap, available, and decision-useful.
+- Do not mutate a repository merely to manufacture, install, or prepare a baseline.
+- Prefer maintained repository-native tests, builds, linters, type checks, or focused probes over ad hoc harnesses.
+- For boolean, control-flow, permission, validator, or guard transformations, verify decision-relevant boundary states when the existing suite does not already prove them.
+- A full suite is warranted when blast radius, coupling, release policy, or uncertainty makes it materially useful; it is not the automatic answer to every small change.
+- If verification is unavailable or unsafe, narrow the completion claim instead of implying evidence that was not observed.
 
-For a runnable Git repository, make the evidence around mutation observable rather
-than implied.
+## Depth is earned
 
-Before the first product edit, record this baseline checkpoint from observed
-repository state:
+Expand investigation or verification only when evidence makes the extra depth decision-relevant, such as:
 
-```text
-BASELINE_COMMAND=<exact command or NOT_RUN>
-BASELINE_SOURCE=<repository evidence that justified the command or why none ran>
-SETUP_MUTATION=NO|YES:<reason stated before setup>
-PRE_EDIT_GIT_STATUS=<observed git status --porcelain or GIT_UNAVAILABLE:<reason>>
-```
+- contradictory evidence;
+- uncertainty that can change the implementation or verdict;
+- high failure cost or irreversible impact;
+- a new semantic, security, data-integrity, or authority boundary;
+- failed verification that changes the diagnosis; or
+- repeated related failures that suggest a shared cause.
 
-- Populate the checkpoint from observations, not plans. `SETUP_MUTATION=NO` is
-  the default.
-- A setup mutation cannot be used merely to discover the baseline. If setup is
-  genuinely required, justify it before execution and report its artifacts or
-  working-tree delta separately from product edits.
-- Do not begin the first product edit until the checkpoint is complete, unless
-  Git or validation execution is unavailable; record that limitation instead of
-  inventing a clean or green state.
+Resolve the material question, then collapse back to the shortest sufficient path.
 
-For boolean, control-flow, validator, permission, or guard transformations,
-existing-suite green is not sufficient by itself to claim semantic equivalence.
-Before calling such a change behavior-preserving, record:
+## Preserve real guards
 
-```text
-SEMANTIC_CHANGE_CHECK=<NOT_APPLICABLE|boundary-state comparison|targeted probe/test>
-```
+Small diffs are not the objective when they erase a real requirement.
 
-Enumerate decision-relevant boundary states or run a targeted regression/probe
-for the changed truth table or invariant. Include empty, absent, error, and
-boundary states when they can take a different branch. If that evidence is not
-available, narrow the claim or do not make the transformation.
+Before simplifying or deleting validation, permissions, rollback, migration, accessibility, privacy, security, integrity, or trust-boundary logic, identify the protected invariant. Remove or weaken the guard only when evidence shows the requirement no longer applies or the same invariant is preserved elsewhere.
 
-Before the completion report, observe final repository state and record:
+Simplify the implementation around a required guard before deleting the guard itself.
 
-```text
-FINAL_GIT_STATUS=<observed git status --porcelain or GIT_UNAVAILABLE:<reason>>
-SETUP_ARTIFACTS=<NONE|observed paths/summary>
-UNRELATED_MUTATIONS=<NONE|observed summary>
-```
+## Evidence and authority
 
-Reconcile the final checkpoint with the report. Never claim `clean working
-tree`, `no artifacts`, `no setup mutations`, or equivalent when the observed
-state contradicts that claim.
+Keep four questions separate:
 
-## Evidence sufficiency
+- **Objective:** what outcome is requested?
+- **Evidence:** what is actually true now?
+- **Role judgment:** what method best serves the objective under the evidence?
+- **Boundary:** what actions or impact classes are actually authorized?
 
-Repository inspection is sufficient once the agent can name:
+Authorization does not make a technical assumption true. If material evidence contradicts an assumption necessary to the requested action's correctness, safety, or intended outcome, stop at the smallest safe boundary, surface the contradiction, and continue only after it is resolved.
 
-1. the affected implementation path and sibling behavior likely to share the change;
-2. relevant local conventions and reuse candidates;
-3. material safety, domain, privacy, integrity, accessibility, and trust guards; and
-4. the proportional validation surface that can detect a regression.
-
-After those are known, stop inspecting and move to the decision ladder. Any
-additional read or search must answer a concrete unresolved question whose
-answer could change the implementation, scope, safety boundary, or confidence
-claim. Whole-repository exploration is not a default when the affected path is
-already bounded. Do not create repository-local planning or analysis artifacts,
-or repeat equivalent analysis, merely to organize continued inspection when no
-decision-relevant question remains.
-
-A material correctness or safety uncertainty overrides this stopping rule:
-investigate that uncertainty before mutation even when the normal sufficiency
-conditions are otherwise met.
-
-## Domain-guard preservation
-
-Before simplifying, deleting, or replacing validation or guard logic, identify
-the protected invariant and the requirement that makes it necessary.
-
-- Domain-level validation is part of the required outcome when it enforces a
-  real product invariant, not removable implementation weight.
-- Simplification must not remove security, privacy, data-integrity, migration,
-  rollback, accessibility, trust-boundary, or user-trust guards merely to make
-  the diff smaller.
-- Remove or weaken a guard only when evidence shows the protected requirement
-  no longer applies or the same invariant is preserved elsewhere.
-- Prefer simplifying the implementation around a required guard instead of
-  erasing the invariant it protects.
-
-A guard can still be redundant or obsolete; Hakim requires evidence for that
-conclusion rather than assuming every existing guard is permanent.
+Do not manufacture objections. Routine, reversible, in-scope choices remain ordinary execution work.
 
 ## Outcome-oriented restraint
 
-Optimize for the smallest sufficient, coherent, safe change that completes the
-requested outcome while preserving required behavior and guards.
+Optimize for the smallest **sufficient, coherent, safe** change.
 
-- Line count is not the objective, and the fewest lines or files do not win when
-  they leave the bounded outcome incomplete or incoherent.
-- Do not split, omit, or defer a necessary part of the same bounded change merely
-  to shrink the diff.
-- Prefer a slightly larger reuse-first change when it is the smallest coherent
-  implementation of the actual outcome.
-- The 7-level ladder still decides how to implement the work; this rule defines
-  what counts as enough work to satisfy the request.
+- Line count is not the objective.
+- Do not split or defer a necessary part of the same bounded outcome merely to reduce the diff.
+- Do not add abstractions, configuration, extension points, dependencies, or compatibility layers without a current consumer or requirement.
+- Prefer deletion when behavior is genuinely unnecessary; prefer reuse when deletion would lose required behavior.
 
-## Bounded `NO_CHANGE` truth
+## Bounded no-change truth
 
-A no-change decision is scoped to the evidence actually inspected. Default to:
+When inspection supports no change, say:
 
 > No justified change found within the inspected scope.
 
-Do not claim the implementation is globally minimal, irreducible, optimal, or
-free of all simplification opportunities unless the inspected evidence actually
-establishes that stronger claim. Report the bounded evidence that supports
-`NO_CHANGE` and any remaining uncertainty.
+Do not upgrade that into a claim that the repository is globally minimal, optimal, correct, secure, or free of all simplification opportunities.
 
-## Intensity Levels
+## Deliberate technical debt
 
-| Level | Behavior |
-|---|---|
-| `lite` | Build what was asked and mention the smaller safe alternative. |
-| `full` | Reuse first, stdlib/native first, shortest safe diff. Default. |
-| `ultra` | Prefer deletion and require evidence before abstractions or dependencies. |
-| `off` | Do not apply Hakim guidance. |
-
-## hakim: Comments (Technical Debt Documentation)
-
-A deliberate shortcut must name its ceiling and upgrade trigger:
+When a deliberate shortcut is accepted, record enough evidence to make the future trigger real:
 
 ```text
-hakim: shortcut accepted because the current ceiling is enough
-ceiling: the concrete limit
-upgrade path: what changes when the ceiling is reached
+hakim: <shortcut and why it is sufficient now>
+ceiling: <concrete current limit>
+upgrade trigger: <observable condition that requires revisiting it>
 ```
 
-Examples or ledgers bundled by a distribution are synthetic unless repository
-evidence explicitly promotes an entry to live debt.
+Use the `debt` capability to inspect live markers and provenance. Examples or historical records do not become live debt merely because they exist.
 
-## Deliberate Technical Debt Ledger
+## Evidence-bound claims
 
-Live debt requires an existing repository path plus evidence such as a commit,
-pull request, issue, operator transcript, or accepted `hakim:` marker. Some Hakim
-distributions may include a synthetic example ledger; its presence is optional
-and it does not make claims about the target repository.
+Never claim release readiness, runtime compatibility, performance improvement, token/cost saving, security approval, benchmark gain, adoption, or ROI beyond accepted evidence for that exact scope.
+
+Implementation completion, automated checks, human review, live-host acceptance, deployment, and release are different evidence layers. Report the strongest supported state, including `HOLD` or unresolved uncertainty when that is the truth.
+
+## Output discipline
+
+For normal coding work, report naturally and concisely:
+
+- what changed;
+- why this is the smallest sufficient safe approach;
+- what verification was actually run or observed;
+- any material uncertainty, remaining risk, or boundary not crossed.
+
+Do not emit fixed checkpoint tables, governance ledgers, or process diaries unless the task itself requires structured evidence.
 
 ## Capabilities
 
-These are canonical capability identifiers. User-facing invocation intentionally
-differs by host and is recorded in `capabilities.json` and the host integration.
+Hakim exposes six canonical capabilities. Invocation syntax is host-native:
 
-| Capability | What it does |
-|---|---|
-| `hakim` | Apply or change Hakim intensity. |
-| `hakim-review` | Review the current unstaged and staged diff for removable complexity. |
-| `hakim-audit` | Audit active repository surfaces for evidence-backed simplification opportunities. |
-| `hakim-debt` | Separate live debt from synthetic examples and archived records. |
-| `hakim-gain` | Show evidence status; `gain` is retained as the beta compatibility ID and does not claim a quantified gain. |
-| `hakim-help` | Show modes, capabilities, host syntax, validation, and evidence boundaries. |
+- `hakim` — execution judgment and mode control;
+- `review` — bounded complexity review;
+- `audit` — deeper evidence-backed repository audit;
+- `debt` — live shortcut/debt provenance;
+- `status` — evidence status only;
+- `help` — current host usage reference.
 
-## Optional Resources
+## Boundaries
 
-Some Hakim distributions include helper scripts or example assets. Use those
-resources only when they are actually present in the active distribution and
-relevant to the task. Do not assume a source-repository path from an installed
-plugin, and do not fail a manual capability merely because an optional helper or
-example asset is absent.
+Hakim never overrides host permissions, repository-local authority, protected-data rules, publication/deployment approval, destructive-operation boundaries, or other explicit impact controls.
 
-## Workflow Use
-
-The methodology can guide prompt chains, routing, parallel audits,
-orchestrator-worker tasks, and evaluator loops. This is usage guidance, not a
-claim that Hakim ships a workflow engine.
-
-## Distribution Boundary
-
-This source tree carries Hakim `1.0.0-beta.5` candidate metadata. A passing
-repository gate does not itself freeze, publish, or establish live-host
-acceptance for the candidate. Release identity is bound to the exact immutable
-Git ref selected after the final product review.
-
-Codex, Claude Code, and GitHub Copilot use repository-hosted native plugin
-marketplaces; OpenCode uses a guarded project-local native plugin installer.
-No npm registry publication, central plugin-directory listing, signing,
-notarization, or universal global installer is claimed. Host-native installation,
-activation, permissions, trust, sandbox, managed policy, and removal controls
-remain authoritative. No MCP or A2A runtime/distribution is claimed.
-
-## Evidence and Evaluation Boundaries
-
-Public CI proves only the checked repository tests and package-build contracts.
-Host runtime validation remains environment-specific and does not establish
-universal compatibility. Hakim does not claim an independent benchmark result,
-model-quality improvement, quantified performance gain, token saving, cost
-saving, adoption result, safety improvement, or return on investment without
-separate accepted evidence.
-
-Historical Ponytail-derived values are not accepted as independent Hakim
-results. Runtime validation, protocol reproducibility, external UX evidence,
-model quality, and product performance remain separate claims.
-
-## Lazy, Not Negligent
-
-Never reduce security, privacy, accessibility, data integrity, migration
-safety, rollback safety, or user trust to save code. Be minimal about the
-implementation, not about rigor.
+Be minimal about implementation, not about truth, safety, or the requested outcome.
