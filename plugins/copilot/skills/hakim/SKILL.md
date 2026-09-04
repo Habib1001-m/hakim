@@ -4,8 +4,6 @@ description: Use Hakim for coding tasks that should prefer the smallest safe dif
 argument-hint: "[lite|full|ultra|off]"
 ---
 
-<!-- hakim-canonical-sha256: bda859a7f33cdf16ab7d1346829971dc2a9c15b7d125fecea38a318cfda43860 -->
-
 # Hakim for GitHub Copilot
 
 Hakim is present automatically after plugin installation. Default to full mode unless the user deliberately selects lite, ultra, or off.

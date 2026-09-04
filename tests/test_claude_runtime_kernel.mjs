@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const hook = path.join(ROOT, 'plugins/claude-code/hooks/session_start.mjs');
-const help = fs.readFileSync(path.join(ROOT, 'plugins/claude-code/skills/help/SKILL.md'), 'utf8');
+const hooks = JSON.parse(fs.readFileSync(path.join(ROOT, 'plugins/claude-code/hooks/hooks.json'), 'utf8'));
 const version = fs.readFileSync(path.join(ROOT, 'core/hakim-skill/VERSION'), 'utf8').trim();
 
 const result = spawnSync(process.execPath, [hook], {
@@ -17,7 +17,6 @@ const result = spawnSync(process.execPath, [hook], {
 });
 
 assert.equal(result.status, 0, result.stderr || result.stdout);
-
 const parsed = JSON.parse(result.stdout);
 const output = parsed.hookSpecificOutput;
 assert.equal(output.hookEventName, 'SessionStart');
@@ -26,42 +25,31 @@ const context = output.additionalContext;
 assert.match(context, new RegExp(`Hakim ${version.replaceAll('.', '\\.')} plugin is active`, 'i'));
 assert.match(
   context,
-  new RegExp(`active Hakim version[\\s\\S]{0,120}exactly ${version.replaceAll('.', '\\.')}[\\s\\S]{0,240}never infer`, 'i'),
-  'Claude runtime kernel must make the manifest-derived active version authoritative over repository history',
+  /apply .*automatically.*coding work.*without requiring an explicit Hakim invocation/is,
+  'Claude SessionStart must make the core Hakim policy plug-and-play',
 );
-assert.ok(
-  context.length <= 1650,
-  `Claude runtime kernel must stay lightweight; got ${context.length} characters`,
-);
-
-assert.match(
-  help,
-  /Version truth is host\/runtime metadata[\s\S]{0,300}Do not infer or restate a Hakim version[\s\S]{0,300}SessionStart activation value/i,
-  'Claude help must not infer version identity from repository history or cached prose',
-);
-
-// Core coding behavior must be salient before the first model decision. The
-// detailed skill body is lazy-loaded, so the startup kernel must explicitly
-// require it before mutation rather than merely hoping description matching
-// triggers it later.
 assert.match(
   context,
-  /coding task[\s\S]{0,240}invoke[\s\S]{0,120}hakim:hakim[\s\S]{0,240}before (?:the )?first (?:file )?mutation/i,
-  'Claude runtime kernel must require hakim:hakim before the first mutation on coding tasks',
+  /Does this need to exist(?: at all)?\?/i,
+  'Claude SessionStart must expose the maintained decision ladder before the first model decision',
 );
-
-// Bounded work should not create orchestration bookkeeping by default when it
-// would not change a real implementation, safety, or coordination decision.
 assert.match(
   context,
-  /bounded[\s\S]{0,240}(?:do not|avoid)[\s\S]{0,120}TaskCreate[\s\S]{0,80}TaskUpdate/i,
-  'Claude runtime kernel must suppress task bookkeeping for bounded work by default',
+  /Baseline discovery is read-only by default/i,
+  'Claude SessionStart must expose baseline purity without requiring a manual skill invocation',
 );
-
-assert.match(
+assert.doesNotMatch(
   context,
-  /representative baseline[\s\S]{0,200}before (?:the )?first (?:file )?mutation/i,
-  'Claude runtime kernel must keep the baseline rule visible before skill loading',
+  /invoke .*hakim:hakim.*before .*mutation/is,
+  'Claude core behavior must not depend on invoking the hidden skill before work',
+);
+assert.ok(Buffer.byteLength(context, 'utf8') <= 9000, 'Claude SessionStart context must stay bounded');
+
+assert.ok(Array.isArray(hooks.hooks.SessionStart), 'Claude SessionStart hook must remain registered');
+assert.equal(
+  Object.prototype.hasOwnProperty.call(hooks.hooks, 'PostToolUse'),
+  false,
+  'Normal Claude runtime must not ship an advisory post-edit diagnostic hook',
 );
 
-console.log(`test_claude_runtime_kernel.mjs: Claude startup kernel makes core Hakim ${version} coding behavior and version truth salient`);
+console.log(`test_claude_runtime_kernel.mjs: Claude plug-and-play runtime kernel contract ok for ${version}`);

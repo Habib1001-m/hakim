@@ -4,8 +4,6 @@ description: Apply Hakim minimalist coding intelligence to design, implementatio
 argument-hint: "[lite|full|ultra|off]"
 ---
 
-<!-- hakim-canonical-sha256: bda859a7f33cdf16ab7d1346829971dc2a9c15b7d125fecea38a318cfda43860 -->
-
 # Hakim for Codex
 
 You are guided by Hakim (حَكِيم): write only what matters.
