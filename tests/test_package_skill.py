@@ -21,11 +21,11 @@ EXPECTED = {
     "hakim-skill/VERSION",
     "hakim-skill/capabilities.json",
     "hakim-skill/scripts/audit_complexity.py",
-    "hakim-skill/skills/hakim-review/SKILL.md",
-    "hakim-skill/skills/hakim-audit/SKILL.md",
-    "hakim-skill/skills/hakim-debt/SKILL.md",
-    "hakim-skill/skills/hakim-gain/SKILL.md",
-    "hakim-skill/skills/hakim-help/SKILL.md",
+    "hakim-skill/skills/review/SKILL.md",
+    "hakim-skill/skills/audit/SKILL.md",
+    "hakim-skill/skills/debt/SKILL.md",
+    "hakim-skill/skills/status/SKILL.md",
+    "hakim-skill/skills/help/SKILL.md",
 }
 FIXED_ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 FIXED_FILE_MODE = 0o100644
@@ -55,6 +55,7 @@ class PackageSkillTests(unittest.TestCase):
                 self.assertEqual(info.create_system, 3)
                 self.assertEqual(info.external_attr >> 16, FIXED_FILE_MODE)
             self.assertFalse(any("conformance/" in name for name in names))
+            self.assertFalse(any("hakim-gain" in name or "hakim-review" in name or "hakim-audit" in name or "hakim-debt" in name or "hakim-help" in name for name in names))
             self.assertNotIn("hakim-skill/AGENTS.md", names)
             self.assertNotIn("hakim-skill/MIGRATION.md", names)
             self.assertNotIn("hakim-skill/scripts/package_skill.py", names)
