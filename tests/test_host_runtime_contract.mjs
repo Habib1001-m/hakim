@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), 'utf8');
@@ -68,8 +68,16 @@ assert.match(JSON.parse(claude.stdout).hookSpecificOutput.additionalContext, /wi
 const copilotSession = read('plugins/copilot/hooks/session_start.mjs');
 assert.match(copilotSession, /without requiring an explicit Hakim invocation/i);
 
-const opencode = read('plugins/opencode/hakim.mjs');
-assert.match(opencode, /experimental\.chat\.system\.transform/);
-for (const id of capabilityIds) assert.match(opencode, new RegExp(id.replace('-', '\\-')));
+const opencodePath = path.join(ROOT, 'plugins/opencode/hakim.mjs');
+const opencodeModule = await import(`${pathToFileURL(opencodePath).href}?parity=${Date.now()}`);
+const opencodeHooks = await opencodeModule.default({});
+const opencodeConfig = {};
+await opencodeHooks.config(opencodeConfig);
+assert.deepEqual(
+  capabilityIds.filter((id) => opencodeConfig.command?.[id]),
+  capabilityIds,
+  'OpenCode must project all canonical capabilities from capabilities.json',
+);
+assert.match(opencodeHooks['experimental.chat.system.transform'].toString(), /reconcileSystemOutput/);
 
 console.log(`test_host_runtime_contract.mjs: plug-and-play core + six maintained capabilities ok for ${version}`);
