@@ -184,21 +184,24 @@ test('git-unavailable and transcript-unavailable states fail soft', () => {
   });
 });
 
-test('retries a readable live transcript when assistant completion is not visible yet', () => {
+test('retries a readable live transcript while the current assistant turn is not visible yet', () => {
   const cwd = initRepo('visibility-lag');
   fs.appendFileSync(path.join(cwd, 'README.md'), 'changed\n');
   const falseClean = 'FINAL_GIT_STATUS=CLEAN\nSETUP_ARTIFACTS=NONE\nUNRELATED_MUTATIONS=NONE';
-  const promptOnly = [
-    JSON.stringify({ type: 'user.message', data: { content: `Quoted checkpoint only:\n${falseClean}` } }),
+  const pendingCurrentTurn = [
     JSON.stringify({ type: 'assistant.turn_start', data: { turnId: '0' } }),
+    JSON.stringify({ type: 'assistant.message', data: { content: 'Earlier completion without structured checkpoint.', turnId: '0', toolRequests: [] } }),
+    JSON.stringify({ type: 'assistant.turn_end', data: { turnId: '0' } }),
+    JSON.stringify({ type: 'user.message', data: { content: `Quoted checkpoint only:\n${falseClean}` } }),
+    JSON.stringify({ type: 'assistant.turn_start', data: { turnId: '1' } }),
   ].join('\n');
   const complete = [
-    promptOnly,
-    JSON.stringify({ type: 'assistant.message', data: { content: falseClean, turnId: '0', toolRequests: [] } }),
-    JSON.stringify({ type: 'assistant.turn_end', data: { turnId: '0' } }),
+    pendingCurrentTurn,
+    JSON.stringify({ type: 'assistant.message', data: { content: falseClean, turnId: '1', toolRequests: [] } }),
+    JSON.stringify({ type: 'assistant.turn_end', data: { turnId: '1' } }),
   ].join('\n');
 
-  const snapshots = [promptOnly, complete];
+  const snapshots = [pendingCurrentTurn, complete];
   let reads = 0;
   const waits = [];
   const result = runObjectiveCompletionTruth(input(cwd), {
