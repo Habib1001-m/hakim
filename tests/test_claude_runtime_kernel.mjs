@@ -30,7 +30,7 @@ assert.match(
 );
 assert.match(
   context,
-  /Does this need to exist\?/i,
+  /Does this need to exist(?: at all)?\?/i,
   'Claude SessionStart must expose the maintained decision ladder before the first model decision',
 );
 assert.match(
