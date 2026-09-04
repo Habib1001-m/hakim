@@ -1,142 +1,142 @@
 {
-  "schema_version": 1,
-  "policy": "capability parity is required; invocation syntax may differ by host",
+  "schema_version": 2,
+  "policy": "exactly six canonical capabilities; host invocation syntax may differ, capability semantics may not",
   "capabilities": [
     {
       "id": "hakim",
-      "purpose": "Apply the Hakim decision ladder in lite, full, ultra, or off mode.",
+      "purpose": "Apply Hakim core execution judgment and lite/full/ultra/off mode control.",
       "canonical_path": "core/hakim-skill/SKILL.md",
       "hosts": {
         "codex": {
           "path": "plugins/codex/skills/hakim/SKILL.md",
-          "invocation": "$hakim:hakim or matching natural-language activation"
+          "invocation": "$hakim:hakim"
         },
         "claude-code": {
           "path": "plugins/claude-code/skills/hakim/SKILL.md",
-          "invocation": "/hakim:full for explicit user invocation; hidden canonical skill remains model-invocable"
+          "invocation": "/hakim:hakim"
         },
         "github-copilot": {
           "path": "plugins/copilot/skills/hakim/SKILL.md",
-          "invocation": "use the installed Hakim skill `hakim`, or matching natural-language activation"
+          "invocation": "installed Hakim skill: hakim"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
-          "invocation": "/hakim <lite|full|ultra|off> or the OpenCode native skill tool"
+          "invocation": "Hakim native command/skill for hakim mode control"
         }
       }
     },
     {
-      "id": "hakim-review",
-      "purpose": "Review a diff for unnecessary complexity and produce a delete or simplify list.",
-      "canonical_path": "core/hakim-skill/skills/hakim-review/SKILL.md",
+      "id": "review",
+      "purpose": "Review an explicit diff or selected files for evidence-backed removable complexity without modifying repository state.",
+      "canonical_path": "core/hakim-skill/skills/review/SKILL.md",
       "hosts": {
         "codex": {
-          "path": "plugins/codex/skills/hakim-review/SKILL.md",
-          "invocation": "$hakim:hakim-review or matching natural language"
+          "path": "plugins/codex/skills/review/SKILL.md",
+          "invocation": "$hakim:review"
         },
         "claude-code": {
-          "path": "plugins/claude-code/skills/hakim-review/SKILL.md",
+          "path": "plugins/claude-code/skills/review/SKILL.md",
           "invocation": "/hakim:review or the scoped hakim:hakim-reviewer agent"
         },
         "github-copilot": {
-          "path": "plugins/copilot/skills/hakim-review/SKILL.md",
-          "invocation": "use the installed `hakim-review` skill or select the `hakim-reviewer` custom agent"
+          "path": "plugins/copilot/skills/review/SKILL.md",
+          "invocation": "installed Hakim skill: review or the Hakim reviewer agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
-          "invocation": "/hakim-review or the OpenCode native skill tool"
+          "invocation": "Hakim native review command/skill"
         }
       }
     },
     {
-      "id": "hakim-audit",
-      "purpose": "Manually audit an explicitly inspected repository scope for evidence-backed simplification opportunities and native or standard-library alternatives.",
-      "canonical_path": "core/hakim-skill/skills/hakim-audit/SKILL.md",
+      "id": "audit",
+      "purpose": "Perform a deeper read-only repository audit when broader evidence is materially required.",
+      "canonical_path": "core/hakim-skill/skills/audit/SKILL.md",
       "hosts": {
         "codex": {
-          "path": "plugins/codex/skills/hakim-audit/SKILL.md",
-          "invocation": "$hakim:hakim-audit or matching natural language"
+          "path": "plugins/codex/skills/audit/SKILL.md",
+          "invocation": "$hakim:audit"
         },
         "claude-code": {
-          "path": "plugins/claude-code/skills/hakim-audit/SKILL.md",
+          "path": "plugins/claude-code/skills/audit/SKILL.md",
           "invocation": "/hakim:audit or the scoped hakim:hakim-auditor agent"
         },
         "github-copilot": {
-          "path": "plugins/copilot/skills/hakim-audit/SKILL.md",
-          "invocation": "use the installed `hakim-audit` skill or select the `hakim-auditor` custom agent"
+          "path": "plugins/copilot/skills/audit/SKILL.md",
+          "invocation": "installed Hakim skill: audit or the Hakim auditor agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
-          "invocation": "/hakim-audit or the OpenCode native skill tool"
+          "invocation": "Hakim native audit command/skill"
         }
       }
     },
     {
-      "id": "hakim-debt",
-      "purpose": "Harvest deliberate Hakim shortcuts and validate debt-ledger evidence without inventing live debt.",
-      "canonical_path": "core/hakim-skill/skills/hakim-debt/SKILL.md",
+      "id": "debt",
+      "purpose": "Inspect live deliberate shortcuts and technical-debt provenance without promoting examples or history into current debt.",
+      "canonical_path": "core/hakim-skill/skills/debt/SKILL.md",
       "hosts": {
         "codex": {
-          "path": "plugins/codex/skills/hakim-debt/SKILL.md",
-          "invocation": "$hakim:hakim-debt or matching natural language"
+          "path": "plugins/codex/skills/debt/SKILL.md",
+          "invocation": "$hakim:debt"
         },
         "claude-code": {
-          "path": "plugins/claude-code/skills/hakim-debt/SKILL.md",
+          "path": "plugins/claude-code/skills/debt/SKILL.md",
           "invocation": "/hakim:debt or the scoped hakim:hakim-debt-analyst agent"
         },
         "github-copilot": {
-          "path": "plugins/copilot/skills/hakim-debt/SKILL.md",
-          "invocation": "use the installed `hakim-debt` skill or select the `hakim-debt-analyst` custom agent"
+          "path": "plugins/copilot/skills/debt/SKILL.md",
+          "invocation": "installed Hakim skill: debt or the Hakim debt analyst agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
-          "invocation": "/hakim-debt or the OpenCode native skill tool"
+          "invocation": "Hakim native debt command/skill"
         }
       }
     },
     {
-      "id": "hakim-gain",
-      "purpose": "Show Hakim evidence status without unsupported performance, savings, adoption, safety, or ROI claims; the `gain` ID is retained for beta compatibility and does not imply a quantified gain.",
-      "canonical_path": "core/hakim-skill/skills/hakim-gain/SKILL.md",
+      "id": "status",
+      "purpose": "Report what the current evidence establishes without unsupported performance, security, compatibility, savings, adoption, or ROI claims.",
+      "canonical_path": "core/hakim-skill/skills/status/SKILL.md",
       "hosts": {
         "codex": {
-          "path": "plugins/codex/skills/hakim-gain/SKILL.md",
-          "invocation": "$hakim:hakim-gain or matching natural language"
+          "path": "plugins/codex/skills/status/SKILL.md",
+          "invocation": "$hakim:status"
         },
         "claude-code": {
-          "path": "plugins/claude-code/skills/hakim-gain/SKILL.md",
-          "invocation": "/hakim:gain or the scoped hakim:hakim-evidence-verifier agent"
+          "path": "plugins/claude-code/skills/status/SKILL.md",
+          "invocation": "/hakim:status or the scoped hakim:hakim-evidence-verifier agent"
         },
         "github-copilot": {
-          "path": "plugins/copilot/skills/hakim-gain/SKILL.md",
-          "invocation": "use the installed `hakim-gain` skill or select the `hakim-evidence-verifier` custom agent"
+          "path": "plugins/copilot/skills/status/SKILL.md",
+          "invocation": "installed Hakim skill: status or the Hakim evidence verifier agent"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
-          "invocation": "/hakim-gain or the OpenCode native skill tool"
+          "invocation": "Hakim native status command/skill"
         }
       }
     },
     {
-      "id": "hakim-help",
-      "purpose": "Show a host-aware quick reference for Hakim modes, capabilities, native invocation, and evidence boundaries.",
-      "canonical_path": "core/hakim-skill/skills/hakim-help/SKILL.md",
+      "id": "help",
+      "purpose": "Show current host usage, modes, capabilities, and trust boundaries without embedding release history or stale candidate identity.",
+      "canonical_path": "core/hakim-skill/skills/help/SKILL.md",
       "hosts": {
         "codex": {
-          "path": "plugins/codex/skills/hakim-help/SKILL.md",
-          "invocation": "$hakim:hakim-help or matching natural language"
+          "path": "plugins/codex/skills/help/SKILL.md",
+          "invocation": "$hakim:help"
         },
         "claude-code": {
-          "path": "plugins/claude-code/skills/hakim-help/SKILL.md",
+          "path": "plugins/claude-code/skills/help/SKILL.md",
           "invocation": "/hakim:help"
         },
         "github-copilot": {
-          "path": "plugins/copilot/skills/hakim-help/SKILL.md",
-          "invocation": "use the installed `hakim-help` skill"
+          "path": "plugins/copilot/skills/help/SKILL.md",
+          "invocation": "installed Hakim skill: help"
         },
         "opencode": {
           "path": "plugins/opencode/hakim.mjs",
-          "invocation": "/hakim-help or the OpenCode native skill tool"
+          "invocation": "Hakim native help command/skill"
         }
       }
     }
