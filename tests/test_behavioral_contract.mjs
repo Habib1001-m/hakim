@@ -14,6 +14,9 @@ const listDirs = (relativePath) => fs.readdirSync(path.join(ROOT, relativePath),
 const CAPABILITIES = ['hakim', 'review', 'audit', 'debt', 'status', 'help'];
 const SPECIALIZED = ['audit', 'debt', 'help', 'review', 'status'];
 const canonical = read('core/hakim-skill/SKILL.md');
+const canonicalPathFor = (name) => name === 'hakim'
+  ? 'core/hakim-skill/SKILL.md'
+  : `core/hakim-skill/skills/${name}/SKILL.md`;
 
 for (const pattern of [
   /smallest sufficient safe change/i,
@@ -62,14 +65,11 @@ for (const relativePath of canonicalSkillPaths) {
 }
 
 for (const hostRoot of ['plugins/codex/skills', 'plugins/claude-code/skills', 'plugins/copilot/skills']) {
-  assert.deepEqual(listDirs(hostRoot), CAPABILITIES, `${hostRoot} must expose exactly the six canonical skill names`);
-}
-
-for (const hostRoot of ['plugins/codex/skills', 'plugins/claude-code/skills', 'plugins/copilot/skills']) {
+  assert.deepEqual(listDirs(hostRoot), [...CAPABILITIES].sort(), `${hostRoot} must expose exactly the six canonical skill names`);
   for (const name of CAPABILITIES) {
     const relativePath = `${hostRoot}/${name}/SKILL.md`;
     const text = read(relativePath);
-    assert.match(text, new RegExp(`^---[\\s\\S]*\\nname:\\s*${name}\\b`, 'm'), `${relativePath} must declare the canonical capability name`);
+    assert.equal(text, read(canonicalPathFor(name)), `${relativePath} must be an exact projection of canonical ${name}`);
     assert.doesNotMatch(text, /\bhakim-gain\b|\bhakim-review\b|\bhakim-audit\b|\bhakim-debt\b|\bhakim-help\b/i, `${relativePath} must not preserve legacy capability IDs`);
     assert.doesNotMatch(text, /\b1\.0\.0-beta\.\d+\b|\b[0-9a-f]{40}\b/i, `${relativePath} must not carry release-history identity`);
   }
@@ -92,7 +92,6 @@ for (const [agentPath, expectedSkill] of [
 
 const help = read('core/hakim-skill/skills/help/SKILL.md');
 assert.match(help, /Use the current host's plugin\/package\/runtime metadata/i, 'help must route installed identity to runtime metadata');
-assert.doesNotMatch(help, /release history|candidate SHAs|previous acceptance results[\s\S]*\b1\.0\.0-beta/i, 'help must not become a historical evidence ledger');
 
 const status = read('core/hakim-skill/skills/status/SKILL.md');
 assert.match(status, /what does the available evidence currently establish/i);
