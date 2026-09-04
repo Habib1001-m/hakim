@@ -7,7 +7,7 @@ description: >
   Use on coding, review, refactoring, dependency, and technical-debt tasks.
 argument-hint: [lite|full|ultra|off]
 license: MIT
-version: 1.0.0-beta.4.post1
+version: 1.0.0-beta.5
 author: Habib1001-m
 repository: https://github.com/Habib1001-m/hakim
 tags:
@@ -253,19 +253,17 @@ claim that Hakim ships a workflow engine.
 
 ## Distribution Boundary
 
-Moving `main` reports Hakim `1.0.0-beta.4.post1` and is explicitly unreleased
-development, not a frozen candidate and not eligible for release or promotion
-evidence. The latest frozen prerelease remains `1.0.0-beta.4` at exact source
-commit `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+This source tree carries Hakim `1.0.0-beta.5` candidate metadata. A passing
+repository gate does not itself freeze, publish, or establish live-host
+acceptance for the candidate. Release identity is bound to the exact immutable
+Git ref selected after the final product review.
 
-Codex, Claude Code, and GitHub Copilot have repository-hosted native plugin
+Codex, Claude Code, and GitHub Copilot use repository-hosted native plugin
 marketplaces; OpenCode uses a guarded project-local native plugin installer.
-Normal frozen-candidate installation is pinned to the exact source commit in the
-maintained installation documentation. No npm publication, central
-plugin-directory listing, signing, notarization, or universal global installer
-is claimed. Host-native installation, activation, permissions, trust, sandbox,
-managed policy, and removal controls remain authoritative. No MCP or A2A
-runtime/distribution is claimed.
+No npm registry publication, central plugin-directory listing, signing,
+notarization, or universal global installer is claimed. Host-native installation,
+activation, permissions, trust, sandbox, managed policy, and removal controls
+remain authoritative. No MCP or A2A runtime/distribution is claimed.
 
 ## Evidence and Evaluation Boundaries
 
