@@ -2,10 +2,10 @@
 
 Hakim is public beta software distributed from its Git repository and host-native plugin surfaces.
 
-Install from an immutable Git ref: a release tag or exact release commit.
+For a supported cross-host release install, use the release tag for the candidate. The release record binds that tag to the reviewed exact commit.
 
 ```bash
-export HAKIM_REF=<release-tag-or-exact-commit>
+export HAKIM_REF=<release-tag>
 ```
 
 ## Codex

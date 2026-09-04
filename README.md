@@ -14,12 +14,12 @@ Security, privacy, accessibility, migrations, rollback safety, data integrity, a
 
 ## Install
 
-Hakim is public beta software. Install from an immutable Git ref: a release tag or, for the strongest pin, the exact release commit.
+Hakim is public beta software. For a supported cross-host release install, use the release tag for the candidate. The release record binds that tag to the reviewed exact commit.
 
-Set the ref you intend to install:
+Set the release tag you intend to install:
 
 ```bash
-export HAKIM_REF=<release-tag-or-exact-commit>
+export HAKIM_REF=<release-tag>
 ```
 
 ### Codex

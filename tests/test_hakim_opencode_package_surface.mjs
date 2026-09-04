@@ -33,7 +33,6 @@ for (const required of [
   'scripts/hakim_opencode_install.mjs',
   'scripts/hakim_opencode_remove.mjs',
   'scripts/lib/opencode_bundle.mjs',
-  'scripts/lib/opencode_prior_manifests.mjs',
   'scripts/lib/opencode_transaction.mjs',
   'plugins/opencode/hakim.mjs',
   'core/loaders/hakim-loader.mjs',
@@ -44,6 +43,8 @@ for (const required of [
 ]) {
   assert.ok(packedPaths.has(required), `Git-backed bootstrap package missing ${required}`);
 }
+
+assert.ok(!packedPaths.has('scripts/lib/opencode_prior_manifests.mjs'), 'bootstrap package must not ship retired beta.2-beta.4 manifest archive');
 
 for (const forbiddenPrefix of ['tests/', 'docs/', '.github/', 'plugins/codex/', 'plugins/claude-code/', 'plugins/copilot/']) {
   assert.ok(![...packedPaths].some((entry) => entry.startsWith(forbiddenPrefix)), `bootstrap package contains unrelated ${forbiddenPrefix} content`);

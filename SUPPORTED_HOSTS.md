@@ -11,7 +11,7 @@ Hakim is public beta software. Support means Hakim maintains a product surface f
 
 ## Installation identity
 
-Install a release from an immutable Git ref. The marketplace repositories for Codex, Claude Code, and Copilot are pinned at the marketplace-source level; their plugin entries use repository-relative product paths. OpenCode installs through the Git-backed npm/npx transport.
+Use the candidate's release tag for the supported cross-host installation path. The release record binds that tag to the reviewed exact commit. Claude Code and GitHub Copilot marketplace entries use repository-relative plugin paths, so all installed plugin content comes from the selected marketplace checkout; OpenCode uses the same selected Git ref through npm/npx transport.
 
 Repository tests check maintained source and package contracts. They do not replace a real-host install/start/invocation check for the exact release identity.
 
