@@ -28,21 +28,16 @@ assert.match(
   /apply .*automatically.*coding work.*without requiring an explicit Hakim invocation/is,
   'Claude SessionStart must make the core Hakim policy plug-and-play',
 );
-assert.match(
-  context,
-  /Does this need to exist(?: at all)?\?/i,
-  'Claude SessionStart must expose the maintained decision ladder before the first model decision',
-);
-assert.match(
-  context,
-  /Baseline discovery is read-only by default/i,
-  'Claude SessionStart must expose baseline purity without requiring a manual skill invocation',
-);
-assert.doesNotMatch(
-  context,
-  /invoke .*hakim:hakim.*before .*mutation/is,
-  'Claude core behavior must not depend on invoking the hidden skill before work',
-);
+assert.match(context, /## Understand only what matters/i, 'Claude SessionStart must expose the stop-inspecting rule');
+assert.match(context, /## The 7-level decision ladder/i, 'Claude SessionStart must expose the decision ladder');
+assert.match(context, /## Proportional verification/i, 'Claude SessionStart must expose proportional verification');
+assert.match(context, /## Depth is earned/i, 'Claude SessionStart must make deeper process evidence-driven');
+assert.match(context, /## Preserve real guards/i, 'Claude SessionStart must preserve material guards');
+assert.match(context, /## Evidence and authority/i, 'Claude SessionStart must separate evidence from authority');
+assert.match(context, /## Evidence-bound claims/i, 'Claude SessionStart must bound completion/runtime/release claims');
+assert.match(context, /ordinary tactics inside the authorized scope/i, 'Claude SessionStart must avoid turning normal work into ceremony');
+assert.doesNotMatch(context, /BASELINE_COMMAND|PRE_EDIT_GIT_STATUS|SEMANTIC_CHANGE_CHECK|FINAL_GIT_STATUS/);
+assert.doesNotMatch(context, /release history|candidate SHA|4\/4 PASS/i);
 assert.ok(Buffer.byteLength(context, 'utf8') <= 9000, 'Claude SessionStart context must stay bounded');
 
 assert.ok(Array.isArray(hooks.hooks.SessionStart), 'Claude SessionStart hook must remain registered');
@@ -52,4 +47,4 @@ assert.equal(
   'Normal Claude runtime must not ship an advisory post-edit diagnostic hook',
 );
 
-console.log(`test_claude_runtime_kernel.mjs: Claude plug-and-play runtime kernel contract ok for ${version}`);
+console.log(`test_claude_runtime_kernel.mjs: compact judgment-first runtime kernel OK for ${version}`);
