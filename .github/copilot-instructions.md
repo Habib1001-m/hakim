@@ -1,7 +1,5 @@
 # Hakim repository instructions
 
-<!-- hakim-canonical-sha256: bda859a7f33cdf16ab7d1346829971dc2a9c15b7d125fecea38a318cfda43860 -->
-
 When changing this repository:
 
 - make the smallest safe change; in Hakim this means the smallest sufficient, coherent, safe change rather than optimizing for the fewest lines or files;

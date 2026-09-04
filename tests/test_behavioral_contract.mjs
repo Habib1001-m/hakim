@@ -1,16 +1,13 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
-const sha256 = (text) => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 
 const canonical = read('core/hakim-skill/SKILL.md');
-const canonicalHash = sha256(canonical);
 
 const canonicalGroups = {
   baseline: [
@@ -88,8 +85,7 @@ const projections = [
 
 for (const relativePath of projections) {
   const text = read(relativePath);
-  const marker = text.match(/hakim-canonical-sha256:\s*([a-f0-9]{64})/i)?.[1]?.toLowerCase();
-  assert.equal(marker, canonicalHash, `${relativePath} canonical hash marker drift`);
+  assert.doesNotMatch(text, /hakim-canonical-sha256/i, `${relativePath} must not carry a manual canonical hash marker`);
 
   for (const pattern of [
     /pre-mutation baseline|before the first mutation/i,
@@ -176,4 +172,4 @@ assert.match(
   'OpenCode mode command must stay a direct mode switch instead of becoming an auxiliary-skill/repository task',
 );
 
-console.log(`test_behavioral_contract.mjs: semantic behavior contract OK (${canonicalHash.slice(0, 12)})`);
+console.log('test_behavioral_contract.mjs: semantic behavior contract OK');
