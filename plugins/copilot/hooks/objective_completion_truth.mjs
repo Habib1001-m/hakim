@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 
 const MAX_TRANSCRIPT_BYTES = 16 * 1024 * 1024;
 const MAX_REASON_PATHS = 12;
+const TRANSCRIPT_VISIBILITY_RETRIES = 8;
+const TRANSCRIPT_VISIBILITY_RETRY_MS = 25;
+const SLEEP_ARRAY = new Int32Array(new SharedArrayBuffer(4));
 
 const CHECKPOINT_FIELDS = Object.freeze([
   'FINAL_GIT_STATUS',
@@ -242,14 +245,40 @@ function readTranscript(transcriptPath) {
   return fs.readFileSync(transcriptPath, 'utf8');
 }
 
+function sleepMs(ms) {
+  Atomics.wait(SLEEP_ARRAY, 0, 0, ms);
+}
+
+function readVisibleAssistantText(transcriptPath, options = {}) {
+  const read = options.readTranscript ?? readTranscript;
+  const sleep = options.sleep ?? sleepMs;
+
+  for (let attempt = 0; attempt <= TRANSCRIPT_VISIBILITY_RETRIES; attempt += 1) {
+    const transcriptText = read(transcriptPath);
+    if (transcriptText === null || transcriptText === undefined) return '';
+
+    const finalAssistantText = extractLastAssistantText(transcriptText);
+    if (finalAssistantText) return finalAssistantText;
+
+    if (attempt < TRANSCRIPT_VISIBILITY_RETRIES) sleep(TRANSCRIPT_VISIBILITY_RETRY_MS);
+  }
+
+  return '';
+}
+
 export function runObjectiveCompletionTruth(hookInput, options = {}) {
   try {
     if (hookInput?.stop_hook_active === true) return allow();
 
-    const transcriptText = options.transcriptText ?? readTranscript(hookInput?.transcriptPath ?? hookInput?.transcript_path);
-    if (transcriptText === null || transcriptText === undefined) return allow();
-
-    const finalAssistantText = extractLastAssistantText(transcriptText);
+    let finalAssistantText;
+    if (options.transcriptText !== null && options.transcriptText !== undefined) {
+      finalAssistantText = extractLastAssistantText(options.transcriptText);
+    } else {
+      finalAssistantText = readVisibleAssistantText(
+        hookInput?.transcriptPath ?? hookInput?.transcript_path,
+        options,
+      );
+    }
     if (!finalAssistantText) return allow();
 
     const gitObservation = options.gitObservation ?? observeGitStatus(hookInput?.cwd, options);
