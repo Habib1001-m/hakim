@@ -9,11 +9,20 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), 'utf8');
 const readJson = (relative) => JSON.parse(read(relative));
 const exists = (relative) => fs.existsSync(path.join(ROOT, relative));
+const dirs = (relative) => fs.readdirSync(path.join(ROOT, relative), { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort();
 
+const EXPECTED = ['hakim', 'review', 'audit', 'debt', 'status', 'help'];
+const SORTED_EXPECTED = [...EXPECTED].sort();
 const version = read('core/hakim-skill/VERSION').trim();
-const capabilities = readJson('core/hakim-skill/capabilities.json');
-const capabilityIds = capabilities.capabilities.map((item) => item.id);
-assert.deepEqual(capabilityIds, ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help']);
+const contract = readJson('core/hakim-skill/capabilities.json');
+const capabilityIds = contract.capabilities.map((item) => item.id);
+
+assert.equal(contract.schema_version, 2, 'beta6 capability contract must use schema version 2');
+assert.deepEqual(capabilityIds, EXPECTED, 'capability order is product contract: hakim, review, audit, debt, status, help');
+assert.equal(new Set(capabilityIds).size, EXPECTED.length, 'capability IDs must be unique');
 
 for (const manifestPath of [
   'plugins/codex/.codex-plugin/plugin.json',
@@ -23,11 +32,15 @@ for (const manifestPath of [
   assert.equal(readJson(manifestPath).version, version, `${manifestPath} version must match canonical VERSION`);
 }
 
-for (const capability of capabilities.capabilities) {
+for (const capability of contract.capabilities) {
   assert.ok(exists(capability.canonical_path), `${capability.id} canonical surface missing`);
   for (const host of ['codex', 'claude-code', 'github-copilot', 'opencode']) {
     assert.ok(exists(capability.hosts[host].path), `${host} ${capability.id} surface missing`);
   }
+}
+
+for (const hostRoot of ['plugins/codex/skills', 'plugins/claude-code/skills', 'plugins/copilot/skills']) {
+  assert.deepEqual(dirs(hostRoot), SORTED_EXPECTED, `${hostRoot} must contain exactly six skill directories`);
 }
 
 const codexHooks = readJson('plugins/codex/hooks/hooks.json').hooks;
@@ -56,6 +69,8 @@ const codex = spawnSync(process.execPath, [path.join(ROOT, 'plugins/codex/hooks/
 });
 assert.equal(codex.status, 0, codex.stderr || codex.stdout);
 assert.match(codex.stdout, /without requiring an explicit Hakim invocation/i);
+assert.match(codex.stdout, /smallest sufficient safe change|decision ladder/i);
+assert.doesNotMatch(codex.stdout, /BASELINE_COMMAND|PRE_EDIT_GIT_STATUS|FINAL_GIT_STATUS/);
 
 const claude = spawnSync(process.execPath, [path.join(ROOT, 'plugins/claude-code/hooks/session_start.mjs')], {
   cwd: ROOT,
@@ -63,21 +78,30 @@ const claude = spawnSync(process.execPath, [path.join(ROOT, 'plugins/claude-code
   encoding: 'utf8',
 });
 assert.equal(claude.status, 0, claude.stderr || claude.stdout);
-assert.match(JSON.parse(claude.stdout).hookSpecificOutput.additionalContext, /without requiring an explicit Hakim invocation/i);
+const claudeContext = JSON.parse(claude.stdout).hookSpecificOutput.additionalContext;
+assert.match(claudeContext, /without requiring an explicit Hakim invocation/i);
+assert.match(claudeContext, /Proportional verification/i);
+assert.match(claudeContext, /Depth is earned/i);
+assert.doesNotMatch(claudeContext, /BASELINE_COMMAND|PRE_EDIT_GIT_STATUS|FINAL_GIT_STATUS/);
 
 const copilotSession = read('plugins/copilot/hooks/session_start.mjs');
 assert.match(copilotSession, /without requiring an explicit Hakim invocation/i);
+assert.doesNotMatch(copilotSession, /BASELINE_COMMAND|PRE_EDIT_GIT_STATUS|FINAL_GIT_STATUS/);
 
 const opencodePath = path.join(ROOT, 'plugins/opencode/hakim.mjs');
 const opencodeModule = await import(`${pathToFileURL(opencodePath).href}?parity=${Date.now()}`);
 const opencodeHooks = await opencodeModule.default({});
 const opencodeConfig = {};
 await opencodeHooks.config(opencodeConfig);
+
 assert.deepEqual(
-  capabilityIds.filter((id) => opencodeConfig.command?.[id]),
-  capabilityIds,
-  'OpenCode must project all canonical capabilities from capabilities.json',
+  EXPECTED.filter((id) => opencodeConfig.command?.[id]),
+  EXPECTED,
+  'OpenCode must project all six canonical capabilities from capabilities.json',
 );
+for (const legacy of ['hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help', 'gain', 'full']) {
+  assert.equal(Boolean(opencodeConfig.command?.[legacy]), false, `OpenCode must not expose legacy command ${legacy}`);
+}
 assert.match(opencodeHooks['experimental.chat.system.transform'].toString(), /reconcileSystemOutput/);
 
-console.log(`test_host_runtime_contract.mjs: plug-and-play core + six maintained capabilities ok for ${version}`);
+console.log(`test_host_runtime_contract.mjs: six-capability host parity + automatic core OK for ${version}`);
