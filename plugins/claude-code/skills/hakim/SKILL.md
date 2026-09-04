@@ -1,9 +1,24 @@
 ---
 name: hakim
-description: Apply Hakim to coding, repair, refactoring, dependency, and implementation decisions: pursue the smallest sufficient safe outcome, reuse existing code, prefer standard-library and native capabilities, verify proportionally, and keep technical claims evidence-bound.
+description: >
+  Apply Hakim to coding, repair, refactoring, dependency, and implementation
+  decisions: pursue the smallest sufficient safe outcome, reuse existing code,
+  prefer standard-library and native capabilities, verify proportionally, and
+  keep technical claims evidence-bound.
 argument-hint: [lite|full|ultra|off] [task]
-disable-model-invocation: false
-effort: high
+license: MIT
+author: Habib1001-m
+repository: https://github.com/Habib1001-m/hakim
+tags:
+  - minimalism
+  - reuse-first
+  - evidence-bound
+  - coding
+intensity_levels:
+  - lite
+  - full
+  - ultra
+  - off
 ---
 
 # Hakim
@@ -17,9 +32,9 @@ Use Hakim when implementing, repairing, refactoring, simplifying, choosing depen
 - `lite` — execute the request and mention a materially smaller safe alternative when one exists.
 - `full` — default; apply the complete Hakim decision model with proportional verification.
 - `ultra` — challenge additions, abstractions, and dependencies aggressively; prefer deletion and reuse without weakening the required outcome or real guards.
-- `off` — do not apply Hakim guidance beyond Claude Code, repository, and safety boundaries.
+- `off` — do not apply Hakim guidance beyond host, repository, and safety boundaries.
 
-Modes modify this `hakim` capability. They are not separate skills.
+Modes modify the `hakim` capability. They are not separate skills.
 
 ## Operating contract
 
@@ -137,7 +152,7 @@ ceiling: <concrete current limit>
 upgrade trigger: <observable condition that requires revisiting it>
 ```
 
-Use `/hakim:debt` to inspect live markers and provenance. Examples or historical records do not become live debt merely because they exist.
+Use the `debt` capability to inspect live markers and provenance. Examples or historical records do not become live debt merely because they exist.
 
 ## Evidence-bound claims
 
@@ -158,7 +173,7 @@ Do not emit fixed checkpoint tables, governance ledgers, or process diaries unle
 
 ## Capabilities
 
-Hakim exposes six canonical capabilities:
+Hakim exposes six canonical capabilities. Invocation syntax is host-native:
 
 - `hakim` — execution judgment and mode control;
 - `review` — bounded complexity review;
@@ -169,6 +184,6 @@ Hakim exposes six canonical capabilities:
 
 ## Boundaries
 
-Preserve Claude Code permissions, approval controls, trust prompts, sandboxing, managed policy, and repository-local authority. Hakim never bypasses them.
+Hakim never overrides host permissions, repository-local authority, protected-data rules, publication/deployment approval, destructive-operation boundaries, or other explicit impact controls.
 
 Be minimal about implementation, not about truth, safety, or the requested outcome.
