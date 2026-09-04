@@ -14,7 +14,6 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKAGER = ROOT / "core/hakim-skill/scripts/package_skill.py"
 EXPECTED = {
     "hakim-skill/SKILL.md",
-    "hakim-skill/AGENTS.md",
     "hakim-skill/INSTALL.md",
     "hakim-skill/README.md",
     "hakim-skill/LICENSE",
@@ -56,8 +55,9 @@ class PackageSkillTests(unittest.TestCase):
                 self.assertEqual(info.create_system, 3)
                 self.assertEqual(info.external_attr >> 16, FIXED_FILE_MODE)
             self.assertFalse(any("conformance/" in name for name in names))
+            self.assertNotIn("hakim-skill/AGENTS.md", names)
+            self.assertNotIn("hakim-skill/MIGRATION.md", names)
             self.assertNotIn("hakim-skill/scripts/package_skill.py", names)
-            self.assertNotIn("hakim-skill/scripts/check_rule_copies.js", names)
 
     def test_package_is_byte_reproducible_across_mtime_changes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -74,10 +74,7 @@ class PackageSkillTests(unittest.TestCase):
             second_result = build_package(source, second)
             self.assertEqual(second_result.returncode, 0, second_result.stderr + second_result.stdout)
             self.assertEqual(first.read_bytes(), second.read_bytes())
-            self.assertEqual(
-                hashlib.sha256(first.read_bytes()).hexdigest(),
-                hashlib.sha256(second.read_bytes()).hexdigest(),
-            )
+            self.assertEqual(hashlib.sha256(first.read_bytes()).hexdigest(), hashlib.sha256(second.read_bytes()).hexdigest())
 
     def test_package_rejects_symlinked_required_helper(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

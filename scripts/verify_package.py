@@ -13,7 +13,6 @@ FIXED_ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 FIXED_FILE_MODE = 0o100644
 EXPECTED = {
     "hakim-skill/SKILL.md",
-    "hakim-skill/AGENTS.md",
     "hakim-skill/INSTALL.md",
     "hakim-skill/README.md",
     "hakim-skill/LICENSE",
