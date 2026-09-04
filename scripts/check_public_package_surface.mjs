@@ -18,6 +18,7 @@ const expectedFiles = [
   'scripts/hakim_opencode_install.mjs',
   'scripts/hakim_opencode_remove.mjs',
   'scripts/lib/opencode_bundle.mjs',
+  'scripts/lib/opencode_prior_manifests.mjs',
   'scripts/lib/opencode_transaction.mjs',
 ];
 
@@ -27,7 +28,8 @@ if (pkg.bin?.['hakim-opencode'] !== 'scripts/hakim_opencode_cli.mjs') errors.pus
 if (JSON.stringify(pkg.files) !== JSON.stringify(expectedFiles)) errors.push('package files allowlist is unexpected');
 
 for (const relative of expectedFiles) {
-  if (!fs.existsSync(path.join(root, relative))) errors.push(`package path missing: ${relative}`);
+  const base = relative.endsWith('/skills') ? path.join(root, relative) : path.join(root, relative);
+  if (!fs.existsSync(base)) errors.push(`package path missing: ${relative}`);
 }
 
 for (const script of [
@@ -58,10 +60,6 @@ for (const relative of [
   'plugins/opencode/hakim.mjs',
 ]) {
   if (!fs.existsSync(path.join(root, relative))) errors.push(`runtime surface missing: ${relative}`);
-}
-
-if (fs.existsSync(path.join(root, 'scripts/lib/opencode_prior_manifests.mjs'))) {
-  errors.push('retired OpenCode beta.2-beta.4 manifest archive must not remain in the product tree');
 }
 
 console.log(JSON.stringify({ ok: errors.length === 0, errors }, null, 2));
