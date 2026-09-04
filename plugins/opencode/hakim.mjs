@@ -68,7 +68,7 @@ function resolveBundle() {
 
 function loadCapabilities(capabilitiesPath) {
   const parsed = JSON.parse(fs.readFileSync(capabilitiesPath, 'utf8'));
-  if (parsed?.schema_version !== 1 || !Array.isArray(parsed.capabilities)) {
+  if (parsed?.schema_version !== 2 || !Array.isArray(parsed.capabilities)) {
     throw new Error('Unsupported Hakim capability contract.');
   }
   for (const capability of parsed.capabilities) {
@@ -86,10 +86,10 @@ function commandDefinition(capability) {
       template: 'Set Hakim mode to $1 for this OpenCode session. Mode selection only: do not load auxiliary Hakim skills, inspect the repository, or run tools for this command. Valid modes: lite, full, ultra, off. Additional arguments: $ARGUMENTS',
     };
   }
-  if (capability.id === 'hakim-help') {
+  if (capability.id === 'help') {
     return {
       description: capability.purpose,
-      template: 'Load the `hakim-help` skill with OpenCode\'s native skill tool and show the Hakim quick reference. Do not require additional arguments. Additional user context (optional): $ARGUMENTS',
+      template: 'Load the `help` skill with OpenCode\'s native skill tool and show the current Hakim reference. Do not require additional arguments. Additional user context (optional): $ARGUMENTS',
     };
   }
   return {
