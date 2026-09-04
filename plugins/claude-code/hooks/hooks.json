@@ -1,5 +1,5 @@
 {
-  "description": "Hakim Claude Code lifecycle integration: automatic session activation plus optional post-edit diagnostics.",
+  "description": "Hakim Claude Code lifecycle integration.",
   "hooks": {
     "SessionStart": [
       {
@@ -13,22 +13,6 @@
             ],
             "timeout": 5,
             "statusMessage": "Activating Hakim"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/post_tool_use_diagnostic.mjs"
-            ],
-            "timeout": 5,
-            "statusMessage": "Hakim diagnostic check"
           }
         ]
       }
