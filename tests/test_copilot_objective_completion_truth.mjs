@@ -184,6 +184,61 @@ test('git-unavailable and transcript-unavailable states fail soft', () => {
   });
 });
 
+test('retries a readable live transcript while the current assistant turn is not visible yet', () => {
+  const cwd = initRepo('visibility-lag');
+  fs.appendFileSync(path.join(cwd, 'README.md'), 'changed\n');
+  const falseClean = 'FINAL_GIT_STATUS=CLEAN\nSETUP_ARTIFACTS=NONE\nUNRELATED_MUTATIONS=NONE';
+  const pendingCurrentTurn = [
+    JSON.stringify({ type: 'assistant.turn_start', data: { turnId: '0' } }),
+    JSON.stringify({ type: 'assistant.message', data: { content: 'Earlier completion without structured checkpoint.', turnId: '0', toolRequests: [] } }),
+    JSON.stringify({ type: 'assistant.turn_end', data: { turnId: '0' } }),
+    JSON.stringify({ type: 'user.message', data: { content: `Quoted checkpoint only:\n${falseClean}` } }),
+    JSON.stringify({ type: 'assistant.turn_start', data: { turnId: '1' } }),
+  ].join('\n');
+  const complete = [
+    pendingCurrentTurn,
+    JSON.stringify({ type: 'assistant.message', data: { content: falseClean, turnId: '1', toolRequests: [] } }),
+    JSON.stringify({ type: 'assistant.turn_end', data: { turnId: '1' } }),
+  ].join('\n');
+
+  const snapshots = [pendingCurrentTurn, complete];
+  let reads = 0;
+  const waits = [];
+  const result = runObjectiveCompletionTruth(input(cwd), {
+    readTranscript: () => snapshots[Math.min(reads++, snapshots.length - 1)],
+    sleep: (ms) => waits.push(ms),
+  });
+
+  assert.equal(result.decision, 'block');
+  assert.equal(reads, 2);
+  assert.deepEqual(waits, [25]);
+  assert.match(result.reason, /README\.md/);
+});
+
+test('transcript visibility retry stays bounded and fails soft when completion never appears', () => {
+  const cwd = initRepo('visibility-never-arrives');
+  fs.appendFileSync(path.join(cwd, 'README.md'), 'changed\n');
+  const promptOnly = JSON.stringify({
+    type: 'user.message',
+    data: { content: 'FINAL_GIT_STATUS=CLEAN\nSETUP_ARTIFACTS=NONE\nUNRELATED_MUTATIONS=NONE' },
+  });
+
+  let reads = 0;
+  const waits = [];
+  const result = runObjectiveCompletionTruth(input(cwd), {
+    readTranscript: () => {
+      reads += 1;
+      return promptOnly;
+    },
+    sleep: (ms) => waits.push(ms),
+  });
+
+  assert.deepEqual(result, { decision: 'allow' });
+  assert.equal(reads, 9);
+  assert.equal(waits.length, 8);
+  assert.ok(waits.every((ms) => ms === 25));
+});
+
 test('setup artifact classifier stays intentionally narrow', () => {
   assert.deepEqual(classifySetupArtifactPaths([
     '?? src/pkg.egg-info/PKG-INFO',
