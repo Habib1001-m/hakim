@@ -1,15 +1,16 @@
 # Hakim for GitHub Copilot CLI
 
-Hakim is a native GitHub Copilot plugin with reusable skills, custom agents, and host-native lifecycle hooks. `.github/copilot-instructions.md` remains an optional repository baseline, not the primary product surface.
+Hakim is a native GitHub Copilot CLI plugin with six canonical skills, five bounded execution agents, and host-native lifecycle hooks. `.github/copilot-instructions.md` remains a lightweight repository fallback, not the primary product surface.
 
-## Install frozen beta.4
+## Install
+
+Use an immutable reviewed release tag:
 
 ```bash
-copilot plugin marketplace add Habib1001-m/hakim
+export HAKIM_REF=<release-tag>
+copilot plugin marketplace add "Habib1001-m/hakim#$HAKIM_REF"
 copilot plugin install hakim@hakim
 ```
-
-Marketplace registration discovers the catalog. The Hakim catalog entry pins `plugins/copilot` to frozen source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
 
 Inspect the installation with:
 
@@ -17,38 +18,40 @@ Inspect the installation with:
 copilot plugin list
 ```
 
-Inside Copilot CLI, `/skills list` and `/agent` expose the loaded Hakim skills and agents.
+Inside Copilot CLI, `/skills list` and `/agent` expose the loaded Hakim skills and execution agents.
 
 ## Native skills
 
-Hakim provides:
+Hakim exposes exactly:
 
-- `hakim` — full smallest-safe-diff workflow.
-- `hakim-review` — bounded removable-complexity review.
-- `hakim-audit` — evidence-backed audit.
-- `hakim-debt` — technical-debt provenance.
-- `hakim-gain` — evidence-status verification.
-- `hakim-help` — usage and trust boundaries.
+```text
+hakim
+review
+audit
+debt
+status
+help
+```
 
-Copilot may load a matching skill when its description fits the task.
+`lite`, `full`, `ultra`, and `off` are modes of `hakim`, not separate skills. Copilot may load a matching skill through normal host-native skill routing.
 
-## Native agents
+## Execution agents
 
 The plugin ships:
 
-- `hakim-reviewer` — read/search only.
-- `hakim-auditor` — read/search only.
-- `hakim-debt-analyst` — read/search only.
-- `hakim-evidence-verifier` — read/search only.
-- `hakim-implementer` — bounded read/search/edit/execute implementation.
+- `hakim-reviewer` — read/search review context routed to `review`.
+- `hakim-auditor` — read/search audit context routed to `audit`.
+- `hakim-debt-analyst` — read/search debt-provenance context routed to `debt`.
+- `hakim-evidence-verifier` — read/search evidence-status context routed to `status`.
+- `hakim-implementer` — bounded read/search/edit/execute context routed to `hakim`.
 
-Use `/agent` to select one explicitly or allow Copilot to use its normal agent selection behavior.
+Agents are execution contexts, not duplicate skill contracts.
 
-## Operational behavior in moving development
+## Operational behavior
 
-Moving development uses host-native hooks for silent parent-session presence, subagent continuity, bounded non-default mode persistence, current-turn mode control, and a late objective-contradiction check.
+Hakim uses host-native hooks for silent parent-session presence, subagent continuity, bounded mode persistence/control, and a late objective-contradiction check.
 
-Explicit mode control:
+Explicit mode control uses the installed Hakim mode command supported by the current Copilot host, for example:
 
 ```text
 /hakim/hakim full
@@ -57,28 +60,15 @@ Explicit mode control:
 /hakim/hakim off
 ```
 
-The late objective check is designed to intervene only when supported observable repository/setup state contradicts a consequential structured completion claim. It does not add broad command blocking or general prose linting.
-
-Moving-development behavior remains separate from the frozen beta.4 product identity until a later candidate is deliberately cut.
+The late objective check intervenes only when supported observable repository/setup state contradicts a consequential structured completion claim. It does not add broad command blocking or general prose linting, and normal completion does not require structured checkpoint output.
 
 ## Update or remove
 
-```bash
-copilot plugin update hakim
-copilot plugin uninstall hakim
-```
+Use Copilot CLI's native plugin update/uninstall surfaces for `hakim@hakim`. The registered marketplace source remains authoritative.
 
-Updates follow the registered marketplace and its pinned plugin-source definition.
+## Repository fallback
 
-## Repository baseline instructions
-
-`.github/copilot-instructions.md` can provide lightweight Hakim guidance to a repository without being the full plugin. The guarded source-checkout installer is create-only and does not overwrite an existing instructions file:
-
-```bash
-npm run plan:install -- --host github-copilot --target /path/to/repository
-npm run install:copilot -- --target /path/to/repository
-npm run install:copilot -- --target /path/to/repository --apply
-```
+`.github/copilot-instructions.md` supplies lightweight judgment guidance when the repository itself is the active source. It does not replace the installed plugin, duplicate the six skill contracts, or claim global installation.
 
 ## Product boundary
 
