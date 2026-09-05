@@ -20,7 +20,7 @@ const version = read('core/hakim-skill/VERSION').trim();
 const contract = readJson('core/hakim-skill/capabilities.json');
 const capabilityIds = contract.capabilities.map((item) => item.id);
 
-assert.equal(contract.schema_version, 2, 'beta6 capability contract must use schema version 2');
+assert.equal(contract.schema_version, 1, 'capability mapping schema remains stable while the six-capability product contract changes');
 assert.deepEqual(capabilityIds, EXPECTED, 'capability order is product contract: hakim, review, audit, debt, status, help');
 assert.equal(new Set(capabilityIds).size, EXPECTED.length, 'capability IDs must be unique');
 
