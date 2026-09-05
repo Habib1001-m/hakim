@@ -30,7 +30,7 @@ test('OpenCode installed surface exposes Hakim-namespaced Markdown commands for 
     const text = file.bytes.toString('utf8');
     assert.match(text, /^---\n/m);
     assert.match(text, /description:\s+Hakim\b/i);
-    assert.match(text, new RegExp(`Load the \\`${capability}\\` skill`, 'i'));
+    assert.ok(text.includes(`Load the \`${capability}\` skill`), `command must route to native ${capability} skill`);
   }
 });
 
