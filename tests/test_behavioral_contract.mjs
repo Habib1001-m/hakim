@@ -4,6 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { getModeDirective as getCoreModeDirective } from '../core/loaders/hakim-loader.mjs';
+import { getModeDirective as getCopilotModeDirective } from '../plugins/copilot/hooks/mode_state.mjs';
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 const listDirs = (relativePath) => fs.readdirSync(path.join(ROOT, relativePath), { withFileTypes: true })
@@ -13,10 +16,23 @@ const listDirs = (relativePath) => fs.readdirSync(path.join(ROOT, relativePath),
 
 const CAPABILITIES = ['hakim', 'review', 'audit', 'debt', 'status', 'help'];
 const SPECIALIZED = ['audit', 'debt', 'help', 'review', 'status'];
+const MODE_DIRECTIVES = Object.freeze({
+  lite: 'Lite mode: execute the request and mention a materially smaller safe alternative when one exists.',
+  full: 'Full mode: apply the complete Hakim decision model with proportional verification.',
+  ultra: 'Ultra mode: challenge additions, abstractions, and dependencies aggressively while preserving the required outcome and real guards.',
+  off: 'Hakim guidance disabled for this session.',
+});
 const canonical = read('core/hakim-skill/SKILL.md');
 const canonicalPathFor = (name) => name === 'hakim'
   ? 'core/hakim-skill/SKILL.md'
   : `core/hakim-skill/skills/${name}/SKILL.md`;
+
+for (const [mode, directive] of Object.entries(MODE_DIRECTIVES)) {
+  assert.equal(getCoreModeDirective(mode), directive, `shared loader ${mode} directive must match beta6 mode semantics`);
+  assert.equal(getCopilotModeDirective(mode), directive, `Copilot ${mode} directive must match beta6 mode semantics`);
+}
+assert.equal(getCoreModeDirective('unsupported'), MODE_DIRECTIVES.full, 'shared loader invalid mode must fall back to full');
+assert.equal(getCopilotModeDirective('unsupported'), MODE_DIRECTIVES.full, 'Copilot invalid mode must fall back to full');
 
 for (const pattern of [
   /smallest sufficient safe change/i,
