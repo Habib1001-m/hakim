@@ -2,7 +2,7 @@
 
 Hakim is public beta software distributed from its Git repository and host-native plugin surfaces.
 
-For a supported cross-host release install, use the release tag for the candidate. The release record binds that tag to the reviewed exact commit.
+For a supported cross-host release install, use an immutable reviewed release tag:
 
 ```bash
 export HAKIM_REF=<release-tag>
@@ -14,9 +14,18 @@ export HAKIM_REF=<release-tag>
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref "$HAKIM_REF"
 ```
 
-Open `/plugins`, install **Hakim**, trust the SessionStart hook, and start a new thread.
+Open `/plugins`, install **Hakim**, review/trust the SessionStart hook, and start a new thread.
 
-Available skills include `$hakim:hakim`, `$hakim:hakim-review`, `$hakim:hakim-audit`, `$hakim:hakim-debt`, `$hakim:hakim-gain`, and `$hakim:hakim-help`.
+Installed skills:
+
+```text
+$hakim:hakim
+$hakim:review
+$hakim:audit
+$hakim:debt
+$hakim:status
+$hakim:help
+```
 
 ## Claude Code
 
@@ -25,9 +34,18 @@ claude plugin marketplace add "https://github.com/Habib1001-m/hakim.git#$HAKIM_R
 claude plugin install hakim@hakim
 ```
 
-Commands include `/hakim:full`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:gain`, and `/hakim:help`.
+Installed skills:
 
-If Hakim was installed while a session was already open, reload plugins or start a new session according to the host's current plugin workflow.
+```text
+/hakim:hakim
+/hakim:review
+/hakim:audit
+/hakim:debt
+/hakim:status
+/hakim:help
+```
+
+If Hakim was installed while a session was already open, reload plugins or start a new session according to the host's current plugin workflow. Claude's hook trust/permission boundary remains authoritative.
 
 ## GitHub Copilot CLI
 
@@ -42,11 +60,13 @@ Verify installation with:
 copilot plugin list
 ```
 
-Hakim supports explicit mode selection through the installed `hakim` capability; use the plugin help surface for the current host syntax.
+Inside Copilot CLI, `/skills list` and `/agent` expose the loaded Hakim skills and execution agents. The six skills are `hakim`, `review`, `audit`, `debt`, `status`, and `help`.
 
-`.github/copilot-instructions.md` is an optional repository projection, not the primary plugin distribution.
+Explicit mode selection uses the installed `hakim` capability; host-native syntax remains authoritative. `.github/copilot-instructions.md` is a lightweight repository fallback, not the primary plugin distribution.
 
 ## OpenCode
+
+From the target repository:
 
 ```bash
 npx --yes --package="github:Habib1001-m/hakim#$HAKIM_REF" hakim-opencode install
@@ -67,7 +87,17 @@ npx --yes --package="github:Habib1001-m/hakim#$HAKIM_REF" hakim-opencode remove
 
 The OpenCode lifecycle supports bounded create/adopt/upgrade/remove flows, validates Hakim-owned files and manifests, refuses unsafe or conflicting state, preserves unrelated `.opencode` content, and does not edit `opencode.json`.
 
-Some npm 10 environments have a Git-package transport bug. If exact-Git npx transport fails with an Arborist/GitFetcher packing error, use npm 11+; do not replace the intended Hakim source ref with a moving branch.
+Some npm 10 environments have a Git-package transport bug. If exact-Git npx transport fails with an Arborist/GitFetcher packing error, use npm 11+; do not replace the intended immutable source ref with a moving branch.
+
+## Capability model
+
+All supported hosts expose the same semantic capabilities:
+
+```text
+hakim  review  audit  debt  status  help
+```
+
+`lite`, `full`, `ultra`, and `off` are modes of `hakim`, not additional skills. Invocation syntax may differ by host.
 
 ## Source development
 
