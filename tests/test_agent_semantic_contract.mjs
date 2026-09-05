@@ -67,5 +67,6 @@ assert.match(claudeImplementer, /^isolation: worktree$/m, 'Claude implementer mu
 assert.match(claudeImplementer, /default branch/i, 'Claude implementer must disclose worktree base semantics');
 assert.match(claudeImplementer, /uncommitted/i, 'Claude implementer must reject unseen parent working-tree state');
 assert.match(claudeImplementer, /REVISION_CONTEXT_MISMATCH/, 'Claude implementer must fail closed on revision-context drift');
+assert.match(claudeImplementer, /lite[^\n]*ultra[^\n]*off/i, 'Claude implementer must preserve all explicit non-default Hakim modes, including off');
 
 console.log('test_agent_semantic_contract.mjs: thin trigger-oriented host agents OK');
