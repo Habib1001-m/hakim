@@ -3,9 +3,9 @@
 // Project-local usage after installation:
 //   .opencode/plugins/hakim.js
 //
-// The adapter does not embed the Hakim ruleset. It resolves the canonical
-// loader, capability contract, and skill sources from either this repository
-// or the exact install bundle created by scripts/hakim_opencode_install.mjs.
+// The adapter does not embed the Hakim ruleset. Source checkout execution uses
+// this repository's canonical core; an installed project-local copy uses only
+// the managed .opencode/hakim-runtime bundle created by the installer.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,35 +35,44 @@ function realDirectory(candidate) {
 }
 
 function resolveBundle() {
-  const candidates = [
-    {
+  const parentDir = path.dirname(__dirname);
+  const sourceCheckout = path.basename(__dirname) === 'opencode' && path.basename(parentDir) === 'plugins';
+  const managedInstall = path.basename(__dirname) === 'plugins' && path.basename(parentDir) === '.opencode';
+
+  let candidate;
+  if (sourceCheckout) {
+    candidate = {
       kind: 'REPOSITORY_CANONICAL_SOURCE',
       loaderPath: path.resolve(__dirname, '../../core/loaders/hakim-loader.mjs'),
       skillPath: path.resolve(__dirname, '../../core/hakim-skill/SKILL.md'),
       capabilitiesPath: path.resolve(__dirname, '../../core/hakim-skill/capabilities.json'),
       skillsDir: path.resolve(__dirname, '../../core/hakim-skill/skills'),
-    },
-    {
+    };
+  } else if (managedInstall) {
+    candidate = {
       kind: 'PROJECT_LOCAL_INSTALL_BUNDLE',
       loaderPath: path.resolve(__dirname, '../hakim-runtime/loaders/hakim-loader.mjs'),
       skillPath: path.resolve(__dirname, '../hakim-runtime/hakim-skill/SKILL.md'),
       capabilitiesPath: path.resolve(__dirname, '../hakim-runtime/hakim-skill/capabilities.json'),
       skillsDir: path.resolve(__dirname, '../hakim-runtime/hakim-skill/skills'),
-    },
-  ];
-
-  for (const candidate of candidates) {
-    if (
-      regularFile(candidate.loaderPath)
-      && regularFile(candidate.skillPath)
-      && regularFile(candidate.capabilitiesPath)
-      && realDirectory(candidate.skillsDir)
-    ) {
-      return candidate;
-    }
+    };
+  } else {
+    throw new Error('Hakim OpenCode plugin location is unsupported or unsafe.');
   }
 
-  throw new Error('Hakim OpenCode canonical bundle is missing or unsafe. Reinstall the project-local adapter.');
+  if (
+    regularFile(candidate.loaderPath)
+    && regularFile(candidate.skillPath)
+    && regularFile(candidate.capabilitiesPath)
+    && realDirectory(candidate.skillsDir)
+  ) {
+    return candidate;
+  }
+
+  if (managedInstall) {
+    throw new Error('Hakim OpenCode managed install bundle is missing or unsafe. Reinstall the project-local adapter.');
+  }
+  throw new Error('Hakim OpenCode repository canonical bundle is missing or unsafe.');
 }
 
 function loadCapabilities(capabilitiesPath) {
