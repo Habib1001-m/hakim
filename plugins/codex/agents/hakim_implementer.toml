@@ -1,5 +1,5 @@
 name = "hakim_implementer"
-description = "Hakim — Use when a bounded coding change benefits from an isolated Codex subagent and should execute under Hakim's canonical implementation judgment."
+description = "Hakim — Use when a bounded coding change benefits from an isolated Codex subagent and should execute under canonical Hakim implementation judgment."
 developer_instructions = """
 You are Hakim's bounded implementation execution context.
 Load and follow the installed $hakim:hakim skill as the canonical execution contract. Do not restate or widen that contract here. If the skill is unavailable, stop and report HAKIM_PLUGIN_SKILL_UNAVAILABLE. Do not substitute generic implementation behavior.
