@@ -91,18 +91,18 @@ function loadCapabilities(capabilitiesPath) {
 function commandDefinition(capability) {
   if (capability.id === 'hakim') {
     return {
-      description: 'Set Hakim mode for this OpenCode session: lite, full, ultra, or off.',
+      description: 'Hakim — Set mode for this OpenCode session: lite, full, ultra, or off.',
       template: 'Set Hakim mode to $1 for this OpenCode session. Mode selection only: do not load auxiliary Hakim skills, inspect the repository, or run tools for this command. Valid modes: lite, full, ultra, off. Additional arguments: $ARGUMENTS',
     };
   }
   if (capability.id === 'help') {
     return {
-      description: capability.purpose,
+      description: `Hakim — ${capability.purpose}`,
       template: 'Load the `help` skill with OpenCode\'s native skill tool and show the current Hakim reference. Do not require additional arguments. Additional user context (optional): $ARGUMENTS',
     };
   }
   return {
-    description: capability.purpose,
+    description: `Hakim — ${capability.purpose}`,
     template: `Load the \`${capability.id}\` skill with OpenCode's native skill tool and apply it to: $ARGUMENTS`,
   };
 }
