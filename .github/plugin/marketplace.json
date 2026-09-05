@@ -3,13 +3,13 @@
   "owner": {"name": "Habib1001-m"},
   "metadata": {
     "description": "Hakim host-native coding governance plugins.",
-    "version": "1.0.0-beta.6"
+    "version": "1.0.0-beta.7"
   },
   "plugins": [
     {
       "name": "hakim",
       "description": "Evidence-bound coding governance with reusable skills and specialized Copilot agents.",
-      "version": "1.0.0-beta.6",
+      "version": "1.0.0-beta.7",
       "source": "./plugins/copilot"
     }
   ]
