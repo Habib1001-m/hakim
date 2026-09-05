@@ -14,12 +14,13 @@ const MAX_CONTEXT_BYTES = 9_000;
 const validModes = new Set(['lite', 'full', 'ultra', 'off']);
 const resolvedMode = validModes.has(mode) ? mode : 'full';
 const operationalSections = Object.freeze([
-  'The 7-level ladder',
-  'Pre-mutation baseline',
-  'Evidence sufficiency',
-  'Domain-guard preservation',
-  'Outcome-oriented restraint',
-  'Bounded `NO_CHANGE` truth',
+  'Understand only what matters',
+  'The 7-level decision ladder',
+  'Proportional verification',
+  'Depth is earned',
+  'Preserve real guards',
+  'Evidence and authority',
+  'Evidence-bound claims',
 ]);
 
 function extractSection(markdown, heading) {
@@ -43,9 +44,9 @@ if (resolvedMode === 'off') {
 }
 
 const modeGuidance = {
-  lite: 'Lite mode: implement the request and mention the smaller safe alternative.',
-  full: 'Full mode: apply the complete Hakim ladder; reuse first and prefer stdlib/native capabilities.',
-  ultra: 'Ultra mode: challenge additions aggressively and prefer safe deletion before new code.',
+  lite: 'Lite mode: execute the request and mention a materially smaller safe alternative when one exists.',
+  full: 'Full mode: apply the complete Hakim decision model with proportional verification.',
+  ultra: 'Ultra mode: challenge additions, abstractions, and dependencies aggressively while preserving the required outcome and real guards.',
 }[resolvedMode];
 
 try {
@@ -54,8 +55,9 @@ try {
   const context = [
     `Hakim ${version} is active in ${resolvedMode} mode.`,
     modeGuidance,
-    'Apply the maintained Hakim policy automatically to coding work without requiring an explicit Hakim invocation.',
-    'Specialized Hakim skills remain available when the user asks for review, audit, debt, evidence status, or help.',
+    'Apply the maintained Hakim core automatically to coding work without requiring an explicit Hakim invocation.',
+    'Choose ordinary tactics inside the authorized scope; add process only when it changes a decision, protects a real boundary, or makes material evidence observable.',
+    'Specialized capabilities remain available for review, audit, debt, evidence status, and help.',
     'Preserve Codex approval, sandbox, plugin, and hook trust controls.',
     '',
     policy,
