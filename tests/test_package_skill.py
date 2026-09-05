@@ -84,11 +84,8 @@ class PackageSkillTests(unittest.TestCase):
             shutil.copytree(ROOT / "core/hakim-skill", source)
             skill = source / "skills" / "help" / "SKILL.md"
             text = skill.read_text(encoding="utf-8")
-            text = text.replace(
-                "description: Show the six Hakim capabilities, modes, host-native invocation patterns, and trust boundaries without embedding release history, candidate SHAs, or stale acceptance state.",
-                "description: [broken] trailing-token",
-                1,
-            )
+            description_line = next(line for line in text.splitlines() if line.startswith("description:"))
+            text = text.replace(description_line, "description: [broken] trailing-token", 1)
             skill.write_text(text, encoding="utf-8")
             result = build_package(source, tmp_root / "out.zip")
             self.assertNotEqual(result.returncode, 0, result.stderr + result.stdout)
