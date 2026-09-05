@@ -105,22 +105,23 @@ for (const mode of ['lite', 'full', 'ultra']) {
   const context = buildOperationalContext(skill, mode);
   assert.match(context, new RegExp(`^HAKIM OPERATIONAL PRESENCE — ${mode} mode\.`));
   for (const heading of [
-    '## Decision ladder',
-    '## Pre-mutation baseline',
-    '## Evidence sufficiency',
-    '## Domain-guard preservation',
-    '## Outcome-oriented restraint',
-    '## Bounded `NO_CHANGE` truth',
+    '## Understand only what matters',
+    '## The 7-level decision ladder',
+    '## Proportional verification',
+    '## Depth is earned',
+    '## Preserve real guards',
+    '## Evidence and authority',
+    '## Evidence-bound claims',
   ]) {
     assert.match(context, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
   assert.ok(Buffer.byteLength(context, 'utf8') < 9_000);
   assert.doesNotMatch(context, /^---$/m);
   assert.doesNotMatch(context, /^name:\s*hakim$/m);
-  assert.doesNotMatch(context, /When the user explicitly invokes Hakim/i);
   assert.doesNotMatch(context, /## Observable checkpoints/);
-  assert.doesNotMatch(context, /BASELINE_COMMAND=/);
-  assert.doesNotMatch(context, /FINAL_GIT_STATUS=/);
+  assert.doesNotMatch(context, /BASELINE_COMMAND|BASELINE_SOURCE|PRE_EDIT_GIT_STATUS|SEMANTIC_CHANGE_CHECK|FINAL_GIT_STATUS|SETUP_ARTIFACTS|UNRELATED_MUTATIONS/);
+  assert.match(context, /ordinary tactics inside the authorized scope/i);
+  assert.match(context, /without requiring an explicit Hakim invocation/i);
 }
 
 assert.match(buildOperationalContext(skill, 'lite'), /Build what is asked, then name the lazier alternative in one line\./);
@@ -180,4 +181,4 @@ try {
   fs.rmSync(subagentData, { recursive: true, force: true });
 }
 
-console.log('test_copilot_operational_presence.mjs: F01-F04 presence + bounded F05 agentStop wiring OK');
+console.log('test_copilot_operational_presence.mjs: modern automatic presence + mode/subagent/F05 wiring OK');
