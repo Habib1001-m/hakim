@@ -38,12 +38,26 @@ function agentText(name, capability, marker = '') {
     `name = "${name}"`,
     `description = "Hakim — Use when delegated ${capability} work needs a bounded execution context."`,
     'developer_instructions = """',
-    `Use the installed $hakim:${capability} skill as the canonical contract.`,
+    `Proceed only when the current Codex skill catalog exposes $hakim:${capability}.`,
     'If it is unavailable, report HAKIM_PLUGIN_SKILL_UNAVAILABLE and stop.',
     'Do not substitute generic behavior.',
     'Preserve parent authority and report evidence gaps to the parent.',
     marker,
     '"""',
+    '',
+  ].join('\n');
+}
+
+function skillText(capability, marker = '') {
+  return [
+    '---',
+    `name: ${capability}`,
+    `description: "Fixture canonical ${capability} contract."`,
+    '---',
+    '',
+    `# Canonical ${capability}`,
+    '',
+    `FIXTURE_CANONICAL_${capability.toUpperCase()}=${marker || 'plain'}`,
     '',
   ].join('\n');
 }
@@ -58,6 +72,9 @@ function makePluginSource(parent, version, marker = '') {
   );
   for (const [file, name, capability] of AGENTS) {
     fs.writeFileSync(path.join(pluginRoot, 'agents', file), agentText(name, capability, marker));
+    const skillDir = path.join(pluginRoot, 'skills', capability);
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'), skillText(capability, marker));
   }
   return pluginRoot;
 }
@@ -157,6 +174,23 @@ test('bundle builder rejects symlinked source agent projections', { skip: !MODUL
   fs.renameSync(file, real);
   fs.symlinkSync(real, file);
   assert.throws(() => buildCodexAgentBundle(source), /symlink|regular file/i);
+}));
+
+test('bundle builder fails closed when a canonical skill source is missing', { skip: !MODULE_AVAILABLE }, async () => withCodexHome(async ({ parent }) => {
+  const { buildCodexAgentBundle } = await loadLifecycle();
+  const source = makePluginSource(parent, '1.2.3', 'missing-skill');
+  fs.unlinkSync(path.join(source, 'skills', 'review', 'SKILL.md'));
+  assert.throws(() => buildCodexAgentBundle(source), /canonical skill source review.*regular file|canonical skill source review.*missing/i);
+}));
+
+test('bundle builder rejects symlinked canonical skill sources', { skip: !MODULE_AVAILABLE || process.platform === 'win32' }, async () => withCodexHome(async ({ parent }) => {
+  const { buildCodexAgentBundle } = await loadLifecycle();
+  const source = makePluginSource(parent, '1.2.3', 'skill-symlink');
+  const file = path.join(source, 'skills', 'review', 'SKILL.md');
+  const real = `${file}.real`;
+  fs.renameSync(file, real);
+  fs.symlinkSync(real, file);
+  assert.throws(() => buildCodexAgentBundle(source), /canonical skill source review.*symlink|regular file/i);
 }));
 
 test('dry-run create is non-mutating; apply installs exact bytes; repeat is idempotent', { skip: !MODULE_AVAILABLE }, async () => withCodexHome(async ({ parent, codexHome }) => {
