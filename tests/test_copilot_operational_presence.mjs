@@ -124,9 +124,9 @@ for (const mode of ['lite', 'full', 'ultra']) {
   assert.match(context, /without requiring an explicit Hakim invocation/i);
 }
 
-assert.match(buildOperationalContext(skill, 'lite'), /Build what is asked, then name the lazier alternative in one line\./);
-assert.match(buildOperationalContext(skill, 'full'), /Enforce the Hakim ladder\./);
-assert.match(buildOperationalContext(skill, 'ultra'), /YAGNI extremist mode: delete before adding/);
+assert.match(buildOperationalContext(skill, 'lite'), /Lite mode: execute the request and mention a materially smaller safe alternative when one exists\./);
+assert.match(buildOperationalContext(skill, 'full'), /Full mode: apply the complete Hakim decision model with proportional verification\./);
+assert.match(buildOperationalContext(skill, 'ultra'), /Ultra mode: challenge additions, abstractions, and dependencies aggressively while preserving the required outcome and real guards\./);
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-copilot-presence-'));
 try {
