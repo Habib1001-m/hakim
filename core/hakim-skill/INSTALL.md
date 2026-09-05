@@ -14,7 +14,7 @@ export HAKIM_REF=<release-tag>
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref "$HAKIM_REF"
 ```
 
-Open `/plugins`, install **Hakim**, review/trust the SessionStart hook, and start a new thread.
+Open `/plugins`, install **Hakim**, approve the host trust prompt if shown, and start a new thread.
 
 Installed skills:
 
@@ -45,7 +45,7 @@ Installed skills:
 /hakim:help
 ```
 
-If Hakim was installed while a session was already open, reload plugins or start a new session according to the host's current plugin workflow. Claude's hook trust/permission boundary remains authoritative.
+If Hakim was installed while a session was already open, reload plugins or start a new session according to the host's current plugin workflow. Approve the host hook-trust prompt if shown. Claude's trust and permission boundaries remain authoritative.
 
 ## GitHub Copilot CLI
 
@@ -97,7 +97,14 @@ All supported hosts expose the same semantic capabilities:
 hakim  review  audit  debt  status  help
 ```
 
-`lite`, `full`, `ultra`, and `off` are modes of `hakim`, not additional skills. Invocation syntax may differ by host.
+Modes belong to `hakim`; they are not additional skills:
+
+- `lite` — execute the request and mention a materially smaller safe alternative when one exists.
+- `full` — default; apply the complete Hakim decision model with proportional verification.
+- `ultra` — challenge additions, abstractions, and dependencies aggressively; prefer deletion and reuse without weakening the required outcome or real guards.
+- `off` — do not apply Hakim guidance beyond host, repository, and safety boundaries.
+
+Invocation syntax may differ by host.
 
 ## Source development
 
@@ -110,4 +117,4 @@ npm run package:release
 
 Repository development requires Node.js 22+ and Python 3.10+.
 
-Generated packages, checksums, and tests prove only their checked scope. Host-native approval, trust, permissions, sandboxing, managed policy, and removal remain authoritative.
+Generated packages, checksums, and tests prove only their checked scope. Host-native approval, trust, permissions, sandboxing, managed policy, caches, and removal remain authoritative.

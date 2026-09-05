@@ -6,14 +6,14 @@ Hakim is public beta software.
 
 - Install releases from an immutable Git ref; moving branch state is not a release identity.
 - No npm registry publication, signing, notarization, external provenance attestation, SLA, or LTS commitment is claimed.
-- OpenCode uses npm/npx as Git transport and command execution; it installs Hakim project-locally rather than globally.
+- OpenCode uses npm/npx as Git transport and command execution and installs Hakim project-locally rather than globally.
 
 ## Compatibility
 
-- Hakim maintains product surfaces for Codex, Claude Code, GitHub Copilot CLI, and OpenCode, but not every host version, operating system, model/provider, or organization policy is guaranteed.
-- Codex `0.131.0+` is the maintained floor for the native plugin-hook path.
-- OpenCode requires Node.js `>=22`; CI exercises Node 22, 24, and 26 for the maintained JavaScript/OpenCode compatibility surface.
-- Host-native approval, permissions, sandboxing, managed policy, caching, and removal remain outside Hakim's authority.
+- Hakim maintains product surfaces for Codex, Claude Code, GitHub Copilot CLI, and OpenCode, but not every host version, operating system, model/provider, organization policy, or future host behavior is guaranteed.
+- OpenCode requires Node.js `>=22`; CI exercises Node 22 and Node 26 compatibility jobs, with the main product/release job currently running on Node 24.
+- Host-native approval, permissions, sandboxing, managed policy, trust prompts, caches, plugin discovery, and removal remain outside Hakim's authority.
+- Host-specific minimum versions are not claimed unless they are maintained as an explicit tested contract.
 
 ## OpenCode lifecycle
 
@@ -21,11 +21,13 @@ Hakim is public beta software.
 - Force overwrite and force removal are not product features.
 - Removal and rollback use bounded ownership, same-filesystem quarantine, verification, and no-clobber restoration.
 - Hakim does not claim a cross-process filesystem lock or immunity to malicious concurrent local replacement.
+- Some npm 10 environments have a Git-package transport bug; if exact-Git npx transport fails with an Arborist/GitFetcher packing error, use npm 11+ rather than replacing the intended immutable source ref with a moving branch.
 
 ## Evaluation
 
 - Deterministic tests cover only their checked contracts.
 - A green repository gate does not by itself prove real-host compatibility for every environment.
+- A host successfully executing startup context does not guarantee that a model can reliably introspect or repeat hidden host context verbatim.
 - Hakim makes no general claim about model quality, speed, token use, cost, adoption, security improvement, or return on investment.
 
 ## Privacy

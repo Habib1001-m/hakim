@@ -10,7 +10,7 @@ Include the affected version or commit, the smallest safe reproduction, expected
 
 ## Security boundaries
 
-Hakim uses the host's native trust, approval, sandbox, permission, plugin, managed-policy, and removal controls. It does not bypass or repair those controls automatically.
+Install Hakim from an immutable reviewed release ref and review host-native trust prompts when they are presented. Hakim uses the host's native trust, approval, sandbox, permission, plugin, managed-policy, cache, and removal controls; it does not bypass or silently repair those controls.
 
 The managed OpenCode lifecycle additionally uses bounded ownership, content validation, symlink/non-regular-file refusal, staged mutation, quarantine-backed rollback, post-mutation verification, and no-clobber restoration. These controls reduce risk but do not create a cross-process filesystem lock or immunity to malicious concurrent local replacement.
 

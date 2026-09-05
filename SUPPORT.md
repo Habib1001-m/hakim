@@ -6,6 +6,8 @@ Hakim is public beta software maintained on a best-effort basis. This policy doe
 
 - The current beta line is the maintained product line.
 - Supported host surfaces are listed in [SUPPORTED_HOSTS.md](SUPPORTED_HOSTS.md).
+- Installation and lifecycle instructions are in [core/hakim-skill/INSTALL.md](core/hakim-skill/INSTALL.md).
+- Product-facing changes are summarized in [CHANGELOG.md](CHANGELOG.md).
 - Security reports should follow [SECURITY.md](SECURITY.md).
 - Host-native trust, permissions, sandboxing, managed policy, caches, and lifecycle controls remain authoritative.
 
@@ -19,4 +21,4 @@ Recognizing an older managed manifest is lifecycle compatibility only. It does n
 
 ## Before stable 1.0
 
-A stable recommendation requires a green release candidate, reproducible release artifacts, current security/install/support documentation, and successful exact-source checks for every host claimed as maintained. Stable release would still not imply an SLA or LTS policy unless separately published.
+A stable recommendation requires a green release candidate, reproducible release artifacts, current installation/security/support documentation, and successful exact-release checks for every host claimed as maintained. Stable release would still not imply an SLA or LTS policy unless separately published.

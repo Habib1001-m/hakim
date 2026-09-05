@@ -27,7 +27,7 @@ hakim  review  audit  debt  status  help
 - `core/hakim-skill/capabilities.json` maps those six semantic capabilities to host-native surfaces.
 - `core/hakim-skill/INSTALL.md` documents supported installation and removal journeys.
 
-Host projections may add native metadata, hooks, agents, state, or invocation syntax. They must not create a second capability contract layer.
+The shared root skill uses a deliberately portable frontmatter contract: `name` plus `description`. Codex, Claude Code, and Copilot root skill projections are byte-identical to that canonical source. Host projections may add native plugin metadata, hooks, agents, state, or invocation syntax around the skills, but they must not create a second capability-contract layer.
 
 ## Host integrations
 
@@ -66,6 +66,8 @@ Mutation-capable lifecycle code must know what it owns and refuse partial, modif
 ## Packaging
 
 The canonical skill ZIP is built from an explicit product allowlist: the core skill, five specialized skills, capability mapping, installation/help documentation, required notices, and the optional deterministic audit helper. Test harnesses, repository evidence, release history, and build tooling are not shipped inside the skill package.
+
+Before artifact generation, the packager validates all six canonical skill frontmatter surfaces and rejects malformed metadata, capability name/path mismatch, unexpected skill directories, symlinked/unsafe structures, and extra files in specialized skill directories.
 
 The Git-backed OpenCode package is separately bounded by the root `package.json` files allowlist and preserves exact prior-version lifecycle authorities needed for safe managed upgrade/remove behavior.
 
