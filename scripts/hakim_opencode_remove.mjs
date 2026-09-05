@@ -118,19 +118,21 @@ export function removeOpenCodeAdapter(options, root = ROOT) {
     moved = moveManagedInstallation(target.target_root, managed, workRoot);
 
     const removedDirectories = removeEmptyDirectories(target.target_root, directories);
-    fs.rmSync(workRoot, { recursive: true });
-
     const finalState = detectManagedInstallation(target.target_root, bundle);
     if (finalState.state !== 'ABSENT') {
-      return result({ ...withInspection, final_managed_state: finalState.state }, 'FAIL', 'POST_REMOVE_VERIFY_FAILED', 'Managed Hakim paths remain after removal; inspect the target manually.', {
+      return result({ ...withInspection, final_managed_state: finalState.state }, 'FAIL', 'POST_REMOVE_VERIFY_FAILED', 'Managed Hakim paths remain after removal; the verified original bytes are retained in quarantine for manual recovery.', {
         mutation_attempted: true,
         removal_performed: true,
         filesystem_changed: true,
+        quarantine_retained: true,
+        quarantine_path: workRoot,
         removed_files: managed.manifest.files.map((file) => file.target_relative),
         removed_directories: removedDirectories,
         installed_product_version: managed.manifest.product_version,
       });
     }
+
+    fs.rmSync(workRoot, { recursive: true });
 
     return result(withInspection, 'PASS', 'REMOVED', `Hakim ${managed.manifest.product_version} was removed after quarantine verification; unrelated .opencode content was preserved.`, {
       mutation_attempted: true,

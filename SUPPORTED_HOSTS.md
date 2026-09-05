@@ -1,30 +1,38 @@
 # Supported Hosts
 
-Hakim is public beta software. The frozen `1.0.0-beta.4` product identity is pinned to exact source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+Hakim is public beta software. A maintained host means Hakim ships and tests a product surface for that host; it does not imply compatibility with every host version, operating system, model/provider, organization policy, or future host behavior.
 
-Support means Hakim maintains a documented product surface for the host. It does not imply compatibility with every host version, operating system, model/provider, organization policy, or future host behavior.
-
-| Host | Product surface | Frozen beta.4 installation | Verified boundary |
+| Host | Automatic baseline | Explicit Hakim surface | Runtime boundary |
 |---|---|---|---|
-| Codex | Native Git marketplace plugin, six skills, SessionStart presence | `codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref 5d00039479f2f11b7fe30ccf2385e70ce24553c3` | Exact frozen journey accepted on Codex `0.145.0`; maintained compatibility floor is `0.131.0+` |
-| Claude Code | Marketplace plugin, commands, skills, hooks, specialist agents | `claude plugin marketplace add Habib1001-m/hakim` then `claude plugin install hakim@hakim` | Exact frozen journey accepted on Claude Code `2.1.220`; catalog pins `plugins/claude-code` to the frozen SHA |
-| GitHub Copilot CLI | Marketplace plugin, six skills, five agents, host-native lifecycle hooks | `copilot plugin marketplace add Habib1001-m/hakim` then `copilot plugin install hakim@hakim` | Exact frozen journey accepted on Copilot CLI `1.0.71`; catalog pins `plugins/copilot` to the frozen SHA |
-| OpenCode | Guarded project-local plugin and managed lifecycle | `npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install` | Exact frozen journey accepted on OpenCode `1.18.5`; Node `>=22` |
+| Codex | Compact SessionStart core | `$hakim:hakim`, `$hakim:review`, `$hakim:audit`, `$hakim:debt`, `$hakim:status`, `$hakim:help` | Host plugin, hook trust, approval, and sandbox controls are authoritative |
+| Claude Code | Compact SessionStart core | `/hakim:hakim`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:status`, `/hakim:help`; scoped execution agents | Host plugin/cache/trust/permission policy is authoritative |
+| GitHub Copilot CLI | Silent parent-session presence plus bounded subagent/mode/completion hooks | Six installed skills plus five execution agents | Host plugin/settings/managed-policy behavior is authoritative |
+| OpenCode | Canonical Hakim core through the project-local plugin system transform | `/hakim <mode>` plus the canonical `review`, `audit`, `debt`, `status`, and `help` surfaces | Node.js `>=22`; Hakim does not edit `opencode.json` |
 
-## Evidence and identity
+## Installation identity
 
-[`conformance/distribution-identity.json`](conformance/distribution-identity.json) maps the frozen product identity, moving development identity, install pins, and packet-backed host evidence.
+Use an immutable reviewed release tag for supported cross-host installation. Tags are release identity and must not be moved after publication.
 
-Frozen beta.4 acceptance is recorded in [`conformance/history/native-host-acceptance-1.0.0-beta.4.json`](conformance/history/native-host-acceptance-1.0.0-beta.4.json). Moving `main` has its own development-only projection and does not inherit frozen-candidate status automatically.
+Claude Code and GitHub Copilot marketplace entries use repository-relative plugin paths, so installed plugin content comes from the selected marketplace checkout. OpenCode uses the same selected Git ref through Git-backed npm/npx transport.
 
-Repository tests, packaging checks, and projection checks do not substitute for real-host evidence.
+Repository tests check maintained source and package contracts. They do not replace a real-host install/start/invocation check for the exact release identity.
 
-## Runtime boundaries
+## Capability parity
 
-The Git-backed OpenCode package declares Node `>=22`. Public CI exercises the maintained JavaScript/OpenCode surface on Node 22, 24, and 26.
+All four hosts expose the same six canonical capabilities:
 
-Host-native security, permissions, approval, sandbox, plugin, managed-policy, cache, and removal controls remain authoritative.
+```text
+hakim  review  audit  debt  status  help
+```
 
-## Design rule
+`lite`, `full`, `ultra`, and `off` are modes of `hakim`; they are not separate capabilities.
 
-Hakim preserves host-native differences. Capability parity is semantic; unused extension surfaces are not added merely for symmetry, and Hakim does not add MCP, LSP, or another cross-host runtime just because a host can support one.
+Parity is semantic, not structural. Invocation syntax, startup behavior, hooks, agents, trust prompts, permissions, caches, state, and removal flows differ because Hakim uses each host's native extension model rather than adding a lowest-common-denominator runtime.
+
+## Runtime support
+
+The Git-backed OpenCode package declares Node.js `>=22`. Public CI exercises the maintained JavaScript/OpenCode surface on Node 22 and Node 26, while the main product/release job currently runs on Node 24.
+
+Host-specific minimum versions are claimed only when they are maintained as an explicit tested contract. Otherwise, current host behavior and the exact release evidence define the supported scope.
+
+Hakim does not add MCP, LSP, A2A, a daemon, or a cross-host workflow engine merely for symmetry.

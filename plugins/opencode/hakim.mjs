@@ -3,9 +3,9 @@
 // Project-local usage after installation:
 //   .opencode/plugins/hakim.js
 //
-// The adapter does not embed the Hakim ruleset. It resolves the canonical
-// loader, capability contract, and skill sources from either this repository
-// or the exact install bundle created by scripts/hakim_opencode_install.mjs.
+// The adapter does not embed the Hakim ruleset. Source checkout execution uses
+// this repository's canonical core; an installed project-local copy uses only
+// the managed .opencode/hakim-runtime bundle created by the installer.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,35 +35,44 @@ function realDirectory(candidate) {
 }
 
 function resolveBundle() {
-  const candidates = [
-    {
+  const parentDir = path.dirname(__dirname);
+  const sourceCheckout = path.basename(__dirname) === 'opencode' && path.basename(parentDir) === 'plugins';
+  const managedInstall = path.basename(__dirname) === 'plugins' && path.basename(parentDir) === '.opencode';
+
+  let candidate;
+  if (sourceCheckout) {
+    candidate = {
       kind: 'REPOSITORY_CANONICAL_SOURCE',
       loaderPath: path.resolve(__dirname, '../../core/loaders/hakim-loader.mjs'),
       skillPath: path.resolve(__dirname, '../../core/hakim-skill/SKILL.md'),
       capabilitiesPath: path.resolve(__dirname, '../../core/hakim-skill/capabilities.json'),
       skillsDir: path.resolve(__dirname, '../../core/hakim-skill/skills'),
-    },
-    {
+    };
+  } else if (managedInstall) {
+    candidate = {
       kind: 'PROJECT_LOCAL_INSTALL_BUNDLE',
       loaderPath: path.resolve(__dirname, '../hakim-runtime/loaders/hakim-loader.mjs'),
       skillPath: path.resolve(__dirname, '../hakim-runtime/hakim-skill/SKILL.md'),
       capabilitiesPath: path.resolve(__dirname, '../hakim-runtime/hakim-skill/capabilities.json'),
       skillsDir: path.resolve(__dirname, '../hakim-runtime/hakim-skill/skills'),
-    },
-  ];
-
-  for (const candidate of candidates) {
-    if (
-      regularFile(candidate.loaderPath)
-      && regularFile(candidate.skillPath)
-      && regularFile(candidate.capabilitiesPath)
-      && realDirectory(candidate.skillsDir)
-    ) {
-      return candidate;
-    }
+    };
+  } else {
+    throw new Error('Hakim OpenCode plugin location is unsupported or unsafe.');
   }
 
-  throw new Error('Hakim OpenCode canonical bundle is missing or unsafe. Reinstall the project-local adapter.');
+  if (
+    regularFile(candidate.loaderPath)
+    && regularFile(candidate.skillPath)
+    && regularFile(candidate.capabilitiesPath)
+    && realDirectory(candidate.skillsDir)
+  ) {
+    return candidate;
+  }
+
+  if (managedInstall) {
+    throw new Error('Hakim OpenCode managed install bundle is missing or unsafe. Reinstall the project-local adapter.');
+  }
+  throw new Error('Hakim OpenCode repository canonical bundle is missing or unsafe.');
 }
 
 function loadCapabilities(capabilitiesPath) {
@@ -82,18 +91,18 @@ function loadCapabilities(capabilitiesPath) {
 function commandDefinition(capability) {
   if (capability.id === 'hakim') {
     return {
-      description: 'Set Hakim mode for this OpenCode session: lite, full, ultra, or off.',
+      description: 'Hakim — Set mode for this OpenCode session: lite, full, ultra, or off.',
       template: 'Set Hakim mode to $1 for this OpenCode session. Mode selection only: do not load auxiliary Hakim skills, inspect the repository, or run tools for this command. Valid modes: lite, full, ultra, off. Additional arguments: $ARGUMENTS',
     };
   }
-  if (capability.id === 'hakim-help') {
+  if (capability.id === 'help') {
     return {
-      description: capability.purpose,
-      template: 'Load the `hakim-help` skill with OpenCode\'s native skill tool and show the Hakim quick reference. Do not require additional arguments. Additional user context (optional): $ARGUMENTS',
+      description: `Hakim — ${capability.purpose}`,
+      template: 'Load the `help` skill with OpenCode\'s native skill tool and show the current Hakim reference. Do not require additional arguments. Additional user context (optional): $ARGUMENTS',
     };
   }
   return {
-    description: capability.purpose,
+    description: `Hakim — ${capability.purpose}`,
     template: `Load the \`${capability.id}\` skill with OpenCode's native skill tool and apply it to: $ARGUMENTS`,
   };
 }

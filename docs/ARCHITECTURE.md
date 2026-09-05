@@ -1,152 +1,78 @@
 # Hakim Architecture
 
-Hakim is intentionally small: one canonical decision policy, one capability registry, and host-native product projections that preserve each host's extension and trust model.
-
-## Authority map
-
-Use one source of truth per question:
-
-| Question | Authority |
-|---|---|
-| Coding decisions | `core/hakim-skill/SKILL.md` |
-| Capability IDs and host mappings | `core/hakim-skill/capabilities.json` |
-| Repository modification rules | `core/hakim-skill/AGENTS.md` |
-| Installation and lifecycle | `core/hakim-skill/INSTALL.md` plus the host integration |
-| Distribution identity and install pins | `conformance/distribution-identity.json` |
-| Live-host acceptance projections | `conformance/native-host-acceptance.json` and `conformance/history/` |
-| Supported hosts | `SUPPORTED_HOSTS.md` |
-| Version/release contract | `VERSIONING.md` |
-| Support boundary | `SUPPORT.md` |
-| Repository health | `npm test`, `scripts/hakim_doctor.mjs`, and Public CI |
-
-Documentation projects these authorities for readers. It is not a second project-state database.
-
-## Product shape
+Hakim has one canonical judgment model, six canonical capabilities, and four host-native projections.
 
 ```text
-                    canonical decision policy
-                  core/hakim-skill/SKILL.md
-                              |
-                      capabilities.json
-                              |
-          +-------------------+-------------------+
-          |                   |                   |
-        Codex             Claude Code         Copilot CLI
-   native skills/hook   commands/skills/     skills/agents/
-                         agents/hooks           hooks
-          \                   |                   /
-           \------------------+------------------/
-                              |
-                           OpenCode
-                   project-local native plugin
+                core/hakim-skill/
+        ┌──────────────┴──────────────┐
+   canonical skills             capabilities.json
+        │                              │
+        └──────────────┬───────────────┘
+                       │
+          ┌────────────┼────────────┬────────────┐
+          │            │            │            │
+        Codex       Claude       Copilot      OpenCode
 ```
 
-Capability parity is semantic. Invocation syntax, startup behavior, agents, hooks, permissions, trust, sandboxing, and removal may differ by host.
+## Canonical product
 
-Hakim does not add MCP, LSP, A2A, a workflow engine, telemetry service, daemon, or another cross-host runtime merely to make integrations look symmetrical.
-
-## Canonical policy and capabilities
-
-`core/hakim-skill/SKILL.md` contains the seven-rung smallest-safe decision ladder and the `lite`, `full`, `ultra`, and `off` modes.
-
-`core/hakim-skill/capabilities.json` defines six maintained capability IDs:
-
-- `hakim`
-- `hakim-review`
-- `hakim-audit`
-- `hakim-debt`
-- `hakim-gain`
-- `hakim-help`
-
-Host projections may add native metadata or UX while preserving canonical semantics. Projection checks detect drift; they do not prove universal effectiveness.
-
-`hakim-gain` is a retained beta compatibility ID for evidence-status reporting, not a quantified performance claim.
-
-## Host surfaces
-
-### Codex
-
-Repository-hosted native Git marketplace plugin with six skills and SessionStart presence. Host trust, sandbox, approval, and hook policy remain authoritative.
-
-### Claude Code
-
-Native marketplace plugin with explicit commands, hidden model-invocable skills, lifecycle hooks, and scoped specialist agents.
-
-### GitHub Copilot CLI
-
-Native marketplace plugin with six skills and five custom agents. `.github/copilot-instructions.md` is an optional repository baseline, not the primary product distribution.
-
-Moving development uses a deliberately small lifecycle topology:
+The capability set is exactly:
 
 ```text
-sessionStart            -> silent parent-session presence
-subagentStart           -> subagent continuity using the same presence authority
-userPromptSubmitted     -> bounded non-default mode persistence
-userPromptTransformed   -> current-turn mode-control semantics
-agentStop               -> late objective contradiction check
+hakim  review  audit  debt  status  help
 ```
 
-The first four hooks preserve ordinary prompt freedom and keep mode state in host-owned plugin data. Default `full` is stateless.
+- `core/hakim-skill/SKILL.md` defines core execution judgment and `lite`, `full`, `ultra`, and `off` modes.
+- `core/hakim-skill/skills/` contains the five specialized capability contracts.
+- `core/hakim-skill/capabilities.json` maps those six semantic capabilities to host-native surfaces.
+- `core/hakim-skill/INSTALL.md` documents supported installation and removal journeys.
 
-The `agentStop` hook is a late-bound objective-truth mechanism. It reads host-provided runtime context ephemerally, reuses existing structured completion checkpoints, and may request one correction only when a supported observable repository/setup fact contradicts a consequential structured claim. It does not add broad command blocking, general prose linting, raw transcript persistence, or a second reasoning engine. When the stop hook is already active, it allows termination to prevent correction loops.
+The shared root skill uses a deliberately portable frontmatter contract: `name` plus `description`. Codex, Claude Code, and Copilot root skill projections are byte-identical to that canonical source. Host projections may add native plugin metadata, hooks, agents, state, or invocation syntax around the skills, but they must not create a second capability-contract layer.
 
-Live-host evidence remains separate from repository implementation and tests.
+## Host integrations
 
-### OpenCode
+**Codex** uses a native marketplace plugin with six skill projections and compact SessionStart presence.
 
-Native project-local plugin installed by a guarded managed lifecycle. The lifecycle persists a bounded install manifest; supports create, exact adoption, supported-version upgrade, and supported older-version removal; never edits `opencode.json`; and preserves unrelated `.opencode` content.
+**Claude Code** uses a native marketplace plugin with six skill projections, compact SessionStart presence, and scoped execution agents. Agents preload a canonical skill; they do not own another contract.
 
-Mutation uses same-filesystem quarantine plus post-move byte verification. Rollback restores actual quarantined bytes with no-clobber semantics.
+**GitHub Copilot CLI** uses a native marketplace plugin with six skill projections, thin execution agents, and bounded lifecycle hooks. Default `full` presence is stateless; non-default mode state is bounded to host-owned plugin data.
 
-Prompt activation uses explicit ownership sentinels so Hakim removes only its own range and refuses to guess ownership of unbounded legacy state.
+**OpenCode** uses a guarded project-local plugin. Its managed lifecycle supports bounded create/adopt/upgrade/remove behavior, refuses unsafe or conflicting state, does not edit `opencode.json`, and uses quarantine-backed rollback with no-clobber restoration.
 
-## Runtime and state boundaries
+Capability parity is semantic. Hakim does not add MCP, LSP, A2A, a daemon, or another cross-host abstraction simply to make the integrations look identical.
 
-Host-native permission, approval, sandbox, trust, plugin, managed-policy, and removal controls remain authoritative.
+## Runtime core
 
-Hakim-owned state must be bounded and purpose-specific. Copilot mode state contains only schema/version mode metadata in host-owned plugin data. Hakim does not persist raw prompts, source code, tool arguments, reasoning, credentials, or transcript content as product state.
+Where a host supports startup/system injection, Hakim supplies only the compact core needed before the first coding decision:
 
-Mutation-capable code must be explicit about ownership and refuse unsafe, partial, modified, unsupported, or unowned conflicting state.
+- bounded understanding and stop-inspecting judgment;
+- the decision ladder;
+- proportional verification;
+- depth earned by actual uncertainty/risk;
+- preservation of real guards;
+- separation of evidence from authority;
+- evidence-bound consequential claims.
 
-## Evidence model
+Specialized `review`, `audit`, `debt`, `status`, and `help` contracts are loaded when needed rather than injected into every session.
 
-Keep these claims separate:
+## State and trust boundaries
 
-1. **Structural/CI conformance** — checked repository contracts passed.
-2. **Live-host acceptance** — a real install/start/invocation journey was observed for the exact identity being claimed.
-3. **Bounded behavioral evidence** — a specific host/task behavior was observed within stated limits.
-4. **Product usefulness/UX** — requires suitable dogfood or user evidence.
-5. **Release authorization** — a product decision separate from ordinary CI success.
-6. **Performance or quality improvement** — requires dedicated evidence and is never inferred from installation or CI.
+Host-native trust, permission, sandbox, managed-policy, cache, and removal controls remain authoritative.
 
-Evidence remains tied to the exact source identity on which it was observed.
+Hakim-owned persistent state is intentionally small and purpose-specific. It does not persist raw prompts, source code, reasoning, credentials, or transcript content as product telemetry.
 
-## Truth-gate policy
+Mutation-capable lifecycle code must know what it owns and refuse partial, modified, unsupported, symlinked, or otherwise unsafe conflicting state.
 
-Structured facts have structured authorities. Versions, release channels, package metadata, capability IDs, install pins, supported-host acceptance, host versions, timestamps, and evidence references should be parsed from machine-readable or structural sources.
+## Packaging
 
-Free-form documentation is reader-facing projection. Tests may reject stale or unsafe public surfaces, but prose order is not a product invariant.
+The canonical skill ZIP is built from an explicit product allowlist: the core skill, five specialized skills, capability mapping, installation/help documentation, required notices, and the optional deterministic audit helper. Test harnesses, repository evidence, release history, and build tooling are not shipped inside the skill package.
 
-When a fact becomes important enough to gate product behavior, prefer a structured authority and focused test over additional status prose.
+Before artifact generation, the packager validates all six canonical skill frontmatter surfaces and rejects malformed metadata, capability name/path mismatch, unexpected skill directories, symlinked/unsafe structures, and extra files in specialized skill directories.
 
-## Packaging and release
+The Git-backed OpenCode package is separately bounded by the root `package.json` files allowlist and preserves exact prior-version lifecycle authorities needed for safe managed upgrade/remove behavior.
 
-The canonical skill package uses an explicit allowlist and normalized member metadata for reproducible output.
+`npm run package:release` builds the deterministic skill ZIP, CycloneDX SBOM, checksums, and release manifest.
 
-The root package is private; its `files` allowlist bounds the Git-backed OpenCode bootstrap and is not an npm registry release.
+## Validation boundary
 
-The Git-backed package declares Node `>=22`. Public CI exercises the maintained JavaScript/OpenCode surface on Node 22, 24, and 26.
-
-`npm run package:release` builds the canonical skill ZIP, deterministic CycloneDX SBOM, and checksum/manifest metadata. Those artifacts prove their checked integrity scope, not publication, signing, third-party attestation, host acceptance, or product effectiveness.
-
-## Design rules
-
-Before adding a component:
-
-1. Prove a current product need.
-2. Reuse the canonical source or an existing host-native surface.
-3. Prefer standard-library and host-native capabilities.
-4. Add no cross-host abstraction solely for symmetry.
-5. Keep product claims narrower than the evidence.
-6. Remove retired executable/product/reference surfaces instead of retaining dormant alternatives.
-7. Preserve capable-model freedom: constrain objective consequences and truth boundaries before reasoning paths.
+`npm test` checks maintained product/runtime contracts and release packaging. A green repository gate does not establish universal host compatibility, product effectiveness, or third-party approval.
