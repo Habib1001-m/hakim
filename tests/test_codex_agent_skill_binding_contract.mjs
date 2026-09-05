@@ -24,6 +24,15 @@ function stripSkillFrontmatter(text, relativePath) {
   return match[1].trim();
 }
 
+function parseDeveloperInstructions(text, relativePath) {
+  const triple = text.match(/^developer_instructions\s*=\s*"""([\s\S]*?)"""\s*$/m);
+  if (triple) return triple[1].trim();
+
+  const basic = text.match(/^developer_instructions\s*=\s*("(?:\\.|[^"\\])*")\s*$/m);
+  assert.ok(basic, `${relativePath} must contain parseable developer_instructions`);
+  return JSON.parse(basic[1]).trim();
+}
+
 test('Codex managed agent bundles embed their canonical Hakim skill bodies instead of relying on runtime skill-resource lookup', async () => {
   const { buildCodexAgentBundle } = await import(pathToFileURL(LIFECYCLE).href);
   const bundle = buildCodexAgentBundle(PLUGIN_ROOT);
@@ -37,28 +46,29 @@ test('Codex managed agent bundles embed their canonical Hakim skill bodies inste
 
     assert.ok(projected, `${agentFile} must be present in the managed Codex agent bundle`);
     const generated = Buffer.from(projected.bytes).toString('utf8');
+    const instructions = parseDeveloperInstructions(generated, agentFile);
 
     assert.ok(
-      generated.includes(canonicalBody),
+      instructions.includes(canonicalBody),
       `${agentFile} must embed the exact canonical ${capability} skill body so the child role does not depend on unsupported skill preload`,
     );
     assert.doesNotMatch(
-      generated,
+      instructions,
       /(?:skill|resource|file|local):\/\//i,
       `${agentFile} must not depend on guessed skill/resource URI schemes`,
     );
     assert.doesNotMatch(
-      generated,
+      instructions,
       /resources\/read/i,
       `${agentFile} must not depend on MCP resources/read to obtain its canonical contract`,
     );
     assert.match(
-      generated,
+      instructions,
       new RegExp(`\\$hakim:${capability}\\b`, 'i'),
       `${agentFile} must retain the Hakim capability identity as its activation guard`,
     );
     assert.match(
-      generated,
+      instructions,
       /HAKIM_PLUGIN_SKILL_UNAVAILABLE/,
       `${agentFile} must retain fail-closed behavior when the Hakim capability is no longer exposed by the host`,
     );
