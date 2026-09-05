@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 1,
   "policy": "exactly six canonical capabilities; host invocation syntax may differ, capability semantics may not",
   "capabilities": [
     {
