@@ -15,7 +15,7 @@ A prerelease version identifies a specific product release. Breaking changes to 
 
 For OpenCode, Hakim may recognize selected older managed manifests for safe upgrade/removal. That support is bounded by the implementation and tests; it is not a promise that every historical development snapshot can be upgraded automatically.
 
-`hakim-gain` remains a beta compatibility ID whose maintained behavior is bounded evidence-status reporting rather than a quantified performance claim.
+Recognizing an older managed manifest is lifecycle compatibility only. It does not make historical capability IDs part of the current canonical product surface; `core/hakim-skill/capabilities.json` is authoritative for the maintained capability set.
 
 ## Before stable 1.0
 
