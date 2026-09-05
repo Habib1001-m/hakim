@@ -94,6 +94,33 @@ class PackageSkillTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, result.stderr + result.stdout)
             self.assertIn("frontmatter", (result.stderr + result.stdout).lower())
 
+    def test_package_rejects_skill_name_path_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_root = Path(tmp)
+            source = tmp_root / "source"
+            shutil.copytree(ROOT / "core/hakim-skill", source)
+            skill = source / "skills" / "help" / "SKILL.md"
+            text = skill.read_text(encoding="utf-8").replace("name: help", "name: status", 1)
+            skill.write_text(text, encoding="utf-8")
+            result = build_package(source, tmp_root / "out.zip")
+            self.assertNotEqual(result.returncode, 0, result.stderr + result.stdout)
+            self.assertIn("frontmatter", (result.stderr + result.stdout).lower())
+
+    def test_package_rejects_unexpected_skill_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_root = Path(tmp)
+            source = tmp_root / "source"
+            shutil.copytree(ROOT / "core/hakim-skill", source)
+            extra = source / "skills" / "extra"
+            extra.mkdir()
+            (extra / "SKILL.md").write_text(
+                '---\nname: extra\ndescription: "Unexpected release capability."\n---\n\n# Extra\n',
+                encoding="utf-8",
+            )
+            result = build_package(source, tmp_root / "out.zip")
+            self.assertNotEqual(result.returncode, 0, result.stderr + result.stdout)
+            self.assertIn("skill directories", (result.stderr + result.stdout).lower())
+
     def test_package_rejects_symlinked_required_helper(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_root = Path(tmp)
