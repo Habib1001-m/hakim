@@ -24,9 +24,9 @@ A successful repository gate does not itself publish a tag, GitHub release, npm 
 
 ## Compatibility
 
-During beta, breaking changes must still be explicit. Removal or incompatible behavior changes to a canonical capability, mode, supported host surface, or managed lifecycle require a distinct release decision and clear user-facing notes.
+During beta, breaking changes must still be explicit. Removal or incompatible behavior changes to a canonical capability, mode, supported host surface, or managed lifecycle require a distinct prerelease identity and clear user-facing documentation.
 
-`hakim-gain` remains a compatibility ID whose maintained meaning is bounded evidence status, not a quantified-gain claim.
+The current canonical capability registry is authoritative for invocation-level compatibility. Recognition of older managed installation manifests for safe upgrade/removal is lifecycle compatibility only and does not preserve historical capability IDs as current product surface.
 
 ## Release artifacts
 
