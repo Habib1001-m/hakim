@@ -4,6 +4,10 @@ Hakim records product-facing changes here. Internal acceptance campaigns, privat
 
 ## Unreleased
 
+## 1.0.0-beta.9
+
+- Made every OpenCode Hakim slash command visibly self-identifying in the TUI by prefixing its description with `Hakim`, so users can discover and filter the six canonical Hakim commands without memorizing generic command names.
+
 ## 1.0.0-beta.8
 
 - Rebuilt the maintained product around exactly six canonical capabilities: `hakim`, `review`, `audit`, `debt`, `status`, and `help`.
