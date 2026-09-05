@@ -8,7 +8,8 @@ import { buildOpenCodeBundle } from '../scripts/lib/opencode_bundle.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PLUGIN_PATH = path.join(ROOT, 'plugins', 'opencode', 'hakim.mjs');
-const SPECIALIZED = ['review', 'audit', 'debt', 'status', 'help'];
+const CAPABILITIES = ['hakim', 'review', 'audit', 'debt', 'status', 'help'];
+const SPECIALIZED = CAPABILITIES.filter((name) => name !== 'hakim');
 
 async function loadPlugin() {
   const url = `${pathToFileURL(PLUGIN_PATH).href}?discoverability=${Date.now()}-${Math.random()}`;
@@ -16,17 +17,15 @@ async function loadPlugin() {
   return module.default;
 }
 
-test('OpenCode installed surface exposes Hakim-namespaced Markdown commands for specialized capabilities', () => {
+test('OpenCode installed surface exposes Hakim-namespaced Markdown discovery routes for specialized capabilities', () => {
   const bundle = buildOpenCodeBundle(ROOT);
   const byTarget = new Map(bundle.files.map((file) => [file.target_relative, file]));
 
   for (const capability of SPECIALIZED) {
     const namespaced = `.opencode/commands/hakim/${capability}.md`;
-    const flat = `.opencode/commands/${capability}.md`;
     const file = byTarget.get(namespaced);
 
     assert.ok(file, `managed bundle must include ${namespaced}`);
-    assert.equal(byTarget.has(flat), false, `flat unbranded command must not be installed: ${flat}`);
     const text = file.bytes.toString('utf8');
     assert.match(text, /^---\n/m);
     assert.match(text, /description:\s+Hakim\b/i);
@@ -34,17 +33,16 @@ test('OpenCode installed surface exposes Hakim-namespaced Markdown commands for 
   }
 });
 
-test('OpenCode plugin reserves dynamic slash projection for the Hakim mode controller only', async () => {
+test('OpenCode keeps canonical capability routes while namespaced discovery routes stay file-backed aliases', async () => {
   const load = await loadPlugin();
   const hooks = await load({});
   const config = {};
 
   await hooks.config(config);
 
-  assert.deepEqual(Object.keys(config.command || {}).sort(), ['hakim']);
-  assert.match(config.command.hakim.description, /Hakim mode/i);
+  assert.deepEqual(CAPABILITIES.filter((name) => config.command?.[name]), CAPABILITIES);
   for (const capability of SPECIALIZED) {
-    assert.equal(config.command[capability], undefined, `specialized command must use /hakim/${capability} Markdown discovery`);
+    assert.equal(config.command?.[`hakim/${capability}`], undefined, `discoverability alias must be file-backed: hakim/${capability}`);
   }
 });
 
