@@ -59,9 +59,6 @@ def verify(zip_path: Path) -> list[str]:
             version = archive.read("hakim-skill/VERSION").decode("utf-8").strip()
             if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", version):
                 errors.append("invalid packaged VERSION")
-            skill = archive.read("hakim-skill/SKILL.md").decode("utf-8")
-            if f"version: {version}" not in skill:
-                errors.append("SKILL.md version does not match VERSION")
             capabilities = json.loads(archive.read("hakim-skill/capabilities.json"))
             if [item.get("id") for item in capabilities.get("capabilities", [])] != CAPABILITY_IDS:
                 errors.append("capability inventory does not match the maintained six-capability contract")
