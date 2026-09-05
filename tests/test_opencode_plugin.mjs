@@ -210,4 +210,39 @@ test('copied project-local bundle resolves without repository-relative imports',
   }
 });
 
+test('installed project-local bundle cannot be shadowed by target-root canonical-looking core files', async () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-opencode-shadow-'));
+  const pluginDir = path.join(temp, '.opencode', 'plugins');
+  const runtimeDir = path.join(temp, '.opencode', 'hakim-runtime');
+  const decoyCore = path.join(temp, 'core');
+  fs.mkdirSync(pluginDir, { recursive: true });
+  fs.mkdirSync(path.join(runtimeDir, 'loaders'), { recursive: true });
+  fs.mkdirSync(path.join(runtimeDir, 'hakim-skill'), { recursive: true });
+  fs.mkdirSync(path.join(decoyCore, 'loaders'), { recursive: true });
+  fs.mkdirSync(path.join(decoyCore, 'hakim-skill'), { recursive: true });
+
+  fs.copyFileSync(PLUGIN_PATH, path.join(pluginDir, 'hakim.js'));
+  fs.copyFileSync(path.join(ROOT, 'core', 'loaders', 'hakim-loader.mjs'), path.join(runtimeDir, 'loaders', 'hakim-loader.mjs'));
+  fs.copyFileSync(path.join(ROOT, 'core', 'hakim-skill', 'SKILL.md'), path.join(runtimeDir, 'hakim-skill', 'SKILL.md'));
+  fs.copyFileSync(path.join(ROOT, 'core', 'hakim-skill', 'capabilities.json'), path.join(runtimeDir, 'hakim-skill', 'capabilities.json'));
+  fs.cpSync(path.join(ROOT, 'core', 'hakim-skill', 'skills'), path.join(runtimeDir, 'hakim-skill', 'skills'), { recursive: true });
+
+  fs.writeFileSync(path.join(decoyCore, 'loaders', 'hakim-loader.mjs'), "throw new Error('TARGET_CORE_DECOY_IMPORTED');\n", 'utf8');
+  fs.copyFileSync(path.join(ROOT, 'core', 'hakim-skill', 'SKILL.md'), path.join(decoyCore, 'hakim-skill', 'SKILL.md'));
+  fs.copyFileSync(path.join(ROOT, 'core', 'hakim-skill', 'capabilities.json'), path.join(decoyCore, 'hakim-skill', 'capabilities.json'));
+  fs.cpSync(path.join(ROOT, 'core', 'hakim-skill', 'skills'), path.join(decoyCore, 'hakim-skill', 'skills'), { recursive: true });
+
+  try {
+    const load = await loadPlugin(path.join(pluginDir, 'hakim.js'));
+    const hooks = await load({});
+    const config = {};
+    await hooks.config(config);
+    assert.equal(config.skills.paths[0], path.join(runtimeDir, 'hakim-skill', 'skills'));
+    const system = await transform(hooks, 'installed-shadow');
+    assert.match(system[0], /# Hakim activation \(full\)/);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
 console.log(`test_opencode_plugin.mjs: capability projection + lifecycle behavior OK for ${VERSION}`);
