@@ -86,13 +86,26 @@ for (const expected of EXPECTED) {
       `${relativePath} must remain a thin execution context instead of duplicating the skill contract`,
     );
 
-    for (const forbidden of ['model', 'model_reasoning_effort', 'service_tier', 'personality', 'sandbox_mode']) {
+    for (const forbidden of [
+      'model',
+      'model_reasoning_effort',
+      'service_tier',
+      'personality',
+      'sandbox_mode',
+      'mcp_servers',
+      'nickname_candidates',
+    ]) {
       assert.doesNotMatch(
         text,
         new RegExp(`^${forbidden}\\s*=`, 'm'),
         `${relativePath} must inherit parent/user ${forbidden} instead of pinning hidden policy`,
       );
     }
+    assert.doesNotMatch(
+      text,
+      /^\s*\[\[\s*skills\.config\s*\]\]/m,
+      `${relativePath} must not impose agent-local skill availability policy`,
+    );
 
     if (expected.readOnlyIntent) {
       assert.match(
