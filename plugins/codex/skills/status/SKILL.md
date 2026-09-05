@@ -1,6 +1,6 @@
 ---
 name: status
-description: Report what the current evidence actually proves for an exact Hakim repository, task, test, or runtime scope without inventing performance, savings, security, compatibility, adoption, or ROI claims.
+description: "Hakim — Use when asked what current evidence proves for an exact repository, task, test, runtime, readiness, or release scope. Separate evidence layers, preserve contradictions, and mark unsupported performance, savings, security, compatibility, adoption, or ROI claims as not established."
 ---
 
 # Hakim Status

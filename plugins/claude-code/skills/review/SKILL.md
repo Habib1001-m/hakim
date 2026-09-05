@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review an explicit diff or selected files for removable complexity, duplicated behavior, speculative abstractions, avoidable dependencies, and unsupported claims without modifying repository state.
+description: "Hakim — Use for a bounded read-only complexity review of an explicitly selected diff, pull request, commit, or file scope. Find evidence-backed deletion, reuse, stdlib/native replacement, avoidable dependency, YAGNI, shrink, or unsupported-claim opportunities; do not treat this as a general correctness, security, architecture, or release review."
 ---
 
 # Hakim Review

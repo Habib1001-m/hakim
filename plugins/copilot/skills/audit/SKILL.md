@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Perform a deeper read-only Hakim repository audit when the decision requires broader evidence than a bounded diff review; report only evidence-backed simplification, dependency, drift, and claim findings.
+description: "Hakim — Use when a subsystem, adapter set, dependency surface, or repository question needs broader read-only evidence than a bounded review. Find only evidence-backed simplification, dependency, drift, and claim issues, and widen scope only when the decision earns it."
 ---
 
 # Hakim Audit
@@ -58,7 +58,7 @@ If evidence conflicts, preserve the contradiction instead of forcing a finding.
 Rank the largest safe reductions or drift corrections first:
 
 ```text
-<severity> <tag> — <finding>. <smallest safe replacement>. [<path>:<line-or-range>]
+<tag> — <finding>. <smallest safe replacement>. [<path>:<line-or-range>]
 ```
 
 End with a compact scope statement:

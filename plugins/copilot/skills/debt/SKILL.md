@@ -1,6 +1,6 @@
 ---
 name: debt
-description: Inspect deliberate Hakim shortcuts and technical-debt provenance in the current repository or task without promoting examples, history, or unsupported assumptions into live debt.
+description: "Hakim — Use when asked which deliberate shortcuts or technical-debt items are actually live in the current repository/task, including Hakim markers or accepted debt records. Require current inspectable evidence; do not promote examples, history, filenames, or unsupported assumptions into live debt."
 ---
 
 # Hakim Debt

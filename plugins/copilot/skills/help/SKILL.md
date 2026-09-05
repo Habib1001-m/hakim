@@ -1,6 +1,6 @@
 ---
 name: help
-description: Show the six Hakim capabilities, modes, host-native invocation patterns, and trust boundaries without embedding release history, candidate SHAs, or stale acceptance state.
+description: "Hakim — Use when asked how to use or invoke Hakim, list its six capabilities or modes, inspect host-native usage, or understand trust boundaries. Do not infer installed version/source identity or repeat release history from the skill text."
 ---
 
 # Hakim Help
@@ -27,7 +27,7 @@ Modes belong to `hakim`; they are not separate skills:
 
 ## Host-native invocation
 
-Typical supported forms are namespaced by the installed Hakim plugin/runtime:
+Invocation is host-native. Use the form exposed by the installed Hakim plugin/runtime:
 
 ```text
 Codex
@@ -47,10 +47,20 @@ Claude Code
   /hakim:help
 
 GitHub Copilot CLI
-  use the installed Hakim skills: hakim, review, audit, debt, status, help
+  /hakim/hakim
+  /hakim/review
+  /hakim/audit
+  /hakim/debt
+  /hakim/status
+  /hakim/help
 
 OpenCode
-  use Hakim's installed native commands/skill tooling for the same six capabilities
+  /hakim
+  /review
+  /audit
+  /debt
+  /status
+  /help
 ```
 
 A host may expose discovery UI, scoped agent names, or command aliases in addition to these forms. Those are routing details, not extra Hakim capabilities.

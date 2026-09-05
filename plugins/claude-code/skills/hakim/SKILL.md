@@ -1,6 +1,6 @@
 ---
 name: hakim
-description: "Apply Hakim to coding, repair, refactoring, dependency, and implementation decisions: pursue the smallest sufficient safe outcome, reuse existing code, prefer standard-library and native capabilities, verify proportionally, and keep technical claims evidence-bound."
+description: "Hakim — Use for coding, repair, refactoring, dependency, and implementation decisions, or when selecting the lite/full/ultra/off mode. Pursue the smallest sufficient safe outcome, prefer reuse and native capabilities, verify proportionally, and keep technical claims evidence-bound."
 ---
 
 # Hakim
