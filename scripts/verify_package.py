@@ -20,13 +20,13 @@ EXPECTED = {
     "hakim-skill/VERSION",
     "hakim-skill/capabilities.json",
     "hakim-skill/scripts/audit_complexity.py",
-    "hakim-skill/skills/hakim-review/SKILL.md",
-    "hakim-skill/skills/hakim-audit/SKILL.md",
-    "hakim-skill/skills/hakim-debt/SKILL.md",
-    "hakim-skill/skills/hakim-gain/SKILL.md",
-    "hakim-skill/skills/hakim-help/SKILL.md",
+    "hakim-skill/skills/review/SKILL.md",
+    "hakim-skill/skills/audit/SKILL.md",
+    "hakim-skill/skills/debt/SKILL.md",
+    "hakim-skill/skills/status/SKILL.md",
+    "hakim-skill/skills/help/SKILL.md",
 }
-CAPABILITY_IDS = ["hakim", "hakim-review", "hakim-audit", "hakim-debt", "hakim-gain", "hakim-help"]
+CAPABILITY_IDS = ["hakim", "review", "audit", "debt", "status", "help"]
 
 
 def verify(zip_path: Path) -> list[str]:
