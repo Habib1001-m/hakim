@@ -68,7 +68,7 @@ function resolveBundle() {
 
 function loadCapabilities(capabilitiesPath) {
   const parsed = JSON.parse(fs.readFileSync(capabilitiesPath, 'utf8'));
-  if (parsed?.schema_version !== 2 || !Array.isArray(parsed.capabilities)) {
+  if (parsed?.schema_version !== 1 || !Array.isArray(parsed.capabilities)) {
     throw new Error('Unsupported Hakim capability contract.');
   }
   for (const capability of parsed.capabilities) {
