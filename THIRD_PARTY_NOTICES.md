@@ -8,15 +8,15 @@ Ponytail project by Dietrich Gebert:
 - License: MIT
 - Copyright: Copyright (c) 2026 DietrichGebert
 
-The inherited concepts are documented in `UPSTREAM.md` and
-`upstream/ponytail.json`. Ponytail benchmark results, release status, adapter
-coverage, branding, and endorsements do not transfer to Hakim.
+The project and license reference above are the maintained public attribution
+for these inherited concepts. Ponytail benchmark results, release status,
+adapter coverage, branding, and endorsements do not transfer to Hakim.
 
 ## Ponytail MIT License
 
 MIT License
 
-Copyright (c) 2026 DietrichGebert
+Copyright (c) 2026 Dietrich Gebert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
