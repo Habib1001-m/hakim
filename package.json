@@ -1,6 +1,6 @@
 {
   "name": "@habib/hakim",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.9",
   "private": true,
   "description": "Evidence-bound coding guidance for smaller, safer AI-assisted changes.",
   "type": "commonjs",
