@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PLUGIN_PATH = path.join(ROOT, 'plugins', 'opencode', 'hakim.mjs');
 const SENTINEL = '<!-- hakim-system:v1 mode=';
+const CAPABILITIES = ['hakim', 'review', 'audit', 'debt', 'status', 'help'];
 
 async function loadPlugin(pluginPath = PLUGIN_PATH) {
   const url = `${pathToFileURL(pluginPath).href}?test=${Date.now()}-${Math.random()}`;
@@ -45,20 +46,19 @@ test('OpenCode plugin registers canonical commands and skills path without overw
   const load = await loadPlugin();
   const hooks = await load({});
   const existing = { description: 'keep me', template: 'existing' };
-  const config = { command: { 'hakim-review': existing } };
+  const config = { command: { review: existing } };
 
   await hooks.config(config);
 
-  assert.equal(config.command['hakim-review'], existing, 'existing host command must not be overwritten');
-  assert.deepEqual(
-    ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help']
-      .filter((name) => config.command[name]),
-    ['hakim', 'hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help'],
-  );
+  assert.equal(config.command.review, existing, 'existing host command must not be overwritten');
+  assert.deepEqual(CAPABILITIES.filter((name) => config.command[name]), CAPABILITIES);
+  for (const legacy of ['hakim-review', 'hakim-audit', 'hakim-debt', 'hakim-gain', 'hakim-help', 'gain', 'full']) {
+    assert.equal(config.command[legacy], undefined, `legacy command must not be projected: ${legacy}`);
+  }
   assert.match(config.command.hakim.template, /\$1/);
-  assert.match(config.command['hakim-audit'].template, /native skill tool/);
-  assert.match(config.command['hakim-help'].template, /show the Hakim quick reference/);
-  assert.match(config.command['hakim-help'].template, /Do not require additional arguments/);
+  assert.match(config.command.audit.template, /native skill tool/);
+  assert.match(config.command.help.template, /show the current Hakim reference/i);
+  assert.match(config.command.help.template, /Do not require additional arguments/);
   assert.equal(config.skills.paths.length, 1);
   assert.equal(config.skills.paths[0], path.join(ROOT, 'core', 'hakim-skill', 'skills'));
 
@@ -77,7 +77,9 @@ test('system transform injects canonical full rules into one system entry', asyn
   assert.match(system[0], /# Hakim activation \(full\)/);
   assert.match(system[0], /Canonical Hakim policy loaded from the active distribution\./);
   assert.doesNotMatch(system[0], /Canonical source: core\/hakim-skill\/SKILL\.md/);
-  assert.match(system[0], /## The Ladder/);
+  assert.match(system[0], /## The 7-level decision ladder/);
+  assert.match(system[0], /## Proportional verification/);
+  assert.doesNotMatch(system[0], /BASELINE_COMMAND|PRE_EDIT_GIT_STATUS|FINAL_GIT_STATUS/);
 });
 
 test('system transform is idempotent on reused output and replaces mode blocks instead of duplicating them', async () => {
@@ -196,14 +198,15 @@ test('copied project-local bundle resolves without repository-relative imports',
     const config = {};
     await hooks.config(config);
     assert.equal(config.skills.paths[0], path.join(runtimeDir, 'hakim-skill', 'skills'));
-    assert.match(config.command['hakim-help'].template, /Do not require additional arguments/);
+    assert.match(config.command.help.template, /Do not require additional arguments/);
+    assert.deepEqual(CAPABILITIES.filter((name) => config.command[name]), CAPABILITIES);
     const system = await transform(hooks, 'installed');
     assert.match(system[0], /# Hakim activation \(full\)/);
     assert.match(system[0], /active distribution/);
-    assert.match(system[0], /## The Ladder/);
+    assert.match(system[0], /## The 7-level decision ladder/);
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
 });
 
-console.log('test_opencode_plugin.mjs: ok');
+console.log('test_opencode_plugin.mjs: beta6 capability projection + lifecycle behavior OK');
