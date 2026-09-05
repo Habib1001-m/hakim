@@ -13,13 +13,14 @@ const MAX_MANIFEST_BYTES = 64 * 1024;
 
 export const MANAGED_MANIFEST_RELATIVE_PATH = 'agents/.hakim-agents-install-manifest.json';
 
-const EXPECTED_AGENT_FILES = Object.freeze([
-  'hakim_reviewer.toml',
-  'hakim_auditor.toml',
-  'hakim_debt_analyst.toml',
-  'hakim_evidence_verifier.toml',
-  'hakim_implementer.toml',
+const AGENT_SPECS = Object.freeze([
+  { file: 'hakim_reviewer.toml', capability: 'review' },
+  { file: 'hakim_auditor.toml', capability: 'audit' },
+  { file: 'hakim_debt_analyst.toml', capability: 'debt' },
+  { file: 'hakim_evidence_verifier.toml', capability: 'status' },
+  { file: 'hakim_implementer.toml', capability: 'hakim' },
 ]);
+const EXPECTED_AGENT_FILES = Object.freeze(AGENT_SPECS.map((spec) => spec.file));
 const EXPECTED_AGENT_SET = new Set(EXPECTED_AGENT_FILES);
 
 function sha256(bytes) {
@@ -55,6 +56,35 @@ function readPluginIdentity(pluginRoot) {
     throw new Error('Codex plugin manifest version is empty');
   }
   return { product_version: manifest.version.trim(), manifest_path: manifestPath };
+}
+
+function readCanonicalSkillBody(pluginRoot, capability) {
+  const skillPath = path.join(pluginRoot, 'skills', capability, 'SKILL.md');
+  const entry = inspectEntry(skillPath, 'file');
+  if (!entry.ok) {
+    throw new Error(`canonical skill source ${capability} must be a regular file, not ${entry.state}`);
+  }
+  const normalized = fs.readFileSync(skillPath, 'utf8').replaceAll('\r\n', '\n');
+  const match = normalized.match(/^---\n[\s\S]*?\n---\n([\s\S]+)$/);
+  if (!match) throw new Error(`canonical skill source ${capability} must contain YAML frontmatter and a body`);
+  const body = match[1].trim();
+  if (body.length === 0) throw new Error(`canonical skill source ${capability} body is empty`);
+  return { body, source_path: skillPath };
+}
+
+function projectCanonicalSkillIntoAgent(templateText, canonicalBody, agentName) {
+  const block = templateText.match(/^developer_instructions\s*=\s*"""([\s\S]*?)"""\s*$/m);
+  if (!block) throw new Error(`agent source ${agentName} must define multiline developer_instructions`);
+  const wrapper = block[1].trim();
+  if (wrapper.length === 0) throw new Error(`agent source ${agentName} developer_instructions are empty`);
+  const instructions = [
+    wrapper,
+    '',
+    'Canonical Hakim capability contract (mechanically projected from the installed plugin skill bytes):',
+    '',
+    canonicalBody,
+  ].join('\n');
+  return templateText.replace(block[0], `developer_instructions = ${JSON.stringify(instructions)}`);
 }
 
 function manifestFromBundle(bundle) {
@@ -107,14 +137,19 @@ export function buildCodexAgentBundle(pluginRoot = DEFAULT_PLUGIN_ROOT) {
     throw new Error(`agent source inventory must contain exactly five expected TOML files; found: ${inventory.join(', ')}`);
   }
 
-  const files = EXPECTED_AGENT_FILES.map((name) => {
+  const files = AGENT_SPECS.map(({ file: name, capability }) => {
     const sourcePath = path.join(agentsDir, name);
     const entry = inspectEntry(sourcePath, 'file');
     if (!entry.ok) throw new Error(`agent source ${name} must be a regular file, not ${entry.state}`);
-    const bytes = fs.readFileSync(sourcePath);
+    const templateText = fs.readFileSync(sourcePath, 'utf8');
+    const canonical = readCanonicalSkillBody(pluginRoot, capability);
+    const projectedText = projectCanonicalSkillIntoAgent(templateText, canonical.body, name);
+    const bytes = Buffer.from(projectedText, 'utf8');
     return {
       source_relative: path.posix.join('agents', name),
       source_path: sourcePath,
+      canonical_skill_relative: path.posix.join('skills', capability, 'SKILL.md'),
+      canonical_skill_path: canonical.source_path,
       target_relative: name,
       bytes,
       sha256: sha256(bytes),
