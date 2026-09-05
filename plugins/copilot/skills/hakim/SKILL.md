@@ -1,24 +1,6 @@
 ---
 name: hakim
-description: >
-  Apply Hakim to coding, repair, refactoring, dependency, and implementation
-  decisions: pursue the smallest sufficient safe outcome, reuse existing code,
-  prefer standard-library and native capabilities, verify proportionally, and
-  keep technical claims evidence-bound.
-argument-hint: [lite|full|ultra|off] [task]
-license: MIT
-author: Habib1001-m
-repository: https://github.com/Habib1001-m/hakim
-tags:
-  - minimalism
-  - reuse-first
-  - evidence-bound
-  - coding
-intensity_levels:
-  - lite
-  - full
-  - ultra
-  - off
+description: "Apply Hakim to coding, repair, refactoring, dependency, and implementation decisions: pursue the smallest sufficient safe outcome, reuse existing code, prefer standard-library and native capabilities, verify proportionally, and keep technical claims evidence-bound."
 ---
 
 # Hakim
