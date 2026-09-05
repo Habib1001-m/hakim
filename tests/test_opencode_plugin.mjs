@@ -8,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PLUGIN_PATH = path.join(ROOT, 'plugins', 'opencode', 'hakim.mjs');
+const VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
 const SENTINEL = '<!-- hakim-system:v1 mode=';
 const CAPABILITIES = ['hakim', 'review', 'audit', 'debt', 'status', 'help'];
 
@@ -209,4 +210,4 @@ test('copied project-local bundle resolves without repository-relative imports',
   }
 });
 
-console.log('test_opencode_plugin.mjs: beta6 capability projection + lifecycle behavior OK');
+console.log(`test_opencode_plugin.mjs: capability projection + lifecycle behavior OK for ${VERSION}`);

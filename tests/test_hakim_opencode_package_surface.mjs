@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const VERSION = fs.readFileSync(path.join(ROOT, 'core', 'hakim-skill', 'VERSION'), 'utf8').trim();
 
 const packed = spawnSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], {
   cwd: ROOT,
@@ -63,4 +65,4 @@ for (const forbiddenPrefix of ['tests/', 'docs/', '.github/', 'plugins/codex/', 
   assert.ok(![...packedPaths].some((entry) => entry.startsWith(forbiddenPrefix)), `bootstrap package contains unrelated ${forbiddenPrefix} content`);
 }
 
-console.log(`test_hakim_opencode_package_surface.mjs: beta6 npm pack surface ok; files=${packedPaths.size}; npm=${process.env.npm_config_user_agent || 'unknown'}`);
+console.log(`test_hakim_opencode_package_surface.mjs: npm pack surface ok for ${VERSION}; files=${packedPaths.size}; npm=${process.env.npm_config_user_agent || 'unknown'}`);

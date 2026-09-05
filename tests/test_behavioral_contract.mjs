@@ -23,13 +23,14 @@ const MODE_DIRECTIVES = Object.freeze({
   off: 'Hakim guidance disabled for this session.',
 });
 const canonical = read('core/hakim-skill/SKILL.md');
+const version = read('core/hakim-skill/VERSION').trim();
 const canonicalPathFor = (name) => name === 'hakim'
   ? 'core/hakim-skill/SKILL.md'
   : `core/hakim-skill/skills/${name}/SKILL.md`;
 
 for (const [mode, directive] of Object.entries(MODE_DIRECTIVES)) {
-  assert.equal(getCoreModeDirective(mode), directive, `shared loader ${mode} directive must match beta6 mode semantics`);
-  assert.equal(getCopilotModeDirective(mode), directive, `Copilot ${mode} directive must match beta6 mode semantics`);
+  assert.equal(getCoreModeDirective(mode), directive, `shared loader ${mode} directive must match current mode semantics`);
+  assert.equal(getCopilotModeDirective(mode), directive, `Copilot ${mode} directive must match current mode semantics`);
 }
 assert.equal(getCoreModeDirective('unsupported'), MODE_DIRECTIVES.full, 'shared loader invalid mode must fall back to full');
 assert.equal(getCopilotModeDirective('unsupported'), MODE_DIRECTIVES.full, 'Copilot invalid mode must fall back to full');
@@ -121,4 +122,4 @@ assert.match(status, /what does the available evidence currently establish/i);
 assert.match(status, /NOT_ESTABLISHED/);
 assert.doesNotMatch(status, /quantified gain|estimated savings|ROI score/i, 'status must not retain gain semantics');
 
-console.log('test_behavioral_contract.mjs: beta6 six-capability judgment-first contract OK');
+console.log(`test_behavioral_contract.mjs: six-capability judgment-first contract OK for ${version}`);
