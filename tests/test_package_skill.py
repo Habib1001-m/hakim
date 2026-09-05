@@ -77,6 +77,23 @@ class PackageSkillTests(unittest.TestCase):
             self.assertEqual(first.read_bytes(), second.read_bytes())
             self.assertEqual(hashlib.sha256(first.read_bytes()).hexdigest(), hashlib.sha256(second.read_bytes()).hexdigest())
 
+    def test_package_rejects_invalid_skill_frontmatter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_root = Path(tmp)
+            source = tmp_root / "source"
+            shutil.copytree(ROOT / "core/hakim-skill", source)
+            skill = source / "skills" / "help" / "SKILL.md"
+            text = skill.read_text(encoding="utf-8")
+            text = text.replace(
+                "description: Show the six Hakim capabilities, modes, host-native invocation patterns, and trust boundaries without embedding release history, candidate SHAs, or stale acceptance state.",
+                "description: [broken] trailing-token",
+                1,
+            )
+            skill.write_text(text, encoding="utf-8")
+            result = build_package(source, tmp_root / "out.zip")
+            self.assertNotEqual(result.returncode, 0, result.stderr + result.stdout)
+            self.assertIn("frontmatter", (result.stderr + result.stdout).lower())
+
     def test_package_rejects_symlinked_required_helper(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_root = Path(tmp)
