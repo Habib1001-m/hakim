@@ -1,36 +1,68 @@
 # Hakim repository instructions
 
-When changing this repository:
+When changing this repository, pursue the **smallest sufficient safe change**.
 
-- make the smallest safe change; in Hakim this means the smallest sufficient, coherent, safe change rather than optimizing for the fewest lines or files;
-- before the first mutation in an existing runnable repository, run the smallest reasonably bounded representative baseline available; baseline discovery is read-only by default, and dependency or editable installs, lockfile or package-metadata generation, repository-local environment/bootstrap creation, code generation, formatter writes, and similar side effects count as mutations rather than harmless baseline preparation;
-- inspect maintained documentation, configuration, scripts, and tool declarations first; do not mutate merely to discover or prepare a baseline when a maintained non-mutating path is available; if setup mutation is genuinely required, state why before doing it and distinguish setup mutation from product mutation;
-- before the first product edit in a runnable Git repository, report observed `BASELINE_COMMAND`, `BASELINE_SOURCE`, `SETUP_MUTATION`, and `PRE_EDIT_GIT_STATUS`; do not treat a plan as a completed checkpoint;
-- for boolean/control-flow/validator/permission/guard transformations, report `SEMANTIC_CHANGE_CHECK` and do not claim semantic equivalence from existing-suite green alone; enumerate decision-relevant boundary states or run a targeted regression/probe, including empty/absent/error/boundary states when they can branch differently;
-- before completion, report observed `FINAL_GIT_STATUS`, `SETUP_ARTIFACTS`, and `UNRELATED_MUTATIONS`; never claim a clean tree, no artifacts, or no setup mutations when the observed state contradicts that claim;
-- once the affected implementation path, local conventions/reuse candidates, material guards, and validation surface are known, stop inspecting; any additional read/search must answer a concrete unresolved question with decision value;
-- do not create repository-local planning/analysis artifacts or repeat equivalent analysis merely to continue inspection when no decision-relevant question remains;
-- do not default to whole-repository exploration when the affected path is already bounded; investigate material correctness or safety uncertainty before mutation;
-- before simplifying or deleting validation/guard logic, identify the protected invariant; simplification must not remove a real domain/security/privacy/integrity/migration/rollback/accessibility/trust guard unless evidence shows the requirement no longer applies or is preserved elsewhere;
-- do not split, omit, or defer a necessary part of the same bounded change merely to shrink the diff;
-- preserve unrelated behavior and user files;
-- keep claims bounded to inspectable evidence; for `NO_CHANGE`, default to `No justified change found within the inspected scope` and do not claim the implementation is globally minimal, irreducible, optimal, or free of all simplification opportunities unless the inspected evidence establishes it;
-- distinguish deterministic checks from correctness or security review;
-- avoid speculative architecture and unnecessary dependencies;
-- add or update tests for changed behavior;
-- never include credentials, private prompts, sensitive evidence, or customer source code;
-- document user-visible changes and remaining limitations.
+## Understand
+
+Resolve only the facts that can change the implementation or the truth of the completion claim:
+
+- requested outcome;
+- affected implementation path and relevant consumers;
+- local reuse candidates and conventions;
+- material security, privacy, integrity, migration, rollback, accessibility, compatibility, or trust boundaries;
+- proportional verification available for the changed behavior.
+
+Stop inspecting when those are known. Additional reads or searches should answer a concrete unresolved question with decision value. Do not create planning/analysis artifacts merely to continue investigation.
+
+## Decide
+
+Prefer, in order:
+
+1. no new implementation when the requested behavior already exists or is not needed;
+2. reuse of existing repository behavior;
+3. standard-library capability;
+4. native platform/runtime capability;
+5. an already-accepted dependency;
+6. a smaller clear implementation;
+7. only then the minimum custom code required.
+
+A smaller diff is not better when it leaves the requested outcome incomplete or weakens a real guard.
+
+## Execute
+
+Choose ordinary implementation tactics inside the authorized scope. Do not manufacture checkpoint tables, approval loops, or fixed command sequences unless they protect a real boundary or make material evidence observable.
+
+Target root causes rather than only the reported symptom. Inspect sibling callers/consumers when they can share the same defect.
+
+Preserve unrelated behavior and user files. Never include credentials, private prompts, sensitive evidence, or customer source code.
+
+## Verify
+
+Verification depth is proportional to changed behavior and failure cost. Reuse maintained repository-native checks before inventing new harnesses.
+
+For changed validators, permissions, guards, state transitions, or control flow, verify the decision-relevant boundary states that can branch differently. A broad green suite is useful evidence but does not by itself prove semantic equivalence for a changed truth table.
+
+If verification cannot run safely or proportionally, say what remains unverified instead of implying a green state.
+
+## Close
+
+Keep completion claims tied to observed evidence. Source inspection, deterministic tests, human review, live runtime acceptance, and release/deployment state are different evidence classes.
+
+For a no-change result, default to:
+
+`No justified change found within the inspected scope.`
+
+Do not promote a bounded result into global optimality, correctness, security, readiness, or release approval.
 
 ## Capability routing
 
-- If the user explicitly requests Hakim, `/hakim`, or the native `hakim` skill, invoke the installed native `hakim` capability before any repository-affecting tool or shell command. Do not reimplement the Hakim workflow first from generic instructions.
-- Use Hakim capability `hakim` for the full evidence-bound workflow.
-- Use Hakim capability `hakim-review` for bounded review.
-- Use Hakim capability `hakim-audit` for evidence-backed audit work.
-- Use Hakim capability `hakim-debt` for focused technical-debt analysis.
-- Use Hakim capability `hakim-gain` for evidence-status summaries; the `gain` ID is retained for beta compatibility and does not imply a quantified gain.
-- Use Hakim capability `hakim-help` for host-aware usage guidance.
+When the native Hakim plugin is installed, use its canonical capabilities rather than reimplementing their contracts here:
 
-When the native `hakim` Copilot plugin is installed, prefer its matching skill or specialized custom agent over re-implementing the workflow from these baseline instructions.
+- `hakim` — execution judgment and `lite | full | ultra | off` mode control;
+- `review` — bounded removable-complexity review;
+- `audit` — deeper evidence-backed repository audit;
+- `debt` — live deliberate-shortcut / technical-debt provenance;
+- `status` — what current evidence establishes;
+- `help` — current host usage and boundaries.
 
-These are capability names, not universal slash-command claims. Host-native permissions, repository protections, plugin enablement, and tool controls remain authoritative.
+These are semantic capability names, not universal slash-command claims. Host-native permissions, repository protections, plugin enablement, managed policy, sandboxing, and tool controls remain authoritative.
