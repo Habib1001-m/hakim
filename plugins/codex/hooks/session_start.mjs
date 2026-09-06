@@ -58,6 +58,7 @@ try {
     'Apply the maintained Hakim core automatically to coding work without requiring an explicit Hakim invocation.',
     'Choose ordinary tactics inside the authorized scope; add process only when it changes a decision, protects a real boundary, or makes material evidence observable.',
     'Specialized capabilities remain available for review, audit, debt, evidence status, and help.',
+    "When delegation already exists, whether Codex chose it or the user requested it, and the delegated work is governed by a specialized Hakim capability, include that same capability in the child task using Codex's native skill selection; Hakim must not cause delegation or add a specialized capability to unrelated delegated work.",
     'Preserve Codex approval, sandbox, plugin, and hook trust controls.',
     '',
     policy,
