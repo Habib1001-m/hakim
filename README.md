@@ -1,23 +1,70 @@
 # Hakim (حَكِيم)
 
-Hakim is a developer tool for AI coding agents: a compact judgment layer that helps capable agents make smaller, safer, better-justified changes without turning them into workflow bots.
+**A judgment layer for AI coding agents.**
 
-> **Free reasoning. Safe action. Evidence-bound claims.**
+Smaller changes. Safer actions. Claims backed by evidence.
 
-Hakim optimizes for the **smallest sufficient safe change**, not the fewest lines. Security, privacy, accessibility, migrations, rollback safety, data integrity, compatibility, trust boundaries, and user trust remain real constraints.
+**Public beta · `v1.0.0-beta.11` · MIT · Codex · Claude Code · GitHub Copilot CLI · OpenCode**
 
-Its decision ladder is deliberately small:
+Hakim gives capable coding agents a compact engineering decision model before they start adding code, dependencies, abstractions, or confident completion claims.
+
+It does **not** turn your agent into a workflow bot. The host still owns permissions, tools, sandboxing, trust prompts, and execution. Hakim focuses on one narrower problem: **better judgment about what should change, how much evidence is enough, and what the result actually proves.**
+
+## Why Hakim exists
+
+AI coding agents are increasingly good at implementation. They can still make expensive judgment mistakes:
+
+- adding a dependency when the platform already solves the problem;
+- creating an abstraction before there is a real need for one;
+- inspecting far more of the repository than the task requires;
+- weakening a security, migration, rollback, or compatibility guard to make a change look simpler;
+- declaring success from a green command that did not actually prove the user-visible result.
+
+Hakim gives the agent a small decision ladder:
 
 ```text
-need? → reuse? → stdlib? → native platform? → accepted dependency? → smaller clear implementation? → minimum custom code
+need?
+  → reuse?
+  → stdlib?
+  → native platform?
+  → accepted dependency?
+  → smaller clear implementation?
+  → minimum custom code
 ```
 
-## Install
+The goal is not the fewest lines. It is the **smallest sufficient safe change**.
 
-Hakim is public beta software. Install a reviewed release by immutable release tag:
+## What changes in practice
+
+Without an explicit judgment layer, an agent may jump from a request directly to implementation.
+
+With Hakim active, the agent is guided to answer a few higher-value questions first:
+
+```text
+Do we need a change at all?
+Can the repository or platform already do this?
+What real guard must remain true?
+What is the smallest coherent implementation?
+What verification actually supports the completion claim?
+```
+
+Hakim then gets out of the way. It does not prescribe a universal command sequence or force every task through the same ceremony.
+
+## Who it is for
+
+| If you are… | Hakim is useful when… |
+|---|---|
+| **An experienced developer** | You want AI agents to preserve engineering constraints, reuse existing architecture, avoid speculative machinery, and keep claims proportional to evidence without replacing your judgment or your host's native controls. |
+| **An ambitious AI / vibe coder** | You can build quickly with coding agents but want a stronger safety net against unnecessary complexity, accidental repository changes, weak verification, and confident answers that outrun what was actually checked. |
+
+You do not need to memorize Hakim's full model. The default `full` mode is designed to be the normal starting point.
+
+## Quick install
+
+Install from an immutable reviewed release tag:
 
 ```bash
-export HAKIM_REF=<release-tag>
+export HAKIM_REF=v1.0.0-beta.11
 ```
 
 ### Codex
@@ -26,7 +73,7 @@ export HAKIM_REF=<release-tag>
 codex plugin marketplace add https://github.com/Habib1001-m/hakim.git --ref "$HAKIM_REF"
 ```
 
-Open `/plugins`, install **Hakim**, approve the host trust prompt if shown, and start a new thread.
+Open `/plugins`, install **Hakim**, then start a new thread.
 
 ### Claude Code
 
@@ -35,7 +82,7 @@ claude plugin marketplace add "https://github.com/Habib1001-m/hakim.git#$HAKIM_R
 claude plugin install hakim@hakim
 ```
 
-Start a fresh Claude session after installation and approve the host hook-trust prompt if shown.
+Start a fresh Claude session after installation.
 
 ### GitHub Copilot CLI
 
@@ -46,58 +93,98 @@ copilot plugin install hakim@hakim
 
 ### OpenCode
 
-From the target repository:
+Run from the repository where you want Hakim available:
 
 ```bash
 npx --yes --package="github:Habib1001-m/hakim#$HAKIM_REF" hakim-opencode install
 ```
 
-OpenCode support is project-local, refuses unsafe or conflicting managed state, preserves unrelated `.opencode` content, and does not edit `opencode.json`.
+OpenCode support is project-local, preserves unrelated `.opencode` content, refuses unsafe conflicting managed state, and does not edit `opencode.json`.
 
-See [Install Hakim](core/hakim-skill/INSTALL.md) for host-specific lifecycle details.
+For host-specific lifecycle, verification, and removal instructions, see **[Install Hakim](core/hakim-skill/INSTALL.md)**.
 
-## Six capabilities
+## Start with `full`
 
-Hakim has one canonical capability model across all supported hosts:
+Hakim has four modes, all controlled through the single `hakim` capability:
 
-- `hakim` — core execution judgment and mode control.
-- `review` — bounded read-only review for removable complexity in an explicit scope.
-- `audit` — deeper evidence-backed repository audit when broader evidence is materially required.
-- `debt` — live deliberate-shortcut and technical-debt provenance.
-- `status` — what the current evidence actually establishes.
-- `help` — current-host usage, modes, capabilities, and trust boundaries.
+| Mode | Use it when |
+|---|---|
+| `full` | **Default.** You want the complete judgment model with proportional verification. |
+| `lite` | You want normal execution with a lighter nudge toward a materially smaller safe alternative when one exists. |
+| `ultra` | You want the agent to challenge additions, abstractions, and dependencies aggressively while preserving the required outcome and real guards. |
+| `off` | You want Hakim guidance disabled for the session beyond host, repository, and safety boundaries. |
 
-Host syntax may differ; capability meaning does not. Where the host supports startup/system injection, the compact Hakim core is present automatically. Specialized capabilities are loaded when needed.
+Use Hakim's installed `help` capability for the exact invocation syntax on your current host.
 
-## Modes
+## Six capabilities, one product model
 
-Modes belong to `hakim`; they are not separate skills:
+| Capability | What it is for |
+|---|---|
+| `hakim` | Core execution judgment and mode control. |
+| `review` | Read-only review of an explicit scope for removable complexity. |
+| `audit` | Deeper evidence-backed repository inspection when broader evidence is actually needed. |
+| `debt` | Current deliberate shortcuts and technical-debt provenance. |
+| `status` | What the current evidence establishes — no stronger. |
+| `help` | Current-host usage, modes, capabilities, and trust boundaries. |
 
-- `lite` — execute the request and mention a materially smaller safe alternative when one exists.
-- `full` — default; apply the complete Hakim decision model with proportional verification.
-- `ultra` — challenge additions, abstractions, and dependencies aggressively; prefer deletion and reuse without weakening the required outcome or real guards.
-- `off` — do not apply Hakim guidance beyond host, repository, and safety boundaries.
+All four maintained hosts expose the same **semantic** capability model. Their commands, hooks, agents, permissions, caches, and lifecycle differ because Hakim uses each host's native extension model instead of adding a lowest-common-denominator runtime.
 
-Use the installed `help` capability or the host plugin UI for current host-native invocation forms.
+## What Hakim deliberately does not do
 
-## Operating model
+Hakim does not add a daemon, MCP server, LSP, A2A layer, or cross-host workflow engine merely to make the integrations look identical.
+
+It does not replace:
+
+- your coding agent;
+- repository instructions and protections;
+- the host's permissions, sandbox, approvals, or managed policy;
+- real security review or domain expertise;
+- evidence with confidence-sounding prose.
+
+Hakim also does not claim universal improvements in model quality, speed, token use, cost, security, adoption, or ROI. A passing test proves the scope that test checked.
+
+## Trust and release model
+
+Hakim is public beta software. Supported installs use immutable release tags rather than moving branch state.
+
+The repository includes deterministic release packaging, a CycloneDX SBOM generator, SHA-256 checksum generation, and release-manifest verification. These improve inspectability; they are not code signing, notarization, an external provenance attestation, or proof that the software is vulnerability-free.
+
+Hakim does not implement a product telemetry collection service and does not enable raw prompt or source-code logging as a product feature.
+
+Read the boundaries before using Hakim in a sensitive environment:
+
+- **[Security](SECURITY.md)**
+- **[Known limitations](docs/KNOWN_LIMITATIONS.md)**
+- **[Supported hosts](docs/SUPPORTED_HOSTS.md)**
+
+## How it is built
+
+Hakim has one canonical judgment model and four host-native projections:
 
 ```text
-UNDERSTAND → DECIDE → EXECUTE → VERIFY → CLOSE
+                canonical Hakim core
+                       │
+          ┌────────────┼────────────┬────────────┐
+          │            │            │            │
+        Codex       Claude       Copilot      OpenCode
 ```
 
-Hakim tells the agent what must remain true, not which fixed sequence of commands to perform. Investigation and verification depth are earned by actual scope, uncertainty, risk, and failure cost.
+The shared product is intentionally small; host-specific code exists only where the host requires native integration behavior.
 
-## Supported hosts
+For the technical design, see **[Architecture](docs/ARCHITECTURE.md)**.
 
-Hakim maintains native product surfaces for:
+## Documentation
 
-- Codex
-- Claude Code
-- GitHub Copilot CLI
-- OpenCode
+Start at **[Hakim documentation](docs/README.md)**, or go directly to:
 
-See [Supported Hosts](docs/SUPPORTED_HOSTS.md). Host-native trust, permissions, sandboxing, managed policy, plugin lifecycle, caches, and removal controls remain authoritative.
+- [Install and lifecycle](core/hakim-skill/INSTALL.md)
+- [Supported hosts](docs/SUPPORTED_HOSTS.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Known limitations](docs/KNOWN_LIMITATIONS.md)
+- [Security](SECURITY.md)
+- [Support](docs/SUPPORT.md)
+- [Versioning](docs/VERSIONING.md)
+- [Changelog](CHANGELOG.md)
 
 ## Development
 
@@ -109,22 +196,6 @@ cd hakim
 npm test
 ```
 
-`npm test` checks maintained product/runtime behavior and release packaging. `npm run package:release` builds the deterministic skill ZIP, CycloneDX SBOM, checksums, and release manifest.
+`npm test` checks maintained product/runtime contracts and release packaging. See **[Contributing](CONTRIBUTING.md)** before proposing a change.
 
-## Documentation
-
-- [Install Hakim](core/hakim-skill/INSTALL.md)
-- [Supported Hosts](docs/SUPPORTED_HOSTS.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Known Limitations](docs/KNOWN_LIMITATIONS.md)
-- [Security](SECURITY.md)
-- [Support](docs/SUPPORT.md)
-- [Versioning](docs/VERSIONING.md)
-- [Changelog](CHANGELOG.md)
-- [Contributing](CONTRIBUTING.md)
-
-Hakim is inspired by Ponytail. Attribution and applicable third-party notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-
-## Claim boundary
-
-A passing test or successful installation proves only the checked scope. Hakim does not claim universal model-quality improvement, performance gain, token savings, cost savings, security certification, adoption, or return on investment without separate accepted evidence.
+Hakim is inspired by Ponytail. Attribution and applicable third-party notices are in **[Third-Party Notices](THIRD_PARTY_NOTICES.md)**.
