@@ -40,7 +40,7 @@ assert.doesNotMatch(
 const help = read(canonicalPathFor('help'));
 assert.match(
   help,
-  /GitHub Copilot CLI\n\s+\/hakim\/hakim\n\s+\/hakim\/review\n\s+\/hakim\/audit\n\s+\/hakim\/debt\n\s+\/hakim\/status\n\s+\/hakim\/help/m,
+  /GitHub Copilot CLI\n\s+\/hakim\/hakim\n\s+\/hakim\/hakim-copilot-review\n\s+\/hakim\/audit\n\s+\/hakim\/debt\n\s+\/hakim\/status\n\s+\/hakim\/help/m,
   'help must show collision-safe plugin-qualified Copilot skill invocation',
 );
 assert.match(

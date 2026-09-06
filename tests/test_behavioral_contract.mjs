@@ -81,7 +81,7 @@ for (const relativePath of canonicalSkillPaths) {
   assert.doesNotMatch(text, /moving\s+main|4\/4\s+PASS|HOLD_FOR_LIVE_HOST_EVIDENCE/i, `${relativePath} must not embed acceptance history`);
 }
 
-for (const hostRoot of ['plugins/codex/skills', 'plugins/claude-code/skills', 'plugins/copilot/skills']) {
+for (const hostRoot of ['plugins/codex/skills', 'plugins/claude-code/skills']) {
   assert.deepEqual(listDirs(hostRoot), [...CAPABILITIES].sort(), `${hostRoot} must expose exactly the six canonical skill names`);
   for (const name of CAPABILITIES) {
     const relativePath = `${hostRoot}/${name}/SKILL.md`;
@@ -91,6 +91,25 @@ for (const hostRoot of ['plugins/codex/skills', 'plugins/claude-code/skills', 'p
     assert.doesNotMatch(text, /\b1\.0\.0-beta\.\d+\b|\b[0-9a-f]{40}\b/i, `${relativePath} must not carry release-history identity`);
   }
 }
+
+const copilotRoot = 'plugins/copilot/skills';
+assert.deepEqual(listDirs(copilotRoot), [...CAPABILITIES].sort(), `${copilotRoot} must keep the six canonical capability directories`);
+for (const name of CAPABILITIES.filter((capability) => capability !== 'review')) {
+  const relativePath = `${copilotRoot}/${name}/SKILL.md`;
+  const text = read(relativePath);
+  assert.equal(text, read(canonicalPathFor(name)), `${relativePath} must remain an exact projection of canonical ${name}`);
+  assert.doesNotMatch(text, /\b1\.0\.0-beta\.\d+\b|\b[0-9a-f]{40}\b/i, `${relativePath} must not carry release-history identity`);
+}
+
+const copilotReviewPath = `${copilotRoot}/review/SKILL.md`;
+const copilotReview = read(copilotReviewPath);
+assert.match(copilotReview, /^name:\s*hakim-copilot-review$/m, `${copilotReviewPath} must use a collision-safe Copilot-local routing ID`);
+assert.equal(
+  copilotReview.replace(/^name:\s*hakim-copilot-review$/m, 'name: review'),
+  read(canonicalPathFor('review')),
+  `${copilotReviewPath} may differ from canonical review only by its Copilot-local routing ID`,
+);
+assert.doesNotMatch(copilotReview, /\b1\.0\.0-beta\.\d+\b|\b[0-9a-f]{40}\b/i, `${copilotReviewPath} must not carry release-history identity`);
 
 for (const [agentPath, expectedSkill] of [
   ['plugins/claude-code/agents/hakim-reviewer.md', 'hakim:review'],
@@ -103,7 +122,7 @@ for (const [agentPath, expectedSkill] of [
 }
 
 for (const [agentPath, capability] of [
-  ['plugins/copilot/agents/hakim-reviewer.agent.md', 'review'],
+  ['plugins/copilot/agents/hakim-reviewer.agent.md', 'hakim-copilot-review'],
   ['plugins/copilot/agents/hakim-auditor.agent.md', 'audit'],
   ['plugins/copilot/agents/hakim-debt-analyst.agent.md', 'debt'],
   ['plugins/copilot/agents/hakim-evidence-verifier.agent.md', 'status'],
