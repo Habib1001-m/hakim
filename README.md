@@ -97,7 +97,7 @@ Hakim maintains native product surfaces for:
 - GitHub Copilot CLI
 - OpenCode
 
-See [Supported Hosts](SUPPORTED_HOSTS.md). Host-native trust, permissions, sandboxing, managed policy, plugin lifecycle, caches, and removal controls remain authoritative.
+See [Supported Hosts](docs/SUPPORTED_HOSTS.md). Host-native trust, permissions, sandboxing, managed policy, plugin lifecycle, caches, and removal controls remain authoritative.
 
 ## Development
 
@@ -114,12 +114,12 @@ npm test
 ## Documentation
 
 - [Install Hakim](core/hakim-skill/INSTALL.md)
-- [Supported Hosts](SUPPORTED_HOSTS.md)
+- [Supported Hosts](docs/SUPPORTED_HOSTS.md)
 - [Architecture](docs/ARCHITECTURE.md)
-- [Known Limitations](KNOWN_LIMITATIONS.md)
+- [Known Limitations](docs/KNOWN_LIMITATIONS.md)
 - [Security](SECURITY.md)
-- [Support](SUPPORT.md)
-- [Versioning](VERSIONING.md)
+- [Support](docs/SUPPORT.md)
+- [Versioning](docs/VERSIONING.md)
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 

@@ -37,9 +37,9 @@ Update only reader-facing documentation affected by the product change:
 
 - `README.md` — overview and quick start.
 - `core/hakim-skill/INSTALL.md` — installation and lifecycle.
-- `SUPPORTED_HOSTS.md` — supported host surfaces.
+- `docs/SUPPORTED_HOSTS.md` — supported host surfaces.
 - `docs/ARCHITECTURE.md` — stable product architecture.
-- `KNOWN_LIMITATIONS.md`, `VERSIONING.md`, `SUPPORT.md`, `SECURITY.md` — durable product boundaries.
+- `docs/KNOWN_LIMITATIONS.md`, `docs/VERSIONING.md`, `docs/SUPPORT.md`, `SECURITY.md` — durable product boundaries.
 
 Do not add public taskboards, execution diaries, operator transcripts, private prompts, or phase-specific project-control documents.
 

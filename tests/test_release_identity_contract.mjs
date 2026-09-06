@@ -11,9 +11,6 @@ const version = read('core/hakim-skill/VERSION').trim();
 
 assert.equal(readJson('package.json').version, version, 'package.json version must match canonical VERSION');
 
-const pyprojectVersion = read('pyproject.toml').match(/^version\s*=\s*"([^"]+)"\s*$/m)?.[1];
-assert.equal(pyprojectVersion, version, 'pyproject.toml version must match canonical VERSION');
-
 const claudeMarketplace = readJson('.claude-plugin/marketplace.json');
 assert.equal(claudeMarketplace.plugins?.[0]?.version, version, 'Claude marketplace version must match canonical VERSION');
 

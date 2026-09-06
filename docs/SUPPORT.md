@@ -5,10 +5,10 @@ Hakim is public beta software maintained on a best-effort basis. This policy doe
 ## Supported product
 
 - The current beta line is the maintained product line.
-- Supported host surfaces are listed in [SUPPORTED_HOSTS.md](SUPPORTED_HOSTS.md).
-- Installation and lifecycle instructions are in [core/hakim-skill/INSTALL.md](core/hakim-skill/INSTALL.md).
-- Product-facing changes are summarized in [CHANGELOG.md](CHANGELOG.md).
-- Security reports should follow [SECURITY.md](SECURITY.md).
+- Supported host surfaces are listed in [Supported Hosts](SUPPORTED_HOSTS.md).
+- Installation and lifecycle instructions are in [Install Hakim](../core/hakim-skill/INSTALL.md).
+- Product-facing changes are summarized in [Changelog](../CHANGELOG.md).
+- Security reports should follow [Security Policy](../SECURITY.md).
 - Host-native trust, permissions, sandboxing, managed policy, caches, and lifecycle controls remain authoritative.
 
 ## Compatibility and upgrades
