@@ -48,7 +48,7 @@ Claude Code
 
 GitHub Copilot CLI
   /hakim/hakim
-  /hakim/review
+  /hakim/hakim-copilot-review
   /hakim/audit
   /hakim/debt
   /hakim/status
@@ -62,6 +62,8 @@ OpenCode
   /status
   /help
 ```
+
+The Copilot review route uses the host-local routing ID `hakim-copilot-review` to avoid collision with higher-precedence generic `review` skills. It remains the canonical Hakim `review` capability, not an additional capability.
 
 A host may expose discovery UI, scoped agent names, or command aliases in addition to these forms. Those are routing details, not extra Hakim capabilities.
 

@@ -60,7 +60,9 @@ Verify installation with:
 copilot plugin list
 ```
 
-Inside Copilot CLI, `/skills list` and `/agent` expose the loaded Hakim skills and execution agents. The six skills are `hakim`, `review`, `audit`, `debt`, `status`, and `help`.
+Inside Copilot CLI, `/skills list` and `/agent` expose the loaded Hakim skills and execution agents. Hakim still has exactly six semantic capabilities: `hakim`, `review`, `audit`, `debt`, `status`, and `help`.
+
+The `review` capability uses the Copilot-local routing ID `hakim-copilot-review` to avoid higher-precedence generic `review` collisions. Invoke it as `/hakim/hakim-copilot-review`; the routing ID is not an additional capability.
 
 Explicit mode selection uses the installed `hakim` capability; host-native syntax remains authoritative. `.github/copilot-instructions.md` is a lightweight repository fallback, not the primary plugin distribution.
 

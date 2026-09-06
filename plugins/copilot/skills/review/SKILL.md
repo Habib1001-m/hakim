@@ -1,5 +1,5 @@
 ---
-name: review
+name: hakim-copilot-review
 description: "Hakim — Use for a bounded read-only complexity review of an explicitly selected diff, pull request, commit, or file scope. Find evidence-backed deletion, reuse, stdlib/native replacement, avoidable dependency, YAGNI, shrink, or unsupported-claim opportunities; do not treat this as a general correctness, security, architecture, or release review."
 ---
 

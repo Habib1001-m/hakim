@@ -22,7 +22,7 @@ Inside Copilot CLI, `/skills list` and `/agent` expose the loaded Hakim skills a
 
 ## Native skills
 
-Hakim exposes exactly:
+Hakim exposes exactly these six semantic capabilities:
 
 ```text
 hakim
@@ -33,13 +33,13 @@ status
 help
 ```
 
-`lite`, `full`, `ultra`, and `off` are modes of `hakim`, not separate skills. Copilot may load a matching skill through normal host-native skill routing.
+`lite`, `full`, `ultra`, and `off` are modes of `hakim`, not separate skills. Copilot's `review` projection uses the host-local routing ID `hakim-copilot-review` so a higher-precedence generic `review` skill cannot shadow it. Invoke it as `/hakim/hakim-copilot-review`; this routing ID is not a seventh Hakim capability.
 
 ## Execution agents
 
 The plugin ships:
 
-- `hakim-reviewer` — read/search review context routed to `review`.
+- `hakim-reviewer` — read/search review context routed to canonical `review` through `hakim-copilot-review`.
 - `hakim-auditor` — read/search audit context routed to `audit`.
 - `hakim-debt-analyst` — read/search debt-provenance context routed to `debt`.
 - `hakim-evidence-verifier` — read/search evidence-status context routed to `status`.
