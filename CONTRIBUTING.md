@@ -41,7 +41,7 @@ Update only reader-facing documentation affected by the product change:
 - `docs/ARCHITECTURE.md` — stable product architecture.
 - `docs/KNOWN_LIMITATIONS.md`, `docs/VERSIONING.md`, `docs/SUPPORT.md`, `SECURITY.md` — durable product boundaries.
 
-Do not add public taskboards, execution diaries, operator transcripts, private prompts, or phase-specific project-control documents.
+Keep public documentation durable and reader-facing. Do not publish private operational material or project-control records as product documentation.
 
 ## Pull requests
 

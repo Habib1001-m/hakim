@@ -1,6 +1,6 @@
 # Changelog
 
-Hakim records product-facing changes here. Internal acceptance campaigns, private governance, evidence ledgers, candidate SHAs, and operator diaries are intentionally excluded.
+Hakim records user-facing product changes here.
 
 ## Unreleased
 

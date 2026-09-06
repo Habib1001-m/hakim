@@ -64,7 +64,7 @@ assert.equal(objectiveCompletion.env, undefined);
 assert.equal(objectiveCompletion.timeoutSec, 3);
 
 for (const forbidden of ['preToolUse', 'postToolUse', 'subagentStop']) {
-  assert.equal(hookConfig.hooks[forbidden], undefined, `F05 must not add hook ${forbidden}`);
+  assert.equal(hookConfig.hooks[forbidden], undefined, `objective completion hook must not add hook ${forbidden}`);
 }
 
 for (const [input, expected] of [
@@ -181,4 +181,4 @@ try {
   fs.rmSync(subagentData, { recursive: true, force: true });
 }
 
-console.log('test_copilot_operational_presence.mjs: modern automatic presence + mode/subagent/F05 wiring OK');
+console.log('test_copilot_operational_presence.mjs: automatic presence + mode/subagent/objective-completion wiring OK');

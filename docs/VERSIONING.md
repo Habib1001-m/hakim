@@ -33,7 +33,7 @@ The current canonical capability registry is authoritative for invocation-level 
 
 ## Changelog policy
 
-`CHANGELOG.md` records product-facing changes only. Internal acceptance campaigns, private governance, evidence ledgers, candidate SHAs, and operator diaries do not belong there.
+`CHANGELOG.md` records user-facing product changes only.
 
 ## Release artifacts
 
