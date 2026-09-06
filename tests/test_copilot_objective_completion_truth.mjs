@@ -16,7 +16,7 @@ import {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HOOK = path.join(ROOT, 'plugins', 'copilot', 'hooks', 'objective_completion_truth.mjs');
-const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-f05-truth-'));
+const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'hakim-objective-truth-'));
 
 function git(cwd, args) {
   const result = spawnSync('git', args, { cwd, encoding: 'utf8', windowsHide: true });
@@ -46,7 +46,7 @@ function transcript(text, extra = []) {
 
 function input(cwd, overrides = {}) {
   return {
-    sessionId: 'synthetic-f05',
+    sessionId: 'synthetic-objective-truth',
     timestamp: 0,
     cwd,
     transcriptPath: path.join(cwd, 'synthetic-transcript.jsonl'),
@@ -76,7 +76,7 @@ test('handles the observed live Copilot assistant.message transcript shape', () 
 
   assert.equal(extractLastAssistantText(raw), falseClean);
 
-  const result = runObjectiveCompletionTruth(input('/tmp/f05-live-fixture'), {
+  const result = runObjectiveCompletionTruth(input('/tmp/objective-truth-live-fixture'), {
     transcriptText: raw,
     gitObservation: {
       available: true,
@@ -152,7 +152,7 @@ test('blocks SETUP_ARTIFACTS=NONE only for high-confidence changed setup artifac
   assert.match(result.reason, /example\.egg-info/);
 });
 
-test('does not pretend to decide semantic unrelatedness in F05 v1', () => {
+test('does not pretend to decide semantic unrelatedness in the bounded objective-completion check', () => {
   const cwd = initRepo('unrelated-not-authoritative');
   fs.writeFileSync(path.join(cwd, 'notes.txt'), 'untracked\n');
 

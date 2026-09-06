@@ -34,4 +34,4 @@ Hakim is public beta software.
 
 Hakim does not implement a product telemetry service and does not enable raw prompt or source-code logging as a product feature. Bounded host-owned mode state does not contain raw prompts, source code, reasoning, credentials, or transcript content.
 
-See [SECURITY.md](SECURITY.md) and [SUPPORT.md](SUPPORT.md).
+See [Security](../SECURITY.md) and [Support](SUPPORT.md).

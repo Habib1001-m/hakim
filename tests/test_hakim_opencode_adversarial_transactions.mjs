@@ -26,7 +26,7 @@ function withRepository(fn) {
     .finally(() => fs.rmSync(parent, { recursive: true, force: true }));
 }
 
-test('P0-02: bytes changed in the final verify-to-rename window are restored no-clobber, never deleted', async () => withRepository(({ target }) => {
+test('bytes changed in the final verify-to-rename window are restored no-clobber, never deleted', async () => withRepository(({ target }) => {
   assert.equal(installOpenCodeAdapter({ target, apply: true }, ROOT).state, 'CREATED');
 
   const plugin = path.join(target, '.opencode', 'plugins', 'hakim.js');
@@ -92,7 +92,7 @@ test('post-remove verification retains quarantine if a concurrent replacement ap
   }
 }));
 
-test('P0-03: rollback race preserves a concurrent replacement even when it occurs after rollback pre-verification', async () => withRepository(({ target }) => {
+test('rollback race preserves a concurrent replacement even when it occurs after rollback pre-verification', async () => withRepository(({ target }) => {
   const bundle = buildOpenCodeBundle(ROOT);
   const first = bundle.files[0];
   const firstPath = path.join(target, first.target_relative);
