@@ -4,6 +4,10 @@ Hakim records product-facing changes here. Internal acceptance campaigns, privat
 
 ## Unreleased
 
+## 1.0.0-beta.10
+
+- Made GitHub Copilot's canonical `review` capability collision-safe with the host-local routing ID `hakim-copilot-review`, and routed `hakim-reviewer` through that ID so higher-precedence generic `review` skills cannot shadow Hakim's review contract.
+
 ## 1.0.0-beta.9
 
 - Made every OpenCode Hakim slash command visibly self-identifying in the TUI by prefixing its description with `Hakim`, so users can discover and filter the six canonical Hakim commands without memorizing generic command names.
