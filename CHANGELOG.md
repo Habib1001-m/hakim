@@ -4,6 +4,10 @@ Hakim records product-facing changes here. Internal acceptance campaigns, privat
 
 ## Unreleased
 
+## 1.0.0-beta.11
+
+- Fixed OpenCode automatic Hakim activation by mutating the host-owned system-context array in place, so the maintained Hakim core and session mode reach fresh model requests instead of being silently lost when the transform replaces the array reference.
+
 ## 1.0.0-beta.10
 
 - Made GitHub Copilot's canonical `review` capability collision-safe with the host-local routing ID `hakim-copilot-review`, and routed `hakim-reviewer` through that ID so higher-precedence generic `review` skills cannot shadow Hakim's review contract.
