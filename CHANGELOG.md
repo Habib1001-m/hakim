@@ -7,6 +7,7 @@ Hakim records product-facing changes here. Internal acceptance campaigns, privat
 ## 1.0.0-beta.9
 
 - Made every OpenCode Hakim slash command visibly self-identifying in the TUI by prefixing its description with `Hakim`, so users can discover and filter the six canonical Hakim commands without memorizing generic command names.
+- Added Codex SessionStart guidance for preserving an already-active specialized Hakim capability across delegation through Codex's native skill selection, without causing delegation or attaching specialized capability behavior to unrelated delegated work.
 
 ## 1.0.0-beta.8
 

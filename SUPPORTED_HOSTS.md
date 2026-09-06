@@ -4,7 +4,7 @@ Hakim is public beta software. A maintained host means Hakim ships and tests a p
 
 | Host | Automatic baseline | Explicit Hakim surface | Runtime boundary |
 |---|---|---|---|
-| Codex | Compact SessionStart core | `$hakim:hakim`, `$hakim:review`, `$hakim:audit`, `$hakim:debt`, `$hakim:status`, `$hakim:help` | Host plugin, hook trust, approval, and sandbox controls are authoritative |
+| Codex | Compact SessionStart core plus delegation-continuity guidance for already-active specialized Hakim capabilities | `$hakim:hakim`, `$hakim:review`, `$hakim:audit`, `$hakim:debt`, `$hakim:status`, `$hakim:help` | Host plugin, hook trust, approval, and sandbox controls are authoritative |
 | Claude Code | Compact SessionStart core | `/hakim:hakim`, `/hakim:review`, `/hakim:audit`, `/hakim:debt`, `/hakim:status`, `/hakim:help`; scoped execution agents | Host plugin/cache/trust/permission policy is authoritative |
 | GitHub Copilot CLI | Silent parent-session presence plus bounded subagent/mode/completion hooks | Six installed skills plus five execution agents | Host plugin/settings/managed-policy behavior is authoritative |
 | OpenCode | Canonical Hakim core through the project-local plugin system transform | `/hakim <mode>` plus the canonical `review`, `audit`, `debt`, `status`, and `help` surfaces | Node.js `>=22`; Hakim does not edit `opencode.json` |

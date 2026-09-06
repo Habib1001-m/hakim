@@ -31,7 +31,7 @@ The shared root skill uses a deliberately portable frontmatter contract: `name` 
 
 ## Host integrations
 
-**Codex** uses a native marketplace plugin with six skill projections and compact SessionStart presence.
+**Codex** uses a native marketplace plugin with six skill projections and compact SessionStart presence. When delegation already exists, the SessionStart core tells the parent to preserve an already-active specialized Hakim capability in the child task through Codex's native skill selection; it does not cause delegation or attach specialized capabilities to unrelated delegated work.
 
 **Claude Code** uses a native marketplace plugin with six skill projections, compact SessionStart presence, and scoped execution agents. Agents preload a canonical skill; they do not own another contract.
 

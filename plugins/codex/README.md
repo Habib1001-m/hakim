@@ -38,6 +38,8 @@ Natural-language skill discovery remains valid when Codex matches a skill descri
 
 SessionStart injects only the compact Hakim core needed before the first coding decision: bounded understanding, the decision ladder, proportional verification, earned depth, real-guard preservation, evidence/authority separation, and evidence-bound claims.
 
+When delegation already exists—whether Codex chose it or the user requested it—and the delegated work is governed by a specialized Hakim capability, SessionStart guidance tells the parent to include that same capability in the child task through Codex's native skill selection. Hakim does not cause delegation and does not attach a specialized capability to unrelated delegated work.
+
 It does not paste specialized review/audit/debt/status/help contracts into every session and does not force fixed checkpoint tables or command sequences. The hook never bypasses Codex approval, sandbox, plugin, or trust controls.
 
 ## Validation
