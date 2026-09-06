@@ -1,8 +1,32 @@
 # Hakim for OpenCode
 
-Hakim is a maintained project-local OpenCode plugin. Frozen `1.0.0-beta.4` installs from exact source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
+Hakim is a maintained project-local OpenCode plugin with a guarded managed lifecycle.
 
-## What the plugin does
+## Install
+
+Use an immutable reviewed release tag from the target repository:
+
+```bash
+export HAKIM_REF=<release-tag>
+npx --yes --package="github:Habib1001-m/hakim#$HAKIM_REF" hakim-opencode install
+```
+
+Read-only inspection:
+
+```bash
+npx --yes --package="github:Habib1001-m/hakim#$HAKIM_REF" hakim-opencode install --dry-run
+npx --yes --package="github:Habib1001-m/hakim#$HAKIM_REF" hakim-opencode status
+```
+
+Remove Hakim-managed project-local state with:
+
+```bash
+npx --yes --package="github:Habib1001-m/hakim#$HAKIM_REF" hakim-opencode remove
+```
+
+The installer does not create or modify `opencode.json`.
+
+## Product surface
 
 Hakim loads from:
 
@@ -10,18 +34,15 @@ Hakim loads from:
 .opencode/plugins/hakim.js
 ```
 
-It uses OpenCode's native configuration and prompt surfaces to:
+It registers the six canonical capabilities when those command names are free:
 
-- register `/hakim`, `/hakim-review`, `/hakim-audit`, `/hakim-debt`, `/hakim-gain`, and `/hakim-help` when those names are free;
-- add the installed canonical skills path without duplicates;
-- inject canonical Hakim policy through the shared loader;
-- keep `lite`, `full`, `ultra`, and `off` mode in process/session memory;
-- make `/hakim <mode>` a direct mode-selection turn;
-- keep Hakim-owned system context bounded by explicit sentinels;
-- preserve unrelated host system content;
-- remove only the relevant session-local mode state when a session is deleted.
+```text
+hakim  review  audit  debt  status  help
+```
 
-The mode-selection turn itself is not a repository task and should not inspect the repository merely to change mode.
+The adapter also adds the installed canonical skill path, injects the canonical Hakim core through the shared loader, keeps `lite | full | ultra | off` mode state bounded to the plugin process/session, preserves unrelated host system content, and removes only the relevant session-local mode state when a session is deleted.
+
+`hakim` mode selection is not a repository task and should not trigger repository inspection merely to change mode.
 
 ## Installed layout
 
@@ -37,65 +58,44 @@ The mode-selection turn itself is not a repository task and should not inspect t
         ├── SKILL.md
         ├── capabilities.json
         └── skills/
+            ├── review/
+            ├── audit/
+            ├── debt/
+            ├── status/
+            └── help/
 ```
 
 `install-manifest.json` records bounded Hakim-owned paths, sizes, hashes, and product version. It is validated as untrusted local input before mutation.
 
-The installer does not create or modify `opencode.json`.
+## Managed lifecycle
 
-## Install frozen beta.4
-
-From the target repository:
-
-```bash
-npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install
-```
-
-Read-only inspection:
-
-```bash
-npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode install --dry-run
-npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode status
-```
-
-The managed lifecycle supports only bounded safe transitions:
+The lifecycle supports bounded safe transitions:
 
 1. **Create** — all Hakim-owned paths are absent.
 2. **Adopt** — a recognized exact pre-manifest installation already matches.
 3. **Upgrade** — a complete verified supported older installation is present.
+4. **Remove** — only a complete verified Hakim-owned installation is eligible for managed removal.
 
 Malformed/unsupported manifests, unsafe paths, partial or modified state, symlinks/non-regular files, unowned conflicts, and unprovable overwrites are refused.
 
+Removal moves Hakim-owned files into private same-filesystem quarantine and verifies moved bytes before deletion. Rollback restores verified quarantined bytes without overwriting independently reappeared paths.
+
 ## Use
+
+Mode selection:
 
 ```text
 /hakim full
+/hakim lite
 /hakim ultra
 /hakim off
-/hakim-review Review the current diff.
-/hakim-audit Inspect the requested repository scope.
-/hakim-help Explain the available Hakim capabilities.
 ```
 
-Use `/hakim <mode>` to select the session mode, then issue the coding or review request separately.
+Specialized capabilities are routed through the installed canonical skills/commands, for example `review`, `audit`, `debt`, `status`, and `help` according to the current OpenCode host surface.
 
 Mode state is process-local. Explicit session IDs are isolated; a fresh plugin process resets to `HAKIM_DEFAULT_MODE` or `full` when unset/invalid.
 
 Hakim never overwrites an existing OpenCode command with the same name.
-
-## Remove frozen beta.4
-
-```bash
-npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode remove
-```
-
-Optional dry run:
-
-```bash
-npx --yes --package=github:Habib1001-m/hakim#5d00039479f2f11b7fe30ccf2385e70ce24553c3 hakim-opencode remove --dry-run
-```
-
-Removal moves Hakim-owned files into private same-filesystem quarantine and verifies moved bytes before deletion. Rollback restores verified quarantined bytes without overwriting independently reappeared paths.
 
 ## Concurrency boundary
 
@@ -105,19 +105,6 @@ The lifecycle does not claim a cross-process lock or immunity from hostile files
 
 The Git-backed package declares Node `>=22`. Public CI exercises the maintained JavaScript/OpenCode surface on Node 22, 24, and 26.
 
-## Source-checkout development
-
-```bash
-git clone https://github.com/Habib1001-m/hakim.git
-cd hakim
-npm run plan:install -- --host opencode --target /path/to/repository
-npm run install:opencode -- --target /path/to/repository
-npm run install:opencode -- --target /path/to/repository --apply
-npm run remove:opencode -- --target /path/to/repository
-```
-
-The source-checkout install script defaults to dry-run; `--apply` performs installation. Moving `main` is development-only rather than the frozen product identity.
-
 ## Validate repository behavior
 
 ```bash
@@ -126,7 +113,6 @@ node tests/test_hakim_opencode_lifecycle.mjs
 node tests/test_hakim_opencode_adversarial_transactions.mjs
 node tests/test_hakim_opencode_cli.mjs
 node tests/test_hakim_opencode_package_surface.mjs
-npm run check:distribution-identity
 npm test
 ```
 

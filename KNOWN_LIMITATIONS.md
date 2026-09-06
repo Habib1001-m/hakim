@@ -1,52 +1,37 @@
 # Known Limitations
 
-Hakim remains public beta software.
+Hakim is public beta software.
 
 ## Distribution
 
-- Frozen `1.0.0-beta.4` is pinned to exact source `5d00039479f2f11b7fe30ccf2385e70ce24553c3`.
-- Moving `main` is unreleased development and is not a frozen candidate.
-- No npm registry package or central marketplace/directory listing is claimed.
-- OpenCode uses npm/npx as Git transport/command execution; it does not create a global Hakim/OpenCode installation.
-- Release artifacts are not signed, notarized, or externally attested.
-- The repository generates a deterministic CycloneDX SBOM, but no external SBOM attestation is claimed.
-- No public SLA or LTS commitment is provided.
+- Install releases from an immutable Git ref; moving branch state is not a release identity.
+- No npm registry publication, signing, notarization, external provenance attestation, SLA, or LTS commitment is claimed.
+- OpenCode uses npm/npx as Git transport and command execution and installs Hakim project-locally rather than globally.
 
 ## Compatibility
 
-- Exact frozen beta.4 live-host evidence exists for Codex, Claude Code, GitHub Copilot CLI, and OpenCode, but it is bounded to the recorded host versions/environments.
-- Codex `0.131.0+` is the maintained compatibility floor for the bundled plugin-hook path.
-- The Git-backed OpenCode package declares Node `>=22`; Public CI exercises the maintained JavaScript/OpenCode surface on Node 22, 24, and 26.
-- Universal operating-system, editor-version, provider, model, organization-policy, and future host-version compatibility is not established.
-- Host-native approval, sandboxing, permissions, managed policy, cache behavior, and removal remain outside Hakim's authority.
-
-## Operational behavior
-
-- Moving Copilot development includes silent parent-session presence, bounded mode state, subagent continuity, and a late objective-contradiction hook.
-- Repository tests do not by themselves establish that every supported Copilot version executes those hooks identically.
-- The late objective-contradiction mechanism remains development behavior until its live-host path is validated on the exact source being claimed.
-- Hakim fails soft when host/runtime truth required by a hook is unavailable; it does not claim a universal final-response correctness guarantee.
+- Hakim maintains product surfaces for Codex, Claude Code, GitHub Copilot CLI, and OpenCode, but not every host version, operating system, model/provider, organization policy, or future host behavior is guaranteed.
+- OpenCode requires Node.js `>=22`; CI exercises Node 22 and Node 26 compatibility jobs, with the main product/release job currently running on Node 24.
+- Host-native approval, permissions, sandboxing, managed policy, trust prompts, caches, plugin discovery, and removal remain outside Hakim's authority.
+- Host-specific minimum versions are not claimed unless they are maintained as an explicit tested contract.
 
 ## OpenCode lifecycle
 
-- The managed project-local lifecycle refuses partial, modified, unsafe, malformed, unsupported, or unowned conflicting state.
-- Force overwrite and force removal are not implemented.
-- Removal and rollback use same-filesystem quarantine, post-move verification, and no-clobber restoration.
-- Hakim does not claim a cross-process operation lock or immunity to malicious/concurrent filesystem replacement outside validated checkpoints.
-- Hakim does not edit `opencode.json`, rotate credentials, or repair host security configuration.
+- Unsafe, partial, modified, malformed, unsupported, or unowned conflicting managed state is refused rather than force-overwritten.
+- Force overwrite and force removal are not product features.
+- Removal and rollback use bounded ownership, same-filesystem quarantine, verification, and no-clobber restoration.
+- Hakim does not claim a cross-process filesystem lock or immunity to malicious concurrent local replacement.
+- Some npm 10 environments have a Git-package transport bug; if exact-Git npx transport fails with an Arborist/GitFetcher packing error, use npm 11+ rather than replacing the intended immutable source ref with a moving branch.
 
-## Evaluation boundaries
+## Evaluation
 
-- Deterministic checks cover only their enabled rules.
-- Zero findings do not equal correctness, security approval, semantic equivalence, or product usefulness.
-- Public CI cannot create live-host evidence by itself.
-- Evidence recorded for one source identity is not automatically valid for another.
-- Hakim makes no general claim about model quality, speed, token use, cost, adoption, safety improvement, or return on investment.
+- Deterministic tests cover only their checked contracts.
+- A green repository gate does not by itself prove real-host compatibility for every environment.
+- A host successfully executing startup context does not guarantee that a model can reliably introspect or repeat hidden host context verbatim.
+- Hakim makes no general claim about model quality, speed, token use, cost, adoption, security improvement, or return on investment.
 
 ## Privacy
 
-- Hakim does not implement a telemetry collection service.
-- Hakim does not enable raw prompt or source-code logging as a product feature.
-- Bounded host-owned mode state does not contain raw prompts, source code, tool arguments, reasoning, credentials, or transcript content.
+Hakim does not implement a product telemetry service and does not enable raw prompt or source-code logging as a product feature. Bounded host-owned mode state does not contain raw prompts, source code, reasoning, credentials, or transcript content.
 
-Security response and maintenance are best-effort during public beta; see [SUPPORT.md](SUPPORT.md).
+See [SECURITY.md](SECURITY.md) and [SUPPORT.md](SUPPORT.md).

@@ -22,9 +22,9 @@ export function loadSkillContent(skillPath = getCanonicalSkillPath()) {
 export function getModeDirective(mode = 'full') {
   const normalized = normalizeMode(mode);
   const directives = {
-    lite: 'Build what is asked, then name the lazier alternative in one line.',
-    full: 'Enforce the Hakim ladder. Prefer reuse, stdlib, native platform features, and shortest safe diffs.',
-    ultra: 'YAGNI extremist mode: delete before adding, challenge abstractions, and ship the minimum safe change.',
+    lite: 'Lite mode: execute the request and mention a materially smaller safe alternative when one exists.',
+    full: 'Full mode: apply the complete Hakim decision model with proportional verification.',
+    ultra: 'Ultra mode: challenge additions, abstractions, and dependencies aggressively while preserving the required outcome and real guards.',
     off: 'Hakim guidance disabled for this session.',
   };
   return directives[normalized];

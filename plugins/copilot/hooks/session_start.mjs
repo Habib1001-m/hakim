@@ -10,12 +10,13 @@ const SKILL_PATH = path.resolve(HERE, '..', 'skills', 'hakim', 'SKILL.md');
 const MAX_CONTEXT_BYTES = 9_000;
 
 const OPERATIONAL_SECTIONS = Object.freeze([
-  'Decision ladder',
-  'Pre-mutation baseline',
-  'Evidence sufficiency',
-  'Domain-guard preservation',
-  'Outcome-oriented restraint',
-  'Bounded `NO_CHANGE` truth',
+  'Understand only what matters',
+  'The 7-level decision ladder',
+  'Proportional verification',
+  'Depth is earned',
+  'Preserve real guards',
+  'Evidence and authority',
+  'Evidence-bound claims',
 ]);
 
 function extractSection(markdown, heading) {
@@ -32,8 +33,9 @@ export function buildOperationalContext(markdown, mode = 'full') {
   const context = [
     `HAKIM OPERATIONAL PRESENCE — ${mode} mode.`,
     getModeDirective(mode),
-    'Hakim is already available for this Copilot session. Apply the maintained decision policy automatically to coding work without requiring an explicit Hakim invocation.',
-    'Preserve model reasoning freedom: these rules govern engineering decisions, evidence, and consequential claims; they are not a fixed reasoning recipe or tool sequence.',
+    'Hakim is already available for this Copilot session. Apply the maintained core automatically to coding work without requiring an explicit Hakim invocation.',
+    'Choose ordinary tactics inside the authorized scope; add process only when it changes a decision, protects a real boundary, or makes material evidence observable.',
+    'Preserve model reasoning freedom and host-native permissions: Hakim governs engineering decisions, evidence, and consequential claims; it is not a fixed reasoning recipe or tool sequence.',
     '',
     body,
   ].join('\n');

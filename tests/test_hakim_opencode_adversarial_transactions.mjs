@@ -60,6 +60,38 @@ test('P0-02: bytes changed in the final verify-to-rename window are restored no-
   }
 }));
 
+test('post-remove verification retains quarantine if a concurrent replacement appears after managed bytes move', async () => withRepository(({ target }) => {
+  assert.equal(installOpenCodeAdapter({ target, apply: true }, ROOT).state, 'CREATED');
+
+  const plugin = path.join(target, '.opencode', 'plugins', 'hakim.js');
+  const replacement = Buffer.from('CONCURRENT REPLACEMENT AFTER QUARANTINE\n');
+  const originalRmdir = fs.rmdirSync;
+  let injected = false;
+
+  fs.rmdirSync = function patchedRmdir(directory, ...args) {
+    if (!injected) {
+      fs.writeFileSync(plugin, replacement);
+      injected = true;
+    }
+    return originalRmdir.call(this, directory, ...args);
+  };
+
+  try {
+    const report = removeOpenCodeAdapter({ target, apply: true }, ROOT);
+    assert.equal(injected, true, 'replacement must appear after managed bytes moved to quarantine');
+    assert.equal(report.status, 'FAIL');
+    assert.equal(report.state, 'POST_REMOVE_VERIFY_FAILED');
+    assert.equal(report.quarantine_retained, true, 'verified original bytes must remain recoverable until post-remove verification succeeds');
+    assert.ok(report.quarantine_path);
+    assert.equal(fs.existsSync(report.quarantine_path), true, 'quarantine work root must still exist');
+    assert.deepEqual(fs.readFileSync(plugin), replacement, 'concurrent replacement must not be clobbered');
+    const quarantinedPlugin = path.join(report.quarantine_path, 'plugins', 'hakim.js');
+    assert.equal(fs.existsSync(quarantinedPlugin), true, 'original managed plugin must remain in quarantine');
+  } finally {
+    fs.rmdirSync = originalRmdir;
+  }
+}));
+
 test('P0-03: rollback race preserves a concurrent replacement even when it occurs after rollback pre-verification', async () => withRepository(({ target }) => {
   const bundle = buildOpenCodeBundle(ROOT);
   const first = bundle.files[0];
