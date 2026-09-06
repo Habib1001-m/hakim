@@ -137,7 +137,7 @@ function reconcileSystemOutput(output, mode, instructions = null) {
     const stripped = stripHakimActivation(entry);
     if (stripped.text.length > 0 || !stripped.changed) cleaned.push(stripped.text);
   }
-  output.system = cleaned;
+  output.system.splice(0, output.system.length, ...cleaned);
   if (mode === 'off') return;
 
   const block = `${ACTIVATION_SENTINEL_PREFIX}${mode} -->\n${instructions}\n${ACTIVATION_SENTINEL_END}`;
