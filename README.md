@@ -1,14 +1,18 @@
-# Hakim (حَكِيم)
+<div align="center">
 
-<p align="center">
-  <img src="docs/assets/hakim-code-wiser-logo.jpg" alt="Hakim — Code Wiser" width="320">
-</p>
+<img src="docs/assets/hakim-code-wiser-logo.jpg" alt="Hakim — Code Wiser" width="220">
 
-**A judgment layer for AI coding agents.**
+<h1>Hakim (حَكِيم)</h1>
 
-Smaller changes. Safer actions. Claims backed by evidence.
+<p><strong>A judgment layer for AI coding agents.</strong></p>
 
-**Public beta · `v1.0.0-beta.11` · MIT · Codex · Claude Code · GitHub Copilot CLI · OpenCode**
+<p>Smaller changes. Safer actions. Claims backed by evidence.</p>
+
+<p><strong><kbd>Public beta</kbd> · <kbd>v1.0.0-beta.11</kbd> · <kbd>MIT</kbd> · <kbd>Codex</kbd> · <kbd>Claude Code</kbd> · <kbd>GitHub Copilot CLI</kbd> · <kbd>OpenCode</kbd></strong></p>
+
+</div>
+
+---
 
 Hakim gives capable coding agents a compact engineering decision model before they start adding code, dependencies, abstractions, or confident completion claims.
 
@@ -63,9 +67,11 @@ Hakim then gets out of the way. It does not prescribe a universal command sequen
 
 You do not need to memorize Hakim's full model. The default `full` mode is designed to be the normal starting point.
 
-## Quick install
+---
 
-Install from an immutable reviewed release tag:
+<h2 align="center">Quick install</h2>
+
+<p align="center">Install from an immutable reviewed release tag:</p>
 
 ```bash
 export HAKIM_REF=v1.0.0-beta.11
@@ -133,6 +139,8 @@ Use Hakim's installed `help` capability for the exact invocation syntax on your 
 
 All four maintained hosts expose the same **semantic** capability model. Their commands, hooks, agents, permissions, caches, and lifecycle differ because Hakim uses each host's native extension model instead of adding a lowest-common-denominator runtime.
 
+---
+
 ## What Hakim deliberately does not do
 
 Hakim does not add a daemon, MCP server, LSP, A2A layer, or cross-host workflow engine merely to make the integrations look identical.
@@ -176,6 +184,8 @@ Hakim has one canonical judgment model and four host-native projections:
 The shared product is intentionally small; host-specific code exists only where the host requires native integration behavior.
 
 For the technical design, see **[Architecture](docs/ARCHITECTURE.md)**.
+
+---
 
 ## Documentation
 
