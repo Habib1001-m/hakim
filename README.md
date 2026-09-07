@@ -12,8 +12,6 @@
 
 </div>
 
----
-
 Hakim gives capable coding agents a compact engineering decision model before they start adding code, dependencies, abstractions, or confident completion claims.
 
 It does **not** turn your agent into a workflow bot. The host still owns permissions, tools, sandboxing, trust prompts, and execution. Hakim focuses on one narrower problem: **better judgment about what should change, how much evidence is enough, and what the result actually proves.**
