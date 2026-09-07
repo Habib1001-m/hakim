@@ -1,5 +1,9 @@
 # Hakim (حَكِيم)
 
+<p align="center">
+  <img src="docs/assets/hakim-code-wiser-logo.jpg" alt="Hakim — Code Wiser" width="320">
+</p>
+
 **A judgment layer for AI coding agents.**
 
 Smaller changes. Safer actions. Claims backed by evidence.
