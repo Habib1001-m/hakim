@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/hakim-code-wiser-logo.jpg" alt="Hakim — Code Wiser" width="220">
+<img src="docs/assets/hakim-code-wiser-logo.png" alt="Hakim — Code Wiser" width="220">
 
 <h1>Hakim (حَكِيم)</h1>
 
